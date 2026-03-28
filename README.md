@@ -1,7 +1,9 @@
-# Programmate
+# PrismaFlow
 
-## What is Programmate?
-Programmate is a software made by programmers for programmers. This app give you tools for developing apps like a todo-list, chat between friends, calendary and more tools. Currently we have four options:
+![image](./public/images/md-banner.png)
+
+## What is PrismaFlow?
+PrismaFlow is a software made by programmers for programmers. This app give you tools for developing apps like a todo-list, chat between friends, calendary and more tools. Currently we have four options:
   - **Free option:** This is in case that you want try the app, but you want to understand or you don't want to spend money in this app. Obviously you have limitations, but i tried to don't make those limitations restrictive.
   - **Pro option:** With this you have every tools and newtest functions only paying **$4 USD / month** _(This will change overtime)_. And you help us to get better functions for you in the future. Really situable if your an indie programmer or a freelancer.
   - **Team option:** This is for groups, from 2 people to 30 people _(This will change overtime)_, the price is **$10 USD / month** _(This will change overtime)_ per member in your team, and like the pro option your team also has all features unlocked with the difference that you have the team chat and team callendar unlocked.

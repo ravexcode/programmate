@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Programmate",
-  description: "The aplication from programmers to programmers",
+  description: "The aplication from programmers to programmers"
 };
 
 export default function RootLayout({
@@ -13,6 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <link rel="shortcut icon" href="/logos/logo.svg" type="image/x-icon" />
       <body>
         {children}
       </body>

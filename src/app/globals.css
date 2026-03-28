@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+@theme {
+  --color-plum: #08020d;
+  --color-plum-section: #130f16;
+  --color-button: #7931bd;
+  --color-gradient-borders: #8850b6;
+  --color-gradient-center: #cdafe6;
+  --color-resalted: #b86bff;
+}
