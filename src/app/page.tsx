@@ -1,7 +1,7 @@
 "use client";
 
-//Imports de funciuones
-import { useState } from "react";
+//Imports de funciones
+import { useState, useRef, Ref, useEffect } from "react";
 
 //Imports de componentes de UI
 import Header from "@/components/ui/header";
@@ -49,6 +49,28 @@ export default function Home() {
     },
   ];
 
+  //Elemento a mostrar
+  const roadmapElement : Ref<HTMLElement> = useRef(null);
+
+  useEffect(() => {
+    const current = roadmapElement.current;
+    if (!current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          current.classList.remove("opacity-0");
+          current.classList.add("show-element");
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(current);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <MainContainer>
       <Header />
@@ -56,7 +78,7 @@ export default function Home() {
       <main className="flex flex-col justify-start items-center gap-7 px-2 pt-5 pb-10 w-full h-full">
         
         <section
-        className="relative w-full max-w-[80dvw] min-h-50 flex flex-col justify-center items-center bg-cover bg-center bg-norepeat py-4 px-4 gap-3">
+        className="relative w-full max-w-[80dvw] min-h-50 flex flex-col justify-center items-center bg-cover bg-center bg-norepeat py-4 px-4 gap-3 show-element">
 
           <img src="/images/background_1.jpg" alt="PrismaFlow® Background" className="object-cover w-full h-full absolute z-1 brightness-60 rounded-lg" />
 
@@ -78,7 +100,7 @@ export default function Home() {
         </SectionContainer>
 
         {/*Roadmap section*/}
-        <section className="flex flex-col justify-center items-center w-full px-4 gap-8">
+        <section ref={roadmapElement} className="flex flex-col justify-center items-center w-full px-4 gap-8 opacity-0">
       
           {/* Título */}
           <h2 className="text-3xl bg-radial from-gradient-center via-gradient-borders to-gradient-borders font-bold bg-center bg-clip-text bg-size-[200%] text-black/0">Nuestro Roadmap</h2>

@@ -5,7 +5,6 @@ import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 //Imports de containers
 import MainContainer from "@/components/containers/main";
-import SectionContainer from "@/components/containers/section";
 
 export default function StartUpPage() {
   return (
@@ -31,7 +30,7 @@ export default function StartUpPage() {
 
           </span>
         </h2>
-        <p className="pt-2 max-w-150 text-center z-10 opacity-70">Mejora tu eficiencia de desarollo con nuestras herramientas pensadas y hechas a la medida para mejorar tu optimización.</p>
+        <p className="pt-2 max-w-150 text-center z-10 opacity-70">Mejora tu eficiencia de desarollo con nuestras herramientas pensadas y hechas a la medida para mejorar tu optimización de tu proyecto.</p>
 
         <div className="flex gap-5 justify-center items-center w-full py-5 z-8">
           <a href="/download"
@@ -50,9 +49,33 @@ export default function StartUpPage() {
 
           <h2 className="text-3xl font-bold">Beneficios</h2>
 
-          <section className="flex flex-col md:flex-row justify-center items-center w-full">
-            <div className="flex flex-col justify-start items-start">
-              <h3></h3>
+          <section className="flex flex-col md:flex-row justify-center items-center md:items-start w-full gap-10 flex-wrap">
+
+            <div className="flex flex-col justify-start items-start bg-plum-section p-3 rounded-md min-h-40 w-80 gap-1 border border-l-5 border-l-resalted border-resalted/50 shadow-lg duration-300 hover:shadow-button/30 hover:scale-105 hover:brightness-110">
+              <div className="flex gap-2">
+                <img src="\icons\easy-to-use.svg" alt="Credits to streamlinehq.com"
+                className="invert aspect-square w-5" />
+                <h3 className="text-lg font-medium">Uso fácil</h3>
+              </div>
+              <p className="text-sm opacity-90">Nuestras herramientas funcionan para cualquier tipo de usuario, desde los más experimentados, hasta los que van aprendiendo.</p>
+            </div>
+
+            <div className="flex flex-col justify-start items-start bg-plum-section p-3 rounded-md min-h-40 w-80 gap-1 border border-l-5 border-l-resalted border-resalted/50 shadow-lg duration-300 hover:shadow-button/30 hover:scale-105 hover:brightness-110">
+              <div className="flex gap-2">
+                <img src="\icons\flow.svg" alt="Credits to streamlinehq.com"
+                className="invert aspect-square w-5" />
+                <h3 className="text-lg font-medium">Mejor flujo de trabajo</h3>
+              </div>
+              <p className="text-sm opacity-90">Las herramientas que ofrecemos son útiles y completamente necesarias dentro del equipo de trabajo, optimizan el planteamiento de problema y ayudan a resolver problemas desde el minuto uno.</p>
+            </div>
+
+            <div className="flex flex-col justify-start items-start bg-plum-section p-3 rounded-md min-h-40 w-80 gap-1 border border-l-5 border-l-resalted border-resalted/50 shadow-lg duration-300 hover:shadow-button/30 hover:scale-105 hover:brightness-110">
+              <div className="flex gap-2">
+                <img src="\icons\price.svg" alt="Credits to streamlinehq.com"
+                className="invert aspect-square w-5" />
+                <h3 className="text-lg font-medium">Precios Accesibles</h3>
+              </div>
+              <p className="text-sm opacity-80">Nuestras herramientas funcionan para cualquier tipo de usuario, desde los más experimentados, hasta los que van aprendiendo.</p>
             </div>
           </section>
 

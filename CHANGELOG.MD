@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v3.0:**
+  1. Diseño mejorado 🎨
+  2. Nueva página ➕
+
 - **Indev v2.0:**
   1. Creación de páginas y web frontend 🚀
   2. Diseño mejorado 🎨

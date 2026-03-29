@@ -1,9 +1,9 @@
 //Contendor especial de objetos de lista
 function ListItem(props: any) {
   return (
-    <li>
+    <li className="flex">
       <a href={props.link}
-      className="hover:text-resalted hover:underline w-full">
+      className="hover:text-resalted hover:underline md:min-w-30">
         {props.children}
       </a>
     </li>
@@ -26,6 +26,7 @@ export default function Footer() {
         <ul className="w-full flex flex-col justify-center items-center md:items-start md:w-auto">
           <li className="font-bold text-resalted"><h4> Acerca de </h4></li>
           <ListItem link="/about#contact"> Contacto </ListItem>
+          <ListItem link="/about#prices"> Precios </ListItem>
           <ListItem link="/forum"> Foro </ListItem>
           <ListItem link="/tyc"> Terminos y condiciones </ListItem>
         </ul>
@@ -56,6 +57,7 @@ export default function Footer() {
 
       </div>
 
+      <p>Créditos de iconos a <a href="https://home.streamlinehq.com/" className="text-resalted underline">Streamline</a></p>
     </footer>
   )
 }
