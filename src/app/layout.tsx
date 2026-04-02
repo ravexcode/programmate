@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import "./styles.css";
 
 export const metadata: Metadata = {
   title: "Programmate",
@@ -13,7 +12,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <link rel="shortcut icon" href="/logos/logo.svg" type="image/x-icon" />
       <body>
         {children}

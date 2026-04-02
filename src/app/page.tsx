@@ -1,112 +1,160 @@
 "use client";
 
-//Imports de funciones
-import { useState, useRef, Ref, useEffect } from "react";
-
-//Imports de componentes de UI
-import Header from "@/components/ui/header";
-import Footer from "@/components/ui/footer";
-//Imports de containers
+//Containers import
 import MainContainer from "@/components/containers/main";
-import SectionContainer from "@/components/containers/section";
 
-//Página principal
-export default function Home() {
-  //Estado de Q activo
+//functions import
+import { useEffect, useRef, useState } from "react";
+
+//Hooks import
+import useIsVisible from "@/hooks/useIsVisible";
+
+export default function HomePage() {
+  const introContainer = useRef<HTMLElement | null>(null);
+  const roadmapContainer = useRef<HTMLElement | null>(null);
+  const featuresContainer = useRef<HTMLElement | null>(null);
+  // @ts-ignore
+  //First container animation
+  const introContainerIsVisible = useIsVisible(introContainer);
+  // @ts-ignore
+  const roadmapContainerIsVisible = useIsVisible(roadmapContainer);
+  // @ts-ignore
+  const featuresContainerIsVisible = useIsVisible(featuresContainer);
+
+  useEffect(() => {
+    if (introContainerIsVisible && introContainer.current) {
+      introContainer.current.classList.remove("opacity-0");
+      introContainer.current.classList.add("show-element");
+    }
+  }, [introContainerIsVisible]);
+
+  useEffect(() => {
+    if (roadmapContainerIsVisible && roadmapContainer.current) {
+      roadmapContainer.current.classList.remove("opacity-0");
+      roadmapContainer.current.classList.add("show-element");
+    }
+  }, [roadmapContainerIsVisible]);
+
+  useEffect(() => {
+    if (featuresContainerIsVisible && featuresContainer.current) {
+      featuresContainer.current.classList.remove("opacity-0");
+      featuresContainer.current.classList.add("show-element");
+    }
+  }, [featuresContainerIsVisible]);
+
   const [activeQ, setActiveQ] = useState(1);
 
-  //Información de las Q
   const roadmapData = [
     {
       id: 1,
-      title: "Q1: Planteamiento",
-      desc: "Esta fase está enfocada en administrar cómo se desarrollará la app, las funciones que tendrá, su principal atractivo y cuál será el público objetivo... ¿Qué hace mi app especial? o ¿Qué distingue mi app de las otras?",
+      title: "Q1: Approach",
+      desc: 'This phase focuses on managing how the app will develop, the features it will have, its main appeal, and the target audience we will address within the market.',
     },
     {
       id: 2,
-      title: "Q2: Diseño",
-      desc: "Los puntos a alcanzar dentro de esta fase es tener un diseño de logos, de la aplicación, de la página web y hasta estructura completa... enfocándonos en darle una identidad a nuestra aplicación.",
+      title: "Q2: Design",
+      desc: "The goals for this phase are to create logos for the app, a website design, and a complete structure of how the application will operate.",
     },
     {
       id: 3,
-      title: "Q3: Configuración de proyecto",
-      desc: "Esta fase busca crear cosas esenciales como el repositorio, las bases para iniciar una beta que por lo menos sea entendible y empezar a usar los bocetos como base.",
+      title: "Q3: Proyect settings",
+      desc: "The goal of this phase is to create essential items such as the repository, the foundations for launching a beta that is at least understandable, and to start using sketches as a base, which may change as this phase progresses.",
     },
     {
       id: 4,
-      title: "Q4: BetaTesting",
-      desc: "Se enfoca en obtener reseñas, tanto positivas como negativas, identificando las funcionales de las inválidas. Estas se atienden con actualizaciones.",
+      title: "Q4: Beta Testing",
+      desc: "The focus is on gathering reviews, both positive and negative, and identifying the valid and invalid functions. These are addressed with updates.",
     },
     {
       id: 5,
-      title: "Q5: Lanzamiento oficial",
-      desc: "Si se llega a esta fase indica que nuestro proyecto ha funcionado y ha llegado al público que buscábamos, o en su defecto tiene el uso esperado dentro del planteamiento.",
+      title: "Q5: Official launch",
+      desc: "The project has succeeded and reached the intended audience, or at least it is being used as expected within the proposed framework.",
     },
     {
       id: 6,
-      title: "Q6: Mantenimiento",
-      desc: "Nos enfocamos en seguir las sugerencias de nuestra comunidad, actualizar la aplicación con arreglo de errores, mejoras de código o cambios de diseño para perfeccionar la app.",
+      title: "Q6: Maintenance",
+      desc: "We focus on following suggestions from our community, updating the app with bug fixes, code improvements, or design changes to refine the app.",
     },
   ];
 
-  //Elemento a mostrar
-  const roadmapElement : Ref<HTMLElement> = useRef(null);
-
-  useEffect(() => {
-    const current = roadmapElement.current;
-    if (!current) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          current.classList.remove("opacity-0");
-          current.classList.add("show-element");
-        }
-      },
-      { threshold: 0.2 }
-    );
-
-    observer.observe(current);
-
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <MainContainer>
-      <Header />
-
-      <main className="flex flex-col justify-start items-center gap-7 px-2 pt-5 pb-10 w-full h-full">
-        
+      <main className="flex flex-col justify-center items-center gap-15">
+        {/* Main section container */}
         <section
-        className="relative w-full max-w-[80dvw] min-h-50 flex flex-col justify-center items-center bg-cover bg-center bg-norepeat py-4 px-4 gap-3 show-element">
+          ref={introContainer}
+          className="relative opacity-0 min-h-80 flex flex-col justify-center items-center p-4 transition-all duration-700 gap-7">
 
-          <img src="/images/background_1.jpg" alt="PrismaFlow® Background" className="object-cover w-full h-full absolute z-1 brightness-60 rounded-lg" />
+          <div className="aspect-square w-50 max-w-[95dvw] bg-radial-[at_25%_25%] from-amethyst-100 to-amethyst-500 rounded-full blur-3xl absolute sm:scale-x-150 md:scale-x-300 -rotate-15 left-[50%] -translate-x-[50%] opacity-40 md:top-10"></div>
 
-          <h1 
-          className="max-w-180 text-center text-xl md:text-3xl z-2">
-            La <span className="text-resalted">herramienta</span> para desarolladores hecha para desarolladores
+          <div className="aspect-square sm:w-50 max-w-[95dvw] bg-radial-[at_25%_25%] from-amethyst-100 to-amethyst-500 rounded-full blur-3xl absolute sm:scale-x-150 md:scale-x-300 -rotate-15 left-[50%] -translate-x-[50%] opacity-40 scale-y-50 md:top-10"></div>
+
+          <h1 className="z-2 font-medium text-4xl md:text-5xl text-text text-center max-w-100 md:max-w-150 text-amethyst-200">
+            The <span className="text-amethyst-400">tool</span> made for developers from developers
           </h1>
 
-          <a href="/about/startup"
-          className="bg-button px-4 py-1 rounded-md duration-200 hover:brightness-80 hover:scale-105 z-2 shadow-lg shadow-button/30">
-            Ver startup
-          </a>
+          <div className="gap-5 flex flex-col md:flex-row">
+            <a
+            href="/about"
+            className="rounded-full bg-primary duration-200 cursor-pointer shadow-lg hover:shadow-primary/30 hover:brightness-120 hover:scale-110 z-2 px-4 py-1 text-text">
+              Take a look
+            </a>
+          </div>
+        </section>
+
+
+
+        <section ref={featuresContainer} className="w-full flex flex-col md:flex-row justify-center items-center px-4 py-2 gap-5 z-2">
+
+
+          <section className="flex flex-col px-4 py-3 rounded-lg bg-amethyst-950 border border-amethyst-800 max-w-90 duration-300 shadow-xl hover:shadow-amethyst-700/10 hover:scale-103 hover:-translate-y-1 hover:border-amethyst-700 hover:brightness-120">
+            <img src="/icons/easy-to-use.svg" alt="Icon made from StreamLineHQ"
+            className="aspect-square w-7"/>
+            <h3 className="text-amethyst-300 text-2xl">Easy to use</h3>
+            
+            <span className="h-2"></span>
+
+            <p className="text-text">
+              Our app is easy to use if you aren't experimented with devs apps.
+            </p>
+          </section>
+
+
+          <section className="flex flex-col px-4 py-3 rounded-lg bg-amethyst-950 border border-amethyst-800 max-w-90 duration-300 shadow-xl hover:shadow-amethyst-700/10 hover:scale-103 hover:-translate-y-1 hover:border-amethyst-700 hover:brightness-120">
+            <img src="/icons/flow.svg" alt="Icon made from StreamLineHQ"
+            className="aspect-square w-7"/>
+            <h3 className="text-amethyst-300 text-2xl">Better workflow</h3>
+            
+            <span className="h-2"></span>
+
+            <p className="text-text">
+              The goal of our App is make easier your workflow, as freelancer as group team.
+            </p>
+          </section>
+
+
+          <section className="flex flex-col px-4 py-3 rounded-lg bg-amethyst-950 border border-amethyst-800 max-w-90 duration-300 shadow-xl hover:shadow-amethyst-700/10 hover:scale-103 hover:-translate-y-1 hover:border-amethyst-700 hover:brightness-120">
+            <img src="/icons/price.svg" alt="Icon made from StreamLineHQ"
+            className="aspect-square w-7"/>
+            <h3 className="text-amethyst-300 text-2xl">Accessible prices</h3>
+            
+            <span className="h-2"></span>
+
+            <p className="text-text">
+              Our prices are accessible with an free plan and free trial of team plan for 30 days.
+            </p>
+          </section>
 
         </section>
 
-        <SectionContainer title="¿Qué es PrismaFlow®?">
-          <p><span className="text-resalted">PrismaFlow®</span> es una aplicación diseñada para optimizar y elevar la eficiencia en cualquier proyecto de desarrollo, ya sea que estés trabajando en sitios web basados en WordPress, aplicaciones web personalizadas o soluciones profesionales de mayor escala. Su enfoque integral permite a equipos y desarrolladores gestionar flujos de trabajo, automatizar tareas repetitivas y mantener un control claro del progreso, lo que se traduce en entregas más rápidas, menos errores y una mejor colaboración entre los miembros del equipo. Ideal tanto para freelancers como para empresas, <span className="text-resalted">PrismaFlow®</span> se adapta a tus necesidades específicas sin sacrificar simplicidad ni potencia.</p>
-          <a href="/about" className="bg-button px-4 py-1 rounded-md duration-200 hover:brightness-80 hover:scale-105 z-2 shadow-lg shadow-button/30 mx-auto my-2">Explorar ahora</a>
-        </SectionContainer>
+        {/* Roadmap container */}
+        <section ref={roadmapContainer} className="flex flex-col justify-center items-center w-full px-4 gap-8 py-10 opacity-0">
+          <h2 className="text-3xl font-bold bg-linear-to-r from-primary via-text to-primary bg-clip-text bg-size-[200%] text-transparent">
+            Our roadmap
+          </h2>
 
-        {/*Roadmap section*/}
-        <section ref={roadmapElement} className="flex flex-col justify-center items-center w-full px-4 gap-8 opacity-0">
-      
-          {/* Título */}
-          <h2 className="text-3xl bg-radial from-gradient-center via-gradient-borders to-gradient-borders font-bold bg-center bg-clip-text bg-size-[200%] text-black/0">Nuestro Roadmap</h2>
-
-          {/* Contenedor del Roadmap */}
-          <section className="flex flex-col lg:flex-row justify-center items-stretch gap-4 w-full max-w-6xl">
+          <section className="flex flex-col xl:flex-row justify-center items-stretch gap-4 w-full max-w-6xl">
             {roadmapData.map((item) => {
               const isActive = activeQ === item.id;
 
@@ -114,28 +162,25 @@ export default function Home() {
                 <article
                   key={item.id}
                   onClick={() => setActiveQ(item.id)}
-                  className={`
-                    group cursor-pointer rounded-xl overflow-hidden border border-white/10 transition-all duration-500 ease-in-out
-                    ${isActive ? "md:flex-[2] bg-plum-section shadow-lg shadow-plum-section/20" : "md:flex-[1] bg-plum-section/40 hover:bg-plum-section/70"}
-                  `}
-                >
-                  <div className="p-5 h-full flex flex-col justify-start">
-                    {/* Cabecera de la tarjeta */}
+                  className={` max-w-[90dvw] group cursor-pointer rounded-xl overflow-hidden border border-white/10 transition-all duration-500 ease-in-out shadow-lg hover:shadow-amethyst-400/10 
+                    ${isActive ? "md:flex-[2] bg-plum-section shadow-lg shadow-plum-section/20 shadow-amethyst-500/30 hover:shadow-amethyst-500/30" : "md:flex-[1] bg-plum-section/40 hover:bg-plum-section/70"}
+                  `}>
+
+                  <div className="p-5 md:min-h-50 h-full flex flex-col justify-start">
                     <h3 
-                      className={`font-bold transition-colors duration-300 ${isActive ? "text-resalted text-xl" : "text-gray-400 text-lg group-hover:text-gray-200 whitespace-nowrap md:truncate"}`}
-                    >
+                      className={`font-bold transition-colors duration-300 ${isActive ? "text-amethyst-400 text-xl" : "text-gray-400 text-lg group-hover:text-gray-200 whitespace-nowrap truncate"}`}>
                       {item.title}
                     </h3>
 
-                    {/* Contenido expandible usando Grid para animar la altura (Height transition) */}
                     <div 
-                      className={`grid transition-all duration-500 ease-in-out ${isActive ? "grid-rows-[1fr] opacity-100 mt-4" : "grid-rows-[0fr] opacity-0 mt-0"}`}
-                    >
+                      className={`grid transition-all duration-500 ease-in-out ${isActive ? "grid-rows-[1fr] opacity-100 mt-4" : "grid-rows-[0fr] opacity-0 mt-0"}`}>
+
                       <div className="overflow-hidden">
                         <p className="text-gray-300 text-sm leading-relaxed">
                           {item.desc}
                         </p>
                       </div>
+
                     </div>
                   </div>
                 </article>
@@ -144,8 +189,6 @@ export default function Home() {
           </section>
         </section>
       </main>
-
-      <Footer />
     </MainContainer>
   );
 }

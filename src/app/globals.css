@@ -1,11 +1,54 @@
 @import "tailwindcss";
 
 @theme {
-  --color-plum: #08020d;
-  --color-plum-section: #130f16;
-  --color-button: #7931bd;
-  --color-gradient-borders: #8850b6;
-  --color-gradient-center: #cdafe6;
-  --color-resalted: #b86bff;
-  --color-prices: #430b7d;
+  /* Base */
+  --color-amethyst-950: #0f0016;
+  --color-amethyst-900: #1a0126;
+  --color-amethyst-800: #2f0147;
+  --color-amethyst-700: #4a0a6a;
+  --color-amethyst-600: #610f7f;
+  --color-amethyst-500: #711fa2;
+
+  /* Light scale */
+  --color-amethyst-400: #a46dcc;
+  --color-amethyst-300: #c891f1;
+  --color-amethyst-200: #cebfd8;
+  --color-amethyst-100: #F3E8FF;
+
+  /* UI roles */
+  --color-background: #090211;
+  --color-background-dark: #020004;
+  --color-primary: #751fa2;
+  --color-text: #F3E8FF;
+}
+
+
+@keyframes showElement {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 100;
+    transform: translateY(0);
+  }
+}
+
+@keyframes showElementTop {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  100% {
+    opacity: 100;
+    transform: translateY(0);
+  }
+}
+
+.show-element {
+  animation: showElement ease-in-out 750ms forwards;
+}
+
+.show-element-top {
+  animation: showElementTop ease-in-out 1500ms forwards;
 }

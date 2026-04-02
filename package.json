@@ -1,6 +1,6 @@
 {
   "name": "programmate",
-  "version": "Indev v1.0",
+  "version": "Indev v6.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,21 +10,27 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.100.1",
-    "@types/jsonwebtoken": "^9.0.10",
     "bcrypt-ts": "^8.0.1",
+    "crypto-js": "^4.2.0",
+    "ioredis": "^5.10.1",
+    "jsonwebtoken": "^9.0.3",
     "next": "^16.2.1",
+    "nodemailer": "^8.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/nodemailer": "^7.0.11",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@types/crypto-js": "^4.2.2",
+    "@types/jsonwebtoken": "^9.0.10"
   }
 }
