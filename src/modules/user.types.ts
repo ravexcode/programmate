@@ -18,7 +18,7 @@ export default class User {
   public changePasswordToken: string | undefined;
   public changePasswordTokenExpires: Date | undefined;
   //Team ID
-  public teamId: Number | undefined;
+  public teamsId: Array<Number> | undefined;
 
   public constructor(
     name: string | undefined,

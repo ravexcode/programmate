@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev 7.0:**
+  1. Nuevas ruta para crear equipos 👥
+  2. Nuevo tipo de Teams
+
 - **Indev 6.0:**
   1. Nuevas páginas 🚀
   2. Mejor diseño 🎨

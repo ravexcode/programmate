@@ -10,7 +10,6 @@ import * as jwt from "jsonwebtoken";
 import { compare } from "bcrypt-ts";
 import User from "@/modules/user.types";
 
-
 //Env constants
 const jwtSecret : string | undefined = process.env.JWT_SECRET;
 
