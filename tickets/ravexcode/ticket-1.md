@@ -16,11 +16,11 @@ Validar y robustecer el flujo completo de pagos usando Stripe, asegurando integr
 
 **Criterios de aceptación:**
 
-* [ ] Webhook validado correctamente con firma
-* [ ] No hay duplicación de registros en DB
-* [ ] Manejo correcto de estados (`pending`, `completed`, `failed`)
-* [ ] Logs claros para debugging
-* [ ] Tests básicos manuales o automatizados
+* [x] Webhook validado correctamente con firma
+* [x] No hay duplicación de registros en DB
+* [x] Manejo correcto de estados (`pending`, `completed`, `failed`)
+* [x] Logs claros para debugging
+* [x] Tests básicos manuales o automatizados
 
 **Notas técnicas:**
 

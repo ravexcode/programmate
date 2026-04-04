@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     //Searchs for the user
     const { data: exists } = await supabase
     .from("users")
-    .select("email")
+    .select("email, payments, id")
     .eq("id", decoded.id)
     .maybeSingle();
 
@@ -118,16 +118,22 @@ export async function POST(req: NextRequest) {
           },
 
           quantity: 1,
-
-          metadata : {
-            //Sends the email
-            email: exists.email
-          }
         }
       ],
       //Payment type
-      mode: "payment"
+      mode: "payment",
+      metadata : {
+        //Sends the data from the user
+        email: exists.email,
+        user_id: exists.id,
+        payments: exists.payments,
+        payment: paymentPlan.cost,
+        plan
+      }
     });
+
+    //Debug
+    console.log(session);
 
     //Return success message
     return NextResponse.json({

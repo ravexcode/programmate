@@ -8,29 +8,29 @@ export default class User {
   //Password hasheada en texto
   public password: string;
   //ToDoList encriptada en string, pero también puede estar vacía
-  public toDoList: string | undefined;
+  public to_do_list: string | undefined;
   //Plan de usuario, sino se ingresó se cambia a "free"
   public plan: string | undefined;
   //Datos del token de cancelación al crear la cuenta
-  public cancelToken: string;
-  public cancelTokenExpires: Date;
+  public cancel_token: string;
+  public cancel_token_expires: Date;
   //Datos del token de cambio de contraseña
-  public changePasswordToken: string | undefined;
-  public changePasswordTokenExpires: Date | undefined;
+  public change_password_token: string | undefined;
+  public change_password_token_expires: Date | undefined;
   //Team ID
-  public teamsId: Array<Number> | undefined;
+  public teams: Array<Number> | undefined;
 
   public constructor(
     name: string | undefined,
     email: string,
     password: string,
-    cancelToken: string,
-    cancelTokenExpires: Date
+    cancel_token: string,
+    cancel_token_expires: Date
   ) {
     this.name = name;
     this.email = email;
     this.password = password;
-    this.cancelToken = cancelToken;
-    this.cancelTokenExpires = cancelTokenExpires;
+    this.cancel_token = cancel_token;
+    this.cancel_token_expires = cancel_token_expires;
   }
 }

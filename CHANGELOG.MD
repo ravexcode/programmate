@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v8.1:**
+  1. Los pagos funcionan correctamente 🚀
+
 - **Indev v8.0:**
   1. Nuevas rutas de pagos (testear) ➕
   2. Cambios en nodemailer lib (testear) 🛠️

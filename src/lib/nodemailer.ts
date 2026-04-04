@@ -13,8 +13,8 @@ const transporter = createTransport({
   secure: false,
   //Email data
   auth: {
-    user: process.env.GOOGLE_EMAIL,
-    pass: process.env.PASSWORD,
+    user: process.env.ADMIN_API_GOOGLE_EMAIL,
+    pass: process.env.ADMIN_API_GOOGLE_PASSWORD,
   },
 });
 
@@ -26,7 +26,7 @@ export async function sendRegistedEmail(
 ) {
   await transporter.sendMail({
     //Email sender
-    from: process.env.EMAIL,
+    from: process.env.ADMIN_API_GOOGLE_EMAIL,
     //Email recivier
     to: email,
     //Title
@@ -130,9 +130,6 @@ export async function sendRegistedEmail(
       </body>
       </html>
     `,
-  })
-  .catch(e => {
-    throw new Error("An error has happened while nodemailer was sending a mail.\nError: ", e.message);
   });
 
   return;

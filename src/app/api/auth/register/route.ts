@@ -66,19 +66,27 @@ export async function POST(req: NextRequest) {
     +cancelToken;
 
     //Send the email
+    /* To be fixed w sbauth
     await sendRegistedEmail(
       email,
       "Welcome to PrismaFlow 🚀",
       cancelSignUpURL
     )
     .catch(e => {
-      throw new Error("An error has ocurred while we sent you an email.\nError: "+e.message);
+      throw new Error("An error has ocurred while we sent you an email.\nError: "+e);
     });
+    */
 
     //Saves the user in the db
     const { data: userSaved, error: saveUserError } = await supabase
     .from("users")
-    .insert([user])
+    .insert([{
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      cancel_token: user.cancel_token,
+      cancel_token_expires: user.cancel_token_expires,
+    }])
     .select()
     .single();
 
