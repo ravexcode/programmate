@@ -1,19 +1,25 @@
 # Indev
 
-- **Indev 7.0:**
+- **Indev v8.0:**
+  1. Nuevas rutas de pagos (testear) ➕
+  2. Cambios en nodemailer lib (testear) 🛠️
+  3. ToDo agregado para mejor control 🧑‍💻
+  4. Tickets para mejorar flujo creados 🚀
+
+- **Indev v7.0:**
   1. Nuevas ruta para crear equipos 👥
   2. Nuevo tipo de Teams
 
-- **Indev 6.0:**
+- **Indev v6.0:**
   1. Nuevas páginas 🚀
   2. Mejor diseño 🎨
   3. Nueva carpeta de hooks 📁
 
-- **Indev 5.0:**
+- **Indev v5.0:**
   1. Nuevas secciones de API 🚀
   2. Rediseño 🎨
 
-- **Indev 4.0:**
+- **Indev v4.0:**
   1. Refactorización 🛠️
 
 - **Indev v3.0:**

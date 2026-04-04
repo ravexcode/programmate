@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   fill="none"
+   viewBox="0 0 14 14"
+   id="Party-Popper--Streamline-Core-Neon"
+   height="14"
+   width="14"
+   version="1.1"
+   sodipodi:docname="party.svg"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <linearGradient
+       id="linearGradient4"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#300069;stop-opacity:1;"
+         offset="0"
+         id="stop3" />
+      <stop
+         style="stop-color:#cebfd8;stop-opacity:1;"
+         offset="1"
+         id="stop4" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient27"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#c710ff;stop-opacity:1;"
+         offset="0"
+         id="stop26" />
+      <stop
+         style="stop-color:#fad0ff;stop-opacity:1;"
+         offset="0"
+         id="stop27" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient1"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#c710ff;stop-opacity:1;"
+         offset="0"
+         id="stop1" />
+      <stop
+         style="stop-color:#fad0ff;stop-opacity:1;"
+         offset="1"
+         id="stop2" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1"
+       id="linearGradient2"
+       x1="-0.00023535973"
+       y1="7.0000548"
+       x2="14"
+       y2="7.0000548"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4"
+       id="linearGradient16"
+       x1="-0.00023535972"
+       y1="14.00011"
+       x2="10.726723"
+       y2="3.7911024"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4"
+       id="linearGradient17"
+       x1="-0.00023535972"
+       y1="14.00011"
+       x2="10.726723"
+       y2="3.7911024"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4"
+       id="linearGradient18"
+       x1="-0.00023535972"
+       y1="14.00011"
+       x2="10.726723"
+       y2="3.7911024"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4"
+       id="linearGradient19"
+       x1="-0.00023535972"
+       y1="14.00011"
+       x2="10.726723"
+       y2="3.7911024"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4"
+       id="linearGradient20"
+       x1="-0.00023535972"
+       y1="14.00011"
+       x2="10.726723"
+       y2="3.7911024"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4"
+       id="linearGradient22"
+       x1="-0.00023535972"
+       y1="14.00011"
+       x2="10.726723"
+       y2="3.7911024"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1"
+       id="linearGradient23"
+       x1="-0.00023535972"
+       y1="14.00011"
+       x2="10.726723"
+       y2="3.7911024"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1"
+       id="linearGradient24"
+       x1="-0.00023535972"
+       y1="14.00011"
+       x2="10.726723"
+       y2="3.7911024"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1"
+       id="linearGradient25"
+       x1="-0.00023535972"
+       y1="14.00011"
+       x2="10.726723"
+       y2="3.7911024"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient27"
+       id="linearGradient26"
+       x1="-0.00023535972"
+       y1="14.00011"
+       x2="10.726723"
+       y2="3.7911024"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     showgrid="false"
+     inkscape:zoom="18.464286"
+     inkscape:cx="-1.8955512"
+     inkscape:cy="5.0096711"
+     inkscape:window-width="1366"
+     inkscape:window-height="697"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="party-popper--hobby-entertainment-party-popper-confetti-event" />
+  <desc
+     id="desc1">
+    Party Popper Streamline Icon: https://streamlinehq.com
+  </desc>
+  <g
+     id="party-popper--hobby-entertainment-party-popper-confetti-event"
+     style="fill:url(#linearGradient2);fill-opacity:1;stroke:#000000;stroke-opacity:1">
+    <path
+       id="Vector"
+       stroke="#c71dff"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="m2.12723 13.4301 6.68 -2.49c0.19774 -0.0699 0.37473 -0.1883 0.51467 -0.3445 0.13995 -0.1562 0.23836 -0.345 0.28617 -0.5492 0.0478 -0.20421 0.04348 -0.41714 -0.01259 -0.6192 -0.05607 -0.20207 -0.16207 -0.38679 -0.30825 -0.53715l-4.19 -4.19c-0.15477 -0.14507 -0.34367 -0.24871 -0.54918 -0.30132 -0.20551 -0.0526 -0.42098 -0.05247 -0.62642 0.00038 -0.20545 0.05286 -0.39422 0.15673 -0.54882 0.30199 -0.1546 0.14526 -0.27003 0.3272 -0.33558 0.52895L0.557235 11.9101c-0.068889 0.2164 -0.076003 0.4477 -0.020543 0.6679 0.055461 0.2203 0.171295 0.4207 0.334464 0.5786 0.163164 0.158 0.367194 0.2673 0.589104 0.3156 0.22191 0.0483 0.45291 0.0337 0.66697 -0.0421Z"
+       stroke-width="1"
+       style="fill:url(#linearGradient22);fill-opacity:1;stroke:url(#linearGradient16);stroke-opacity:1" />
+    <path
+       id="Vector_2"
+       stroke="#000cfe"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="M11.95 7.13004c-0.4441 -0.24781 -0.9641 -0.32261 -1.46 -0.21"
+       stroke-width="1"
+       style="fill:url(#linearGradient23);fill-opacity:1;stroke:url(#linearGradient17);stroke-opacity:1" />
+    <path
+       id="Vector_3"
+       stroke="#000cfe"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="M9.87671 4.50493c0.28319 -0.4269 0.40059 -0.94259 0.32999 -1.45"
+       stroke-width="1"
+       style="fill:url(#linearGradient24);fill-opacity:1;stroke:url(#linearGradient18);stroke-opacity:1" />
+    <path
+       id="Vector_4"
+       stroke="#000cfe"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="M7.36999 0.5c0.35049 1.07367 0.30437 2.23743 -0.13 3.28"
+       stroke-width="1"
+       style="fill:url(#linearGradient25);fill-opacity:1;stroke:url(#linearGradient19);stroke-opacity:1" />
+    <path
+       id="Vector_5"
+       stroke="#000cfe"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="M13 3.75c-0.2761 0 -0.5 -0.22386 -0.5 -0.5s0.2239 -0.5 0.5 -0.5 0.5 0.22386 0.5 0.5 -0.2239 0.5 -0.5 0.5Z"
+       stroke-width="1"
+       style="fill:url(#linearGradient26);fill-opacity:1;stroke:url(#linearGradient20);stroke-opacity:1" />
+  </g>
+</svg>

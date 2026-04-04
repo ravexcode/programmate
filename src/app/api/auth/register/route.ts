@@ -1,6 +1,6 @@
 //Lib imports
 import supabase from "@/lib/db";
-import sendEmail from "@/lib/nodemailer";
+import { sendRegistedEmail } from "@/lib/nodemailer";
 
 //Dependences imports
 import { NextRequest, NextResponse } from "next/server";
@@ -8,9 +8,10 @@ import { NextRequest, NextResponse } from "next/server";
 //User library imports
 import * as jwt from "jsonwebtoken";
 import { hash } from "bcrypt-ts";
-import User from "@/modules/user.types";
 import { randomBytes } from "crypto";
 
+//Types imports
+import User from "@/modules/user.types";
 
 //Env constants
 const jwtSecret : string | undefined = process.env.JWT_SECRET;
@@ -60,12 +61,12 @@ export async function POST(req: NextRequest) {
 
     //Creates the email
     const cancelSignUpURL =
-    process.env.NEXT_URL || "http://localhost:3000"
+    process.env.NEXT_PUBLIC_NEXT_URL || "http://localhost:3000"
     +"/security/cancel-sign-up/"
     +cancelToken;
 
     //Send the email
-    await sendEmail(
+    await sendRegistedEmail(
       email,
       "Welcome to PrismaFlow 🚀",
       cancelSignUpURL

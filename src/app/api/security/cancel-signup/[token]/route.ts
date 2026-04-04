@@ -4,9 +4,6 @@ import supabase from "@/lib/db";
 //Dependences imports
 import { NextRequest, NextResponse } from "next/server";
 
-//User library imports
-import User from "@/modules/user.types";
-
 export async function DELETE(req: NextRequest, { params } : { params: Promise<{ token: string }> }) {
   try {
     //Get the token from the URL params

@@ -5,9 +5,11 @@ import supabase from "@/lib/db";
 //Dependences imports
 import { NextRequest, NextResponse } from "next/server";
 
-//User library imports
+//Modules imports
 import * as jwt from "jsonwebtoken";
 import { compare } from "bcrypt-ts";
+
+//Types imports
 import User from "@/modules/user.types";
 
 //Env constants
