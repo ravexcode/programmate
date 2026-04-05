@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v9.0:**
+  1. Optimización de la página web
+  2. Mejoras en las animaciones de la web
+
 - **Indev v8.1:**
   1. Los pagos funcionan correctamente 🚀
 

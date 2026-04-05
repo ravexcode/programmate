@@ -3,54 +3,17 @@
 //Containers import
 import MainContainer from "@/components/containers/main";
 
-//functions import
-import { useEffect, useRef } from "react";
-
-//Hooks import
-import useIsVisible from "@/hooks/useIsVisible";
-
 export default function AboutPage() {
-  const topContainer = useRef(null);
-  const pricesContainer = useRef(null);
-  const contactContainer = useRef(null);
-  // @ts-ignore
-  const topContainerIsVisible = useIsVisible(topContainer);
-  // @ts-ignore
-  const pricesContainerIsVisible = useIsVisible(pricesContainer);
-  // @ts-ignore
-  const contactContainerIsVisible = useIsVisible(contactContainer);
-
-  useEffect(() => {
-    if (topContainerIsVisible && topContainer.current) {
-      topContainer.current.classList.remove("opacity-0");
-      topContainer.current.classList.add("show-element");
-    }
-  }, [topContainerIsVisible]);
-
-  useEffect(() => {
-    if (pricesContainerIsVisible && pricesContainer.current) {
-      pricesContainer.current.classList.remove("opacity-0");
-      pricesContainer.current.classList.add("show-element");
-    }
-  }, [pricesContainerIsVisible]);
-
-  useEffect(() => {
-    if (contactContainer && contactContainer.current) {
-      contactContainer.current.classList.remove("opacity-0");
-      contactContainer.current.classList.add("show-element");
-    }
-  }, [contactContainer]);
-
   return (
     <MainContainer>
       <main
-      className="flex flex-col justify-center items-center py-3 gap-10">
+      className="flex flex-col justify-center items-center py-10 pb-3 gap-10 appear-element">
+
         <section
-        ref={topContainer}
-        className="opacity-0 bg-[url(/images/banner_1.png)] bg-center bg-cover  min-h-40 md:min-h-80 w-[98%] rounded-md relative flex flex-col justify-center items-center z-1 rounded-md">
+        className="bg-[url(/images/banner_1.png)] bg-center bg-cover my-20 md:my-10 min-h-40 w-[98%] rounded-md relative flex flex-col justify-center items-center z-1 rounded-md show-element">
           <div className="w-full h-full absolute bg-linear-to-t from-background from-20% to-transparent z-2"></div>
 
-          <h2 className="text-3xl md:text-5xl font-semibold text-text z-3 max-w-[70dvw] text-center">
+          <h2 className="text-3xl md:text-5xl font-semibold text-text z-3 max-w-[70dvw] text-center z-10">
             Upgrade the workflow in your proyect with <span className="text-amethyst-400">PrismaFlow</span>
           </h2>
         </section>
@@ -59,8 +22,7 @@ export default function AboutPage() {
 
         <section
         id="prices"
-        ref={pricesContainer}
-        className="flex flex-col gap-7 w-full justify-center items-center opacity-0">
+        className="flex flex-col gap-7 w-full justify-center items-center show-element">
           <h2 className="text-4xl font-bold text-amethyst-500 text-center">
             Our subscription plans
           </h2>
@@ -140,9 +102,8 @@ export default function AboutPage() {
         </section>
 
         <section 
-          className="text-text px-6 py-16 md:py-24 gap-12 flex flex-col justify-center items-center w-full max-w-5xl mx-auto opacity-0" 
-          id="contact" 
-          ref={contactContainer}>
+          className="text-text px-6 py-16 md:py-24 gap-12 flex flex-col justify-center items-center w-full max-w-5xl mx-auto show-element" 
+          id="contact" >
 
           <h2 className="text-4xl md:text-5xl font-bold text-amethyst-500 text-center w-full">
             Contact us
