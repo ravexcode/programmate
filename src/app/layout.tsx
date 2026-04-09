@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <link rel="shortcut icon" href="/logos/logo.svg" type="image/x-icon" />
-      <body>
+      <body className="bg-black">
         <ViewTransition
         name="page">
         {children}

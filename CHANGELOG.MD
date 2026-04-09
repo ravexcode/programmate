@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev 10.0:**
+  1. Optimización completa de auth service, usando Supabase Auth. 🚀
+  2. Rutas de api de teams avanzadas levemente. 🛠️
+  3. Páginas de ejemplo generadas con Gemini AI. ✨
+
 - **Indev v9.0:**
   1. Optimización de la página web
   2. Mejoras en las animaciones de la web

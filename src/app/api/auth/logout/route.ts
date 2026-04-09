@@ -1,32 +1,25 @@
 //Lib imports
-import redis from "@/lib/redis";
+import supabase from "@/lib/db";
 
 //Dependences imports
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    //User data to save
-    const { email, data } = await req.json();
+    //Sign out with Supabase Auth
+    const { error } = await supabase.auth.signOut();
 
-    //If isn't sent we return an error
-    if(!email || !data) return NextResponse.json({
-      message: "Data not sent correctly",
-      error: "Bad request"
+    //If error occurs, return it
+    if (error) return NextResponse.json({
+      message: error.message,
+      error: error.message
     }, {
-      status: 403
+      status: 400
     });
 
-    //Save the user in redis
-    await redis.set(email, data)
-    //If we have an error, returns it
-    .catch(e => {
-      throw new Error("An error has happened in redis", e.message);
-    });
-
-    //If all is ok, return success message
+    //Send success message
     return NextResponse.json({
-      message: "Logged Out successfully!"
+      message: "Logged out successfully!"
     });
   } catch(e: any) {
     //Server errors

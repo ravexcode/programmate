@@ -9,14 +9,14 @@ import { headers } from "next/headers";
 import * as jwt from "jsonwebtoken";
 import Team from "@/modules/team.types";
 
-//Env constants
-const jwtSecret : string | undefined = process.env.JWT_SECRET;
+
+//Functions imports
+import { decode_jwt } from "@/functions/jsonwebtoken";
 
 export async function POST(req: NextRequest) {
   try {
     //User data for log in
-    const headersList = await headers();
-    const token = headersList.get("Authorization");
+    const token = (await headers()).get("Authorization");
     const { name, description } = await req.json();
 
     //If isn't sent we return an error
@@ -28,21 +28,13 @@ export async function POST(req: NextRequest) {
     });
 
     //Looks if jwtSecret key is inserted
-    if(!jwtSecret) throw new Error("JWT Secret Key no inserted");
-    const decoded = jwt.verify(token, jwtSecret) as { id: string };
-    //If the token is wrong returns error
-    if(!decoded?.id) return NextResponse.json({
-      message: "Invalid token",
-      error: "Unauthorized"
-    }, {
-      status: 401
-    });
+    const user_id = decode_jwt(token)
 
     //Searchs the user
     const { data : user } = await supabase
     .from("users")
     .select("id, plan, teams")
-    .eq("id", decoded.id)
+    .eq("id", user_id)
     .maybeSingle();
 
     //Looks if the user exists
@@ -66,7 +58,7 @@ export async function POST(req: NextRequest) {
     const team = new Team(
       name, //Name
       description, //Description
-      [ parseInt(decoded.id) ], //Users id
+      [ user_id ], //Users id
       new Date(), //Creation date
     );
 
@@ -108,6 +100,229 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       message: "Team created successfully",
     })
+  } catch(e: any) {
+    //Server errors
+    return NextResponse.json({
+      message: "An error has happened in the server",
+      error: e.message
+    }, {
+      status: 500
+    });
+  }
+}
+
+
+//Updates the team
+export async function PUT(req: NextRequest){
+  try {
+    //Gets the data
+    const { teamId, newName, newDescription } = await req.json();
+    const token = (await headers()).get("Authorization");
+
+    //Verifies if the darta is OK
+    if(!teamId || !token || (!newName && !newDescription)) return NextResponse.json({
+      message: "Data sent error",
+      error: "Bad request"
+    }, {
+      status: 403
+    });
+
+    //Verifies the token
+    const user_id = decode_jwt(token);
+
+    //Gets the team data
+    const { data: team, error: getTeamError } = await supabase
+    .from("teams")
+    .select("*")
+    .eq("team_id", teamId)
+    .maybeSingle();
+
+    //Verifies if the team data has been gotten
+    if(!team) return NextResponse.json({
+      message: "The team doesn't exists",
+      error: "Not found"
+    }, {
+      status: 404
+    });
+
+    //Verifies if there's no error
+    if(getTeamError) return NextResponse.json({
+      message: "Trying to get team error",
+      error: getTeamError.message
+    }, {
+      status: 500
+    });
+
+    //Verifies if the user is in the team
+    if(!team?.users_id.includes(user_id)) return NextResponse.json({
+      message: "Oops... You aren't in the team",
+      error: "Unauthorized"
+    }, {
+      status: 401
+    });
+
+    //Do the function from the data inserted
+    if(newName && newDescription) {
+      //Saves the value in the DB
+      const { error: updateTeamError } = await supabase
+      .from("teams")
+      .update({
+        name: newName,
+        description: newDescription
+      })
+      .eq("team_id", teamId);
+
+      //Verifies if there's no error
+      if(updateTeamError) return NextResponse.json({
+        message: "Trying to update team error",
+        error: updateTeamError.message
+      }, {
+        status: 500
+      });
+
+      //if all is ok returns success msg
+      return NextResponse.json({
+        message: "Team updated in both data"
+      });
+    };
+
+
+    if(newName) {
+      //Saves the value in the DB
+      const { error: updateTeamError } = await supabase
+      .from("teams")
+      .update({
+        name: newName
+      })
+      .eq("team_id", teamId);
+
+      //Verifies if there's no error
+      if(updateTeamError) return NextResponse.json({
+        message: "Trying to update team error",
+        error: updateTeamError.message
+      }, {
+        status: 500
+      });
+
+      //if all is ok returns success msg
+      return NextResponse.json({
+        message: "Team name updated"
+      });
+    };
+
+
+    if(newDescription) {
+      //Saves the value in the DB
+      const { error: updateTeamError } = await supabase
+      .from("teams")
+      .update({
+        description: newDescription
+      })
+      .eq("team_id", teamId);
+
+      //Verifies if there's no error
+      if(updateTeamError) return NextResponse.json({
+        message: "Trying to update team error",
+        error: updateTeamError.message
+      }, {
+        status: 500
+      });
+
+      //if all is ok returns success msg
+      return NextResponse.json({
+        message: "Team description updated"
+      });
+    };
+
+    //Error handler
+    return NextResponse.json({
+      message: "An error has happened",
+      error: "Bad request",
+      data_inserted: {
+        name: newName,
+        description: newDescription
+      }
+    }, {
+      status: 500
+    });
+  } catch(e: any) {
+    //Server errors
+    return NextResponse.json({
+      message: "An error has happened in the server",
+      error: e.message
+    }, {
+      status: 500
+    });
+  }
+}
+
+//Delete the team function
+export async function DELETE(req: NextRequest){
+  try {
+    //Gets the data
+    const { teamId } = await req.json();
+    const token = (await headers()).get("Authorization");
+
+    //Verifies if the darta is OK
+    if(!teamId || !token) return NextResponse.json({
+      message: "Data sent error",
+      error: "Bad request"
+    }, {
+      status: 403
+    });
+
+    //Verifies the token
+    const user_id = decode_jwt(token);
+
+    //Gets the team data
+    const { data: team, error: getTeamError } = await supabase
+    .from("teams")
+    .select("*")
+    .eq("team_id", teamId)
+    .maybeSingle();
+
+    //Verifies if the team data has been gotten
+    if(!team) return NextResponse.json({
+      message: "The team doesn't exists",
+      error: "Not found"
+    }, {
+      status: 404
+    });
+
+    //Verifies if there's no error
+    if(getTeamError) return NextResponse.json({
+      message: "Trying to get team error",
+      error: getTeamError.message
+    }, {
+      status: 500
+    });
+
+    //Verifies if the user is in the team
+    if(!team?.users_id.includes(user_id)) return NextResponse.json({
+      message: "Oops... You aren't in the team",
+      error: "Unauthorized"
+    }, {
+      status: 401
+    });
+
+    //If all is ok, deletes the team
+    const { error: deleteTeamError } = await supabase
+    .from("teams")
+    .delete()
+    .eq("team_id", teamId);
+
+    //Verifies if there's no error
+    if(deleteTeamError) return NextResponse.json({
+      message: "Trying to get team error",
+      error: deleteTeamError.message
+    }, {
+      status: 500
+    });
+
+    //If everything is fine, returns success message
+    return NextResponse.json({
+      message: "Team deleted successfully"
+    });
   } catch(e: any) {
     //Server errors
     return NextResponse.json({

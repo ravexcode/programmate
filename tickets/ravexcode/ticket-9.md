@@ -15,8 +15,8 @@ Mejorar la optimización de la página eliminando los useEffect innecesarios, ap
 
 **Criterios de aceptación:**
 
-* [ ] El frontend carga más rápido
-* [ ] Las animaciones son de calidad
+* [x] El frontend carga más rápido
+* [x] Las animaciones son de calidad
 
 **Notas técnicas:**
 

@@ -15,11 +15,11 @@ Mejorar el gestión de cuentas de usuarios con SupabaseAuth, el cual ahorra lín
 
 **Criterios de aceptación:**
 
-* [ ] El usuario puede registrarse
-* [ ] El usuario puede iniciar sesión
-* [ ] El usuario puede cerrar sesión
-* [ ] Se envía un correo al momento de iniciar sesión
-* [ ] Se guardan los datos en IORedis
+* [x] El usuario puede registrarse
+* [x] El usuario puede iniciar sesión
+* [x] El usuario puede cerrar sesión
+* [x] Se envía un correo al momento de iniciar sesión
+* [x] Se guardan los datos en IORedis
 
 **Notas técnicas:**
 
