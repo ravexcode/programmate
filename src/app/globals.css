@@ -1,23 +1,24 @@
 @import "tailwindcss";
 
+/*Plugin de MiduDev!*/
+@import 'tailwind-animations';
+
 @theme {
-  /* Base */
-  --color-amethyst-950: #0f0016;
-  --color-amethyst-900: #1a0126;
-  --color-amethyst-800: #2f0147;
-  --color-amethyst-700: #4a0a6a;
-  --color-amethyst-600: #610f7f;
-  --color-amethyst-500: #711fa2;
+  /* Color variation */
+  --color-ultramarine-950: #152556;
+  --color-ultramarine-900: #1a3a8e;
+  --color-ultramarine-800: #1a43bf;
+  --color-ultramarine-700: #164ddf;
+  --color-ultramarine-600: #1e63f2;
+  --color-ultramarine-500: #3483fd;
+  --color-ultramarine-400: #5aa6ff;
+  --color-ultramarine-300: #8fc5ff;
+  --color-ultramarine-200: #bddbff;
+  --color-ultramarine-100: #daeaff;
+  --color-ultramarine-50: #eef6ff;
 
-  /* Light scale */
-  --color-amethyst-400: #a46dcc;
-  --color-amethyst-300: #c891f1;
-  --color-amethyst-200: #cebfd8;
-  --color-amethyst-100: #F3E8FF;
-
-  /* UI roles */
-  --color-background: #090211;
-  --color-background-dark: #020004;
-  --color-primary: #751fa2;
-  --color-text: #F3E8FF;
+  /* Pre-built colors */
+  --color-background: #01010a;
+  --color-text: #EEF5DB;
+  --color-main: #1A43BF;
 }

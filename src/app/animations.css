@@ -1,76 +1,13 @@
-/* Animación para los elementos que vienen de abajo */
-@keyframes fadeAndMoveUp {
-  0% { opacity: 0; transform: translateY(30px); }
-  25% { opacity: 1; transform: translateY(0); } /* Totalmente visible */
-  75% { opacity: 1; transform: translateY(0); } /* Totalmente visible */
-  100% { opacity: 0; transform: translateY(-30px); } /* Desaparece al salir */
-}
-
-/* Animación para los elementos que vienen de arriba */
-@keyframes fadeAndMoveDown {
-  0% { opacity: 0; transform: translateY(-30px); }
-  25% { opacity: 1; transform: translateY(0); }
-  75% { opacity: 1; transform: translateY(0); } 
-  100% { opacity: 0; transform: translateY(30px); }
-}
-
-@keyframes appearElement {
-  from { opacity: 0; transform: translateY(-3rem); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.show-element, .show-element-top {
-  view-timeline-name: --revealing-element;
-  view-timeline-axis: block;
-  
-  /* 'both' permite que la animación retroceda si el usuario sube */
-  animation-fill-mode: both;
-  animation-timing-function: ease-in-out;
-  animation-timeline: --revealing-element;
-  
-  /* 'cover' abarca desde que el borde superior entra por abajo 
-     hasta que el borde inferior sale por arriba */
-  animation-range: cover 10px cover 90%;
-}
-
-.show-element {
-  animation-name: fadeAndMoveUp;
-}
-
-.appear-element {
-  animation: appearElement 750ms ease-in-out forwards;
-}
-
-
-@keyframes slide-in {
-  from {
-    opacity: 0;
-    transform: translateY(2rem);
+@keyframes carousel {
+  0% {
+    transform: translateX(0);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  100% {
+    transform: translateX(-50%);
   }
 }
 
-@keyframes slide-out {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(2rem);
-  }
-}
-
-::view-transition-old(page) {
-  opacity: 1;
-  animation: slide-out 500ms ease-out forwards;
-}
-
-::view-transition-new(page) {
-  opacity: 0;
-  animation: slide-in 500ms ease-out forwards;
-  animation-delay: 300ms;
+.carousel {
+  animation: carousel 20s linear infinite;
+  will-change: transform;
 }

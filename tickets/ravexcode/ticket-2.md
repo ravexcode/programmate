@@ -15,10 +15,9 @@ Finalizar el módulo de equipos (teams), incluyendo CRUD completo y relaciones c
 
 **Criterios de aceptación:**
 
-* [ ] CRUD completo (`GET`, `POST`, `PUT`, `DELETE`)
-* [ ] Validación de pertenencia a equipo
-* [ ] Manejo de errores consistente
-* [ ] Tipado fuerte en TypeScript
+* [x] CRUD completo (`GET`, `POST`, `PUT`, `DELETE`)
+* [x] Validación de pertenencia a equipo
+* [x] Manejo de errores consistente
 
 **Notas técnicas:**
 

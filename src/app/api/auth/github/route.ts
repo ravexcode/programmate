@@ -1,6 +1,8 @@
-//lib imports
-import supabase from "@/lib/db";
+//Next imports
 import { type NextRequest, NextResponse } from "next/server";
+
+//Lib imports
+import supabase from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   try {
@@ -9,7 +11,7 @@ export async function GET(req: NextRequest) {
 
     //signs with google 
     const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
+      provider: "github",
       options: {
         redirectTo: api_url + "/oauth/callback",
       }
@@ -25,9 +27,10 @@ export async function GET(req: NextRequest) {
 
     //Returns the data
     return NextResponse.json({
-      message: "Ready for start with google",
+      message: "Ready for start with github",
       url: data?.url
     });
+
   } catch(e: any) {
     //Error handler
     return NextResponse.json({

@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v11.0:**
+  1. Rediseño del frontend 🎨
+  2. Nueva librería para animaciones de tailwind ✨
+  3. Supabase Auth agregado
+  4. Nuevo OAuth con Google y GitHub con supabase Auth
+
 - **Indev 10.0:**
   1. Optimización completa de auth service, usando Supabase Auth. 🚀
   2. Rutas de api de teams avanzadas levemente. 🛠️

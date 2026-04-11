@@ -47,6 +47,9 @@ export async function POST(req: NextRequest) {
       status: 500
     });
 
+    //Debug
+    console.log(data);
+
     //If supabase is ok returns the token
     return NextResponse.json({
       message: "Logged in from Supabase successfully",

@@ -1,155 +1,113 @@
+//view in client
 "use client";
 
-//Containers import
-import MainContainer from "@/components/containers/main";
+//Components imports
+import Header from "@/components/ui/header";
+import Footer from "@/components/ui/footer";
 
-//functions import
-import { useState } from "react";
+import IconCarousel from "@/components/icon_carrousel";
 
-export default function HomePage() {
-
-  const [activeQ, setActiveQ] = useState(1);
-
-  const roadmapData = [
-    {
-      id: 1,
-      title: "Q1: Approach",
-      desc: 'This phase focuses on managing how the app will develop, the features it will have, its main appeal, and the target audience we will address within the market.',
-    },
-    {
-      id: 2,
-      title: "Q2: Design",
-      desc: "The goals for this phase are to create logos for the app, a website design, and a complete structure of how the application will operate.",
-    },
-    {
-      id: 3,
-      title: "Q3: Proyect settings",
-      desc: "The goal of this phase is to create essential items such as the repository, the foundations for launching a beta that is at least understandable, and to start using sketches as a base, which may change as this phase progresses.",
-    },
-    {
-      id: 4,
-      title: "Q4: Beta Testing",
-      desc: "The focus is on gathering reviews, both positive and negative, and identifying the valid and invalid functions. These are addressed with updates.",
-    },
-    {
-      id: 5,
-      title: "Q5: Official launch",
-      desc: "The project has succeeded and reached the intended audience, or at least it is being used as expected within the proposed framework.",
-    },
-    {
-      id: 6,
-      title: "Q6: Maintenance",
-      desc: "We focus on following suggestions from our community, updating the app with bug fixes, code improvements, or design changes to refine the app.",
-    },
-  ];
-
-
+//Gradient ball container
+function GradientBall({
+  size = 100,
+  position = "absolute",
+  top = "50%",
+  x = "-50%",
+  y = "-50%",
+}: any) {
   return (
-    <MainContainer>
-      <main className="flex flex-col justify-center items-center gap-15 appear-element py-10">
-        {/* Main section container */}
-        <section
-          className="bg-[url(/images/banner_2.png)] bg-center bg-cover my-20 md:my-10 min-h-40 md:min-h-80 w-[98%] rounded-md relative flex flex-col justify-center items-center z-1 rounded-md show-element gap-8">
-            <div className="w-full h-full absolute bg-radial-[80%_50%] from-transparent to-background z-2"></div>
+    <div
+      className="aspect-square bg-main/40 blur-3xl rounded-full animate-pulse left-[150%] md:left-[100%]"
+      style={{
+        height: size,
+        position,
+        top,
+        transform: `translate(${x}, ${y})`,
+      }}
+    />
+  );
+}
 
-          <h1 className="z-2 font-medium text-4xl md:text-5xl text-text text-center max-w-[70dvw] text-amethyst-200">
-            The <span className="text-amethyst-400">tool</span> made from devs for devs
+function Card(props: any) {
+  return (
+    <section 
+    className="rounded-xl border border-ultramarine-50/50 px-6 py-3 bg-background flex flex-col justify-center items-center gap-1 w-75 text-start shadow-lg shadow-main/20 duration-400 hover:shadow-main/50 hover:-translate-y-2 hover:scale-105 cursor-default timeline-scroll animate-zoom-in animate-range-[entry_-10%_cover_60%] md:animate-range-[entry_40%_cover_90%]">
+      <h2 
+      className="text-xl text-main w-full font-semibold">
+        {props.title}
+      </h2>
+      <p
+      className="w-full">
+        {props.children}
+      </p>
+    </section>
+  )
+}
+
+//Landing page
+export default function HomePage(){
+  return (
+    <div className="bg-background min-h-dvh">
+      <Header />
+
+      <main
+      className="flex flex-col justify-center items-center mb-auto">
+
+        <section
+        className="relative px-4 w-full min-h-90 flex flex-col justify-center items-start w-full text-text pt-20 animate-fade-in overflow-hidden">
+          <GradientBall
+          size="60rem"
+          display="absolute"
+          top="50%"
+          />
+
+          <h1
+          className="text-6xl font-bold mb-4 z-2">
+            Built to improve <br />
+            your team workflow
           </h1>
-          <a
-          href="/about"
-          className="rounded-full bg-amethyst-500/20 backdrop-brightness-90 border-3 border-amethyst-400 duration-200 cursor-pointer shadow-lg hover:shadow-primary/30 hover:brightness-120 hover:scale-110 z-2 px-6 py-2 text-text text-lg">
-            Take a look
-          </a>
+          <p
+          className="opacity-80 z-2">
+            For design, development, code, databases and more!
+          </p>
+
+          <div
+          className="w-full md:w-[50%] flex justify-center items-center mt-5 z-2">
+            <a
+            href="/about"
+            className="bg-main rounded-lg px-6 py-1 duration-200 hover:brightness-80">
+              Take a look
+            </a>
+          </div>
+
+          <img src="/images/dashboard.png" alt="Dashboard made by Canva AI"
+          className="z-2 w-[95%] md:w-[80%] max-w-300 mt-10 mx-auto rounded-xl md:rounded-4xl"/>
         </section>
 
+        <IconCarousel />
 
+        <section 
+        className="text-text bg-background flex flex-col justify-center items-center gap-5 px-4 py-10 z-2 w-full">
+          <p
+          className="text-lg px-10 py-1 rounded-full bg-ultramarine-950/60">
+            features
+          </p>
 
-        <section
-        className="w-full flex flex-col md:flex-row justify-center items-center px-4 py-2 gap-5 z-2 show-element">
-
-
-          <section className="flex flex-col px-4 py-3 rounded-lg bg-amethyst-950 border border-amethyst-800 max-w-90 duration-300 shadow-xl hover:shadow-amethyst-700/10 hover:scale-103 hover:-translate-y-1 hover:border-amethyst-700 hover:brightness-120">
-            <img src="/icons/easy-to-use.svg" alt="Icon made from StreamLineHQ"
-            className="aspect-square w-7"/>
-            <h3 className="text-amethyst-300 text-2xl">Easy to use</h3>
-            
-            <span className="h-2"></span>
-
-            <p className="text-text">
-              Our app is easy to use if you aren't experimented with devs apps.
-            </p>
-          </section>
-
-
-          <section className="flex flex-col px-4 py-3 rounded-lg bg-amethyst-950 border border-amethyst-800 max-w-90 duration-300 shadow-xl hover:shadow-amethyst-700/10 hover:scale-103 hover:-translate-y-1 hover:border-amethyst-700 hover:brightness-120">
-            <img src="/icons/flow.svg" alt="Icon made from StreamLineHQ"
-            className="aspect-square w-7"/>
-            <h3 className="text-amethyst-300 text-2xl">Better workflow</h3>
-            
-            <span className="h-2"></span>
-
-            <p className="text-text">
-              The goal of our App is make easier your workflow, as freelancer as group team.
-            </p>
-          </section>
-
-
-          <section className="flex flex-col px-4 py-3 rounded-lg bg-amethyst-950 border border-amethyst-800 max-w-90 duration-300 shadow-xl hover:shadow-amethyst-700/10 hover:scale-103 hover:-translate-y-1 hover:border-amethyst-700 hover:brightness-120">
-            <img src="/icons/price.svg" alt="Icon made from StreamLineHQ"
-            className="aspect-square w-7"/>
-            <h3 className="text-amethyst-300 text-2xl">Accessible prices</h3>
-            
-            <span className="h-2"></span>
-
-            <p className="text-text">
-              Our prices are accessible with an free plan and free trial of team plan for 30 days.
-            </p>
-          </section>
-
-        </section>
-
-        {/* Roadmap container */}
-        <section
-        className="flex flex-col justify-center items-center w-full px-4 gap-8 py-10  show-element">
-          <h2 className="text-3xl font-bold bg-linear-to-r from-primary via-text to-primary bg-clip-text bg-size-[200%] text-transparent">
-            Our roadmap
-          </h2>
-
-          <section className="flex flex-col xl:flex-row justify-center items-stretch gap-4 w-full max-w-6xl">
-            {roadmapData.map((item) => {
-              const isActive = activeQ === item.id;
-
-              return (
-                <article
-                  key={item.id}
-                  onClick={() => setActiveQ(item.id)}
-                  className={` max-w-[90dvw] group cursor-pointer rounded-xl overflow-hidden border border-white/10 transition-all duration-500 ease-in-out shadow-lg hover:shadow-amethyst-400/10 
-                    ${isActive ? "md:flex-[2] bg-plum-section shadow-lg shadow-plum-section/20 shadow-amethyst-500/30 hover:shadow-amethyst-500/30" : "md:flex-[1] bg-plum-section/40 hover:bg-plum-section/70"}
-                  `}>
-
-                  <div className="p-5 md:min-h-50 h-full flex flex-col justify-start">
-                    <h3 
-                      className={`font-bold transition-colors duration-300 ${isActive ? "text-amethyst-400 text-xl" : "text-gray-400 text-lg group-hover:text-gray-200 whitespace-nowrap truncate"}`}>
-                      {item.title}
-                    </h3>
-
-                    <div 
-                      className={`grid transition-all duration-500 ease-in-out ${isActive ? "grid-rows-[1fr] opacity-100 mt-4" : "grid-rows-[0fr] show-element-top  show-element mt-0"}`}>
-
-                      <div className="overflow-hidden">
-                        <p className="text-gray-300 text-sm leading-relaxed">
-                          {item.desc}
-                        </p>
-                      </div>
-
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </section>
+          <div className="flex flex-col lg:flex-row gap-10">
+            <Card title="Easy to use">
+              Our app is easy to use if you aren't experimented with dev apps
+            </Card>
+            <Card title="Easy to use">
+              Our app is easy to use if you aren't experimented with dev apps
+            </Card>
+            <Card title="Easy to use">
+              Our app is easy to use if you aren't experimented with dev apps
+            </Card>
+          </div>
         </section>
       </main>
-    </MainContainer>
-  );
+
+      <Footer />
+    </div>
+  )
 }
