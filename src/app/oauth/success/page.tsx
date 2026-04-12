@@ -1,45 +1,17 @@
-//Client declaration
+//Client page
 "use client";
 
-//Next imports
-import { setCookie } from "cookies-next";
-
-//Components
+//UI Components
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 
-//React imports
-import { useEffect } from "react";
-
-export default function OAuthCallback(){
-  //Starts the app
-  useEffect(() => {
-    //Gets the params deleting the hash separator
-    const hash = window.location.hash.substring(1);
-    //Params data
-    const params = new URLSearchParams(hash);
-
-    //Gets the access token from params
-    const access_token = params.get("access_token");
-
-    //If there's no params data returns to home
-    if(!access_token) {
-      window.location.href = "/"
-    }
-
-    //Cleans the URL for preventing errors
-    window.history.replaceState({}, document.title, window.location.pathname);
-
-    //Saves the cookie an redirects to dashboard
-    setCookie("token", access_token);
-    window.location.href = "/dashboard";
-  }, []);
-
+export default function AuthSuccess(){
   return (
-    <div className="bg-background min-h-dvh">
-      <Header />
-      <main
-      className="flex flex-col justify-center items-center px-4 py-6 min-h-130 animate-fade-in relative">
+    <div className="bg-background min-h-dvh grid grid-rows-[auto_1fr_auto]">
+      <Header
+      isAuthForm={true}/>
+
+      <main className="flex flex-col justify-center items-center w-full h-full py-20 relative">
 
         <section
         className="px-4 py-10 bg-ultramarine-950 shadow-xl shadow-ultramarine-700/20 min-w-90 rounded-md flex flex-col justify-center items-center gap-2 border border-ultramarine-600/50 text-center show-element text-text z-2">
@@ -55,16 +27,18 @@ export default function OAuthCallback(){
 
           <h1
           className="text-3xl font-bold">
-            Welcome to PrismaFlow!
+            Signed up successfully!
           </h1>
           <p
           className="font-semibold">
-            Thanks for trusting in us!
+            We sent you an email
           </p>
-          <p
-          className="mt-5 w-80">
-            You will be redirected to the app, if there's an error report it!
-          </p>
+          
+          <a
+          href="https://mail.google.com"
+          className="mt-5 w-full bg-main/50 py-2 rounded-md shadow-lg shadow-ultramarine-400/50 duration-200 hover:bg-main/70 hover:shadow-ultramarine-400">
+            Go to GMail
+          </a>
 
         </section>
 
@@ -74,6 +48,7 @@ export default function OAuthCallback(){
           className="absolute aspect-square block left-1/2 top-1/1 -translate-x-1/2 -translate-y-1/2 h-150 bg-main/20 blur-3xl rounded-full animate-pulse" />
         </div>
       </main>
+
       <Footer />
     </div>
   )

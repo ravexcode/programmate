@@ -1,129 +1,141 @@
+//Client page
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import MainContainer from "@/components/containers/main";
+//React imports
+import { useRef, useState } from "react";
 
-export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [ isLoading, setIsLoading ] = useState(false);
+//Next imports
+import { setCookie } from "cookies-next";
 
-  const handleGoogleLogin = async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch("/api/auth/google");
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (err) {
-      console.error("Error redirecting to Google:", err);
-      setIsLoading(false);
-    }
-  };
+//Form components
+import AuthForm from "@/components/forms/authForm";
+import { Input, PasswordInput } from "@/components/forms/inputs";
 
-  const handleLogin = async (e: any) => {
+//Auth buttons
+import AuthGoogleButton from "@/components/buttons/authGoogle";
+import AuthGithubButton from "@/components/buttons/authGithub";
+
+//UI Components
+import Header from "@/components/ui/header";
+import Footer from "@/components/ui/footer";
+
+export default function LogInPage() {
+  const form = useRef(null);
+  const [ isFormDisponible, setIsFormDisponible ] = useState(true);
+  const [ formMessage, setFormMessage ] = useState("");
+
+  //Form submit handler
+  const handleSubmit = async(e: any) => {
+    //Prevents reloads
     e.preventDefault();
-    setError("");
-    setIsLoading(true);
-    
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+    //Turns off the form
+    setIsFormDisponible(false);
 
-      if (res.ok) {
-        router.push("/welcome?source=login");
-      } else {
-        const data = await res.json();
-        setError(data.message || "Error al iniciar sesión");
-        setIsLoading(false);
-      }
-    } catch (err) {
-      setError("Error de conexión");
-      setIsLoading(false);
+    //Verifies if form ref exists
+    if(!form.current) {
+      //Turns on
+      setIsFormDisponible(true);
+      return;
     }
+
+    //Gets the form data
+    const current : any = form.current!;
+    const data = current.querySelectorAll("input");
+    //Puts the data in the body
+    const body : Object = {
+      //Puts the email in the body
+      email: data[0].value,
+      //Puts the password in the body
+      password: data[1].value,
+    };
+
+    //Makes the request
+    const res = await fetch(
+      //Route
+      "/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          //Api key
+          "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
+        },
+        //Log in data
+        body: JSON.stringify(body),
+      }
+    );
+
+    //Process the data
+    const resData = await res.json();
+
+    if(res.status === 200) {
+      //Saves the cookie
+      setCookie("token", resData.token);
+      //Returns to dashboard
+      window.location.href = "/dashboard";
+      return;
+    }
+
+    //If there's an error returns error
+    setFormMessage(resData.message);
+    setIsFormDisponible(true);
+    return;
   };
 
   return (
-    <MainContainer>
-      <main className="flex flex-col justify-center items-center min-h-[80vh] py-10 pb-3 gap-10 appear-element">
-        <section className="w-full max-w-md mx-auto show-element my-10">
-          <form 
-            onSubmit={handleLogin}
-            className="flex flex-col gap-6 p-8 bg-amethyst-950 rounded-xl border border-amethyst-500 shadow-lg text-text"
-          >
-            <h2 className="text-3xl font-bold text-amethyst-500 text-center mb-2">
-              Welcome back
-            </h2>
+    <div className="bg-background min-h-dvh grid grid-rows-[auto_1fr_auto]">
+      <Header
+      isAuthForm={true} />
+        <main
+        className="flex flex-col justify-center items-center w-full h-full py-20 relative">
 
-            {error && <p className="text-red-400 text-sm text-center">{error}</p>}
-
-            <div className="flex flex-col justify-start items-start w-full gap-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                Email
-              </label>
-              <input 
-                type="email" 
-                id="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-3 rounded-md bg-amethyst-900/40 border border-amethyst-700 placeholder:text-gray-400 focus:outline-none focus:border-amethyst-400 focus:ring-1 focus:ring-amethyst-400 transition-all" 
-                placeholder="me@email.com" 
-              />
+          <AuthForm
+          onSubmit={(e: any) => { handleSubmit(e) }}
+          title="Welcome back!"
+          sumbitText="Sign in"
+          disponible={isFormDisponible ? false : true}
+          ref={form}
+          message={formMessage}>
+            <div
+            className="flex flex-col gap-3 w-full justify-center items-center">
+              <p>Sign in with</p>
+              <AuthGoogleButton />
+              <AuthGithubButton />
             </div>
 
-            <div className="flex flex-col justify-start items-start w-full gap-2">
-              <label htmlFor="password" className="text-sm font-medium">
-                Password
-              </label>
-              <input 
-                type="password" 
-                id="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 rounded-md bg-amethyst-900/40 border border-amethyst-700 placeholder:text-gray-400 focus:outline-none focus:border-amethyst-400 focus:ring-1 focus:ring-amethyst-400 transition-all" 
-                placeholder="••••••••" 
-              />
+            <div className="flex items-center w-full my-6">
+              <div className="flex-1 h-px bg-gray-300"></div>
+              
+              <p className="px-4 text-center whitespace-nowrap">
+                Or
+              </p>
+              
+              <div className="flex-1 h-px bg-gray-300"></div>
             </div>
 
-            <button 
-              type="submit" 
-              className={ "mt-2 w-full py-3 px-6 bg-amethyst-600 hover:bg-amethyst-500 text-white font-bold rounded-md transition-colors cursor-pointer " + (isLoading ? "cursor-progress hover:bg-amethyst-900" : "") }
-            >
-              Log In
-            </button>
+            <Input
+            type="email"
+            guide="user@email.com"
+            title="Insert your email"
+            name="email"/>
+            <span className="h-3"></span>
+            <PasswordInput
+            title="Insert your password"
+            name="password"/>
+          </AuthForm>
 
-            <div className="flex items-center gap-2 my-2 opacity-50">
-              <div className="h-px w-full bg-text"></div>
-              <span className="text-sm">or</span>
-              <div className="h-px w-full bg-text"></div>
-            </div>
+          <div
+          className="w-100 max-w-[95dvw] text-text flex flex-col justify-center z-2 animate-fade-in-up text-center">
+            <p> Don't have an account? <a href="/auth/register" className="text-blue-500 duration-200 hover:underline hover:text-blue-400">Sign up</a> </p>
+            <p> By logging in you agree to our <a download={true} href="/legal/terms-and-service" className="text-blue-500 duration-200 hover:underline hover:text-blue-400">terms of service</a> </p>
+          </div>
 
-            <button 
-              type="button"
-              onClick={handleGoogleLogin}
-              className="w-full py-3 px-6 bg-background-dark text-text font-bold rounded-md duration-200 cursor-pointer flex justify-center items-center gap-3 shadow-lg hover:scale-105 hover:bg-amethyst-900 hover:shadow-amethyst-500/20"
-            >
-              <img src="/icons/google.svg" alt="Google" className="w-5 h-5" />
-              Continue with Google
-            </button>
-            
-            <p className="text-center text-sm text-text/70 mt-2">
-              Don't have an account? <a href="/auth/register" className="text-amethyst-400 hover:underline">Sign up</a>
-            </p>
-
-            <p className="w-full text-center text-text text-sm">Made with Gemini AI ✨</p>
-          </form>
-        </section>
-      </main>
-    </MainContainer>
-  );
+          <div
+          className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+            <div
+            className="absolute aspect-square block left-1/2 top-1/1 -translate-x-1/2 -translate-y-1/2 h-300 bg-main/20 blur-3xl rounded-full animate-pulse" />
+          </div>
+        </main>
+      <Footer />
+    </div>
+  )
 }

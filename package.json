@@ -11,6 +11,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.100.1",
     "bcrypt-ts": "^8.0.1",
+    "cookies-next": "^6.1.1",
     "crypto-js": "^4.2.0",
     "ioredis": "^5.10.1",
     "jsonwebtoken": "^9.0.3",

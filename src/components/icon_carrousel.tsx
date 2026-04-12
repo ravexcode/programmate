@@ -16,7 +16,7 @@ export default function IconCarousel() {
   ];
 
   return (
-    <section className="mt-20 bg-background z-10 w-full py-5 overflow-hidden animate-blurred-fade-in">
+    <section className="mt-20 bg-background z-2 w-full py-5 overflow-hidden animate-blurred-fade-in block">
   
       <div className="w-full overflow-hidden">
         

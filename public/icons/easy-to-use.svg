@@ -16,20 +16,20 @@
   <defs
      id="defs5">
     <linearGradient
-       id="linearGradient24"
+       id="linearGradient3"
        inkscape:collect="always">
       <stop
-         style="stop-color:#4b006f;stop-opacity:1;"
+         style="stop-color:#1f13ff;stop-opacity:1;"
          offset="0"
-         id="stop23" />
+         id="stop2" />
       <stop
-         style="stop-color:#cebfd8;stop-opacity:1;"
+         style="stop-color:#bab3f7;stop-opacity:1;"
          offset="1"
-         id="stop24" />
+         id="stop3" />
     </linearGradient>
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient24"
+       xlink:href="#linearGradient3"
        id="linearGradient8"
        gradientUnits="userSpaceOnUse"
        x1="3.7786028"
@@ -38,7 +38,7 @@
        y2="0.81464428" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient24"
+       xlink:href="#linearGradient3"
        id="linearGradient10"
        x1="13.166574"
        y1="8.2574501"
@@ -47,7 +47,7 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient24"
+       xlink:href="#linearGradient3"
        id="linearGradient12"
        x1="13.166574"
        y1="8.2574501"
@@ -56,7 +56,7 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient24"
+       xlink:href="#linearGradient3"
        id="linearGradient16"
        x1="17.401009"
        y1="22.963083"
@@ -65,7 +65,7 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient24"
+       xlink:href="#linearGradient3"
        id="linearGradient23"
        gradientUnits="userSpaceOnUse"
        x1="17.401009"
@@ -82,9 +82,9 @@
      inkscape:pageopacity="0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#505050"
-     inkscape:zoom="7.6161293"
-     inkscape:cx="10.241423"
-     inkscape:cy="4.9237609"
+     inkscape:zoom="10.770833"
+     inkscape:cx="5.384913"
+     inkscape:cy="10.166344"
      inkscape:window-width="1366"
      inkscape:window-height="697"
      inkscape:window-x="-8"

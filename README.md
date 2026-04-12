@@ -1,7 +1,5 @@
 # PrismaFlow
 
-![image](./public/images/md-banner.png)
-
 ## What is PrismaFlow?
 PrismaFlow is a software made by programmers for programmers. This app give you tools for developing apps like a todo-list, chat between friends, calendary and more tools. Currently we have four options:
   - **Free option:** This is in case that you want try the app, but you want to understand or you don't want to spend money in this app. Obviously you have limitations, but i tried to don't make those limitations restrictive.

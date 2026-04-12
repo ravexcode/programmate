@@ -1,5 +1,10 @@
 # Indev
 
+ - **Indev v12.0:**
+  1. Nuevas páginas. 🚀
+  2. LogIn y Register funcionales. 🔒
+  3. Rediseño de páginas anteriores. 🎨
+
 - **Indev v11.0:**
   1. Rediseño del frontend 🎨
   2. Nueva librería para animaciones de tailwind ✨

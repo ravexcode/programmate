@@ -16,28 +16,16 @@
   <defs
      id="defs1">
     <linearGradient
-       id="linearGradient4"
+       id="linearGradient8"
        inkscape:collect="always">
       <stop
-         style="stop-color:#300069;stop-opacity:1;"
+         style="stop-color:#1f13ff;stop-opacity:1;"
          offset="0"
-         id="stop3" />
+         id="stop7" />
       <stop
-         style="stop-color:#cebfd8;stop-opacity:1;"
+         style="stop-color:#bab3f7;stop-opacity:1;"
          offset="1"
-         id="stop4" />
-    </linearGradient>
-    <linearGradient
-       id="linearGradient27"
-       inkscape:collect="always">
-      <stop
-         style="stop-color:#c710ff;stop-opacity:1;"
-         offset="0"
-         id="stop26" />
-      <stop
-         style="stop-color:#fad0ff;stop-opacity:1;"
-         offset="0"
-         id="stop27" />
+         id="stop8" />
     </linearGradient>
     <linearGradient
        id="linearGradient1"
@@ -62,7 +50,7 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient4"
+       xlink:href="#linearGradient8"
        id="linearGradient16"
        x1="-0.00023535972"
        y1="14.00011"
@@ -71,7 +59,7 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient4"
+       xlink:href="#linearGradient8"
        id="linearGradient17"
        x1="-0.00023535972"
        y1="14.00011"
@@ -80,7 +68,7 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient4"
+       xlink:href="#linearGradient8"
        id="linearGradient18"
        x1="-0.00023535972"
        y1="14.00011"
@@ -89,7 +77,7 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient4"
+       xlink:href="#linearGradient8"
        id="linearGradient19"
        x1="-0.00023535972"
        y1="14.00011"
@@ -98,7 +86,7 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient4"
+       xlink:href="#linearGradient8"
        id="linearGradient20"
        x1="-0.00023535972"
        y1="14.00011"
@@ -107,44 +95,8 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient4"
+       xlink:href="#linearGradient8"
        id="linearGradient22"
-       x1="-0.00023535972"
-       y1="14.00011"
-       x2="10.726723"
-       y2="3.7911024"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient1"
-       id="linearGradient23"
-       x1="-0.00023535972"
-       y1="14.00011"
-       x2="10.726723"
-       y2="3.7911024"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient1"
-       id="linearGradient24"
-       x1="-0.00023535972"
-       y1="14.00011"
-       x2="10.726723"
-       y2="3.7911024"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient1"
-       id="linearGradient25"
-       x1="-0.00023535972"
-       y1="14.00011"
-       x2="10.726723"
-       y2="3.7911024"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient27"
-       id="linearGradient26"
        x1="-0.00023535972"
        y1="14.00011"
        x2="10.726723"
@@ -163,7 +115,7 @@
      showgrid="false"
      inkscape:zoom="18.464286"
      inkscape:cx="-1.8955512"
-     inkscape:cy="5.0096711"
+     inkscape:cy="4.9555125"
      inkscape:window-width="1366"
      inkscape:window-height="697"
      inkscape:window-x="-8"
@@ -192,7 +144,7 @@
        stroke-linejoin="round"
        d="M11.95 7.13004c-0.4441 -0.24781 -0.9641 -0.32261 -1.46 -0.21"
        stroke-width="1"
-       style="fill:url(#linearGradient23);fill-opacity:1;stroke:url(#linearGradient17);stroke-opacity:1" />
+       style="fill:none;fill-opacity:1;stroke:url(#linearGradient17);stroke-opacity:1" />
     <path
        id="Vector_3"
        stroke="#000cfe"
@@ -200,7 +152,7 @@
        stroke-linejoin="round"
        d="M9.87671 4.50493c0.28319 -0.4269 0.40059 -0.94259 0.32999 -1.45"
        stroke-width="1"
-       style="fill:url(#linearGradient24);fill-opacity:1;stroke:url(#linearGradient18);stroke-opacity:1" />
+       style="fill:none;fill-opacity:1;stroke:url(#linearGradient18);stroke-opacity:1" />
     <path
        id="Vector_4"
        stroke="#000cfe"
@@ -208,7 +160,7 @@
        stroke-linejoin="round"
        d="M7.36999 0.5c0.35049 1.07367 0.30437 2.23743 -0.13 3.28"
        stroke-width="1"
-       style="fill:url(#linearGradient25);fill-opacity:1;stroke:url(#linearGradient19);stroke-opacity:1" />
+       style="fill:none;fill-opacity:1;stroke:url(#linearGradient19);stroke-opacity:1" />
     <path
        id="Vector_5"
        stroke="#000cfe"
@@ -216,6 +168,6 @@
        stroke-linejoin="round"
        d="M13 3.75c-0.2761 0 -0.5 -0.22386 -0.5 -0.5s0.2239 -0.5 0.5 -0.5 0.5 0.22386 0.5 0.5 -0.2239 0.5 -0.5 0.5Z"
        stroke-width="1"
-       style="fill:url(#linearGradient26);fill-opacity:1;stroke:url(#linearGradient20);stroke-opacity:1" />
+       style="fill:none;fill-opacity:1;stroke:url(#linearGradient20);stroke-opacity:1" />
   </g>
 </svg>

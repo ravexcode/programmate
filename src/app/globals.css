@@ -5,16 +5,16 @@
 
 @theme {
   /* Color variation */
-  --color-ultramarine-950: #152556;
-  --color-ultramarine-900: #1a3a8e;
-  --color-ultramarine-800: #1a43bf;
-  --color-ultramarine-700: #164ddf;
-  --color-ultramarine-600: #1e63f2;
-  --color-ultramarine-500: #3483fd;
-  --color-ultramarine-400: #5aa6ff;
-  --color-ultramarine-300: #8fc5ff;
-  --color-ultramarine-200: #bddbff;
-  --color-ultramarine-100: #daeaff;
+  --color-ultramarine-950: #020210;
+  --color-ultramarine-900: #05051e;
+  --color-ultramarine-800: #080731;
+  --color-ultramarine-700: #15134d;
+  --color-ultramarine-600: #232169;
+  --color-ultramarine-500: #1d1a6c;
+  --color-ultramarine-400: #1a1791;
+  --color-ultramarine-300: #1814a5;
+  --color-ultramarine-200: #4845bc;
+  --color-ultramarine-100: #c0beff;
   --color-ultramarine-50: #eef6ff;
 
   /* Pre-built colors */

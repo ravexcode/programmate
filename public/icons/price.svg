@@ -16,20 +16,20 @@
   <defs
      id="defs5">
     <linearGradient
-       id="linearGradient5"
+       id="linearGradient9"
        inkscape:collect="always">
       <stop
-         style="stop-color:#300069;stop-opacity:1;"
+         style="stop-color:#1f13ff;stop-opacity:1;"
          offset="0"
-         id="stop5" />
+         id="stop7" />
       <stop
-         style="stop-color:#cebfd8;stop-opacity:1;"
+         style="stop-color:#bab3f7;stop-opacity:1;"
          offset="1"
-         id="stop6" />
+         id="stop8" />
     </linearGradient>
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient5"
+       xlink:href="#linearGradient9"
        id="linearGradient6"
        x1="1.2778709"
        y1="21.060331"
@@ -38,7 +38,7 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient5"
+       xlink:href="#linearGradient9"
        id="linearGradient8"
        x1="1.2778709"
        y1="21.060331"
@@ -47,7 +47,7 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient5"
+       xlink:href="#linearGradient9"
        id="linearGradient11"
        x1="1.2778709"
        y1="21.060331"
@@ -56,7 +56,7 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient5"
+       xlink:href="#linearGradient9"
        id="linearGradient13"
        x1="1.2778709"
        y1="21.060331"
@@ -65,7 +65,7 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient5"
+       xlink:href="#linearGradient9"
        id="linearGradient15"
        x1="1.2778709"
        y1="21.060331"
@@ -90,7 +90,8 @@
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="Tag-Dollar--Streamline-Ultimate" />
+     inkscape:current-layer="Tag-Dollar--Streamline-Ultimate"
+     showgrid="false" />
   <desc
      id="desc1">
     Tag Dollar Streamline Icon: https://streamlinehq.com

@@ -7,31 +7,11 @@ import Footer from "@/components/ui/footer";
 
 import IconCarousel from "@/components/icon_carrousel";
 
-//Gradient ball container
-function GradientBall({
-  size = 100,
-  position = "absolute",
-  top = "50%",
-  x = "-50%",
-  y = "-50%",
-}: any) {
-  return (
-    <div
-      className="aspect-square bg-main/40 blur-3xl rounded-full animate-pulse left-[150%] md:left-[100%]"
-      style={{
-        height: size,
-        position,
-        top,
-        transform: `translate(${x}, ${y})`,
-      }}
-    />
-  );
-}
-
 function Card(props: any) {
   return (
     <section 
-    className="rounded-xl border border-ultramarine-50/50 px-6 py-3 bg-background flex flex-col justify-center items-center gap-1 w-75 text-start shadow-lg shadow-main/20 duration-400 hover:shadow-main/50 hover:-translate-y-2 hover:scale-105 cursor-default timeline-scroll animate-zoom-in animate-range-[entry_-10%_cover_60%] md:animate-range-[entry_40%_cover_90%]">
+    className="rounded-xl border border-ultramarine-50/50 px-6 py-3 bg-background flex flex-col justify-center items-start gap-1 w-75 text-start shadow-lg shadow-main/20 duration-400 hover:shadow-main/50 hover:-translate-y-2 hover:scale-105 cursor-default timeline-[view(y)] animate-fade-in animate-range-[entry_0%_cover_30%] md:animate-range-[entry_0%_cover_50%]">
+      <img src={"/icons/" + props.icon} alt={props.icon} />
       <h2 
       className="text-xl text-main w-full font-semibold">
         {props.title}
@@ -44,6 +24,41 @@ function Card(props: any) {
   )
 }
 
+function PricingCard(props: any){
+  return (
+    <div
+    className="flex flex-col px-6 py-4 rounded-xl h-100 bg-background border-ultramarine-50/50 border shadow-lg shadow-ultramarine-950/50 mb-10 w-60 timeline-[view(y)] animate-fade-in animate-range-[entry_0%_cover_30%] md:animate-range-[entry_0%_cover_30%] relative">
+      {props.isRecomended ? (
+        <div>
+          <span
+          className="absolute -translate-y-6 -translate-x-10 px-3 py-1 rounded-md bg-main">
+            Recomended
+          </span>
+
+          <span className="h-5 md:h-3 block"></span>
+        </div>
+      ) : null}
+      <p className="text-sm font-light">{props.plan} plan</p>
+      <h3 className="text-2xl font-semibold"> {props.cost} </h3>
+
+      <span className="h-3 block"></span>
+
+      {props.benefits.map((value : any, index : any) => (
+        <div
+        key={"price_" + props.plan + "_" + index}
+        className="text-text/80">
+          ✓ {value}
+        </div>
+      ))}
+
+      <button
+      className="w-full py-1 rounded-full mt-auto bg-main shadow-xl shadow-main/20 duration-300 hover:shadow-main/50 hover:scale-105 hover:-translate-y-1 cursor-pointer">
+        Get started
+      </button>
+    </div>
+  )
+}
+
 //Landing page
 export default function HomePage(){
   return (
@@ -51,15 +66,11 @@ export default function HomePage(){
       <Header />
 
       <main
-      className="flex flex-col justify-center items-center mb-auto">
+      className="flex flex-col justify-center items-center">
 
         <section
         className="relative px-4 w-full min-h-90 flex flex-col justify-center items-start w-full text-text pt-20 animate-fade-in overflow-hidden">
-          <GradientBall
-          size="60rem"
-          display="absolute"
-          top="50%"
-          />
+          <div className="aspect-square bg-main/40 blur-3xl rounded-full animate-pulse h-300 w-300 left-[80%] absolute"></div>
 
           <h1
           className="text-6xl font-bold mb-4 z-2">
@@ -86,23 +97,85 @@ export default function HomePage(){
 
         <IconCarousel />
 
+        <span className="h-10"></span>
+
         <section 
-        className="text-text bg-background flex flex-col justify-center items-center gap-5 px-4 py-10 z-2 w-full">
+        className="text-text bg-background flex flex-col justify-center items-center gap-5 px-4 py-10 z-2 w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%] md:animate-range-[entry_0%_cover_50%]">
           <p
           className="text-lg px-10 py-1 rounded-full bg-ultramarine-950/60">
             features
           </p>
 
           <div className="flex flex-col lg:flex-row gap-10">
-            <Card title="Easy to use">
+            <Card
+            title="Easy to use"
+            icon="easy-to-use.svg">
               Our app is easy to use if you aren't experimented with dev apps
             </Card>
-            <Card title="Easy to use">
-              Our app is easy to use if you aren't experimented with dev apps
+            <Card
+            title="Better workflow"
+            icon="flow.svg">
+              Prismaflow goal is making that your proyects have more workflow
             </Card>
-            <Card title="Easy to use">
-              Our app is easy to use if you aren't experimented with dev apps
+            <Card
+            title="Accessible prices"
+            icon="price.svg">
+              The prices are accessible from students to big company teams
             </Card>
+          </div>
+        </section>
+
+        <span className="h-10"></span>
+
+        <section
+        className="flex flex-col justify-center items-center bg-background gap-10 mt-10 text-text py-30 relative w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%] md:animate-range-[entry_0%_cover_50%]"
+        id="pricing">
+          <h2 className="text-3xl text-center w-full font-semibold z-10 relative">
+            Pricing
+          </h2>
+
+          <div className="flex flex-col md:flex-row w-full justify-center items-center md:gap-20 z-2 relative">
+
+            <PricingCard
+            plan="Free"
+            cost="$0 USD/month"
+            benefits={[
+              "2 proyects limit",
+              "To do list",
+              "Ticket creator",
+              "JSON Editor",
+            ]}/>
+
+            <PricingCard
+            plan="Pro"
+            cost="$4 USD/month"
+            isRecomended={true}
+            benefits={[
+              "All free benefits +",
+              "Unlimited proyects",
+              "ERD Tool",
+              "JSON viewer tool",
+            ]}/>
+
+            <PricingCard
+            plan="Team"
+            cost="$8 USD/month"
+            benefits={[
+              "All pro plans +",
+              "Chat IRT",
+              "Kanban board",
+              "Unlimited integrants",
+              "Unlimited integrants",
+              "Team roles",
+              "Callendar",
+            ]}/>
+
+          </div>
+
+          <div
+          className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+            <div
+            className="absolute left-1/2 top-1/1 -translate-x-1/2 -translate-y-1/2 h-250 w-250 bg-main/40 blur-3xl rounded-full animate-pulse" />
           </div>
         </section>
       </main>
