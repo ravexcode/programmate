@@ -5,17 +5,17 @@
 
 @theme {
   /* Color variation */
-  --color-ultramarine-950: #020210;
-  --color-ultramarine-900: #05051e;
-  --color-ultramarine-800: #080731;
-  --color-ultramarine-700: #15134d;
-  --color-ultramarine-600: #232169;
-  --color-ultramarine-500: #1d1a6c;
-  --color-ultramarine-400: #1a1791;
-  --color-ultramarine-300: #1814a5;
-  --color-ultramarine-200: #4845bc;
+  --color-ultramarine-50:  #eef6ff;
   --color-ultramarine-100: #c0beff;
-  --color-ultramarine-50: #eef6ff;
+  --color-ultramarine-200: #9a97e6;
+  --color-ultramarine-300: #6f6bd1;
+  --color-ultramarine-400: #4845bc;
+  --color-ultramarine-500: #2e2b9e;
+  --color-ultramarine-600: #232169;
+  --color-ultramarine-700: #15134d;
+  --color-ultramarine-800: #0d0c3a;
+  --color-ultramarine-900: #05051e;
+  --color-ultramarine-950: #020210;
 
   /* Pre-built colors */
   --color-background: #01010a;

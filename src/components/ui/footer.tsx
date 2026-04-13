@@ -2,7 +2,7 @@ function CustomLi(props: any){
   return (
     <li>
       <a href={props.link}
-       className="cursor-pointer duration-200 hover:text-main">
+       className="cursor-pointer duration-200 hover:text-ultramarine-200 hover:underline font-light">
         {props.children}
       </a>
     </li>
@@ -12,14 +12,17 @@ function CustomLi(props: any){
 export default function Footer(){
   return (
     <footer
-    className="bg-black flex flex-col justify-center items-center px-4 py-3 z-100 text-text bottom relative">
-      <img src="/logos/large_white.svg" alt="Logo made by RavexCode"
-      className="h-7 mb-5"/>
+    className="bg-black flex flex-col justify-center items-center px-4 py-3 z-100 text-text bottom relative text-text/80">
+      <a href="/"
+      className="hover:brightness-80">
+        <img src="/logos/large_white.svg" alt="Logo made by RavexCode"
+        className="h-7 mb-5"/>
+      </a>
       
       <div
-      className="flex gap-10 md:gap-30 flex-wrap justify-center items-start">
-        <ul className="flex flex-col justify-center items-start">
-          <h3 className="font-bold text-lg">About</h3>
+      className="flex flex-col gap-10 md:flex-row justify-center md:justify-evenly items-start w-full px-4">
+        <ul className="flex flex-col justify-center items-center md:items-start w-full md:w-auto">
+          <h3 className="text-lg">About</h3>
           <CustomLi link="/about"> More info </CustomLi>
           <CustomLi link="/"> Home </CustomLi>
           <CustomLi link="/about#startup"> Startup </CustomLi>
@@ -27,16 +30,16 @@ export default function Footer(){
         </ul>
 
         
-        <ul className="flex flex-col justify-center items-start">
-          <h3 className="font-bold text-lg">Application</h3>
+        <ul className="flex flex-col justify-center items-center md:items-start w-full md:w-auto">
+          <h3 className="text-lg">Application</h3>
           <CustomLi link="/app"> More info </CustomLi>
           <CustomLi link="/blog"> Home </CustomLi>
           <CustomLi link="/app#download"> Startup </CustomLi>
         </ul>
 
         
-        <ul className="flex flex-col justify-center items-start">
-          <h3 className="font-bold text-lg">Developers</h3>
+        <ul className="flex flex-col justify-center items-center md:items-start w-full md:w-auto">
+          <h3 className="text-lg">Developers</h3>
           <CustomLi link="/devs"> More info </CustomLi>
           <CustomLi link="/devs/about"> Technologies </CustomLi>
           <CustomLi link="/devs/docs"> Docs </CustomLi>
@@ -44,12 +47,20 @@ export default function Footer(){
         </ul>
 
         
-        <ul className="flex flex-col justify-center items-start">
-          <h3 className="font-bold text-lg">Social media</h3>
+        <ul className="flex flex-col justify-center items-center md:items-start w-full md:w-auto">
+          <h3 className="text-lg">Social media</h3>
           <CustomLi link="/"> Youtube </CustomLi>
           <CustomLi link="/"> X (Twittter) </CustomLi>
           <CustomLi link="/"> Reddit </CustomLi>
           <CustomLi link="/"> Facebook </CustomLi>
+        </ul>
+
+        <ul className="flex flex-col justify-center items-center md:items-start w-full md:w-auto">
+          <h3 className="text-lg">Legacy</h3>
+          <CustomLi link="/legacy/tc"> Terms of service </CustomLi>
+          <CustomLi link="/legacy/privacy"> Privacity conditions </CustomLi>
+          <CustomLi link="/legacy/privacy"> Delete my account </CustomLi>
+          <CustomLi link="/legacy/license"> License </CustomLi>
         </ul>
       </div>
 

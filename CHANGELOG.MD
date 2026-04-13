@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v13.0:**
+  1. Nueva página. 🚀
+  2. Cambios de diseño.🎨
+  3. Ruta /api/users/me terminada. 🛠️
+
  - **Indev v12.0:**
   1. Nuevas páginas. 🚀
   2. LogIn y Register funcionales. 🔒

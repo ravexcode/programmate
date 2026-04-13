@@ -1,19 +1,25 @@
 //React imports
-import { useState } from "react"
+import { useState } from "react";
+
+const inputClasses = {
+  container: "flex flex-col justify-center items-start w-full relative",
+  label: "text-sm font-light -translate-y-1",
+  input: "border border-ultramarine-50/10 bg-ultramarine-900 rounded-xl py-3 px-4 w-full placeholder:text-text/40 duration-300 focus:outline-none focus:shadow-ultramarine-300/40 bg-transparent"
+}
 
 export function Input(props : any){
   return (
     <div
-    className="flex flex-col justify-center items-start w-full">
+    className={inputClasses.container}>
       <label
-      className="text-sm font-light -translate-y-1">
+      className={inputClasses.label}>
         {props.title}
       </label>
       <input
       name={props.name}
       type={props.type}
       placeholder={props.guide}
-      className="border-2 border-ultramarine-300 rounded-xl py-2 px-3 w-full placeholder:text-text/40 shadow-lg shadow-ultramarine-300/20 duration-300 focus:outline-none focus:shadow-ultramarine-300/40 bg-transparent"/>
+      className={inputClasses.input}/>
     </div>
   )
 }
@@ -23,9 +29,9 @@ export function PasswordInput(props : any){
 
   return (
     <div
-    className="flex flex-col justify-center items-start w-full relative">
+    className={inputClasses.container}>
       <label
-      className="text-sm font-light -translate-y-1">
+      className={inputClasses.label}>
         {props.title}
       </label>
       <input
@@ -33,7 +39,7 @@ export function PasswordInput(props : any){
       type={isShown ? "text" : "password"}
       placeholder="••••••••••"
       minLength={8}
-      className="border-2 border-ultramarine-300 rounded-xl py-2 px-3 w-full placeholder:text-text/40 shadow-lg shadow-ultramarine-300/20 duration-300 focus:outline-none focus:shadow-ultramarine-300/40 bg-transparent"/>
+      className={inputClasses.input}/>
       <button type="button"
       className="text-main text-sm absolute right-4 translate-y-[0.55rem] cursor-pointer"
       onClick={() => {

@@ -1,3 +1,4 @@
+// components/IconCarousel.tsx
 import Image from 'next/image';
 
 interface IconProps {
@@ -9,32 +10,41 @@ interface IconProps {
 
 export default function IconCarousel() {
   const icons: IconProps[] = [
-    { src: "/icons/supabase.svg", alt: "Supabase icon made by RavexCode", className: "h-10 w-auto", width: 150 },
-    { src: "/icons/stripe.svg", alt: "Stripe icon made by RavexCode", className: "h-8 w-auto", width: 120 },
-    { src: "/icons/redis.svg", alt: "Redis icon made by RavexCode", className: "h-10 w-auto", width: 150 },
-    { src: "/icons/nextjs.svg", alt: "Nextjs icon made by RavexCode", className: "h-8 w-auto", width: 120 },
+    { src: "/icons/supabase.svg", alt: "Supabase", className: "h-10 w-auto opacity-70 hover:opacity-100 transition-opacity", width: 150 },
+    { src: "/icons/stripe.svg", alt: "Stripe", className: "h-8 w-auto opacity-70 hover:opacity-100 transition-opacity", width: 120 },
+    { src: "/icons/redis.svg", alt: "Redis", className: "h-10 w-auto opacity-70 hover:opacity-100 transition-opacity", width: 150 },
+    { src: "/icons/nextjs.svg", alt: "Next.js", className: "h-8 w-auto opacity-70 hover:opacity-100 transition-opacity", width: 120 },
   ];
 
   return (
-    <section className="mt-20 bg-background z-2 w-full py-5 overflow-hidden animate-blurred-fade-in block">
-  
-      <div className="w-full overflow-hidden">
-        
-        <div className="flex w-max gap-15 carousel">
-          {[...icons, ...icons].map((icon, index) => (
-            <Image
-              key={index}
-              src={icon.src}
-              alt={icon.alt}
-              width={icon.width}
-              height={100}
-              className={`object-contain ${icon.className}`}
-              priority
-            />
+    <section className="mt-20 w-full py-10 overflow-hidden relative z-10 flex flex-col items-center">
+      <p className="text-sm font-medium text-text/50 uppercase tracking-widest mb-8 text-center">
+        Potenciado por las mejores tecnologías
+      </p>
+      
+      {/* Máscara de gradiente para difuminar los bordes izquierdo y derecho */}
+      <div 
+        className="w-full max-w-5xl overflow-hidden"
+        style={{
+          maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)'
+        }}
+      >
+        <div className="flex w-max gap-16 md:gap-24 animate-[carousel_20s_linear_infinite] hover:[animation-play-state:paused]">
+          {[...icons, ...icons, ...icons].map((icon, index) => (
+            <div key={index} className="flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
+              <Image
+                src={icon.src}
+                alt={icon.alt}
+                width={icon.width}
+                height={40}
+                className={`object-contain ${icon.className}`}
+                priority={index < 4}
+              />
+            </div>
           ))}
         </div>
-
       </div>
     </section>
   );
-};
+}

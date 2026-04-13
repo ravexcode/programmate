@@ -27,7 +27,7 @@ function Card(props: any) {
 function PricingCard(props: any){
   return (
     <div
-    className="flex flex-col px-6 py-4 rounded-xl h-100 bg-background border-ultramarine-50/50 border shadow-lg shadow-ultramarine-950/50 mb-10 w-60 timeline-[view(y)] animate-fade-in animate-range-[entry_0%_cover_30%] md:animate-range-[entry_0%_cover_30%] relative">
+    className={"flex flex-col px-6 py-4 rounded-xl h-100 shadow-lg shadow-ultramarine-950/50 mb-10 w-60 timeline-[view(y)] animate-fade-in animate-range-[entry_0%_cover_30%] relative " + ( props.isRecomended ? "bg-ultramarine-900 scale-110" : "bg-ultramarine-950" )}>
       {props.isRecomended ? (
         <div>
           <span
@@ -102,7 +102,7 @@ export default function HomePage(){
         <section 
         className="text-text bg-background flex flex-col justify-center items-center gap-5 px-4 py-10 z-2 w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%] md:animate-range-[entry_0%_cover_50%]">
           <p
-          className="text-lg px-10 py-1 rounded-full bg-ultramarine-950/60">
+          className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30">
             features
           </p>
 
@@ -128,11 +128,12 @@ export default function HomePage(){
         <span className="h-10"></span>
 
         <section
-        className="flex flex-col justify-center items-center bg-background gap-10 mt-10 text-text py-30 relative w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%] md:animate-range-[entry_0%_cover_50%]"
+        className="flex flex-col justify-center items-center bg-background gap-15 mt-10 text-text py-30 relative w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%]"
         id="pricing">
-          <h2 className="text-3xl text-center w-full font-semibold z-10 relative">
+          <p
+          className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30">
             Pricing
-          </h2>
+          </p>
 
           <div className="flex flex-col md:flex-row w-full justify-center items-center md:gap-20 z-2 relative">
 

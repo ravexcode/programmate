@@ -12,8 +12,8 @@ import AuthForm from "@/components/forms/authForm";
 import { Input, PasswordInput } from "@/components/forms/inputs";
 
 //Auth buttons
-import AuthGoogleButton from "@/components/buttons/authGoogle";
-import AuthGithubButton from "@/components/buttons/authGithub";
+import AuthGoogleButton from "@/components/forms/buttons/authGoogle";
+import AuthGithubButton from "@/components/forms/buttons/authGithub";
 
 //UI Components
 import Header from "@/components/ui/header";
@@ -83,8 +83,6 @@ export default function LogInPage() {
 
   return (
     <div className="bg-background min-h-dvh grid grid-rows-[auto_1fr_auto]">
-      <Header
-      isAuthForm={true} />
         <main
         className="flex flex-col justify-center items-center w-full h-full py-20 relative">
 
@@ -114,7 +112,7 @@ export default function LogInPage() {
 
             <Input
             type="email"
-            guide="user@email.com"
+            guide="me@email.com"
             title="Insert your email"
             name="email"/>
             <span className="h-3"></span>
