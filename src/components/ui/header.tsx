@@ -60,7 +60,7 @@ export default function Header(props: any){
             </div>
           ) : (
             <a
-            href="/"
+            href="/dashboard"
             className="px-4 py-1 cursor-pointer rounded-md duration-300 bg-main hover:brightness-150">
               Dashboard
             </a>

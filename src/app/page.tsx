@@ -69,7 +69,7 @@ export default function HomePage(){
       className="flex flex-col justify-center items-center">
 
         <section
-        className="relative px-4 w-full min-h-90 flex flex-col justify-center items-start w-full text-text pt-20 animate-fade-in overflow-hidden">
+        className="relative px-4 w-full min-h-90 flex flex-col justify-center items-start w-full text-text pt-20 animate-fade-in overflow-hidden  ">
           <div className="aspect-square bg-main/40 blur-3xl rounded-full animate-pulse h-300 w-300 left-[80%] absolute"></div>
 
           <h1

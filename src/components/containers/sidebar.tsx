@@ -21,7 +21,7 @@ export default function SideBar(props: any) {
 
   return (
     <aside
-      className={` min-h-screen bg-ultramarine-950 text-text transition-all duration-300 flex flex-col
+      className={` min-h-screen bg-ultramarine-950 text-text transition-all duration-300 flex flex-col animate-fade-in
         ${expanded ? "w-64" : "w-16"}
       `}>
       {/* Toggle */}

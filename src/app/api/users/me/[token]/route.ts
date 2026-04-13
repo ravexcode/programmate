@@ -39,10 +39,23 @@ export async function GET(
       status: 500
     });
 
+    //Gets the user's extra data
+    const { data: teams } = await supabase
+    .from("teams")
+    .select("*")
+    .contains("users_id", user.id);
+
+    const { data: payments } = await supabase
+    .from("payments")
+    .select("*")
+    .eq("user_id", user.id);
+
     //Returns the user's data
     return NextResponse.json({
       message: "User data got",
-      user
+      user,
+      teams,
+      payments,
     })
   } catch(e) {
 

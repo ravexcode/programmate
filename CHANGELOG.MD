@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v14.0:**
+  1. Transición al ingresar a la página dashboard. ⚡
+  2. Pantalla de carga en dashboard. ⌚
+  3. Datos de dashboard funcionales. 🛠️
+  4. api/users/me ya retorna más información. 📁
+
 - **Indev v13.0:**
   1. Nueva página. 🚀
   2. Cambios de diseño.🎨

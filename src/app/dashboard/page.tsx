@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 //Components imports
 import SideBar from "@/components/containers/sidebar";
 import { getCookie } from "cookies-next";
-import { deleteCookie } from "cookies-next/client";
+import LoadingDashboard from "@/components/screens/loading_dashboard";
 
 // 1. Tipado fuerte: Evitamos usar 'any' para un código más profesional y seguro.
 interface ProjectCardProps {
@@ -55,7 +55,9 @@ export default function Dashboard(){
   //User's data
   const [ user, setUser ] = useState({
     email: "",
-    name: ""
+    name: "",
+    plan: "",
+    teams: []
   });
 
   //Function to update user's data
@@ -75,10 +77,30 @@ export default function Dashboard(){
     //Verifies if status is OK
     if(res.status === 200) {
       const identity = data.user.identities[0];
+      let plan : string = "free";
+      let teams = [];
+
+      if(data.payments && data.payments.length >= 1) {
+        const lastPayment = data.payments[data.payments.length - 1]; //Minus 1 because the array is 1 spot before the data
+        const expires = new Date(lastPayment.paid_at);
+        const now = new Date();
+
+        if(now < expires) {
+          plan = lastPayment.plan;
+          plan = plan.replaceAll('"', '');
+          plan = plan.charAt(0).toUpperCase() + plan.slice(1);
+        }
+      }
+
+      if(data.teams && data.teams.length >= 1) {
+        teams = data.teams;
+      }
 
       setUser({
         "email": identity.email,
-        "name": identity.identity_data.name,
+        "name": identity.identity_data.name || data.user.user_metadata.username,
+        "plan": plan,
+        "teams": teams
       });
       return;
     }
@@ -94,66 +116,72 @@ export default function Dashboard(){
 
   return (
     <div className="min-h-screen bg-background grid grid-cols-[auto_1fr] overflow-hidden text-text">
-      <SideBar email={user.email || "Loading..."} />
+      {
+        user && user.email ? (
+          <>
+            <SideBar email={user.email} />
+            <main className="relative flex flex-col h-screen overflow-y-auto px-4 py-8 md:px-8 md:py-10 animate-fade-in">
+              {
+                user.plan && (
+                  <span
+                  className="fixed right-5 top-5 text-sm px-5 py-1 bg-main shadow-lg shadow-main/30 rounded-full cursor-default">
+                    { user.plan }
+                  </span>
+                )
+              }
 
-      <main className="relative flex flex-col h-screen overflow-y-auto px-4 py-8 md:px-8 md:py-10">
-        
-        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-          <div className="absolute left-1/2 top-0 w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-main/10 blur-[100px] animate-pulse" />
-        </div>
+              <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                <div className="absolute left-1/2 top-0 w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-main/10 blur-[100px] animate-pulse" />
+              </div>
 
-        <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col gap-10">
-          
-          <header className="flex flex-col gap-2">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
-              Welcome back{user.name ? ", " + user.name : ""}!
-            </h2>
-            <p className="text-text/70 text-sm md:text-base">
-              There are your recent projects
-            </p>
-          </header>
-          
-          <section className="flex flex-col gap-6">
-            
-            <div className="flex w-full items-center justify-between">
-              <h3 className="text-xl font-semibold tracking-tight text-white/90">
-                Projects
-              </h3>
+              <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col gap-10">
+                
+                <header className="flex flex-col gap-2">
+                  <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
+                    Welcome back, {user.name}!
+                  </h2>
+                  <p className="text-text/70 text-sm md:text-base">
+                    There are your recent projects
+                  </p>
+                </header>
+                
+                <section className="flex flex-col gap-6">
+                  
+                  <div className="flex w-full items-center justify-between">
+                    <h3 className="text-xl font-semibold tracking-tight text-white/90">
+                      Projects
+                    </h3>
 
-              <button className="flex items-center gap-2 bg-main px-4 py-2 text-sm font-medium text-white rounded-lg transition-all duration-300 hover:bg-main/80 focus:outline-none focus:ring-2 focus:ring-main/50 focus:ring-offset-2 focus:ring-offset-background active:scale-95 cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Create new
-              </button>
-            </div>
+                    <button className="flex items-center gap-2 bg-main px-4 py-2 text-sm font-medium text-white rounded-lg transition-all duration-300 hover:bg-main/80 focus:outline-none focus:ring-2 focus:ring-main/50 focus:ring-offset-2 focus:ring-offset-background active:scale-95 cursor-pointer">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                      Create new
+                    </button>
+                  </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              <ProjectCard
-                title="Prismaflow"
-                description="Ejemplo de proyecto base para evaluar el diseño."
-              />
-              <ProjectCard
-                title="Prismaflow"
-                description="Ejemplo de proyecto base para evaluar el diseño."
-              />
-              <ProjectCard
-                title="Prismaflow"
-                description="Ejemplo de proyecto base para evaluar el diseño."
-              />
-              <ProjectCard
-                title="Prismaflow"
-                description="Ejemplo de proyecto base para evaluar el diseño."
-              />
-              <ProjectCard
-                title="Prismaflow"
-                description="Ejemplo de proyecto base para evaluar el diseño."
-              />
-            </div>
-          </section>
-        </div>
-      </main>
+                  <div className={user.teams.length > 1 ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col justify-center items-center"}>
+                    {
+                      user.teams.length > 1 ? user.teams.map((team : any, index) => (
+                        <ProjectCard
+                        key={ index }
+                        title={ team.title }
+                        description={ team.description }/>
+                      )) : (
+                        <span
+                        className="w-full text-center text-2xl font-light text-text py-4"> No projects found, try creating a new project!  </span>
+                      )
+                    }
+                  </div>
+                </section>
+              </div>
+            </main>
+          </>
+        ) : (
+          <LoadingDashboard />
+        )
+      }
     </div>
   )
 }
