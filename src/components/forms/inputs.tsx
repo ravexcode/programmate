@@ -4,7 +4,7 @@ import { useState } from "react";
 const inputClasses = {
   container: "flex flex-col justify-center items-start w-full relative",
   label: "text-sm font-light -translate-y-1",
-  input: "border border-ultramarine-50/10 bg-ultramarine-900 rounded-xl py-3 px-4 w-full placeholder:text-text/40 duration-300 focus:outline-none focus:shadow-ultramarine-300/40 bg-transparent"
+  input: "border border-ultramarine-50/10 bg-neutral-950 rounded-xl py-3 px-4 w-full placeholder:text-text/40 duration-300 focus:outline-none focus:shadow-ultramarine-300/40 z-3"
 }
 
 export function Input(props : any){

@@ -33,7 +33,7 @@ export default function AuthGithubButton(){
       goToGithub();
     }}
     disabled={isEnabled ? false : true}
-    className="bg-black flex gap-3 text-lg font-bold rounded-md justify-center items-center px-6 py-2 cursor-pointer duration-500 hover:scale-105 hover:bg-ultramarine-700 w-full shadow-md  disabled:grayscale disabled:hover:bg-black disabled:cursor-wait disabled:hover:scale-100 disabled:brightness-80 disabled:duration-100">
+    className="bg-neutral-900 flex gap-3 text-lg font-bold rounded-md justify-center items-center px-6 py-2 cursor-pointer duration-500 hover:scale-105 hover:bg-ultramarine-700 w-full shadow-md  disabled:grayscale disabled:hover:bg-black disabled:cursor-wait disabled:hover:scale-100 disabled:brightness-80 disabled:duration-100">
       <img
       src="/icons/github.svg"
       alt="Icon made by RavexCode"

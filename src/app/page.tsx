@@ -10,14 +10,14 @@ import IconCarousel from "@/components/icon_carrousel";
 function Card(props: any) {
   return (
     <section 
-    className="rounded-xl border border-ultramarine-50/50 px-6 py-3 bg-background flex flex-col justify-center items-start gap-1 w-75 text-start shadow-lg shadow-main/20 duration-400 hover:shadow-main/50 hover:-translate-y-2 hover:scale-105 cursor-default timeline-[view(y)] animate-fade-in animate-range-[entry_0%_cover_30%] md:animate-range-[entry_0%_cover_50%]">
+    className="rounded-xl border border-neutral-800 px-6 py-3 bg-neutral-950 flex flex-col justify-center items-start gap-1 w-75 text-start shadow-lg shadow-ultramarine-700/20 duration-400 hover:shadow-ultramarine-700/50 hover:-translate-y-2 hover:scale-105 cursor-default timeline-[view(y)] animate-fade-in animate-range-[entry_0%_cover_30%]">
       <img src={"/icons/" + props.icon} alt={props.icon} />
       <h2 
-      className="text-xl text-main w-full font-semibold">
+      className="text-xl text-main w-full">
         {props.title}
       </h2>
       <p
-      className="w-full">
+      className="w-full font-light">
         {props.children}
       </p>
     </section>
@@ -27,7 +27,7 @@ function Card(props: any) {
 function PricingCard(props: any){
   return (
     <div
-    className={"flex flex-col px-6 py-4 rounded-xl h-100 shadow-lg shadow-ultramarine-950/50 mb-10 w-60 timeline-[view(y)] animate-fade-in animate-range-[entry_0%_cover_30%] relative " + ( props.isRecomended ? "bg-ultramarine-900 scale-110" : "bg-ultramarine-950" )}>
+    className={"flex flex-col px-6 py-4 rounded-xl h-100 shadow-lg shadow-ultramarine-950/50 mb-10 w-60 timeline-[view(y)] animate-fade-in animate-range-[entry_0%_cover_30%] relative bg-neutral-950 " + ( props.isRecomended && "scale-110" )}>
       {props.isRecomended ? (
         <div>
           <span
@@ -52,7 +52,7 @@ function PricingCard(props: any){
       ))}
 
       <button
-      className="w-full py-1 rounded-full mt-auto bg-main shadow-xl shadow-main/20 duration-300 hover:shadow-main/50 hover:scale-105 hover:-translate-y-1 cursor-pointer">
+      className="w-full py-1 rounded-full mt-auto bg-main shadow-lg shadow-ultramarine-700/20 duration-300 hover:shadow-ultramarine-700/50 hover:scale-105 hover:-translate-y-1 cursor-pointer">
         Get started
       </button>
     </div>
@@ -69,7 +69,7 @@ export default function HomePage(){
       className="flex flex-col justify-center items-center">
 
         <section
-        className="relative px-4 w-full min-h-90 flex flex-col justify-center items-start w-full text-text pt-20 animate-fade-in overflow-hidden  ">
+        className="relative px-4 w-full min-h-90 flex flex-col justify-center items-start w-full text-text pt-20 pb-10 animate-fade-in-up overflow-hidden">
           <div className="aspect-square bg-main/40 blur-3xl rounded-full animate-pulse h-300 w-300 left-[80%] absolute"></div>
 
           <h1
@@ -92,7 +92,7 @@ export default function HomePage(){
           </div>
 
           <img src="/images/dashboard.png" alt="Dashboard made by Canva AI"
-          className="z-2 w-[95%] md:w-[80%] max-w-300 mt-10 mx-auto rounded-xl md:rounded-4xl"/>
+          className="z-2 w-[95%] md:w-[80%] max-w-300 mt-10 mx-auto rounded-xl md:rounded-4xl border-2 border-neutral-800"/>
         </section>
 
         <IconCarousel />
@@ -100,7 +100,7 @@ export default function HomePage(){
         <span className="h-10"></span>
 
         <section 
-        className="text-text bg-background flex flex-col justify-center items-center gap-5 px-4 py-10 z-2 w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%] md:animate-range-[entry_0%_cover_50%]">
+        className="text-text bg-background flex flex-col justify-center items-center gap-5 px-4 z-2 w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%]">
           <p
           className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30">
             features
@@ -125,10 +125,8 @@ export default function HomePage(){
           </div>
         </section>
 
-        <span className="h-10"></span>
-
         <section
-        className="flex flex-col justify-center items-center bg-background gap-15 mt-10 text-text py-30 relative w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%]"
+        className="flex flex-col justify-center items-center bg-background gap-15 mt-10 text-text relative w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%] min-h-150"
         id="pricing">
           <p
           className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30">

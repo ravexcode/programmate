@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v15**
+  1. Nueva ruta en api para buscar usuarios. 🔍
+  2. Rediseño en colores. 🎨
+  3. Funcionalidades nuevas en dashboard. 🛠️
+
 - **Indev v14.1:**
   1. Dashboard funcional completamente. 🛠️
   2. Página de configuración de usuario iniciada. ⚙️

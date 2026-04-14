@@ -2,7 +2,7 @@ function CustomLi(props: any){
   return (
     <li>
       <a href={props.link}
-       className="cursor-pointer duration-200 hover:text-ultramarine-200 hover:underline font-light">
+       className="cursor-pointer duration-200 hover:text-main hover:underline font-light">
         {props.children}
       </a>
     </li>
@@ -57,9 +57,8 @@ export default function Footer(){
 
         <ul className="flex flex-col justify-center items-center md:items-start w-full md:w-auto">
           <h3 className="text-lg">Legacy</h3>
-          <CustomLi link="/legacy/tc"> Terms of service </CustomLi>
+          <CustomLi link="/legacy/tos"> Terms of service </CustomLi>
           <CustomLi link="/legacy/privacy"> Privacity conditions </CustomLi>
-          <CustomLi link="/legacy/privacy"> Delete my account </CustomLi>
           <CustomLi link="/legacy/license"> License </CustomLi>
         </ul>
       </div>

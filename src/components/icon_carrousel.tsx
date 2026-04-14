@@ -17,9 +17,9 @@ export default function IconCarousel() {
   ];
 
   return (
-    <section className="mt-20 w-full py-10 overflow-hidden relative z-10 flex flex-col items-center">
+    <section className="mt-20 w-full py-10 relative z-10 flex flex-col items-center timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%]">
       <p className="text-sm font-medium text-text/50 uppercase tracking-widest mb-8 text-center">
-        Potenciado por las mejores tecnologías
+        Powered by the best technologies
       </p>
       
       {/* Máscara de gradiente para difuminar los bordes izquierdo y derecho */}
