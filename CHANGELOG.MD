@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v14.1:**
+  1. Dashboard funcional completamente. 🛠️
+  2. Página de configuración de usuario iniciada. ⚙️
+
 - **Indev v14.0:**
   1. Transición al ingresar a la página dashboard. ⚡
   2. Pantalla de carga en dashboard. ⌚

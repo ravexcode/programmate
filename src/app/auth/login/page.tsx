@@ -84,7 +84,7 @@ export default function LogInPage() {
   return (
     <div className="bg-background min-h-dvh grid grid-rows-[auto_1fr_auto]">
         <main
-        className="flex flex-col justify-center items-center w-full h-full py-20 relative">
+        className="flex flex-col justify-center items-center w-full h-full pt-5 pb-20 relative">
 
           <AuthForm
           onSubmit={(e: any) => { handleSubmit(e) }}

@@ -13,12 +13,17 @@ import LoadingDashboard from "@/components/screens/loading_dashboard";
 interface ProjectCardProps {
   title: string;
   description: string;
+  id: number
 }
 
-export function ProjectCard({ title, description }: ProjectCardProps) {
+export function ProjectCard({ title, description, id }: ProjectCardProps) {
   return (
     <article 
       className="group relative w-full max-w-sm flex flex-col rounded-xl border border-ultramarine-50/10 bg-ultramarine-900/40 p-5 shadow-lg backdrop-blur-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-ultramarine-50/30 hover:bg-ultramarine-900/60 hover:shadow-xl hover:shadow-ultramarine-800/40 cursor-pointer"
+      onClick={() => {
+        window.location.href = `/teams/${id}`
+      }}
+      key={id}
     >
       <header className="flex items-start justify-between mb-3">
         {/* 2. Tipografía: tracking-tight le da un toque moderno y line-clamp evita que un título largo rompa el diseño */}
@@ -85,7 +90,7 @@ export default function Dashboard(){
         const expires = new Date(lastPayment.paid_at);
         const now = new Date();
 
-        if(now < expires) {
+        if(now <= expires) {
           plan = lastPayment.plan;
           plan = plan.replaceAll('"', '');
           plan = plan.charAt(0).toUpperCase() + plan.slice(1);
@@ -161,12 +166,13 @@ export default function Dashboard(){
                     </button>
                   </div>
 
-                  <div className={user.teams.length > 1 ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col justify-center items-center"}>
+                  <div className={user.teams.length >= 1 ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col justify-center items-center"}>
                     {
-                      user.teams.length > 1 ? user.teams.map((team : any, index) => (
+                      user.teams.length >= 1 ? user.teams.map((team : any, index) => (
                         <ProjectCard
                         key={ index }
-                        title={ team.title }
+                        id={ team.team_id }
+                        title={ team.name }
                         description={ team.description }/>
                       )) : (
                         <span

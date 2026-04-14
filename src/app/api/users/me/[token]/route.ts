@@ -43,7 +43,7 @@ export async function GET(
     const { data: teams } = await supabase
     .from("teams")
     .select("*")
-    .contains("users_id", user.id);
+    .contains("users_id", [ user.id ]);
 
     const { data: payments } = await supabase
     .from("payments")
@@ -57,7 +57,13 @@ export async function GET(
       teams,
       payments,
     })
-  } catch(e) {
-
+  } catch(e: any) {
+    //Error handler
+    return NextResponse.json({
+      message: "Error inside in the server",
+      error: e.message
+    }, {
+      status: 500
+    });
   }
 }
