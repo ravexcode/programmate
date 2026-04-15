@@ -120,6 +120,13 @@ export default function Dashboard(){
         "plan": plan,
         "teams": teams
       });
+
+      localStorage.setItem("user", JSON.stringify({
+        "email": identity.email,
+        "name": identity.identity_data.name || data.user.user_metadata.username,
+        "plan": plan,
+        "teams": teams
+      }));
       return;
     }
 
@@ -127,9 +134,25 @@ export default function Dashboard(){
   }
 
   useEffect(() => {
-    const token = getCookie("token");
-    if(!token) return;
-    updateUserData(token);
+    const user_cached = localStorage.getItem("user");
+
+    if(!user_cached) {
+      const token = getCookie("token");
+
+      if(!token) return;
+
+      updateUserData(token);
+      return;
+    }
+
+    const user_cached_parsed = JSON.parse(user_cached);
+
+    setUser({
+        "email": user_cached_parsed.email,
+        "name": user_cached_parsed.name,
+        "plan": user_cached_parsed.plan,
+        "teams": user_cached_parsed.teams
+      });
   }, []);
 
   const showForm = () => {
@@ -230,9 +253,6 @@ export default function Dashboard(){
                 }
               }
             }}
-            onBlur={() => {
-              setFounded(undefined);
-            }}
             className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80"/>
 
             {
@@ -250,7 +270,9 @@ export default function Dashboard(){
                           id: data.id,
                           email: data.email,
                           username: data.display_name
-                        } ])
+                        } ]);
+
+                        setFounded(undefined);
                       }}>
                         { data.email }
                       </p>
@@ -277,8 +299,9 @@ export default function Dashboard(){
               integrants && integrants.length >= 1 &&
                 integrants.map((data, index) => (
                   <p
-                  key={index}>
-                    { data.username } <br />
+                  key={index}
+                  className="text-wrap">
+                    { data.username } <span className="text-text/30">({data.email})</span> <br />
                   </p>
                 ))
             }
@@ -306,13 +329,16 @@ export default function Dashboard(){
         user && user.email ? (
           <>
             <SideBar email={user.email} />
-            <main className="relative flex flex-col h-screen overflow-y-auto px-4 py-8 md:px-8 md:py-10 animate-fade-in">
+            <main className="relative flex flex-col h-screen overflow-y-auto px-4 md:px-8 animate-fade-in">
               {
                 user.plan && (
-                  <span
-                  className="fixed right-5 top-5 text-sm px-5 py-1 bg-main shadow-lg shadow-main/30 rounded-full cursor-default">
-                    { user.plan }
-                  </span>
+                  <div
+                  className="flex justify-end items-center w-full my-5">
+                    <span
+                    className="text-sm px-5 py-1 bg-main shadow-lg shadow-main/30 rounded-full cursor-default">
+                      { user.plan }
+                    </span>
+                  </div>
                 )
               }
 
@@ -322,13 +348,29 @@ export default function Dashboard(){
 
               <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col gap-10">
                 
-                <header className="flex flex-col gap-2">
-                  <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
+                <header className="flex h-max">
+                  <div
+                  className="flex flex-col justify-center items-between gap-2 w-full">
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
                     Welcome back, {user.name}!
-                  </h2>
-                  <p className="text-text/70 text-sm md:text-base">
-                    There are your recent projects
-                  </p>
+                    </h2>
+                    <p className="text-text/70 text-sm md:text-base">
+                      There are your recent projects
+                    </p>
+                  </div>
+
+                  <button
+                  className="text-sm px-5 py-1 border-2 border-ultramarine-50/30 rounded-md cursor-pointer duration-300 hover:brightness-120 hover:bg-ultramarine-900 hover:scale-105 h-max my-auto disabled:hover:brightness-80 disabled:hover:bg-transparent disabled:hover:scale-100 disabled:brightness-80 disabled:cursor-wait"
+                  onClick={ async(e) => {
+                    const token = getCookie("token");
+                    e.currentTarget.disabled = true;
+
+                    await updateUserData(token);
+
+                    window.location.reload();
+                  }}>
+                    Reload
+                  </button>
                 </header>
                 
                 <section className="flex flex-col gap-6">

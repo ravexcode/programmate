@@ -38,7 +38,7 @@ export default function Header(props: any){
 
       <ul
       className="hidden md:flex gap-5 justify-center items-center">
-        <OptionsButton link="/about"> Product </OptionsButton>
+        <OptionsButton link="/about#features"> Product </OptionsButton>
         <OptionsButton link="/#pricing"> Pricing </OptionsButton>
         <OptionsButton link="/about#contact"> Contact </OptionsButton>
       </ul>

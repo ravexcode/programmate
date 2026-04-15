@@ -1,7 +1,7 @@
 //view in client
 "use client";
 
-//Components imports
+//Prebuilt components
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 
@@ -62,18 +62,24 @@ function PricingCard(props: any){
 //Landing page
 export default function HomePage(){
   return (
-    <div className="bg-background min-h-dvh">
+    <div className="bg-background min-h-dvh grid grid-rows-[auto_1fr_auto]">
       <Header />
 
       <main
       className="flex flex-col justify-center items-center">
 
         <section
-        className="relative px-4 w-full min-h-90 flex flex-col justify-center items-start w-full text-text pt-20 pb-10 animate-fade-in-up overflow-hidden">
-          <div className="aspect-square bg-main/40 blur-3xl rounded-full animate-pulse h-300 w-300 left-[80%] absolute"></div>
+        className="relative px-4 w-full min-h-90 flex flex-col justify-center items-center w-full text-text pt-20 pb-10 animate-fade-in-up overflow-hidden">
+          <div
+          className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+            <div
+            className="aspect-square absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-250 bg-main/40 blur-3xl rounded-full animate-pulse" />
+            <div className="bg-linear-to-t from-background to-transparent w-full h-50 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
+            <div className="bg-linear-to-b from-background to-transparent w-full h-20 left-0 top-0 absolute z-3 pointer-events-none"></div>
+          </div>
 
           <h1
-          className="text-6xl font-bold mb-4 z-2">
+          className="text-6xl font-bold mb-4 z-2 text-center">
             Built to improve <br />
             your team workflow
           </h1>
@@ -103,7 +109,7 @@ export default function HomePage(){
         className="text-text bg-background flex flex-col justify-center items-center gap-5 px-4 z-2 w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%]">
           <p
           className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30">
-            features
+            Why Prismaflow?
           </p>
 
           <div className="flex flex-col lg:flex-row gap-10">
@@ -126,9 +132,9 @@ export default function HomePage(){
         </section>
 
         <section
-        className="flex flex-col justify-center items-center bg-background gap-15 mt-10 text-text relative w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%] min-h-150"
-        id="pricing">
+        className="flex flex-col justify-center items-center bg-background gap-15 mt-10 text-text relative w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%] min-h-150 py-5">
           <p
+          id="pricing"
           className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30">
             Pricing
           </p>
@@ -175,6 +181,7 @@ export default function HomePage(){
           className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
             <div
             className="absolute left-1/2 top-1/1 -translate-x-1/2 -translate-y-1/2 h-250 w-250 bg-main/40 blur-3xl rounded-full animate-pulse" />
+            <div className="bg-linear-to-t from-background to-transparent w-full h-50 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
           </div>
         </section>
       </main>

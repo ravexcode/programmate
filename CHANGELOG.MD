@@ -1,6 +1,12 @@
 # Indev
 
-- **Indev v15**
+- **Indev v16.0:**
+  1. Mejora en el diseño de la página about. 🚀
+  2. Bugfixes en dashboard. 🐛
+  3. Landing page modificada ligeramente. 🎨
+  4. Cambio de redirección en header ui. 🛠️
+
+- **Indev v15.0:**
   1. Nueva ruta en api para buscar usuarios. 🔍
   2. Rediseño en colores. 🎨
   3. Funcionalidades nuevas en dashboard. 🛠️
