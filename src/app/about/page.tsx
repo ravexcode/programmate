@@ -14,7 +14,7 @@ interface FeaturesCardProps{
 function FeaturesCard(props: FeaturesCardProps) {
   return (
     <section 
-    className="rounded-xl border border-neutral-800 px-12 py-8 bg-neutral-950 flex flex-col justify-center items-center gap-5 max-w-[80dvw] w-lg text-start shadow-lg shadow-ultramarine-700/20 duration-400 hover:shadow-ultramarine-700/50 cursor-default timeline-[view(y)] animate-fade-in animate-range-[entry_0%_cover_30%]">
+    className="rounded-xl border border-neutral-800 px-12 py-8 bg-neutral-950 flex flex-col justify-center items-center gap-5 max-w-[80dvw] w-lg text-start shadow-xl shadow-main/5 duration-400 hover:shadow-lg hover:shadow-main/10 hover:-translate-y-1 hover:border-main cursor-default timeline-[view(y)] animate-fade-in animate-range-[entry_0%_cover_30%]">
       <article
       className="flex flex-col gap-1 w-full">
         <h2 
@@ -117,14 +117,38 @@ export default function AboutPage(){
           </article>
         </section>
 
-        <section
-        className="text-text bg-background flex flex-col justify-center items-center gap-10 px-8 z-2 w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%] mt-20">
+          <section
+          id="contact"
+          className="flex flex-col justify-center items-center gap-4 mt-20 mb-24 px-4 text-text relative w-full max-w-4xl mx-auto timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%]">
           <p
-          className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30"
-          id="contact">
+          className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30">
             Contact us
           </p>
+          <p className="mb-8 text-xl opacity-80 font-light text-center">
+            Connect with our community and support team
+          </p>
 
+          <article className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+            <a href="#" className="flex items-center justify-between px-6 py-4 rounded-xl bg-neutral-950 border border-neutral-800 duration-300 hover:border-main hover:shadow-lg hover:shadow-main/10 hover:-translate-y-1 group">
+              <h4 className="font-semibold text-lg group-hover:text-main transition-colors"> YouTube </h4>
+              <p className="font-light opacity-70 group-hover:opacity-100 transition-opacity"> @prismaflow </p>
+            </a>
+            
+            <a href="#" className="flex items-center justify-between px-6 py-4 rounded-xl bg-neutral-950 border border-neutral-800 duration-300 hover:border-main hover:shadow-lg hover:shadow-main/10 hover:-translate-y-1 group">
+              <h4 className="font-semibold text-lg group-hover:text-main transition-colors"> X (Twitter) </h4>
+              <p className="font-light opacity-70 group-hover:opacity-100 transition-opacity"> @prismaflow </p>
+            </a>
+
+            <a href="#" className="flex items-center justify-between px-6 py-4 rounded-xl bg-neutral-950 border border-neutral-800 duration-300 hover:border-main hover:shadow-lg hover:shadow-main/10 hover:-translate-y-1 group">
+              <h4 className="font-semibold text-lg group-hover:text-main transition-colors"> Reddit </h4>
+              <p className="font-light opacity-70 group-hover:opacity-100 transition-opacity"> r/prismaflow </p>
+            </a>
+
+            <a href="#" className="flex items-center justify-between px-6 py-4 rounded-xl bg-neutral-950 border border-neutral-800 duration-300 hover:border-main hover:shadow-lg hover:shadow-main/10 hover:-translate-y-1 group">
+              <h4 className="font-semibold text-lg group-hover:text-main transition-colors"> Facebook </h4>
+              <p className="font-light opacity-70 group-hover:opacity-100 transition-opacity"> Prismaflow </p>
+            </a>
+          </article>
         </section>
       </main>
 

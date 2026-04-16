@@ -62,7 +62,7 @@ function PricingCard(props: any){
 //Landing page
 export default function HomePage(){
   return (
-    <div className="bg-background min-h-dvh grid grid-rows-[auto_1fr_auto]">
+    <div className="bg-background min-h-dvh">
       <Header />
 
       <main
@@ -70,12 +70,13 @@ export default function HomePage(){
 
         <section
         className="relative px-4 w-full min-h-90 flex flex-col justify-center items-center w-full text-text pt-20 pb-10 animate-fade-in-up overflow-hidden">
+
           <div
           className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
             <div
-            className="aspect-square absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-250 bg-main/40 blur-3xl rounded-full animate-pulse" />
-            <div className="bg-linear-to-t from-background to-transparent w-full h-50 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
-            <div className="bg-linear-to-b from-background to-transparent w-full h-20 left-0 top-0 absolute z-3 pointer-events-none"></div>
+            className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-250 bg-main/40 blur-3xl rounded-full animate-pulse" />
+            <div className="bg-linear-to-t from-background to-transparent w-screen h-50 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
+            <div className="bg-linear-to-b from-background to-transparent w-screen h-20 left-0 top-0 absolute z-3 pointer-events-none"></div>
           </div>
 
           <h1
@@ -97,7 +98,7 @@ export default function HomePage(){
             </a>
           </div>
 
-          <img src="/images/dashboard.png" alt="Dashboard made by Canva AI"
+          <img src="/images/dashboard.png" alt=""
           className="z-2 w-[95%] md:w-[80%] max-w-300 mt-10 mx-auto rounded-xl md:rounded-4xl border-2 border-neutral-800"/>
         </section>
 
@@ -180,8 +181,8 @@ export default function HomePage(){
           <div
           className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
             <div
-            className="absolute left-1/2 top-1/1 -translate-x-1/2 -translate-y-1/2 h-250 w-250 bg-main/40 blur-3xl rounded-full animate-pulse" />
-            <div className="bg-linear-to-t from-background to-transparent w-full h-50 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
+            className="absolute aspect-square left-1/2 top-1/1 -translate-x-1/2 -translate-y-1/2 h-250 bg-main/40 blur-3xl rounded-full animate-pulse" />
+            <div className="bg-linear-to-t from-background to-transparent w-screen h-50 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
           </div>
         </section>
       </main>

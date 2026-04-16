@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@openrouter/sdk": "^0.12.9",
     "@supabase/supabase-js": "^2.100.1",
     "bcrypt-ts": "^8.0.1",
     "cookies-next": "^6.1.1",

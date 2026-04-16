@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v17.0:**
+  1. AI implementada *(Deepseek)*. 🤖
+  2. Bugfix al modo responsive de la landing page. 📱
+  3. Nueva ruta para la AI. 🛠️
+
 - **Indev v16.0:**
   1. Mejora en el diseño de la página about. 🚀
   2. Bugfixes en dashboard. 🐛
