@@ -1,6 +1,6 @@
 # 📌 Sistema de Tickets – Guía de Uso
 
-Este documento explica cómo funcionan los tickets dentro del proyecto **RavexCode**, cómo deben interpretarse y cómo utilizarlos correctamente durante el desarrollo.
+Este documento explica cómo funcionan los tickets dentro del proyecto **Programmate**, cómo deben interpretarse y cómo utilizarlos correctamente durante el desarrollo.
 
 ---
 

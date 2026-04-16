@@ -57,19 +57,31 @@ export function ProjectCard({ title, description, id }: ProjectCardProps) {
 }
 
 export default function Dashboard(){
+  //Ai chat type
+  interface AIChat {
+    sent_by: string,
+    message: string
+  }
+
   //User's data
   const [ user, setUser ] = useState({
     email: "",
     name: "",
     plan: "",
-    teams: [{}] as Array<Object | null>
+    teams: [{}] as Array<Object | null>,
+    ai_chat: [{}] as Array<AIChat | null>
   });
   //User's searched and integrants
   const [ searched, setSearched ] = useState<string | undefined>();
   const [ integrants, setIntegrants ] = useState<Array<User> | undefined>();
   const [ founded, setFounded ] = useState<Array<User> | undefined>();
 
+  //Form container
   const container : RefObject<null> = useRef(null);
+  //Ai chat container
+  const AIcontainer : RefObject<null> = useRef(null);
+  //Ai button
+  const AIbutton : RefObject<null> = useRef(null);
 
   //Function to update user's data
   const updateUserData = async(token: any) => {
@@ -118,14 +130,16 @@ export default function Dashboard(){
         "email": identity.email,
         "name": identity.identity_data.name || data.user.user_metadata.username,
         "plan": plan,
-        "teams": teams
+        "teams": teams,
+        "ai_chat": data.ai_chat,
       });
 
       localStorage.setItem("user", JSON.stringify({
         "email": identity.email,
         "name": identity.identity_data.name || data.user.user_metadata.username,
         "plan": plan,
-        "teams": teams
+        "teams": teams,
+        "ai_chat": data.ai_chat,
       }));
       return;
     }
@@ -151,7 +165,8 @@ export default function Dashboard(){
         "email": user_cached_parsed.email,
         "name": user_cached_parsed.name,
         "plan": user_cached_parsed.plan,
-        "teams": user_cached_parsed.teams
+        "teams": user_cached_parsed.teams,
+        "ai_chat": user_cached_parsed.ai_chat
       });
   }, []);
 
@@ -196,9 +211,101 @@ export default function Dashboard(){
     e.preventDefault();
   }
 
+  const openAiForm = () => {
+    if(!AIbutton.current || !AIcontainer.current) return;
+    const button : HTMLButtonElement = AIbutton.current;
+    const container : HTMLElement = AIcontainer.current;
+
+    button.classList.add("hidden");
+    container.classList.remove("hidden");
+    return;
+  }
+
+  const closeAiForm = () => {
+    if(!AIbutton.current || !AIcontainer.current) return;
+    const button : HTMLButtonElement = AIbutton.current;
+    const container : HTMLElement = AIcontainer.current;
+
+    button.classList.remove("hidden");
+    container.classList.add("hidden");
+
+    return
+  }
   return (
     <div className="min-h-screen bg-background grid grid-cols-[auto_1fr] overflow-hidden text-text">
+      {/* AI button */}
+      <button
+      ref={AIbutton}
+      className="fixed p-3 rounded-full bottom-4 right-4 border-x border-main shadow-lg shadow-main/20 cursor-pointer bg-neutral-950 z-3 duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-main/40 focus:outline-none"
+      onClick={() => {
+        openAiForm();
+      }}>
+        <img
+        src="/icons/buttons/ai.svg"
+        alt="Icon made by RavexCode"
+        className="aspect-square w-7 block"/>
+      </button>
 
+      {/* AI section container */}
+      <section
+      ref={AIcontainer}
+      className="hidden animate-fade-in-left fixed h-screen w-screen md:w-md z-10 top-0 right-0 md:px-4 md:py-3">
+
+        <section
+        className="bg-neutral-900 h-full px-4 pb-3 rounded-lg flex flex-col">
+          <div
+          className="px-4 py-4 flex justify-center items-center">
+            <button
+            className="text-sm ml-auto text-main cursor-pointer"
+            onClick={() => {
+              closeAiForm();
+            }}>
+              Exit
+            </button>
+          </div>
+
+          <div
+          className="flex flex-col justify-start items-center gap-4">
+            {/* Messages */}
+            { user.ai_chat && user.ai_chat.length >= 1 ? user.ai_chat.map((value, index) => (
+              <span
+              key={index}
+              className={"max-w-[80%] px-2 rounded-md px-2 py-3 text-sm " + (value?.sent_by === "ai" ? "bg-main mr-auto rounded-bl-none" : "bg-neutral-800 ml-auto text-end rounded-br-none")}>
+                { value?.message }
+              </span>
+            )) : (
+              <span
+              className="w-8/10 my-auto text-center opacity-80 text-lg font-light">
+                Start a conversation with Deltathink
+              </span>
+            ) }
+          </div>
+          
+          <form
+          className="flex justify-center items-center gap-3 mt-auto w-full"
+          onSubmit={async(e) => {
+            e.preventDefault();
+            
+          }}>
+            <input
+            type="text"
+            placeholder="Ask me anything"
+            className="w-full rounded-md bg-neutral-950 px-2 py-3 text-sm duration-300 outline-2 outline-transparent focus:outline-main"/>
+            <button type="submit"
+            className="bg-neutral-950 rounded-full aspect-square w-10 h-10 flex justify-center items-center cursor-pointer outline-2 outline-transparent duration-500 hover:outline-main">
+              <img
+              src="/icons/buttons/send.svg"
+              alt="Icon made by RavexCode"
+              className="w-5 aspect-square block relative -translate-x-[1px] translate-y-[1px]"/>
+            </button>
+          </form>
+
+        </section>
+
+      </section>
+
+
+      {/* Project creator form */}
       <div
       ref={container}
       className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex flex-col justify-center items-center z-200 animate-fade-in hidden">
@@ -325,6 +432,7 @@ export default function Dashboard(){
       </div>
 
 
+      {/* Main container */}
       {
         user && user.email ? (
           <>

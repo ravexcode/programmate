@@ -9,6 +9,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { PostgrestSingleResponse } from "@supabase/supabase-js";
 
+//Node modules imports
+import CryptoJS from "crypto-js";
+import { Encrypt } from "@/functions/crypto";
+
 //Exports function for making ai requests
 export async function POST(req: NextRequest){
   try {
@@ -68,6 +72,7 @@ export async function POST(req: NextRequest){
       display_name: string,
       daily_requests: number,
       last_updated: string,
+      ai_chat: Array<Object> | null
     }
 
     //User profile data
@@ -147,6 +152,17 @@ export async function POST(req: NextRequest){
     .from("profiles")
     .update({
       daily_requests: profile.daily_requests! + 1,
+      ai_chat: [
+        ...profile.ai_chat || [],
+        {
+          "sent_by": "user",
+          "message": Encrypt(message)
+        },
+        {
+          "sent_by": "ai",
+          "message": Encrypt(response)
+        }
+      ]
     })
     .eq("id", profile.id);
 

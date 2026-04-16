@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 //Lib imports
 import supabase from "@/lib/db";
+import { Decrypt } from "@/functions/crypto";
 
 export async function GET(
   req: NextRequest,
@@ -50,12 +51,43 @@ export async function GET(
     .select("*")
     .eq("user_id", user.id);
 
+    //Gets user's ai chat messages
+    interface AiChatMessages {
+      //Sender
+      sent_by: string,
+      //Message (AES Encrypted)
+      message: string,
+    }
+
+    //Data from supabase
+    const { data: profile } = await supabase
+    .from("profiles")
+    .select("ai_chat")
+    .eq("id", user.id)
+    .maybeSingle();
+
+    //Declare's the AI chat data
+    let ai_chat : Array<Object | null> = [];
+
+    //Verifies if the user had a chat with ai before
+    if(profile && profile.ai_chat.length >= 1) {
+      //Decrypt all the messages
+      profile.ai_chat.map((value: AiChatMessages) => {
+        //Decrypts and saves in the same place
+        value.message = Decrypt(value.message)
+
+        //Puts in the chat
+        ai_chat.push(value);
+      });
+    }
+
     //Returns the user's data
     return NextResponse.json({
       message: "User data got",
       user,
       teams,
       payments,
+      ai_chat: ai_chat
     })
   } catch(e: any) {
     //Error handler

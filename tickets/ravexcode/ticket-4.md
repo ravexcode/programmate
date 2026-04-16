@@ -14,9 +14,9 @@ Agregar comentarios y documentación interna en módulos reutilizables (`lib`).
 
 **Criterios de aceptación:**
 
-* [ ] Comentarios claros en funciones clave
-* [ ] Tipado completo en TypeScript
-* [ ] Sin código ambiguo
+* [x] Comentarios claros en funciones clave
+* [x] Tipado completo en TypeScript
+* [x] Sin código ambiguo
 
 **Notas técnicas:**
 

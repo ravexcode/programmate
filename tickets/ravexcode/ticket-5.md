@@ -1,4 +1,4 @@
-## 🎟️ TICKET: Download Page Implementation
+## 🎟️ TICKET: [Outdated] Download Page Implementation
 
 **ID:** FE-001
 **Tipo:** Feature

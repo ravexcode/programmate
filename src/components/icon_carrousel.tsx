@@ -1,19 +1,17 @@
-// components/IconCarousel.tsx
 import Image from 'next/image';
 
 interface IconProps {
   src: string;
   alt: string;
   className: string;
-  width: number;
 }
 
 export default function IconCarousel() {
   const icons: IconProps[] = [
-    { src: "/icons/supabase.svg", alt: "Supabase", className: "h-10 w-auto opacity-70 hover:opacity-100 transition-opacity", width: 150 },
-    { src: "/icons/stripe.svg", alt: "Stripe", className: "h-8 w-auto opacity-70 hover:opacity-100 transition-opacity", width: 120 },
-    { src: "/icons/redis.svg", alt: "Redis", className: "h-10 w-auto opacity-70 hover:opacity-100 transition-opacity", width: 150 },
-    { src: "/icons/nextjs.svg", alt: "Next.js", className: "h-8 w-auto opacity-70 hover:opacity-100 transition-opacity", width: 120 },
+    { src: "/icons/supabase.svg", alt: "Supabase", className: "h-10 opacity-70 hover:opacity-100 transition-opacity" },
+    { src: "/icons/stripe.svg", alt: "Stripe", className: "h-8 opacity-70 hover:opacity-100 transition-opacity" },
+    { src: "/icons/redis.svg", alt: "Redis", className: "h-10 opacity-70 hover:opacity-100 transition-opacity" },
+    { src: "/icons/nextjs.svg", alt: "Next.js", className: "h-8 opacity-70 hover:opacity-100 transition-opacity" },
   ];
 
   return (
@@ -33,13 +31,10 @@ export default function IconCarousel() {
         <div className="flex w-max gap-16 md:gap-24 animate-[carousel_20s_linear_infinite] hover:[animation-play-state:paused]">
           {[...icons, ...icons, ...icons].map((icon, index) => (
             <div key={index} className="flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-              <Image
+              <img
                 src={icon.src}
                 alt={icon.alt}
-                width={icon.width}
-                height={40}
                 className={`object-contain ${icon.className}`}
-                priority={index < 4}
               />
             </div>
           ))}

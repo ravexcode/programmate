@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v18.0:**
+  1. AI implementada en el frontend. ⚙️
+  2. Mensajes ahora se encriptan y decriptan en el backend. 🛡️
+
 - **Indev v17.0:**
   1. AI implementada *(Deepseek)*. 🤖
   2. Bugfix al modo responsive de la landing page. 📱
