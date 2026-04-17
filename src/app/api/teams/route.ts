@@ -11,9 +11,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { PostgrestSingleResponse } from "@supabase/supabase-js";
 
-//User library imports
-import Team from "@/modules/team.types";
-
 export async function POST(req: NextRequest) {
   try {
     //User data for log in
@@ -73,14 +70,15 @@ export async function POST(req: NextRequest) {
         status: 403
       });
     }
-
+    
     //We create the team
-    const team = new Team(
-      name, //Name
-      description, //Description
-      integrants, //Users id
-      new Date(), //Creation date
-    );
+    const team = {
+      name,
+      description,
+      integrants: integrants,
+      integrants_id: integrants.map((integrant: any) => integrant.id),
+      created_at: new Date()
+    };
 
     //Saves the team to user data
     const { data: newTeam, error: saveTeamError } = await supabase

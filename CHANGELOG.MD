@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v18.3:**
+  1. Bugfix leves del dashboard. 🪲
+  2. Ruta de api para borrar la cuenta. 🗑️
+
 - **Indev v18.2:**
   1. Refactor completo de Dashboard
   2. Update de teams

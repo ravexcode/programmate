@@ -129,7 +129,10 @@ export async function POST(req: NextRequest){
             content: message
           }
         ],
-        stream: true
+        stream: true,
+        reasoning: {
+          effort: "low",
+        }
       }
     });
 
@@ -139,11 +142,6 @@ export async function POST(req: NextRequest){
       if (content) {
         response += content;
         process.stdout.write(content);
-      }
-
-      // Usage information comes in the final chunk
-      if (chunk.usage) {
-        console.log("\nReasoning tokens:", chunk.usage.totalTokens);
       }
     }
 
@@ -181,7 +179,6 @@ export async function POST(req: NextRequest){
     });
   } catch(e: any) {
     //Error handler
-    console.error(e);
     return NextResponse.json({
       message: "Error inside in the server",
       error: e

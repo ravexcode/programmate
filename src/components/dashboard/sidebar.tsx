@@ -51,6 +51,12 @@ export default function SideBar(props: any) {
         </a>
 
         <Icon
+        action="/dashboard"
+        icon="dashboard"
+        name="Dashboard"
+        isDisplayed={expanded} />
+
+        <Icon
         action="/to-do-list"
         icon="tasklist"
         name="ToDo list"

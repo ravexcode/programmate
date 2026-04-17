@@ -41,10 +41,10 @@ export default function AIChat(){
 
   //UseState for get the user data
   useEffect(() => {
-    const user = localStorage.getItem("user");
+    const user_cached = window.localStorage.getItem("user");
 
-    if(user) {
-      setUser(JSON.parse(user));
+    if(user_cached) {
+      setUser(JSON.parse(user_cached));
     }
   }, []);
 
@@ -156,7 +156,7 @@ export default function AIChat(){
       {/* Button */}
       <button
       ref={AIbutton}
-      className="fixed p-3 rounded-full bottom-4 right-4 border-x border-main shadow-lg shadow-main/20 cursor-pointer bg-neutral-950 z-2 duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-main/40 focus:outline-none animate-pulse"
+      className="fixed p-3 rounded-full bottom-4 right-4 border-x border-main shadow-lg shadow-main/20 cursor-pointer bg-neutral-950 z-10 duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-main/40 focus:outline-none animate-pulse"
       onClick={() => {
         toggleAiForm();
       }}>
@@ -195,7 +195,7 @@ export default function AIChat(){
             { user && user.ai_chat && user.ai_chat.length >= 1 ? user.ai_chat.map((value, index) => (
               <span
               key={index}
-              className={"max-w-[80%] px-2 rounded-md px-2 py-3 text-sm " + (value?.sent_by === "ai" ? "bg-main mr-auto rounded-bl-none" : "bg-neutral-800 ml-auto text-end rounded-br-none")}>
+              className={"max-w-[80%] px-2 rounded-md px-2 py-3 text-sm text-wrap " + (value?.sent_by === "ai" ? "bg-neutral-800 mr-auto rounded-bl-none" : "bg-main ml-auto text-end rounded-br-none")}>
                 <ReactMarkdown>{value?.message}</ReactMarkdown>
               </span>
             )) : (

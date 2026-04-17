@@ -316,6 +316,14 @@ export default function Dashboard(){
 
       //Hides the form
       hideProjectContainer();
+      //Change loading state
+      setIsLoading(false);
+      //Clear all the inputs
+      setFound(undefined);
+      setSearched(undefined);
+      setIntegrants(undefined);
+      setProjectName(undefined);
+      setProjectDescription(undefined);
 
       //Returns success
       return;
