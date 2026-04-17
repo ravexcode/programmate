@@ -1,7 +1,7 @@
 class Team {
   public name : string;
   public description : string;
-  public users_id : Array<Number>;
+  public users_id : Array<string>;
   public chat : Array<Object> | undefined;
   public kanban_board : Array<Object> | undefined;
   public callendar : Array<Object> | undefined;
@@ -10,7 +10,7 @@ class Team {
   constructor(
     name: string,
     description: string,
-    users_id: Array<Number>,
+    users_id: Array<string>,
     created_at: Date,
   ) {
     this.name = name;

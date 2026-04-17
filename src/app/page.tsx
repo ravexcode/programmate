@@ -144,7 +144,7 @@ export default function HomePage(){
 
             <PricingCard
             plan="Free"
-            cost="$0 USD/month"
+            cost="Free"
             benefits={[
               "2 proyects limit",
               "To do list",

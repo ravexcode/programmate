@@ -1,43 +1,37 @@
+//------------------- OUTDATED -------------------
+
+//Update with supabase auth
+
+
 //Lib imports
 import supabase from "@/lib/db";
 
 //Dependences imports
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { PostgrestSingleResponse } from "@supabase/supabase-js";
 
 //User library imports
-import * as jwt from "jsonwebtoken";
 import Team from "@/modules/team.types";
-
-
-//Functions imports
-import { decode_jwt } from "@/functions/jsonwebtoken";
 
 export async function POST(req: NextRequest) {
   try {
     //User data for log in
     const token = (await headers()).get("Authorization");
-    const { name, description } = await req.json();
+    const { name, description, integrants } = await req.json();
 
     //If isn't sent we return an error
-    if(!token || !name || !description ) return NextResponse.json({
+    if(!token || !name || !description || !integrants ) return NextResponse.json({
       message: "Data not sent correctly",
       error: "Bad request"
     }, {
       status: 403
     });
 
-    //Looks if jwtSecret key is inserted
-    const user_id = decode_jwt(token)
+    //Gets the user from Supabase Auth
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
-    //Searchs the user
-    const { data : user } = await supabase
-    .from("users")
-    .select("id, plan, teams")
-    .eq("id", user_id)
-    .maybeSingle();
-
-    //Looks if the user exists
+    //Verifies if the user has been returned
     if(!user) return NextResponse.json({
       message: "User not found",
       error: "Not found"
@@ -45,25 +39,51 @@ export async function POST(req: NextRequest) {
       status: 404
     });
 
-    //Looks if the user can create proyects
-    const teamsCount = Array.isArray(user.teams) ? user.teams.length : 0;
-    if(user.plan === "free" && teamsCount >= 2) return NextResponse.json({
-      message: "Proyects limit reached",
-      error: "Bad request"
+    //Verifies if there's an error
+    if(getUserError) return NextResponse.json({
+      message: getUserError.message,
+      error: getUserError
     }, {
-      status: 403
+      status: 500
     });
+
+    //Gets user profile to check plan and teams
+    interface Profile {
+      id: string,
+      plan: string
+    }
+
+    const { data: profile } = await supabase
+    .from("profiles")
+    .select("id, plan")
+    .eq("id", user.id)
+    .maybeSingle() as PostgrestSingleResponse<Profile> || null;
+
+    //Verifies if the user can create projects
+    if(profile && profile.plan === "free") {
+      const { data: teams } = await supabase
+      .from("teams")
+      .select("team_id")
+      .contains("users_id", [user.id]);
+
+      if(teams && teams.length >= 2) return NextResponse.json({
+        message: "Projects limit reached",
+        error: "Bad request"
+      }, {
+        status: 403
+      });
+    }
 
     //We create the team
     const team = new Team(
       name, //Name
       description, //Description
-      [ user_id ], //Users id
+      integrants, //Users id
       new Date(), //Creation date
     );
 
     //Saves the team to user data
-    const { data: savedTeamData, error: saveTeamError } = await supabase
+    const { data: newTeam, error: saveTeamError } = await supabase
     .from("teams")
     .insert([team])
     .select()
@@ -77,28 +97,10 @@ export async function POST(req: NextRequest) {
       status: 500
     });
 
-    //Puts the updatedTeams
-    const updatedTeams = Array.isArray(user.teams) 
-      ? [...user.teams, savedTeamData.team_id] 
-      : [savedTeamData.team_id];
-
-    //Saves the team in the user data
-    const { error: updateUserTeamsError } = await supabase
-    .from("users")
-    .update({ teams: updatedTeams })
-    .eq("id", user.id);
-
-    //Looks if there's an error
-    if(updateUserTeamsError) return NextResponse.json({
-      message: "An error has happened while we tried to update your user.",
-      error: updateUserTeamsError.message
-    }, {
-      status: 500
-    });
-
     //If all is OK returns success
     return NextResponse.json({
       message: "Team created successfully",
+      team: newTeam
     })
   } catch(e: any) {
     //Server errors
@@ -119,7 +121,7 @@ export async function PUT(req: NextRequest){
     const { teamId, newName, newDescription } = await req.json();
     const token = (await headers()).get("Authorization");
 
-    //Verifies if the darta is OK
+    //Verifies if the data is OK
     if(!teamId || !token || (!newName && !newDescription)) return NextResponse.json({
       message: "Data sent error",
       error: "Bad request"
@@ -127,8 +129,24 @@ export async function PUT(req: NextRequest){
       status: 403
     });
 
-    //Verifies the token
-    const user_id = decode_jwt(token);
+    //Gets the user from Supabase Auth
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
+
+    //Verifies if the user has been returned
+    if(!user) return NextResponse.json({
+      message: "User not found",
+      error: "Not found"
+    }, {
+      status: 404
+    });
+
+    //Verifies if there's an error
+    if(getUserError) return NextResponse.json({
+      message: getUserError.message,
+      error: getUserError
+    }, {
+      status: 500
+    });
 
     //Gets the team data
     const { data: team, error: getTeamError } = await supabase
@@ -154,7 +172,7 @@ export async function PUT(req: NextRequest){
     });
 
     //Verifies if the user is in the team
-    if(!team?.users_id.includes(user_id)) return NextResponse.json({
+    if(!team?.users_id.includes(user.id)) return NextResponse.json({
       message: "Oops... You aren't in the team",
       error: "Unauthorized"
     }, {
@@ -263,7 +281,7 @@ export async function DELETE(req: NextRequest){
     const { teamId } = await req.json();
     const token = (await headers()).get("Authorization");
 
-    //Verifies if the darta is OK
+    //Verifies if the data is OK
     if(!teamId || !token) return NextResponse.json({
       message: "Data sent error",
       error: "Bad request"
@@ -271,8 +289,24 @@ export async function DELETE(req: NextRequest){
       status: 403
     });
 
-    //Verifies the token
-    const user_id = decode_jwt(token);
+    //Gets the user from Supabase Auth
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
+
+    //Verifies if the user has been returned
+    if(!user) return NextResponse.json({
+      message: "User not found",
+      error: "Not found"
+    }, {
+      status: 404
+    });
+
+    //Verifies if there's an error
+    if(getUserError) return NextResponse.json({
+      message: getUserError.message,
+      error: getUserError
+    }, {
+      status: 500
+    });
 
     //Gets the team data
     const { data: team, error: getTeamError } = await supabase
@@ -298,7 +332,7 @@ export async function DELETE(req: NextRequest){
     });
 
     //Verifies if the user is in the team
-    if(!team?.users_id.includes(user_id)) return NextResponse.json({
+    if(!team?.users_id.includes(user.id)) return NextResponse.json({
       message: "Oops... You aren't in the team",
       error: "Unauthorized"
     }, {

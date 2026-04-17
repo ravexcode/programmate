@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v18.2:**
+  1. Refactor completo de Dashboard
+  2. Update de teams
+
 - **Indev v18.1:**
   1. AI chat funcional al 100% en el frontend
   2. Implementación de ReactMarkdown para las respuestas de la IA

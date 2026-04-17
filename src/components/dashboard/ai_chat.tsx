@@ -1,69 +1,105 @@
-import { useState, useRef, RefObject } from "react";
+//React imports
+import { useState, useRef, RefObject, useEffect } from "react";
+
+//Next imports
 import { getCookie, deleteCookie } from "cookies-next/client";
+
+//Node modules imports
 import ReactMarkdown from "react-markdown";
 
+//Types
+//User data type
+interface User {
+  email: string,
+  name: string,
+  plan: string,
+  teams: Array<Object | null>,
+  ai_chat: Array<AIChat>
+}
+//User data type
+interface AIChat {
+  sent_by: string,
+  message: string
+}
 export default function AIChat(){
-  interface User {
-    id: string,
-    email: string,
-    username: string
-  }
-  
-  //Ai chat type
-  interface AIChat {
-    sent_by: string,
-    message: string
-  }
 
-  const [ user, setUser ] = useState({
-    email: "",
-    name: "",
-    plan: "",
-    teams: [{}] as Array<Object | null>,
-    ai_chat: [{}] as Array<AIChat | null>
-  });
-  
+  //States updater
+  //User data
+  const [ user, setUser ] = useState<User>();
+  //Current message to send
+  const [ currentMessage, setCurrentMessage ] = useState<string>("");
+  //Is loading the response state
+  const [isLoading, setIsLoading] = useState(false);
+  //AI Container visibility state
+  const [isVisible, setIsVisible] = useState(true);
+
+  //Containers ref
   //Ai chat container
   const AIcontainer : RefObject<null> = useRef(null);
   //Ai button
   const AIbutton : RefObject<null> = useRef(null);
-  
-  const [ currentMessage, setCurrentMessage ] = useState<string | undefined>(undefined);const [isLoading, setIsLoading] = useState(false);
 
-  const openAiForm = () => {
+  //UseState for get the user data
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+
+    if(user) {
+      setUser(JSON.parse(user));
+    }
+  }, []);
+
+  //AI Container toggler (On / Off) function
+  const toggleAiForm = () => {
+    //Verifies if the button and container exists (preventing errors)
     if(!AIbutton.current || !AIcontainer.current) return;
+    //Current elements
+    //Button current
     const button : HTMLButtonElement = AIbutton.current;
+    //Current elements
+    //Button current
     const container : HTMLElement = AIcontainer.current;
 
-    button.classList.add("hidden");
-    container.classList.remove("hidden");
+    //Sets functions in base is visible or not
+    if(isVisible) {
+      //Shows the button
+      button.classList.add("hidden");
+      //Hides the container
+      container.classList.remove("hidden");
+    } else {
+      //Hides the button
+      button.classList.remove("hidden");
+      //Shows the container
+      container.classList.add("hidden");
+    }
+
+    //Toggles is visible or not
+    setIsVisible(prev => prev === true ? false : true);
+    //End of function
     return;
   }
 
-  const closeAiForm = () => {
-    if(!AIbutton.current || !AIcontainer.current) return;
-    const button : HTMLButtonElement = AIbutton.current;
-    const container : HTMLElement = AIcontainer.current;
-
-    button.classList.remove("hidden");
-    container.classList.add("hidden");
-
-    return;
-  }
-
+  //Message sender and recivier
   const submitMessage = async(e: any) => {
+    //Prevents premature reloads
     e.preventDefault();
+    //Verifies if message is inserted
     if(!currentMessage || currentMessage.length < 1) return;
+    //Gets the users token
     const token = await getCookie("token");
+    //Verifies if exists
     if(!token) {
+      //If isn't logged close sessions data (Error prevention)
       deleteCookie("token");
+      localStorage.clear();
+      //Returns to login
       window.location.href = "/auth/login";
     }
 
+    //Puts the message sent in a const
     const message_sent = currentMessage;
 
-    // Actualizar estado con el mensaje del usuario inmediatamente
-    setUser(prev => ({
+    //Updates the messages states
+    setUser((prev : any) => ({
       ...prev,
       ai_chat: [
         ...prev.ai_chat,
@@ -74,9 +110,10 @@ export default function AIChat(){
       ]
     }));
 
-    // Limpiar el input
+    //Clears the input
     setCurrentMessage("");
 
+    //Makes the requests
     const res = await fetch("/api/ai", {
       method: "POST",
       headers: {
@@ -89,11 +126,13 @@ export default function AIChat(){
       })
     });
 
+    //Sets the message dta
     const data = await res.json();
 
+    //Verifies if the status is OK
     if(res.status === 200) {
       // Actualizar estado con la respuesta del AI
-      setUser(prev => ({
+      setUser((prev : any) => ({
         ...prev,
         ai_chat: [
           ...prev.ai_chat,
@@ -108,17 +147,18 @@ export default function AIChat(){
     } else {
       //Debug
       console.error("An error has happened.\nError: " + data);
+      //Add the snackbar logic
     }
   }
 
   return (
     <>
-      {/* button */}
+      {/* Button */}
       <button
       ref={AIbutton}
-      className="fixed p-3 rounded-full bottom-4 right-4 border-x border-main shadow-lg shadow-main/20 cursor-pointer bg-neutral-950 z-3 duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-main/40 focus:outline-none"
+      className="fixed p-3 rounded-full bottom-4 right-4 border-x border-main shadow-lg shadow-main/20 cursor-pointer bg-neutral-950 z-2 duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-main/40 focus:outline-none animate-pulse"
       onClick={() => {
-        openAiForm();
+        toggleAiForm();
       }}>
         <img
         src="/icons/buttons/ai.svg"
@@ -132,22 +172,27 @@ export default function AIChat(){
       className="hidden animate-fade-in-left fixed h-screen w-screen md:w-md z-10 top-0 right-0 md:px-4 md:py-3">
 
         <section
-        className="bg-neutral-900 h-full px-4 pb-3 rounded-lg flex flex-col">
+        className="bg-neutral-900 h-full pb-3 px-2 md:rounded-xl flex flex-col">
           <div
-          className="px-4 py-4 flex justify-center items-center">
+          className="px-6 py-4 flex justify-center items-center">
+
             <button
             className="text-sm ml-auto text-main cursor-pointer"
             onClick={() => {
-              closeAiForm();
+              toggleAiForm();
             }}>
-              Exit
+              <img
+              src="/icons/buttons/close.svg"
+              alt="Icon made by RavexCode"
+              className="aspect-square block w-3"/>
             </button>
+
           </div>
 
           <div
-          className="flex flex-col justify-start items-center gap-4 overflow-x-hidden overflow-y-auto pb-5">
+          className="flex flex-col justify-start items-center gap-4 overflow-x-hidden overflow-y-auto pb-5 px-4">
             {/* Messages */}
-            { user.ai_chat && user.ai_chat.length >= 1 ? user.ai_chat.map((value, index) => (
+            { user && user.ai_chat && user.ai_chat.length >= 1 ? user.ai_chat.map((value, index) => (
               <span
               key={index}
               className={"max-w-[80%] px-2 rounded-md px-2 py-3 text-sm " + (value?.sent_by === "ai" ? "bg-main mr-auto rounded-bl-none" : "bg-neutral-800 ml-auto text-end rounded-br-none")}>
@@ -162,28 +207,26 @@ export default function AIChat(){
           </div>
           
           <form
-          className="flex justify-center items-center gap-3 mt-auto w-full"
+          className="flex justify-center items-center gap-3 mt-auto w-full px-4"
           onSubmit={async (e: any) => {
-            e.preventDefault(); // Evita que la página se recargue por defecto
-            
-            // Evita envíos vacíos o múltiples envíos si ya está cargando
+            e.preventDefault();
             if (!currentMessage?.trim() || isLoading) return;
 
-            setIsLoading(true); // Activa el estado de carga y la animación
+            setIsLoading(true);
             
             try {
               await submitMessage(e);
             } finally {
-              setIsLoading(false); // Desactiva el estado de carga al terminar
-              setCurrentMessage(""); // Opcional: limpia el input después de enviar
+              setIsLoading(false);
+              setCurrentMessage("");
             }
           }}
         >
           <input
             type="text"
             placeholder="Ask me anything"
-            value={currentMessage} // Controlamos el valor del input
-            disabled={isLoading} // Se deshabilita durante la carga
+            value={currentMessage}
+            disabled={isLoading}
             onChange={(e: any) => {
               setCurrentMessage(e.target.value);
             }}
@@ -192,11 +235,10 @@ export default function AIChat(){
 
           <button 
             type="submit"
-            disabled={isLoading || !currentMessage?.trim()} // Deshabilitado si carga o está vacío
+            disabled={isLoading || !currentMessage?.trim()}
             className="bg-neutral-950 rounded-full aspect-square w-10 h-10 flex justify-center items-center cursor-pointer outline-2 outline-transparent duration-500 hover:outline-main disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {isLoading ? (
-              // Animación de Spinner (se muestra mientras isLoading sea true)
               <svg 
                 className="animate-spin w-5 h-5 text-white/70" 
                 xmlns="http://www.w3.org/2000/svg" 
@@ -207,17 +249,16 @@ export default function AIChat(){
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             ) : (
-              // Tu ícono original (se muestra cuando NO está cargando)
               <img
                 src="/icons/buttons/send.svg"
                 alt="Icon made by RavexCode"
-                className="w-5 aspect-square block relative -translate-x-[1px] translate-y-[1px] duration-300 hover:scale-110" // Pequeño efecto hover agregado
+                className="w-5 aspect-square block relative -translate-x-[1px] translate-y-[1px] duration-300 hover:scale-110"
               />
             )}
           </button>
         </form>
 
-          <p className="text-sm font-light w-full px-5 text-center mx-auto py-1">Powered by <span className="text-main">Deepseek 3.1</span></p>
+          <p className="text-sm font-light w-full px-5 text-center mx-auto py-1">Powered by <span className="text-blue-500">Deepseek</span></p>
 
         </section>
 

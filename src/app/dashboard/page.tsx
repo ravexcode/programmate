@@ -1,4 +1,4 @@
-//Client
+//Client side
 "use client";
 
 //React imports
@@ -7,20 +7,36 @@ import { useEffect, useState, useRef, RefObject } from "react";
 //Components imports
 import SideBar from "@/components/dashboard/sidebar";
 import LoadingDashboard from "@/components/screens/loading_dashboard";
+import AIChat from "@/components/dashboard/ai_chat";
 
 //Modules imports
 import { getCookie } from "cookies-next";
+import { deleteCookie } from "cookies-next/client";
 
+//Types
+//Project card
 interface ProjectCardProps {
   title: string;
   description: string;
   id: number
 }
-
-interface User {
+//User
+interface UserBasic {
   id: string,
   email: string,
   username: string
+}
+//User data type
+interface UserData {
+  id: string,
+  email: string,
+  name: string,
+  plan: string,
+  teams: Array<Object | null>,
+  ai_chat: Array<{
+    sent_by: string,
+    message: string
+  }>
 }
 
 export function ProjectCard({ title, description, id }: ProjectCardProps) {
@@ -59,27 +75,30 @@ export function ProjectCard({ title, description, id }: ProjectCardProps) {
 }
 
 export default function Dashboard(){
-  //Ai chat type
-  interface AIChat {
-    sent_by: string,
-    message: string
-  }
+  //State values
+  //User data
+  const [ user, setUser ] = useState<UserData>();
+  //Is reloading button
+  const [ isReloading, setIsReloading ] = useState<boolean>(false);
 
-  //User's data
-  const [ user, setUser ] = useState({
-    email: "",
-    name: "",
-    plan: "",
-    teams: [{}] as Array<Object | null>,
-    ai_chat: [{}] as Array<AIChat | null>
-  });
-  //User's searched and integrants
+  //Projects form
+  //Users searched
   const [ searched, setSearched ] = useState<string | undefined>();
-  const [ integrants, setIntegrants ] = useState<Array<User> | undefined>();
-  const [ founded, setFounded ] = useState<Array<User> | undefined>();
+  //Integrants
+  const [ integrants, setIntegrants ] = useState<Array<UserBasic> | undefined>();
+  //Users found
+  const [ found, setFound ] = useState<Array<UserBasic> | undefined>();
+  //Project name
+  const [ projectName, setProjectName ] = useState<string | undefined>();
+  //Project description
+  const [ projectDescription, setProjectDescription ] = useState<string | undefined>();
+  //Loading button state
+  const [ isLoading, setIsLoading ] = useState<boolean>(false);
 
-  //Form container
-  const container : RefObject<null> = useRef(null);
+  //Containers
+  //Project creator
+  const project_container : RefObject<null> = useRef(null);
+
 
   //Function to update user's data
   const updateUserData = async(token: any) => {
@@ -96,93 +115,137 @@ export default function Dashboard(){
     const data = await res.json();
     
     //Verifies if status is OK
-    if(res.status === 200) {
-      const identity = data.user.identities[0];
-      let plan : string = "Free";
-      let teams : Array<Object | null> = [];
-
-      if(data.payments && data.payments.length >= 1) {
-        const lastPayment = data.payments[data.payments.length - 1]; //Minus 1 because the array is 1 spot before the data
-        const expires = new Date(lastPayment.paid_at);
-        const now = new Date();
-
-        if(now <= expires) {
-          plan = lastPayment.plan;
-          plan = plan.replaceAll('"', '');
-          plan = plan.charAt(0).toUpperCase() + plan.slice(1);
-        }
-      }
-
-      teams = [];
-      
-      if(data.teams && data.teams.length >= 1) {
-        teams = data.teams;
-      }
-
-      setUser({
-        "email": identity.email,
-        "name": identity.identity_data.name || data.user.user_metadata.username,
-        "plan": plan,
-        "teams": teams,
-        "ai_chat": data.ai_chat,
-      });
-
-      localStorage.setItem("user", JSON.stringify({
-        "email": identity.email,
-        "name": identity.identity_data.name || data.user.user_metadata.username,
-        "plan": plan,
-        "teams": teams,
-        "ai_chat": data.ai_chat,
-      }));
-      return;
+    if(res.status !== 200) {
+      //If there's an error
+      //Deletes token auth
+      deleteCookie("token");
+      //Deletes cache
+      localStorage.clear();
+      //Returns to log in page
+      window.location.href = "/auth/login";
     }
 
-    window.location.href = "/auth/login";
+    //Else continues with the code
+    //Set identity (Github)
+    const identity = data.user.identities[0];
+    //Plan default
+    let plan : string = "Free";
+    //Teams
+    let teams : Array<Object | null> = [];
+
+    //Payments section
+    if(data.payments && data.payments.length >= 1) {
+      //Gets the latest payment
+      const lastPayment = data.payments[data.payments.length - 1]; //Minus 1 because the array is 1 spot before the data
+      //Expiration date
+      const expires = new Date(lastPayment.paid_at);
+      //Now
+      const now = new Date();
+
+      //Verifies if the payment isn't expired
+      if(now <= expires) {
+        //Plan
+        plan = lastPayment.plan;
+        //Deletes the "" ("pro" -> pro)
+        plan = plan.replaceAll('"', '');
+        //First letter to capital (pro -> Pro)
+        plan = plan.charAt(0).toUpperCase() + plan.slice(1);
+      }
+    }
+    
+    //Teams updater
+    if(data.teams && data.teams.length >= 1) {
+      teams = data.teams;
+    }
+
+    //Updates the user
+    setUser({
+      "id": data.user.id,
+      "email": identity.email,
+      "name": identity.identity_data.name || data.user.user_metadata.username, //GitHub or Google
+      "plan": plan,
+      "teams": teams,
+      "ai_chat": data.ai_chat,
+    });
+
+    //User sent to caché
+    localStorage.setItem("user", JSON.stringify({
+      "id": data.user.id,
+      "email": identity.email,
+      "name": identity.identity_data.name || data.user.user_metadata.username,
+      "plan": plan,
+      "teams": teams,
+      "ai_chat": data.ai_chat,
+    }));
+    //Returns as success
+    return;
   }
 
+  //Gets user data
   useEffect(() => {
-    const user_cached = localStorage.getItem("user");
+    //User cached (can be null)
+    const user_cached : string | null = localStorage.getItem("user");
 
-    if(!user_cached) {
-      const token = getCookie("token");
+    //Verifies if is cached
+    if(user_cached) {
+      //If is cached parses to JSON
+      const user_cached_parsed : UserData = JSON.parse(user_cached);
 
-      if(!token) return;
+      //Sets the user cached
+      setUser(user_cached_parsed);
 
-      updateUserData(token);
-      return;
+      //Returns success
     }
 
-    const user_cached_parsed = JSON.parse(user_cached);
+    //Id isn't cached gets the data
+    const token = getCookie("token");
 
-    setUser({
-        "email": user_cached_parsed.email,
-        "name": user_cached_parsed.name,
-        "plan": user_cached_parsed.plan,
-        "teams": user_cached_parsed.teams,
-        "ai_chat": user_cached_parsed.ai_chat
-      });
+    if(!token) {
+      //If hasn't token returns to log in form
+      window.location.href = "/auth/login";
+    };
+
+    //Updates the user's data
+    updateUserData(token);
+    //Returns success
+    return;
   }, []);
 
-  const showForm = () => {
-    if(!container.current) return;
-    setFounded(undefined);
+  //Function to show the proyect container
+  const showProjectContainer = () => {
+    //Verfies if exists
+    if(!project_container.current) return;
+    //Change loading state
+    setIsLoading(false);
+    //Clear all the inputs
+    setFound(undefined);
     setSearched(undefined);
-    setIntegrants(undefined)
+    setIntegrants(undefined);
+    setProjectName(undefined);
+    setProjectDescription(undefined);
 
-    const current : HTMLElement = container.current;
+    //Current container
+    const current : HTMLElement = project_container.current;
 
+    //Shows
     current.classList.remove("hidden");
   };
 
-  const hideForm = () => {
-    if(!container.current) return;
+  //And function for hiding
+  const hideProjectContainer = () => {
+    //Returns if it doesb't exists
+    if(!project_container.current) return;
 
-    const current : HTMLElement = container.current;
+    //Current
+    const current : HTMLElement = project_container.current;
 
+    //Hides
     current.classList.add("hidden");
   };
 
+  //User searcher
   const searchUsers = async() => {
+    //Fetch the api with user data
     const res = await fetch(`/api/users/search/${searched}`, {
       method: "GET",
       headers: {
@@ -191,23 +254,85 @@ export default function Dashboard(){
       }
     });
 
+    //Data from res
     const data = await res.json();
 
+    //If success sets the users
     if(res.status === 200) {
-      setFounded(data.users);
+      setFound(data.users);
     }
 
+    //Else, returns error
     return;
   }
 
+  //Project creator
   const handleCreateProject = async(e: any) => {
+    //Prevents premature reloads
     e.preventDefault();
+    setIsLoading(true);
+
+    //Id isn't cached gets the data
+    const token = await getCookie("token") as string;
+
+    if(!token) {
+      //If hasn't token returns to log in form
+      window.location.href = "/auth/login";
+    };
+
+    //Insert user to integrants if not exists
+    const integrants_created = integrants ?? [];
+    integrants_created.push({
+      id: user?.id || "",
+      email: user?.email || "",
+      username: user?.name || ""
+    });
+
+    //Fetchs to api
+    const res = await fetch("/api/teams", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
+        "Authorization": token,
+      },
+      body: JSON.stringify({
+        name: projectName,
+        description: projectDescription,
+        integrants: integrants_created
+      })
+    });
+
+    //Handles the response
+    const data = await res.json();
+
+    //If success, returns the data
+    if(res.status === 200) {
+      //Updates the user data
+      setUser(prev => prev ? {
+        ...prev,
+        teams: [ ...(prev.teams ?? []), data.team ]
+      } : prev);
+
+      //Hides the form
+      hideProjectContainer();
+
+      //Returns success
+      return;
+    }
+
+    //Else, returns error
+    console.error(data)
+    setIsLoading(false);
+    return;
   }
   return (
     <div className="min-h-screen bg-background grid grid-cols-[auto_1fr] overflow-hidden text-text">
+      <AIChat />
+
       {/* Project creator form */}
       <div
-      ref={container}
+      ref={project_container}
       className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex flex-col justify-center items-center z-200 animate-fade-in hidden">
         <form
         onSubmit={(e: any) => {
@@ -227,7 +352,10 @@ export default function Dashboard(){
           <input
           required
           type="text"
-          className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80"/>
+          className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80"
+          onChange={(e) => {
+            setProjectName(e.target.value);
+          }}/>
 
           <label
           className="font-light w-full text-sm text-start mb-1">
@@ -236,7 +364,9 @@ export default function Dashboard(){
           <textarea
           required
           className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 overflow-y-auto min-h-20 h-20 max-h-50 text-text/80"
-          maxLength={20}/>
+          onChange={(e) => {
+            setProjectDescription(e.target.value);
+          }}/>
 
           <label
           className="font-light w-full text-sm text-start mb-1">
@@ -245,7 +375,6 @@ export default function Dashboard(){
           <div
           className="w-full relative h-max">
             <input
-            required
             type="text"
             placeholder="Ctrl + Enter"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -263,12 +392,12 @@ export default function Dashboard(){
             className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80"/>
 
             {
-              founded && founded.length >= 1 && (
+              found && found.length >= 1 && (
                 <section
                 className="absolute w-full text-sm py-2 bg-zinc-900 top-2/3 z-3">
                   {
-                    founded.map((data : any, index) => 
-                      data.email !== user.email &&(
+                    found.map((data : any, index) => 
+                      data.email !== user?.email &&(
                       <p
                       key={index}
                       className="w-full px-3 text-start hover:backdrop-brightness-120 py-2 cursor-pointer"
@@ -279,7 +408,7 @@ export default function Dashboard(){
                           username: data.display_name
                         } ]);
 
-                        setFounded(undefined);
+                        setFound(undefined);
                       }}>
                         { data.email }
                       </p>
@@ -301,30 +430,33 @@ export default function Dashboard(){
 
           <div
           className="w-full rounded-sm px-3 py-2 bg-neutral-950/50 text-sm focus:outline-none mb-10 text-text/80 cursor-default">
-            { user.name } <span className="text-text/30">(You)</span> <br />
+            { user?.name } <span className="text-text/30">(You)</span> <br />
             {
               integrants && integrants.length >= 1 &&
-                integrants.map((data, index) => (
-                  <p
-                  key={index}
-                  className="text-wrap">
-                    { data.username } <span className="text-text/30">({data.email})</span> <br />
-                  </p>
-                ))
+                integrants.map((data, index) =>
+                  data.email !== user?.email && (
+                    <p
+                    key={index}
+                    className="text-wrap">
+                      { data.username } <span className="text-text/30">({data.email})</span> <br />
+                    </p>
+                  )
+                )
             }
           </div>
 
           <div className="flex w-full justify-end items-center gap-4">
             <button type="button"
             onClick={() => {
-              hideForm();
+              hideProjectContainer();
             }}
             className="px-4 py-1 rounded-md bg-neutral-800 duration-200 hover:brightness-80 cursor-pointer">
               Cancel
             </button>
 
             <button type="submit"
-            className="px-4 py-1 rounded-md bg-main duration-200 hover:brightness-80 cursor-pointer">
+            className="px-4 py-1 rounded-md bg-main duration-200 hover:brightness-80 cursor-pointer disabled:bg-main/50 disabled:cursor-wait"
+            disabled={ isLoading || !projectName || projectName.length < 3 || !projectDescription}>
               Create
             </button>
           </div>
@@ -368,16 +500,19 @@ export default function Dashboard(){
                   </div>
 
                   <button
-                  className="text-sm px-5 py-1 border-2 border-ultramarine-50/30 rounded-md cursor-pointer duration-300 hover:brightness-120 hover:bg-ultramarine-900 hover:scale-105 h-max my-auto disabled:hover:brightness-80 disabled:hover:bg-transparent disabled:hover:scale-100 disabled:brightness-80 disabled:cursor-wait"
+                  className="text-sm p-2 border-2 border-ultramarine-50/30 rounded-md cursor-pointer duration-300 hover:brightness-120 hover:scale-105 h-max my-auto disabled:hover:brightness-80 disabled:hover:bg-transparent disabled:hover:scale-100 disabled:brightness-80 disabled:cursor-wait"
+                  disabled={isReloading}
                   onClick={ async(e) => {
-                    const token = getCookie("token");
-                    e.currentTarget.disabled = true;
+                    setIsReloading(true);
+                    const token = await getCookie("token");
 
                     await updateUserData(token);
-
-                    window.location.reload();
+                    setIsReloading(false);
                   }}>
-                    Reload
+                    <img
+                    src="/icons/buttons/reload.svg"
+                    alt="Icon made by RavexCode"
+                    className="aspect-square block w-5"/>
                   </button>
                 </header>
                 
@@ -391,7 +526,7 @@ export default function Dashboard(){
                     <button
                     className="flex items-center gap-2 bg-main px-4 py-2 text-sm font-medium text-white rounded-lg transition-all duration-300 hover:bg-main/80 focus:outline-none focus:ring-2 focus:ring-main/50 focus:ring-offset-2 focus:ring-offset-background active:scale-95 cursor-pointer"
                     onClick={() => {
-                      showForm()
+                      showProjectContainer()
                     }}>
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19"></line>

@@ -14,9 +14,9 @@ Mejorar el código de manera completa en el dashboard, dejandolo más limpio y o
 
 **Criterios de aceptación:**
 
-* [ ] Se entiende
-* [ ] Los comentarios aportan de verdad al entendimiento
-* [ ] Funciona igual que separado
+* [x] Se entiende
+* [x] Los comentarios aportan de verdad al entendimiento
+* [x] Funciona igual que separado
 
 **Notas técnicas:**
 

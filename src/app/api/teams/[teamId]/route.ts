@@ -5,9 +5,6 @@ import supabase from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 
-//Functions imports
-import { decode_jwt } from "@/functions/jsonwebtoken";
-
 //Gets the team data
 export async function GET(
   req: NextRequest,
@@ -24,6 +21,25 @@ export async function GET(
       error: "Bad request"
     }, {
       status: 403
+    });
+
+    //Gets the user from Supabase Auth
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
+
+    //Verifies if the user has been returned
+    if(!user) return NextResponse.json({
+      message: "User not found",
+      error: "Not found"
+    }, {
+      status: 404
+    });
+
+    //Verifies if there's an error
+    if(getUserError) return NextResponse.json({
+      message: getUserError.message,
+      error: getUserError
+    }, {
+      status: 500
     });
 
     //Gets the team data
@@ -49,11 +65,8 @@ export async function GET(
       status: 500
     });
 
-    //Gets the user id
-    const user_id = decode_jwt(token);
-
     //Verifies if the user is in the team
-    if(!team?.users_id.includes(user_id)) return NextResponse.json({
+    if(!team?.users_id.includes(user.id)) return NextResponse.json({
       message: "Oops... You aren't in the team",
       error: "Unauthorized"
     }, {
