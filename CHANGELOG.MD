@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v18.1:**
+  1. AI chat funcional al 100% en el frontend
+  2. Implementación de ReactMarkdown para las respuestas de la IA
+
 - **Indev v18.0:**
   1. AI implementada en el frontend. ⚙️
   2. Mensajes ahora se encriptan y decriptan en el backend. 🛡️

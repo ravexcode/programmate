@@ -2,12 +2,10 @@
 "use client";
 
 //Prebuilt components
-import Header from "@/components/ui/header";
-import Footer from "@/components/ui/footer";
-import SideBar from "@/components/containers/sidebar";
+import SideBar from "@/components/dashboard/sidebar";
 
 //React imports
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { deleteCookie } from "cookies-next";
 
 export default function ConfigurationPage(){

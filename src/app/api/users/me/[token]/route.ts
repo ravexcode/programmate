@@ -70,7 +70,7 @@ export async function GET(
     let ai_chat : Array<Object | null> = [];
 
     //Verifies if the user had a chat with ai before
-    if(profile && profile.ai_chat.length >= 1) {
+    if(profile && profile.ai_chat && profile.ai_chat.length >= 1) {
       //Decrypt all the messages
       profile.ai_chat.map((value: AiChatMessages) => {
         //Decrypts and saves in the same place

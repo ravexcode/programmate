@@ -2,12 +2,14 @@
 "use client";
 
 //React imports
-import { useEffect, useState, useRef, RefObject, ChangeEvent } from "react";
+import { useEffect, useState, useRef, RefObject } from "react";
 
 //Components imports
-import SideBar from "@/components/containers/sidebar";
-import { getCookie } from "cookies-next";
+import SideBar from "@/components/dashboard/sidebar";
 import LoadingDashboard from "@/components/screens/loading_dashboard";
+
+//Modules imports
+import { getCookie } from "cookies-next";
 
 interface ProjectCardProps {
   title: string;
@@ -78,10 +80,6 @@ export default function Dashboard(){
 
   //Form container
   const container : RefObject<null> = useRef(null);
-  //Ai chat container
-  const AIcontainer : RefObject<null> = useRef(null);
-  //Ai button
-  const AIbutton : RefObject<null> = useRef(null);
 
   //Function to update user's data
   const updateUserData = async(token: any) => {
@@ -115,12 +113,7 @@ export default function Dashboard(){
         }
       }
 
-      teams = [
-        {
-          name: "PrismaFlow",
-          description: "SaaS project made for making a better experience doing user's projects",
-        }
-      ];
+      teams = [];
       
       if(data.teams && data.teams.length >= 1) {
         teams = data.teams;
@@ -210,101 +203,8 @@ export default function Dashboard(){
   const handleCreateProject = async(e: any) => {
     e.preventDefault();
   }
-
-  const openAiForm = () => {
-    if(!AIbutton.current || !AIcontainer.current) return;
-    const button : HTMLButtonElement = AIbutton.current;
-    const container : HTMLElement = AIcontainer.current;
-
-    button.classList.add("hidden");
-    container.classList.remove("hidden");
-    return;
-  }
-
-  const closeAiForm = () => {
-    if(!AIbutton.current || !AIcontainer.current) return;
-    const button : HTMLButtonElement = AIbutton.current;
-    const container : HTMLElement = AIcontainer.current;
-
-    button.classList.remove("hidden");
-    container.classList.add("hidden");
-
-    return
-  }
   return (
     <div className="min-h-screen bg-background grid grid-cols-[auto_1fr] overflow-hidden text-text">
-      {/* AI button */}
-      <button
-      ref={AIbutton}
-      className="fixed p-3 rounded-full bottom-4 right-4 border-x border-main shadow-lg shadow-main/20 cursor-pointer bg-neutral-950 z-3 duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-main/40 focus:outline-none"
-      onClick={() => {
-        openAiForm();
-      }}>
-        <img
-        src="/icons/buttons/ai.svg"
-        alt="Icon made by RavexCode"
-        className="aspect-square w-7 block"/>
-      </button>
-
-      {/* AI section container */}
-      <section
-      ref={AIcontainer}
-      className="hidden animate-fade-in-left fixed h-screen w-screen md:w-md z-10 top-0 right-0 md:px-4 md:py-3">
-
-        <section
-        className="bg-neutral-900 h-full px-4 pb-3 rounded-lg flex flex-col">
-          <div
-          className="px-4 py-4 flex justify-center items-center">
-            <button
-            className="text-sm ml-auto text-main cursor-pointer"
-            onClick={() => {
-              closeAiForm();
-            }}>
-              Exit
-            </button>
-          </div>
-
-          <div
-          className="flex flex-col justify-start items-center gap-4">
-            {/* Messages */}
-            { user.ai_chat && user.ai_chat.length >= 1 ? user.ai_chat.map((value, index) => (
-              <span
-              key={index}
-              className={"max-w-[80%] px-2 rounded-md px-2 py-3 text-sm " + (value?.sent_by === "ai" ? "bg-main mr-auto rounded-bl-none" : "bg-neutral-800 ml-auto text-end rounded-br-none")}>
-                { value?.message }
-              </span>
-            )) : (
-              <span
-              className="w-8/10 my-auto text-center opacity-80 text-lg font-light">
-                Start a conversation with Deltathink
-              </span>
-            ) }
-          </div>
-          
-          <form
-          className="flex justify-center items-center gap-3 mt-auto w-full"
-          onSubmit={async(e) => {
-            e.preventDefault();
-            
-          }}>
-            <input
-            type="text"
-            placeholder="Ask me anything"
-            className="w-full rounded-md bg-neutral-950 px-2 py-3 text-sm duration-300 outline-2 outline-transparent focus:outline-main"/>
-            <button type="submit"
-            className="bg-neutral-950 rounded-full aspect-square w-10 h-10 flex justify-center items-center cursor-pointer outline-2 outline-transparent duration-500 hover:outline-main">
-              <img
-              src="/icons/buttons/send.svg"
-              alt="Icon made by RavexCode"
-              className="w-5 aspect-square block relative -translate-x-[1px] translate-y-[1px]"/>
-            </button>
-          </form>
-
-        </section>
-
-      </section>
-
-
       {/* Project creator form */}
       <div
       ref={container}

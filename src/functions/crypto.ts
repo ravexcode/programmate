@@ -4,7 +4,7 @@ import CryptoJS from "crypto-js";
 //Function for getting the crypto secret key
 function getSK(){
   //Gets from dotenv the secret key
-  const cryptoSK = process.env.ENCRYPTION_KEY;
+  const cryptoSK = process.env.CRYPTO_SK;
 
   //Verifies if the crypto secret key
   if(!cryptoSK) throw new Error("CryptoSecret Key not inserted");

@@ -78,7 +78,7 @@ export async function POST(req: NextRequest){
     //User profile data
     const { data: profile } = await supabase
     .from("profiles")
-    .select("id, daily_requests, last_updated")
+    .select("*")
     .eq("id", user.id)
     .maybeSingle() as PostgrestSingleResponse<Profile> || null;
 
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest){
     //Makes the request
     const stream = await openRouter.chat.send({
       chatRequest: {
-        model: "deepseek/deepseek-chat-v3.1",
+        model: "nex-agi/deepseek-v3.1-nex-n1",
         messages: [
           {
             role: "user",
@@ -181,6 +181,7 @@ export async function POST(req: NextRequest){
     });
   } catch(e: any) {
     //Error handler
+    console.error(e);
     return NextResponse.json({
       message: "Error inside in the server",
       error: e

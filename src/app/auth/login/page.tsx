@@ -16,7 +16,6 @@ import AuthGoogleButton from "@/components/forms/buttons/authGoogle";
 import AuthGithubButton from "@/components/forms/buttons/authGithub";
 
 //UI Components
-import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 
 export default function LogInPage() {
@@ -69,7 +68,9 @@ export default function LogInPage() {
 
     if(res.status === 200) {
       //Saves the cookie
-      setCookie("token", resData.token);
+      setCookie("token", resData.token, {
+        maxAge: 60 * 60 * 24 * 3 //3 Days
+      });
       //Returns to dashboard
       window.location.href = "/dashboard";
       return;

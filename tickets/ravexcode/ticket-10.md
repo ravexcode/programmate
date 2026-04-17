@@ -1,6 +1,6 @@
 ## 🎟️ TICKET: UX AI Dashboard
 
-**ID:** FE-004
+**ID:** BE-006
 **Tipo:** Task
 **Prioridad:** Media
 
@@ -15,7 +15,7 @@ Agregar funcionalidad a la sección de la AI en el dashboard
 
 **Criterios de aceptación:**
 
-* [ ] La AI responde
+* [x] La AI responde
 * [ ] Marca errores en un snackbar
 
 **Notas técnicas:**
