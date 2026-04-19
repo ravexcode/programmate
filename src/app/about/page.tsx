@@ -5,6 +5,9 @@
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 
+//Custom components
+import SmoothProvider from "@/lib/components/lennis";
+
 interface FeaturesCardProps{
   title: string,
   description: string,
@@ -38,12 +41,13 @@ export default function AboutPage(){
     <div
     className="min-h-screen bg-background grid grid-rows-[auto_1fr_auto]">
       <Header />
+      <SmoothProvider />
 
       <main
       className="flex flex-col justify-start items-center pb-10">
 
         <section
-        className="flex flex-col justify-center items-center relative animate-fade-in-up overflow-hidden w-full text-text min-h-130">
+        className="flex flex-col justify-center items-center relative animate-fade-in-up overflow-hidden w-full text-text min-h-180">
           <div
           className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
             <div

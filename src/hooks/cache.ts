@@ -1,16 +1,9 @@
-import { deleteCookie } from "cookies-next/client";
+import { UserData } from "@/types/user.types";
 
-async function returnToLogin() {
-  await deleteCookie("token");
-  window.localStorage.clear();
-
-  window.location.href = "/login";
-}
-
-export function getCached() {
+export function getCached() : UserData | null {
   const cached_user = window.localStorage.getItem("user");
 
-  if(!cached_user) return returnToLogin();
+  if(!cached_user) return null
 
   const user = JSON.parse(cached_user!);
 

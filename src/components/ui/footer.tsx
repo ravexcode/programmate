@@ -56,7 +56,7 @@ export default function Footer(){
         </ul>
 
         <ul className="flex flex-col justify-center items-center md:items-start w-full md:w-auto">
-          <h3 className="text-lg">Legacy</h3>
+          <h3 className="text-lg"> Legal </h3>
           <CustomLi link="/legacy/tos"> Terms of service </CustomLi>
           <CustomLi link="/legacy/privacy"> Privacity conditions </CustomLi>
           <CustomLi link="/legacy/license"> License </CustomLi>

@@ -29,17 +29,19 @@ export default function OAuthCallback(){
 
     //Cleans the URL for preventing errors
     window.history.replaceState({}, document.title, window.location.pathname);
-
-    //Saves the cookie an redirects to dashboard
-    setCookie("token", access_token);
-    window.location.href = "/dashboard";
+    //Waits 3 seconds before redirecting to dashboard
+    setTimeout(() => {
+      //Saves cookie and redirects to dashboard
+      setCookie("token", access_token);
+      window.location.href = "/dashboard";
+    }, 3000);
   }, []);
 
   return (
-    <div className="bg-background min-h-dvh">
+    <div className="bg-background min-h-dvh grid">
       <Header />
       <main
-      className="flex flex-col justify-center items-center px-4 py-6 min-h-130 animate-fade-in relative">
+      className="flex flex-col justify-center items-center px-4 py-6 min-h-130 animate-fade-in relative w-screen">
 
         <section
         className="px-4 py-10 bg-ultramarine-950 shadow-xl shadow-ultramarine-700/20 min-w-90 rounded-md flex flex-col justify-center items-center gap-2 border border-ultramarine-600/50 text-center show-element text-text z-2">
@@ -48,7 +50,7 @@ export default function OAuthCallback(){
             <div className="absolute inset-0 rounded-full bg-ultramarine-300/50 blur-xl animate-pulse" />
             <img 
               src="/icons/party.svg" 
-              alt="Icon made by StreamlineHQ"
+              alt="Icon made by Ravex Code"
               className="relative z-2 aspect-square w-12 drop-shadow-md"
             />
           </div>
@@ -58,8 +60,8 @@ export default function OAuthCallback(){
             Welcome to PrismaFlow!
           </h1>
           <p
-          className="font-semibold">
-            Thanks for trusting in us!
+          className="font-light text-lg opacity-80">
+            Your authentication was successful!
           </p>
           <p
           className="mt-5 w-80">
@@ -69,10 +71,11 @@ export default function OAuthCallback(){
         </section>
 
         <div
-        className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-          <div
-          className="absolute aspect-square block left-1/2 top-1/1 -translate-x-1/2 -translate-y-1/2 h-150 bg-main/20 blur-3xl rounded-full animate-pulse" />
-        </div>
+          className="pointer-events-none absolute inset-0 z-0 overflow-hidden w-screen">
+            <div
+            className="absolute aspect-square left-1/2 top-1/1 -translate-x-1/2 -translate-y-1/2 h-150 bg-main/60 blur-3xl rounded-full animate-pulse" />
+            <div className="bg-linear-to-t from-background to-transparent w-screen h-50 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
+          </div>
       </main>
       <Footer />
     </div>

@@ -62,7 +62,7 @@ export async function GET(
     //Data from supabase
     const { data: profile } = await supabase
     .from("profiles")
-    .select("ai_chat")
+    .select("*")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -84,10 +84,9 @@ export async function GET(
     //Returns the user's data
     return NextResponse.json({
       message: "User data got",
-      user,
       teams,
       payments,
-      ai_chat: ai_chat
+      profile
     })
   } catch(e: any) {
     //Error handler

@@ -28,9 +28,6 @@ export default async function UpdateUserData(token : string) {
     window.location.href = "/auth/login";
   }
 
-  //Else continues with the code
-  //Set identity (Github)
-  const identity = data.user.identities[0];
   //Plan default
   let plan : string = "Free";
   //Teams
@@ -63,13 +60,13 @@ export default async function UpdateUserData(token : string) {
 
   //Creates the user object
   const user : UserData = {
-    "id": data.user.id,
-    "email": identity.email,
-    "name": identity.identity_data.name || data.user.user_metadata.username, //GitHub or Google
+    "id": data.profile.id,
+    "email": data.profile.email,
+    "name": data.profile.display_name,
     "plan": plan,
     "teams": teams,
-    "ai_chat": data.ai_chat,
-    "to_do_list": data.to_do_list
+    "ai_chat": data.profile.ai_chat,
+    "to_do_list": data.profile.to_do_list
   }
 
   //Saves in cache

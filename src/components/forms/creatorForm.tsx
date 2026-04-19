@@ -31,7 +31,7 @@ export default function CreatorForm(props: CreatorFormProps) {
         </button>
 
         <button type="submit"
-        className="px-4 py-1 rounded-md bg-main duration-200 hover:brightness-80 cursor-pointer disabled:bg-main/50 disabled:cursor-wait"
+        className="px-4 py-1 rounded-md bg-main duration-200 hover:brightness-80 cursor-pointer disabled:brightness-50 disabled:cursor-not-allowed disabled:hover:brightness-50"
         disabled={props.actionIsDisabled}>
           Create
         </button>

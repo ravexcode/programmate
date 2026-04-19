@@ -7,25 +7,16 @@ import { getCookie, deleteCookie } from "cookies-next/client";
 //Node modules imports
 import ReactMarkdown from "react-markdown";
 
-//Types
-//User data type
-interface User {
-  email: string,
-  name: string,
-  plan: string,
-  teams: Array<Object | null>,
-  ai_chat: Array<AIChat>
-}
-//User data type
-interface AIChat {
-  sent_by: string,
-  message: string
-}
-export default function AIChat(){
+//Function imports
+import { getCached } from "@/hooks/cache";
 
+//Types imports
+import { UserData } from "@/types/user.types";
+
+export default function AIChat(){
   //States updater
   //User data
-  const [ user, setUser ] = useState<User>();
+  const [ user, setUser ] = useState<UserData>();
   //Current message to send
   const [ currentMessage, setCurrentMessage ] = useState<string>("");
   //Is loading the response state
@@ -41,11 +32,14 @@ export default function AIChat(){
 
   //UseState for get the user data
   useEffect(() => {
-    const user_cached = window.localStorage.getItem("user");
+    async function getCache(){
+      const user = await getCached();
 
-    if(user_cached) {
-      setUser(JSON.parse(user_cached));
+      console.log(JSON.stringify(user));
+      setUser(user);
     }
+
+    getCache();
   }, []);
 
   //AI Container toggler (On / Off) function
@@ -102,7 +96,7 @@ export default function AIChat(){
     setUser((prev : any) => ({
       ...prev,
       ai_chat: [
-        ...prev.ai_chat,
+        ...prev.ai_chat || [],
         {
           sent_by: "user",
           message: message_sent

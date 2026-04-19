@@ -8,10 +8,15 @@ import { useEffect, useState, useRef, RefObject } from "react";
 import SideBar from "@/components/dashboard/sidebar";
 import LoadingDashboard from "@/components/screens/loading_dashboard";
 import AIChat from "@/components/dashboard/ai_chat";
+import CreatorForm from "@/components/forms/creatorForm";
+import CreatorInput from "@/components/forms/creatorInputs";
+import SnackBar from "@/components/containers/snackbar";
 
 //Modules imports
 import { getCookie } from "cookies-next";
-import { deleteCookie } from "cookies-next/client";
+
+//Services imports
+import UpdateUserData from "@/services/update.user";
 
 //Types
 //Project card
@@ -20,19 +25,18 @@ interface ProjectCardProps {
   description: string;
   id: number
 }
+
 //Types imports
 import { UserData, UserBasic } from "@/types/user.types";
-import CreatorForm from "@/components/forms/creatorForm";
-import CreatorInput from "@/components/forms/creatorInputs";
+import { getCached } from "@/hooks/cache";
+
 export function ProjectCard({ title, description, id }: ProjectCardProps) {
   return (
     <article 
       className="group relative w-full max-w-sm flex flex-col rounded-xl border border-ultramarine-50/10 bg-neutral-950 p-5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-ultramarine-50/30 hover:bg-ultramarine-900/60 hover:shadow-xl hover:shadow-ultramarine-800/40 cursor-pointer"
       onClick={() => {
         window.location.href = `/teams/${id}`
-      }}
-      key={id}
-    >
+      }}>
       <header className="flex items-start justify-between mb-3">
         <h3 className="text-lg font-semibold text-text tracking-tight line-clamp-1">
           {title}
@@ -80,119 +84,72 @@ export default function Dashboard(){
   //Loading button state
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
 
+  //Snackbar
+  //Message
+  const [ snackBarMessage, setSnackBarMessage ] = useState<string | null>(null);
+  //Status
+  const [ snackBarIsError, setSnackBarIsError ] = useState<boolean>(false);
+
   //Containers
   //Project creator
   const project_container : RefObject<null> = useRef(null);
 
-  //Function to update user's data
-  const updateUserData = async(token: any) => {
-    //Fetch to user api
-    const res = await fetch(`/api/users/me/${token}`, {
-      method: "GET",
-      headers: {
-        "Content-type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
-      }
-    });
+  //Snackbar container
+  const snackBar : RefObject<null> = useRef(null);
 
-    //Gets the user data
-    const data = await res.json();
-    
-    //Verifies if status is OK
-    if(res.status !== 200) {
-      //If there's an error
-      //Deletes token auth
-      deleteCookie("token");
-      //Deletes cache
-      localStorage.clear();
-      //Returns to log in page
-      window.location.href = "/auth/login";
-    }
+  //Show snackbar function
+  const showSnackBar = (
+    message: string,
+    isError: boolean
+  ) => {
+    //Verifies if snackbar is avaible
+    if(!snackBar.current) return;
 
-    //Else continues with the code
-    //Set identity (Github)
-    const identity = data.user.identities[0];
-    //Plan default
-    let plan : string = "Free";
-    //Teams
-    let teams : Array<Object | null> = [];
+    //Current snackbar
+    const current : HTMLElement = snackBar.current;
 
-    //Payments section
-    if(data.payments && data.payments.length >= 1) {
-      //Gets the latest payment
-      const lastPayment = data.payments[data.payments.length - 1]; //Minus 1 because the array is 1 spot before the data
-      //Expiration date
-      const expires = new Date(lastPayment.paid_at);
-      //Now
-      const now = new Date();
+    //Shows snackbar
+    current.classList.remove("hidden");
+    //Shows data
+    setSnackBarMessage(message);
+    setSnackBarIsError(isError);
 
-      //Verifies if the payment isn't expired
-      if(now <= expires) {
-        //Plan
-        plan = lastPayment.plan;
-        //Deletes the "" ("pro" -> pro)
-        plan = plan.replaceAll('"', '');
-        //First letter to capital (pro -> Pro)
-        plan = plan.charAt(0).toUpperCase() + plan.slice(1);
-      }
-    }
-    
-    //Teams updater
-    if(data.teams && data.teams.length >= 1) {
-      teams = data.teams;
-    }
-
-    //Updates the user
-    setUser({
-      "id": data.user.id,
-      "email": identity.email,
-      "name": identity.identity_data.name || data.user.user_metadata.username, //GitHub or Google
-      "plan": plan,
-      "teams": teams,
-      "ai_chat": data.ai_chat,
-      "to_do_list": data.to_do_list
-    });
-
-    //User sent to caché
-    localStorage.setItem("user", JSON.stringify({
-      "id": data.user.id,
-      "email": identity.email,
-      "name": identity.identity_data.name || data.user.user_metadata.username,
-      "plan": plan,
-      "teams": teams,
-      "ai_chat": data.ai_chat,
-      "to_do_list": data.user.to_do_list
-    }));
-    //Returns as success
-    return;
+    //Hides snackbar after 2 seconds
+    setTimeout(() => {
+      current.classList.add("hidden");
+      //Clears snackbar's data
+      setSnackBarMessage(message);
+      setSnackBarIsError(isError);
+    }, 2000)
   }
 
   //Gets user data
   useEffect(() => {
-    //User cached (can be null)
-    const user_cached : string | null = localStorage.getItem("user");
+    //Gets the cached user
+    const user = getCached();
 
-    //Verifies if is cached
-    if(user_cached) {
-      //If is cached parses to JSON
-      const user_cached_parsed : UserData = JSON.parse(user_cached);
-
-      //Sets the user cached
-      setUser(user_cached_parsed);
-
-      //Returns success
+    //If there is a cached user, sets the user data
+    if(user) {
+      setUser(user);
     }
 
-    //Id isn't cached gets the data
-    const token = getCookie("token");
+    //Function to update the user data
+    async function updateFromToken(){
+      //Id isn't cached gets the data
+      const token = await getCookie("token") as string;
 
-    if(!token) {
-      //If hasn't token returns to log in form
-      window.location.href = "/auth/login";
-    };
+      if(!token) {
+        //If hasn't token returns to log in form
+        window.location.href = "/auth/login";
+      };
 
-    //Updates the user's data
-    updateUserData(token);
+      //Updates the user's data
+      UpdateUserData(token);
+    }
+
+    //Executes the function
+    updateFromToken();
+    
     //Returns success
     return;
   }, []);
@@ -316,13 +273,17 @@ export default function Dashboard(){
     }
 
     //Else, returns error
-    console.error(data)
+    showSnackBar(data.message, true);
     setIsLoading(false);
     return;
   }
   return (
     <div className="min-h-screen bg-background grid grid-cols-[auto_1fr] overflow-hidden text-text">
       <AIChat />
+      <SnackBar
+      message={snackBarMessage}
+      isError={snackBarIsError}
+      ref={snackBar}/>
 
       {/* Project creator form */}
       <div
@@ -346,82 +307,132 @@ export default function Dashboard(){
           onChange={(e) => setProjectDescription(e.target.value)}
           type="textarea"/>
 
-          <label
-          className="font-light w-full text-sm text-start mb-1">
+          <div className="w-full">
+          <label 
+            htmlFor="user-search"
+            className="font-light w-full text-sm text-start mb-1 block"
+          >
             Search integrants <span className="text-text/60">(by email)</span>
           </label>
-          <div
-          className="w-full relative h-max">
+          
+          {/* SEARCH INPUT CONTAINER */}
+          <div className="w-full relative h-max">
             <input
-            type="text"
-            placeholder="Ctrl + Enter"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              const value = e.target.value;
-              setSearched(value)
-            }}
-            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-              if (e.ctrlKey && e.key === "Enter") {
-                e.preventDefault();
-                if(searched) {
-                  searchUsers();
-                }
-              }
-            }}
-            className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80"/>
-
-            {
-              found && found.length >= 1 && (
-                <section
-                className="absolute w-full text-sm py-2 bg-zinc-900 top-2/3 z-3">
-                  {
-                    found.map((data : any, index) => 
-                      data.email !== user?.email &&(
-                      <p
-                      key={index}
-                      className="w-full px-3 text-start hover:backdrop-brightness-120 py-2 cursor-pointer"
-                      onClick={() => {
-                        setIntegrants(prev => [ ...(prev ?? []), {
-                          id: data.id,
-                          email: data.email,
-                          username: data.display_name
-                        } ]);
-
-                        setFound(undefined);
-                      }}>
-                        { data.email }
-                      </p>
-                    ))
+              id="user-search"
+              type="text"
+              value={searched || ""} // Make input controlled to clear it later
+              placeholder="Press Enter to search..."
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setSearched(e.target.value);
+              }}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                // UX: Standard Enter key is much more intuitive than Ctrl+Enter
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (searched && searched.trim().length > 0) {
+                    searchUsers();
                   }
-                </section>
-              )
-            }
+                }
+              }}
+              className="w-full rounded-sm px-3 py-2 pr-10 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 focus:ring-1 focus:ring-blue-500 transition-all"
+            />
 
-            <img
-            src="/icons/buttons/search.svg"
-            alt="Icon made by RavexCode"
-            className="aspect-square w-4 absolute right-2 top-1/5 cursor-pointer"
-            onClick={() => {
-              if(!searched || searched.length < 1) return;
-              searchUsers();
-            }}/>
+            {/* SEARCH ICON */}
+            <button
+              type="button"
+              className="absolute right-2 top-1/2 -translate-y-1/2 -mt-1.5 p-1 hover:bg-neutral-700 rounded-sm transition-colors"
+              onClick={() => {
+                if (!searched || searched.trim().length < 1) return;
+                searchUsers();
+              }}
+              aria-label="Search users"
+            >
+              <img
+                src="/icons/buttons/search.svg"
+                alt="Search icon"
+                className="aspect-square w-4 cursor-pointer opacity-70 hover:opacity-100"
+              />
+            </button>
+
+            {/* DROPDOWN RESULTS */}
+            {found && found.length > 0 && (
+              <section className="absolute w-full text-sm py-1 bg-zinc-900 top-full left-0 z-50 rounded-md shadow-lg border border-neutral-800 max-h-48 overflow-y-auto">
+                {found.map((data: any) => {
+                  // Prevent showing the current user or already added integrants in the search results
+                  const isAlreadyAdded = integrants?.some(i => i.email === data.email);
+                  if (data.email === user?.email || isAlreadyAdded) return null;
+
+                  return (
+                    <div
+                      key={data.id}
+                      className="w-full px-3 text-start hover:bg-neutral-800 py-2 cursor-pointer transition-colors flex flex-col"
+                      onClick={() => {
+                        // Add user
+                        setIntegrants(prev => [
+                          ...(prev ?? []), 
+                          {
+                            id: data.id,
+                            email: data.email,
+                            username: data.display_name
+                          }
+                        ]);
+                        
+                        // UX: Clear the search state and input after selection
+                        setFound(undefined);
+                        setSearched(""); 
+                      }}
+                    >
+                      <span className="font-medium text-text/90">{data.display_name}</span>
+                      <span className="text-xs text-text/50">{data.email}</span>
+                    </div>
+                  );
+                })}
+              </section>
+            )}
           </div>
 
-          <div
-          className="w-full rounded-sm px-3 py-2 bg-neutral-950/50 text-sm focus:outline-none mb-10 text-text/80 cursor-default">
-            { user?.name } <span className="text-text/30">(You)</span> <br />
-            {
-              integrants && integrants.length >= 1 &&
-                integrants.map((data, index) =>
-                  data.email !== user?.email && (
-                    <p
-                    key={index}
-                    className="text-wrap">
-                      { data.username } <span className="text-text/30">({data.email})</span> <br />
-                    </p>
-                  )
+          {/* SELECTED USERS LIST */}
+          <div className="w-full rounded-sm p-3 bg-neutral-950/50 text-sm mb-10 border border-neutral-900/50">
+            <h4 className="text-text/50 text-xs mb-2 uppercase tracking-wider">Team Members</h4>
+            
+            <div className="flex flex-col gap-2">
+              {/* Current User */}
+              <div className="flex items-center justify-between text-text/80 bg-neutral-900/50 px-3 py-2 rounded-sm cursor-default">
+                <div>
+                  <span className="font-medium">{user?.name}</span>
+                  <span className="text-text/40 ml-2 text-xs">({user?.email})</span>
+                </div>
+                <span className="text-text/30 text-xs font-medium px-2 py-1 bg-neutral-800 rounded-sm">You</span>
+              </div>
+
+              {/* Added Integrants */}
+              {integrants && integrants.map((data) => (
+                data.email !== user?.email && (
+                  <div 
+                    key={data.id} 
+                    className="flex items-center justify-between text-text/80 bg-neutral-800/40 px-3 py-2 rounded-sm"
+                  >
+                    <div>
+                      <span className="font-medium">{data.username}</span>
+                      <span className="text-text/40 ml-2 text-xs">({data.email})</span>
+                    </div>
+                    
+                    {/* UX: Allow users to undo/remove a selection */}
+                    <button
+                      onClick={() => {
+                        setIntegrants(prev => prev?.filter(i => i.id !== data.id));
+                      }}
+                      className="text-red-400/70 hover:text-red-400 text-xs font-medium px-2 py-1 hover:bg-red-400/10 rounded-sm transition-colors"
+                      aria-label={`Remove ${data.username}`}
+                    >
+                      Remove
+                    </button>
+                  </div>
                 )
-            }
+              ))}
+            </div>
           </div>
+        </div>
         </CreatorForm>
       </div>
 
@@ -445,7 +456,7 @@ export default function Dashboard(){
               }
 
               <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-                <div className="absolute left-1/2 top-0 w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-main/10 blur-[100px] animate-pulse" />
+                <div className="absolute left-1/2 top-0 aspect-square block w-200 -translate-x-1/2 -translate-y-1/2 rounded-full bg-main/40 blur-3xl animate-pulse" />
               </div>
 
               <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col gap-10">
@@ -466,9 +477,9 @@ export default function Dashboard(){
                   disabled={isReloading}
                   onClick={ async(e) => {
                     setIsReloading(true);
-                    const token = await getCookie("token");
+                    const token = await getCookie("token") as string;
 
-                    await updateUserData(token);
+                    await UpdateUserData(token);
                     setIsReloading(false);
                   }}>
                     <img
@@ -498,9 +509,9 @@ export default function Dashboard(){
                     </button>
                   </div>
 
-                  <div className={user.teams.length >= 1 ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col justify-center items-center"}>
+                  <div className={user.teams && user.teams.length >= 1 ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col justify-center items-center"}>
                     {
-                      user.teams.length >= 1 ? user.teams.map((team : any, index) => (
+                      user.teams && user.teams.length >= 1 ? user.teams.map((team : any, index) => (
                         <ProjectCard
                         key={ index }
                         id={ team.team_id }

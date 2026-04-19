@@ -4,17 +4,18 @@ export interface UserData {
   email: string,
   name: string,
   plan: string,
-  teams: Array<Object | null>,
-  ai_chat: Array<{
+  teams?: Array<Object | null>,
+  ai_chat?: Array<{
     sent_by: string,
     message: string
   }>,
-  to_do_list: Array<{
+  to_do_list?: Array<{
     title: string,
     description: string,
-    tasks: Array<{
+    tasks?: Array<{
       title: string,
-      description: string,
+      isCompleted?: boolean,
+      expiration_date?: Date
     }>
   }>
 }

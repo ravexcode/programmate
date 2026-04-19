@@ -10,7 +10,6 @@ import { headers } from "next/headers";
 import { PostgrestSingleResponse } from "@supabase/supabase-js";
 
 //Node modules imports
-import CryptoJS from "crypto-js";
 import { Encrypt } from "@/functions/crypto";
 
 //Exports function for making ai requests
@@ -29,7 +28,7 @@ export async function POST(req: NextRequest){
       status: 403
     });
 
-    //Gets the data
+    //Gets the user's data
     const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned

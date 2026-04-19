@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v19.1:**
+  1. Cambios minimos en la página de inicio. 🛠️
+  2. Implementación de lennis para mejor scroll. 🖱️
+  3. Bugfix leve. 🪲
+  4. Renombre en la sección de usuarios /config -> /settings. ⚙️
+
 - **Indev v19.0:**
   1. Nueva funcionalidad para crear listas de tareas. 📝
   2. Mejoras en la interfaz de usuario. 🎨

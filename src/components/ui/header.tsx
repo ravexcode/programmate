@@ -49,12 +49,12 @@ export default function Header(props: any){
             <div className="flex gap-5 justify-center items-center text-xs md:text-sm">
               <a
               href="/auth/register"
-              className="px-4 py-1 cursor-pointer rounded-md border border-ultramarine-50/30 duration-300 hover:bg-ultramarine-50/20">
-                Sign up
+              className="px-4 py-1 cursor-pointer rounded-md duration-300 bg-main hover:brightness-150">
+                Get started
               </a>
               <a
               href="/auth/login"
-              className="px-4 py-1 cursor-pointer rounded-md duration-300 bg-main hover:brightness-150">
+              className="px-4 py-1 cursor-pointer rounded-md border border-ultramarine-50/30 duration-300 hover:bg-ultramarine-50/20">
                 Log in
               </a>
             </div>
