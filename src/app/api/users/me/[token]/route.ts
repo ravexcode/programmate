@@ -46,9 +46,6 @@ export async function GET(
     .select("*")
     .contains("integrants_id", [ user.id ]);
 
-    //Debug
-    console.log(user.id)
-
     const { data: payments } = await supabase
     .from("payments")
     .select("*")

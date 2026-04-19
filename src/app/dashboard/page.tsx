@@ -20,25 +20,10 @@ interface ProjectCardProps {
   description: string;
   id: number
 }
-//User
-interface UserBasic {
-  id: string,
-  email: string,
-  username: string
-}
-//User data type
-interface UserData {
-  id: string,
-  email: string,
-  name: string,
-  plan: string,
-  teams: Array<Object | null>,
-  ai_chat: Array<{
-    sent_by: string,
-    message: string
-  }>
-}
-
+//Types imports
+import { UserData, UserBasic } from "@/types/user.types";
+import CreatorForm from "@/components/forms/creatorForm";
+import CreatorInput from "@/components/forms/creatorInputs";
 export function ProjectCard({ title, description, id }: ProjectCardProps) {
   return (
     <article 
@@ -98,7 +83,6 @@ export default function Dashboard(){
   //Containers
   //Project creator
   const project_container : RefObject<null> = useRef(null);
-
 
   //Function to update user's data
   const updateUserData = async(token: any) => {
@@ -166,6 +150,7 @@ export default function Dashboard(){
       "plan": plan,
       "teams": teams,
       "ai_chat": data.ai_chat,
+      "to_do_list": data.to_do_list
     });
 
     //User sent to caché
@@ -176,6 +161,7 @@ export default function Dashboard(){
       "plan": plan,
       "teams": teams,
       "ai_chat": data.ai_chat,
+      "to_do_list": data.user.to_do_list
     }));
     //Returns as success
     return;
@@ -342,39 +328,23 @@ export default function Dashboard(){
       <div
       ref={project_container}
       className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex flex-col justify-center items-center z-200 animate-fade-in hidden">
-        <form
-        onSubmit={(e: any) => {
-          handleCreateProject(e)
-        }}
-        className="animate-fade-in-up w-100 bg-neutral-900 rounded-lg px-6 py-4 flex flex-col justify-center items-center">
+        <CreatorForm
+        title="Create a new project"
+        action={handleCreateProject}
+        hideAction={hideProjectContainer}
+        actionIsDisabled={ isLoading || !projectName || projectName.length < 3 || !projectDescription}>
+          <CreatorInput
+          label="Project name"
+          placeholder="My project"
+          value={projectName || ""}
+          onChange={(e) => setProjectName(e.target.value)}/>
 
-          <h2
-          className="text-lg w-full text-start mb-3">
-            Create a new project
-          </h2>
-
-          <label
-          className="font-light w-full text-sm text-start mb-1">
-            Insert your project's name <span className="text-red-600">*</span>
-          </label>
-          <input
-          required
-          type="text"
-          className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80"
-          onChange={(e) => {
-            setProjectName(e.target.value);
-          }}/>
-
-          <label
-          className="font-light w-full text-sm text-start mb-1">
-            Insert your project's description
-          </label>
-          <textarea
-          required
-          className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 overflow-y-auto min-h-20 h-20 max-h-50 text-text/80"
-          onChange={(e) => {
-            setProjectDescription(e.target.value);
-          }}/>
+          <CreatorInput
+          label="Project description"
+          placeholder="Describe your project"
+          value={projectDescription || ""}
+          onChange={(e) => setProjectDescription(e.target.value)}
+          type="textarea"/>
 
           <label
           className="font-light w-full text-sm text-start mb-1">
@@ -452,23 +422,7 @@ export default function Dashboard(){
                 )
             }
           </div>
-
-          <div className="flex w-full justify-end items-center gap-4">
-            <button type="button"
-            onClick={() => {
-              hideProjectContainer();
-            }}
-            className="px-4 py-1 rounded-md bg-neutral-800 duration-200 hover:brightness-80 cursor-pointer">
-              Cancel
-            </button>
-
-            <button type="submit"
-            className="px-4 py-1 rounded-md bg-main duration-200 hover:brightness-80 cursor-pointer disabled:bg-main/50 disabled:cursor-wait"
-            disabled={ isLoading || !projectName || projectName.length < 3 || !projectDescription}>
-              Create
-            </button>
-          </div>
-        </form>
+        </CreatorForm>
       </div>
 
 

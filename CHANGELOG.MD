@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v19.0:**
+  1. Nueva funcionalidad para crear listas de tareas. 📝
+  2. Mejoras en la interfaz de usuario. 🎨
+
 - **Indev v18.3:**
   1. Bugfix leves del dashboard. 🪲
   2. Ruta de api para borrar la cuenta. 🗑️

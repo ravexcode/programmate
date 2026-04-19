@@ -6,7 +6,7 @@ function Icon(props : any) {
   return (
     <a
     href={props.action}
-    className="w-full flex justify-start items-center gap-2 px-2 py-2 rounded-lg hover:bg-ultramarine-800 cursor-pointer transition">
+    className="w-full flex justify-start items-center gap-2 px-2 py-2 rounded-lg hover:bg-ultramarine-800 cursor-pointer transition focus:outline-none">
       <img
       src={"/icons/buttons/" + props.icon + ".svg"}
       alt="Icon made by RavexCode"

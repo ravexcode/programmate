@@ -1,0 +1,79 @@
+//Next imports
+import { deleteCookie } from "cookies-next/client";
+
+//Types imports
+import { UserData } from "@/types/user.types";
+
+export default async function UpdateUserData(token : string) {
+  //Fetch to user api
+  const res = await fetch(`/api/users/me/${token}`, {
+    method: "GET",
+    headers: {
+      "Content-type": "application/json",
+      "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
+    }
+  });
+
+  //Gets the user data
+  const data = await res.json();
+  
+  //Verifies if status is OK
+  if(res.status !== 200) {
+    //If there's an error
+    //Deletes token auth
+    deleteCookie("token");
+    //Deletes cache
+    localStorage.clear();
+    //Returns to log in page
+    window.location.href = "/auth/login";
+  }
+
+  //Else continues with the code
+  //Set identity (Github)
+  const identity = data.user.identities[0];
+  //Plan default
+  let plan : string = "Free";
+  //Teams
+  let teams : Array<Object | null> = [];
+
+  //Payments section
+  if(data.payments && data.payments.length >= 1) {
+    //Gets the latest payment
+    const lastPayment = data.payments[data.payments.length - 1]; //Minus 1 because the array is 1 spot before the data
+    //Expiration date
+    const expires = new Date(lastPayment.paid_at);
+    //Now
+    const now = new Date();
+
+    //Verifies if the payment isn't expired
+    if(now <= expires) {
+      //Plan
+      plan = lastPayment.plan;
+      //Deletes the "" ("pro" -> pro)
+      plan = plan.replaceAll('"', '');
+      //First letter to capital (pro -> Pro)
+      plan = plan.charAt(0).toUpperCase() + plan.slice(1);
+    }
+  }
+  
+  //Teams updater
+  if(data.teams && data.teams.length >= 1) {
+    teams = data.teams;
+  }
+
+  //Creates the user object
+  const user : UserData = {
+    "id": data.user.id,
+    "email": identity.email,
+    "name": identity.identity_data.name || data.user.user_metadata.username, //GitHub or Google
+    "plan": plan,
+    "teams": teams,
+    "ai_chat": data.ai_chat,
+    "to_do_list": data.to_do_list
+  }
+
+  //Saves in cache
+  localStorage.setItem("user", JSON.stringify(user));
+  //Returns as user
+  return user;
+}
