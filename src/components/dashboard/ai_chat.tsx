@@ -33,9 +33,7 @@ export default function AIChat(){
   //UseState for get the user data
   useEffect(() => {
     async function getCache(){
-      const user = await getCached();
-
-      console.log(JSON.stringify(user));
+      const user : any = await getCached();
       setUser(user);
     }
 

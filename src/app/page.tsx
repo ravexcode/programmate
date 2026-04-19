@@ -70,7 +70,7 @@ export default function HomePage(){
       className="flex flex-col justify-center items-center">
         <SmoothProvider />
         <section
-        className="relative px-4 w-full min-h-90 flex flex-col justify-center items-center w-full text-text pt-20 pb-10 animate-fade-in-up overflow-hidden">
+        className="relative px-4 w-full min-h-screen flex flex-col justify-center items-center w-full text-text pt-20 pb-10 animate-fade-in-up overflow-hidden">
 
           <div
           className="pointer-events-none absolute inset-0 z-0 overflow-hidden">

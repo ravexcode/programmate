@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v19.2:**
+  1. Cambios menores en el dashboard. 🛠️
+  2. Agregación de menu para los proyectos. ⚙️
+
 - **Indev v19.1:**
   1. Cambios minimos en la página de inicio. 🛠️
   2. Implementación de lennis para mejor scroll. 🖱️

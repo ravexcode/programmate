@@ -100,9 +100,9 @@ export default function LogInPage() {
   };
 
   return (
-    <div className="bg-background min-h-dvh grid grid-rows-[auto_1fr_auto]">
+    <div className="bg-background min-h-dvh grid grid-rows-[1fr_auto]">
         <main
-        className="flex flex-col justify-center items-center w-full h-full pt-5 pb-20 relative">
+        className="flex flex-col justify-center items-center w-full h-full pt-5 pb-20 relative min-h-screen">
 
           <AuthForm
           onSubmit={(e: any) => { handleSubmit(e) }}
@@ -158,7 +158,8 @@ export default function LogInPage() {
           <div
           className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
             <div
-            className="absolute aspect-square block left-1/2 top-1/1 -translate-x-1/2 -translate-y-1/2 h-300 bg-main/20 blur-3xl rounded-full animate-pulse" />
+            className="absolute aspect-square block left-1/2 top-1/1 -translate-x-1/2 -translate-y-1/2 h-300 bg-main/40 blur-3xl rounded-full animate-pulse" />
+            <div className="bg-linear-to-t from-background to-transparent w-screen h-20 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
           </div>
         </main>
       <Footer />

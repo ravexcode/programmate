@@ -2,7 +2,7 @@
 "use client";
 
 //React imports
-import { useEffect, useState, useRef, RefObject } from "react";
+import { useEffect, useState, useRef, RefObject, SetStateAction } from "react";
 
 //Components imports
 import SideBar from "@/components/dashboard/sidebar";
@@ -23,39 +23,83 @@ import UpdateUserData from "@/services/update.user";
 interface ProjectCardProps {
   title: string;
   description: string;
-  id: number
+  id: number;
+  menuIndex: number | null;
+  hideMenu: () => void;
+  showMenu: () => void;
+  index: number
 }
 
 //Types imports
 import { UserData, UserBasic } from "@/types/user.types";
 import { getCached } from "@/hooks/cache";
 
-export function ProjectCard({ title, description, id }: ProjectCardProps) {
+export function ProjectCard(props : ProjectCardProps) {
   return (
     <article 
-      className="group relative w-full max-w-sm flex flex-col rounded-xl border border-ultramarine-50/10 bg-neutral-950 p-5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-ultramarine-50/30 hover:bg-ultramarine-900/60 hover:shadow-xl hover:shadow-ultramarine-800/40 cursor-pointer"
+      className="group relative w-full max-w-sm flex flex-col rounded-xl border border-ultramarine-50/10 bg-neutral-950 p-5 cursor-pointer"
       onClick={() => {
-        window.location.href = `/teams/${id}`
+        window.location.href = `/teams/${props.id}`
       }}>
       <header className="flex items-start justify-between mb-3">
         <h3 className="text-lg font-semibold text-text tracking-tight line-clamp-1">
-          {title}
+          {props.title}
         </h3>
         
         <button 
           aria-label="Opciones del proyecto"
-          className="flex h-8 w-8 -mr-2 -mt-2 items-center justify-center rounded-full text-text hover:bg-ultramarine-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine-400"
-          onClick={(e) => e.stopPropagation()}>
+          className="flex h-8 w-8 -mr-2 -mt-2 items-center justify-center rounded-full text-text hover:bg-ultramarine-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine-400 cursor-pointer"
+          onClick={(e) => {
+            e.nativeEvent.stopImmediatePropagation();
+            e.stopPropagation();
+            props.showMenu();
+          }}>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="1"></circle>
             <circle cx="12" cy="5" r="1"></circle>
             <circle cx="12" cy="19" r="1"></circle>
           </svg>
         </button>
+
+        { props.menuIndex === props.index && (
+          <div className="absolute right-2 top-10 z-20 w-36 overflow-hidden rounded-lg border border-ultramarine-50/10 bg-neutral-900 shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
+            <button
+            onClick={(e) => {
+              e.nativeEvent.stopImmediatePropagation(); 
+              e.stopPropagation();
+              props.hideMenu();
+            }}
+            className="flex w-full items-center px-4 py-2.5 text-sm text-text transition-colors hover:bg-ultramarine-800">
+
+            <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+
+            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+            </svg>
+
+            Edit
+          </button>
+          
+          <button
+          onClick={(e) => {
+            e.nativeEvent.stopImmediatePropagation(); 
+            e.stopPropagation();
+            props.hideMenu();
+          }}
+          className="flex w-full items-center px-4 py-2.5 text-sm text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300">
+
+            <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            
+            Delete
+          </button>
+          </div>
+      )}
       </header>
 
       <p className="text-sm text-text/60 line-clamp-3 leading-relaxed">
-        {description}
+        {props.description}
       </p>
       
       <div className="absolute inset-0 -z-10 rounded-xl bg-gradient-to-br from-ultramarine-400/0 via-ultramarine-400/0 to-ultramarine-400/0 transition-colors duration-500 group-hover:from-ultramarine-400/5"></div>
@@ -90,12 +134,31 @@ export default function Dashboard(){
   //Status
   const [ snackBarIsError, setSnackBarIsError ] = useState<boolean>(false);
 
+  //Projects options state
+  const [ openMenuIndex, setOpenMenuIndex ] = useState<number | null>(null);
+
   //Containers
   //Project creator
   const project_container : RefObject<null> = useRef(null);
 
   //Snackbar container
   const snackBar : RefObject<null> = useRef(null);
+
+  //Function for hide the menu of projects when user clicks outside
+  useEffect(() => {
+    //Function for close menu
+    const closeMenu = () => {
+      //Menu index
+      setOpenMenuIndex(null);
+      return;
+    }
+    
+    //Event that listens the click
+    document.addEventListener("click", closeMenu);
+    
+    //Remove the event listener
+    return () => document.removeEventListener("click", closeMenu);
+  }, []);
 
   //Show snackbar function
   const showSnackBar = (
@@ -516,7 +579,15 @@ export default function Dashboard(){
                         key={ index }
                         id={ team.team_id }
                         title={ team.name }
-                        description={ team.description }/>
+                        description={ team.description }
+                        index={ index }
+                        hideMenu={ () => {
+                          setOpenMenuIndex(null)
+                        } }
+                        showMenu={ () => {
+                          setOpenMenuIndex(prev => prev === index ? null : index);
+                        } }
+                        menuIndex={ openMenuIndex! }/>
                       )) : (
                         <span
                         className="w-full text-center text-2xl font-light text-text py-4"> No projects found, try creating a new project!  </span>

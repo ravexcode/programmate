@@ -47,22 +47,22 @@ export default function AboutPage(){
       className="flex flex-col justify-start items-center pb-10">
 
         <section
-        className="flex flex-col justify-center items-center relative animate-fade-in-up overflow-hidden w-full text-text min-h-180">
+        className="flex flex-col justify-center items-center relative animate-fade-in-up overflow-hidden w-full text-text min-h-screen">
           <div
           className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
             <div
-            className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-120 bg-main/40 blur-3xl rounded-full animate-pulse" />
+            className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-120 md:w-200 bg-main/40 blur-3xl rounded-full animate-pulse" />
             <div className="bg-linear-to-t from-background to-transparent w-full h-20 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
             <div className="bg-linear-to-b from-background to-transparent w-full h-20 left-0 top-0 absolute z-3 pointer-events-none"></div>
           </div>
 
           <h1
-          className="text-6xl font-bold mb-4 z-2 text-center">
+          className="text-6xl font-bold mb-4 z-2 text-center px-6">
             More than <br />
             "All in one"
           </h1>
           <p
-          className="opacity-80 z-2 max-w-100 text-center">
+          className="opacity-80 z-2 max-w-100 text-center px-6">
             Centralize your workflow, reduce errors and improve collaboration without extra tools.
           </p>
         </section>
