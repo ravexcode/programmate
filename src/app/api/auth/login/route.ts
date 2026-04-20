@@ -17,22 +17,6 @@ export async function POST(req: NextRequest) {
     }, {
       status: 403
     });
-
-    //Searchs the user in Redis
-    const user : any = await redis.get(email);
-
-    //----------- Redis -----------
-    if(user) {
-      //Parses the user data to string
-      const userParsed = JSON.parse(user);
-
-      //Success message
-      return NextResponse.json({
-        message: "Logged in from Redis successfully",
-        token: userParsed.session?.access_token
-      });
-    }
-
     //----------- Supabase -----------
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -46,9 +30,6 @@ export async function POST(req: NextRequest) {
     }, {
       status: 500
     });
-
-    //Debug
-    console.log(data);
 
     //If supabase is ok returns the token
     return NextResponse.json({

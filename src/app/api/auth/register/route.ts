@@ -25,7 +25,8 @@ export async function POST(req: NextRequest) {
       options: {
         data: {
           username: name
-        }
+        },
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_NEXT_URL || "http://localhost:3000/"}oauth/callback`
       }
     });
 
@@ -36,9 +37,6 @@ export async function POST(req: NextRequest) {
     }, {
       status: 500
     });
-
-    //Saves the user in Redis for preventing the db saturation
-    await redis.set(email, JSON.stringify(data));
 
     //If everything is ok returns the token
     return NextResponse.json({

@@ -66,7 +66,9 @@ export default async function UpdateUserData(token : string) {
     "plan": plan,
     "teams": teams,
     "ai_chat": data.profile.ai_chat,
-    "to_do_list": data.profile.to_do_list
+    "to_do_list": data.profile.to_do_list,
+    "created_at": data.user.identities[0].created_at,
+    "last_sign_in": data.user.last_sign_in_at
   }
 
   //Saves in cache

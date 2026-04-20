@@ -17,7 +17,9 @@ export interface UserData {
       isCompleted?: boolean,
       expiration_date?: Date
     }>
-  }>
+  }>,
+  created_at?: string,
+  last_sign_in?: string
 }
 
 //User basic data (for example teammates)

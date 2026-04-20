@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v20.0:**
+  1. Rediseño de iconos. 🖼️
+  2. Rediseño ligero de app. 🎨
+  3. Rutas inservibles eliminadas. 🗑️
+  4. Auth modificado. 🛠️
+
 - **Indev v19.2:**
   1. Cambios menores en el dashboard. 🛠️
   2. Agregación de menu para los proyectos. ⚙️

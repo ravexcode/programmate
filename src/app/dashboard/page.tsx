@@ -37,7 +37,7 @@ import { getCached } from "@/hooks/cache";
 export function ProjectCard(props : ProjectCardProps) {
   return (
     <article 
-      className="group relative w-full max-w-sm flex flex-col rounded-xl border border-ultramarine-50/10 bg-neutral-950 p-5 cursor-pointer"
+      className="group relative w-full max-w-sm flex flex-col rounded-xl border border-ultramarine-50/10 bg-neutral-950 p-5"
       onClick={() => {
         window.location.href = `/teams/${props.id}`
       }}>
@@ -91,7 +91,6 @@ export function ProjectCard(props : ProjectCardProps) {
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
             </svg>
-            
             Delete
           </button>
           </div>
@@ -340,6 +339,23 @@ export default function Dashboard(){
     setIsLoading(false);
     return;
   }
+
+  //Verifies if user is new
+  useEffect(() => {
+    //Verifies if exists
+    if(!user) return;
+
+    //Created at to Date
+    const created_at = new Date(user.created_at!);
+    //Date now
+    const now = new Date();
+
+    //Verifies if the sign up dat and now have the same day value, and teams don't exists
+    if(created_at.getDay() === now.getDay() && !user.teams) {
+      window.location.href = "/get-started";
+    }
+  }, [user]);
+
   return (
     <div className="min-h-screen bg-background grid grid-cols-[auto_1fr] overflow-hidden text-text">
       <AIChat />
@@ -519,7 +535,7 @@ export default function Dashboard(){
               }
 
               <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-                <div className="absolute left-1/2 top-0 aspect-square block w-200 -translate-x-1/2 -translate-y-1/2 rounded-full bg-main/40 blur-3xl animate-pulse" />
+                <div className="absolute left-1/2 top-1/2 aspect-square block w-200 -translate-x-1/2 -translate-y-1/2 rounded-full bg-main/15 blur-3xl animate-pulse" />
               </div>
 
               <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col gap-10">
@@ -560,7 +576,7 @@ export default function Dashboard(){
                     </h3>
 
                     <button
-                    className="flex items-center gap-2 bg-main px-4 py-2 text-sm font-medium text-white rounded-lg transition-all duration-300 hover:bg-main/80 focus:outline-none focus:ring-2 focus:ring-main/50 focus:ring-offset-2 focus:ring-offset-background active:scale-95 cursor-pointer"
+                    className="flex items-center gap-2 bg-main px-6 py-2 text-sm font-medium text-white rounded-full transition-all duration-300 hover:bg-main/80 focus:outline-none active:scale-95 cursor-pointer"
                     onClick={() => {
                       showProjectContainer()
                     }}>
