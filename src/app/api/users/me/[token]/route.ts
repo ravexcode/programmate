@@ -81,8 +81,6 @@ export async function GET(
       });
     }
 
-    console.log(user);
-
     //Returns the user's data
     return NextResponse.json({
       message: "User data got",

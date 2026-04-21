@@ -13,6 +13,9 @@ import { getCached } from "@/hooks/cache";
 //Types imports
 import { UserData } from "@/types/user.types";
 
+//Icons imports
+import { IconX } from "@tabler/icons-react";
+
 export default function AIChat(){
   //States updater
   //User data
@@ -137,8 +140,6 @@ export default function AIChat(){
 
       return;
     } else {
-      //Debug
-      console.error("An error has happened.\nError: " + data);
       //Add the snackbar logic
     }
   }
@@ -166,17 +167,17 @@ export default function AIChat(){
         <section
         className="bg-neutral-900 h-full pb-3 px-2 md:rounded-xl flex flex-col">
           <div
-          className="px-6 py-4 flex justify-center items-center">
+          className="px-6 py-4 flex justify-end items-center">
 
             <button
-            className="text-sm ml-auto text-main cursor-pointer"
+            className="text-sm text-main cursor-pointer"
             onClick={() => {
               toggleAiForm();
             }}>
-              <img
-              src="/icons/buttons/close.svg"
-              alt="Icon made by RavexCode"
-              className="aspect-square block w-3"/>
+              <IconX
+              size={25}
+              stroke={2}
+              color="white" />
             </button>
 
           </div>

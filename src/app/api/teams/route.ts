@@ -1,24 +1,23 @@
-//------------------- OUTDATED -------------------
-
-//Update with supabase auth
-
-
 //Lib imports
 import supabase from "@/lib/db";
 
-//Dependences imports
+//Next imports
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
+
+//Types imports
 import { PostgrestSingleResponse } from "@supabase/supabase-js";
 
 export async function POST(req: NextRequest) {
   try {
     //User data for log in
     const token = (await headers()).get("Authorization");
-    const { name, description, integrants } = await req.json();
+    const { name, description, integrants, tags, status } = await req.json();
+
+    console.log(name, description, integrants, tags, status);
 
     //If isn't sent we return an error
-    if(!token || !name || !description || !integrants ) return NextResponse.json({
+    if(!token || !name || !description || !integrants || !tags || !status ) return NextResponse.json({
       message: "Data not sent correctly",
       error: "Bad request"
     }, {
@@ -45,11 +44,13 @@ export async function POST(req: NextRequest) {
     });
 
     //Gets user profile to check plan and teams
+    //Profile type
     interface Profile {
       id: string,
       plan: string
     }
 
+    //Gets the data
     const { data: profile } = await supabase
     .from("profiles")
     .select("id, plan")
@@ -77,7 +78,9 @@ export async function POST(req: NextRequest) {
       description,
       integrants: integrants,
       integrants_id: integrants.map((integrant: any) => integrant.id),
-      created_at: new Date()
+      created_at: new Date(),
+      tags,
+      status
     };
 
     //Saves the team to user data

@@ -1,17 +1,31 @@
 //React imports
-import { useState } from "react";
+import { ReactNode, useState } from "react";
+
+//Icons imports
+import {
+  IconChecklist,
+  IconLayoutDashboard,
+  IconLayoutSidebar,
+  IconSettings,
+  IconUserCircle
+} from "@tabler/icons-react";
+
+//Icon interface
+interface IconProps {
+  action: string;
+  name: string;
+  isDisplayed: boolean;
+  children: ReactNode
+}
 
 //Icon button component
-function Icon(props : any) {
+function Icon(props : IconProps) {
   return (
     <a
     href={props.action}
     className="w-full flex justify-start items-center gap-2 px-2 py-2 rounded-lg hover:bg-ultramarine-800 cursor-pointer transition focus:outline-none opacity-80">
-      <img
-      src={"/icons/buttons/" + props.icon + ".svg"}
-      alt="Icon made by RavexCode"
-      className="aspect-square w-3 md:w-5"/>
-      {props.isDisplayed && <span className="text-sm min-w-64"> {props.name} </span>}
+      {props.children}
+      {props.isDisplayed && <span className="text-sm"> {props.name} </span>}
     </a>
   )
 }
@@ -48,7 +62,10 @@ export default function SideBar(props: SideBarProps) {
         <button
           onClick={() => setExpanded(prev => !prev)}
           className="w-full flex justify-start items-center gap-2 px-2 py-2 rounded-lg hover:bg-ultramarine-800 cursor-pointer transition opacity-80">
-          <img src="/icons/buttons/toggle_navbar.svg" className="aspect-square w-3 md:w-5" />
+          <IconLayoutSidebar
+          size={23}
+          stroke={2}
+          color="white" />
 
           {expanded && <span className="text-sm"> Close </span>}
 
@@ -61,9 +78,13 @@ export default function SideBar(props: SideBarProps) {
 
         <Icon
         action="/dashboard"
-        icon="dashboard"
         name="Dashboard"
-        isDisplayed={expanded} />
+        isDisplayed={expanded}>
+          <IconLayoutDashboard
+          size={23}
+          stroke={2}
+          color="white" />
+        </Icon>
 
         {
           expanded && (
@@ -76,9 +97,13 @@ export default function SideBar(props: SideBarProps) {
 
         <Icon
         action="/to-do-list"
-        icon="tasklist"
         name="ToDo list"
-        isDisplayed={expanded} />
+        isDisplayed={expanded} >
+          <IconChecklist
+          size={23}
+          stroke={2}
+          color="white" />
+        </Icon>
 
         <div
         className="mt-auto flex flex-col gap-1 pb-3">
@@ -93,15 +118,23 @@ export default function SideBar(props: SideBarProps) {
 
           <Icon
           action="/users/profile/me"
-          icon="profile"
-          name={props.email}
-          isDisplayed={expanded} />
+          name={props.email!}
+          isDisplayed={expanded}>
+            <IconUserCircle
+            size={23}
+            stroke={2}
+            color="white" />
+          </Icon>
 
           <Icon
           action="/settings"
-          icon="configuration"
           name="Configuration"
-          isDisplayed={expanded} />
+          isDisplayed={expanded}>
+            <IconSettings
+            size={23}
+            stroke={2}
+            color="white" />
+          </Icon>
         </div>
       </nav>
     </aside>

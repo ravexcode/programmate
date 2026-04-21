@@ -1,8 +1,17 @@
 //Client side
 "use client";
 
+//Table icons imports
+import {
+  IconPlus,
+  IconSearch,
+  IconTrash,
+  IconPencil,
+  IconDotsVertical,
+  IconReload } from "@tabler/icons-react";
+
 //React imports
-import { useEffect, useState, useRef, RefObject, SetStateAction } from "react";
+import { useEffect, useState, useRef, RefObject } from "react";
 
 //Components imports
 import SideBar from "@/components/dashboard/sidebar";
@@ -27,7 +36,10 @@ interface ProjectCardProps {
   menuIndex: number | null;
   hideMenu: () => void;
   showMenu: () => void;
-  index: number
+  index: number;
+  status: string;
+  tags: Array<string>;
+  key: number;
 }
 
 //Types imports
@@ -37,28 +49,36 @@ import { getCached } from "@/hooks/cache";
 export function ProjectCard(props : ProjectCardProps) {
   return (
     <article 
-      className="group relative w-full max-w-sm flex flex-col rounded-xl border border-ultramarine-50/10 bg-neutral-950 p-5"
+      className="group relative w-full flex flex-col rounded-xl border border-ultramarine-50/10 bg-neutral-950 p-5"
       onClick={() => {
         window.location.href = `/teams/${props.id}`
-      }}>
+      }}
+      key={ "team_" + props.key }>
       <header className="flex items-start justify-between mb-3">
-        <h3 className="text-lg font-semibold text-text tracking-tight line-clamp-1">
-          {props.title}
-        </h3>
+        <div
+        className="w-full flex flex-col gap-1">
+          <h3 className="text-lg font-semibold text-text">
+            {props.title}
+          </h3>
+          <p
+          className="text-sm font-extralight flex justify-start items-center gap-2">
+            <span
+            className={"h-2 w-2 rounded-full block " + ( props.status === "Backlog" ? "bg-zinc-500" : props.status === "Planning" ? "bg-blue-400" : props.status === "In Progress" ? "bg-orange-400" : props.status === "On Hold" ? "bg-red-400" : "bg-purple-500" )}></span>
+            {props.status}
+          </p>
+        </div>
         
-        <button 
-          aria-label="Opciones del proyecto"
+        <button
           className="flex h-8 w-8 -mr-2 -mt-2 items-center justify-center rounded-full text-text hover:bg-ultramarine-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine-400 cursor-pointer"
           onClick={(e) => {
             e.nativeEvent.stopImmediatePropagation();
             e.stopPropagation();
             props.showMenu();
           }}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="1"></circle>
-            <circle cx="12" cy="5" r="1"></circle>
-            <circle cx="12" cy="19" r="1"></circle>
-          </svg>
+          <IconDotsVertical
+          size={16}
+          color="white"
+          stroke={3}/>
         </button>
 
         { props.menuIndex === props.index && (
@@ -69,12 +89,11 @@ export function ProjectCard(props : ProjectCardProps) {
               e.stopPropagation();
               props.hideMenu();
             }}
-            className="flex w-full items-center px-4 py-2.5 text-sm text-text transition-colors hover:bg-ultramarine-800">
+            className="flex w-full items-center px-4 py-2.5 text-sm text-text transition-colors hover:bg-ultramarine-800 gap-2">
 
-            <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-
-            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-            </svg>
+            <IconPencil
+            size={20}
+            color="white" />
 
             Edit
           </button>
@@ -85,12 +104,12 @@ export function ProjectCard(props : ProjectCardProps) {
             e.stopPropagation();
             props.hideMenu();
           }}
-          className="flex w-full items-center px-4 py-2.5 text-sm text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300">
+          className="flex w-full items-center px-4 py-2.5 text-sm text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-200 gap-2">
 
-            <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
+            <IconTrash
+            size={20}
+            stroke={1} />
+
             Delete
           </button>
           </div>
@@ -101,7 +120,17 @@ export function ProjectCard(props : ProjectCardProps) {
         {props.description}
       </p>
       
-      <div className="absolute inset-0 -z-10 rounded-xl bg-gradient-to-br from-ultramarine-400/0 via-ultramarine-400/0 to-ultramarine-400/0 transition-colors duration-500 group-hover:from-ultramarine-400/5"></div>
+      <div
+      className="flex gap-2 mt-2">
+        {
+          props.tags && props.tags.map(tag => (
+            <div
+            className="px-3 py-1 rounded-full text-sm font-light border border-main/50 bg-main/20 text-text/80 w-max cursor-default">
+              {tag}
+            </div>
+          ))
+        }
+      </div>
     </article>
   )
 }
@@ -206,7 +235,10 @@ export default function Dashboard(){
       };
 
       //Updates the user's data
-      UpdateUserData(token);
+      const user = await UpdateUserData(token);
+      if(user) {
+        setUser(user)
+      }
     }
 
     //Executes the function
@@ -351,7 +383,7 @@ export default function Dashboard(){
     const now = new Date();
 
     //Verifies if the sign up dat and now have the same day value, and teams don't exists
-    if(created_at.getDay() === now.getDay() && !user.teams) {
+    if(created_at.getDay() === now.getDay() && user.teams?.length! <= 0) {
       window.location.href = "/get-started";
     }
   }, [user]);
@@ -394,18 +426,16 @@ export default function Dashboard(){
             Search integrants <span className="text-text/60">(by email)</span>
           </label>
           
-          {/* SEARCH INPUT CONTAINER */}
           <div className="w-full relative h-max">
             <input
               id="user-search"
               type="text"
-              value={searched || ""} // Make input controlled to clear it later
+              value={searched || ""}
               placeholder="Press Enter to search..."
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setSearched(e.target.value);
               }}
               onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                // UX: Standard Enter key is much more intuitive than Ctrl+Enter
                 if (e.key === "Enter") {
                   e.preventDefault();
                   if (searched && searched.trim().length > 0) {
@@ -416,7 +446,6 @@ export default function Dashboard(){
               className="w-full rounded-sm px-3 py-2 pr-10 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 focus:ring-1 focus:ring-blue-500 transition-all"
             />
 
-            {/* SEARCH ICON */}
             <button
               type="button"
               className="absolute right-2 top-1/2 -translate-y-1/2 -mt-1.5 p-1 hover:bg-neutral-700 rounded-sm transition-colors"
@@ -426,18 +455,15 @@ export default function Dashboard(){
               }}
               aria-label="Search users"
             >
-              <img
-                src="/icons/buttons/search.svg"
-                alt="Search icon"
-                className="aspect-square w-4 cursor-pointer opacity-70 hover:opacity-100"
-              />
+              <IconSearch
+              size={16}
+              color="white"
+              stroke={2}/>
             </button>
 
-            {/* DROPDOWN RESULTS */}
             {found && found.length > 0 && (
               <section className="absolute w-full text-sm py-1 bg-zinc-900 top-full left-0 z-50 rounded-md shadow-lg border border-neutral-800 max-h-48 overflow-y-auto">
                 {found.map((data: any) => {
-                  // Prevent showing the current user or already added integrants in the search results
                   const isAlreadyAdded = integrants?.some(i => i.email === data.email);
                   if (data.email === user?.email || isAlreadyAdded) return null;
 
@@ -446,7 +472,6 @@ export default function Dashboard(){
                       key={data.id}
                       className="w-full px-3 text-start hover:bg-neutral-800 py-2 cursor-pointer transition-colors flex flex-col"
                       onClick={() => {
-                        // Add user
                         setIntegrants(prev => [
                           ...(prev ?? []), 
                           {
@@ -456,7 +481,6 @@ export default function Dashboard(){
                           }
                         ]);
                         
-                        // UX: Clear the search state and input after selection
                         setFound(undefined);
                         setSearched(""); 
                       }}
@@ -484,7 +508,6 @@ export default function Dashboard(){
                 <span className="text-text/30 text-xs font-medium px-2 py-1 bg-neutral-800 rounded-sm">You</span>
               </div>
 
-              {/* Added Integrants */}
               {integrants && integrants.map((data) => (
                 data.email !== user?.email && (
                   <div 
@@ -496,14 +519,12 @@ export default function Dashboard(){
                       <span className="text-text/40 ml-2 text-xs">({data.email})</span>
                     </div>
                     
-                    {/* UX: Allow users to undo/remove a selection */}
                     <button
                       onClick={() => {
                         setIntegrants(prev => prev?.filter(i => i.id !== data.id));
                       }}
                       className="text-red-400/70 hover:text-red-400 text-xs font-medium px-2 py-1 hover:bg-red-400/10 rounded-sm transition-colors"
-                      aria-label={`Remove ${data.username}`}
-                    >
+                      aria-label={`Remove ${data.username}`}>
                       Remove
                     </button>
                   </div>
@@ -552,7 +573,7 @@ export default function Dashboard(){
                   </div>
 
                   <button
-                  className="text-sm p-2 border-2 border-ultramarine-50/30 rounded-md cursor-pointer duration-300 hover:brightness-120 hover:scale-105 h-max my-auto disabled:hover:brightness-80 disabled:hover:bg-transparent disabled:hover:scale-100 disabled:brightness-80 disabled:cursor-wait"
+                  className="text-sm py-2 px-6 border-2 border-ultramarine-50/30 rounded-full cursor-pointer duration-300 hover:border-ultramarine-50/60 h-max w-max flex gap-2 text-lg my-auto disabled:hover:brightness-80 disabled:hover:bg-transparent disabled:hover:scale-100 disabled:brightness-80 disabled:cursor-wait"
                   disabled={isReloading}
                   onClick={ async(e) => {
                     setIsReloading(true);
@@ -561,10 +582,12 @@ export default function Dashboard(){
                     await UpdateUserData(token);
                     setIsReloading(false);
                   }}>
-                    <img
-                    src="/icons/buttons/reload.svg"
-                    alt="Icon made by RavexCode"
-                    className="aspect-square block w-5"/>
+                    <IconReload
+                    size={20}
+                    color="white"
+                    stroke={2} />
+
+                    Refresh
                   </button>
                 </header>
                 
@@ -580,15 +603,15 @@ export default function Dashboard(){
                     onClick={() => {
                       showProjectContainer()
                     }}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                      </svg>
+                      <IconPlus
+                      color="white"
+                      size={16}
+                      stroke={2.5}/>
                       Create new
                     </button>
                   </div>
 
-                  <div className={user.teams && user.teams.length >= 1 ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col justify-center items-center"}>
+                  <div className={user.teams && user.teams.length >= 1 ? "grid grid-cols-1 lg:grid-cols-2 gap-6" : "flex flex-col justify-center items-center"}>
                     {
                       user.teams && user.teams.length >= 1 ? user.teams.map((team : any, index) => (
                         <ProjectCard
@@ -603,7 +626,9 @@ export default function Dashboard(){
                         showMenu={ () => {
                           setOpenMenuIndex(prev => prev === index ? null : index);
                         } }
-                        menuIndex={ openMenuIndex! }/>
+                        menuIndex={ openMenuIndex! }
+                        status={team.status}
+                        tags={ team.tags }/>
                       )) : (
                         <span
                         className="w-full text-center text-2xl font-light text-text py-4"> No projects found, try creating a new project!  </span>

@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v20.1:**
+  1. Get started screen fix
+  2. little Bugfixes in /api/teams, /dashboard, /settings
+  3. Tabler icons implemented
+
 - **Indev v20.0:**
   1. Rediseño de iconos. 🖼️
   2. Rediseño ligero de app. 🎨

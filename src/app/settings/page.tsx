@@ -78,7 +78,7 @@ export default function ConfigurationPage(){
       //Verifies the response
       if(res.status === 200) {
         //Deletes the user from cache
-        localStorage.removeItem("user");
+        window.localStorage.clear();
         deleteCookie("token");
         //Redirects to the login page
         window.location.href = "/auth/login";

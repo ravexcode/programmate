@@ -1,8 +1,10 @@
 //Client side
 "use client";
 
+import SnackBar from "@/components/containers/snackbar";
+import { getCookie } from "cookies-next/client";
 //React imports
-import { useState, KeyboardEvent } from "react";
+import { useState, KeyboardEvent, useRef, RefObject } from "react";
 
 export default function GetStarted() {
   //State handlers
@@ -17,10 +19,42 @@ export default function GetStarted() {
 
   //Integrants state
   const [emailInput, setEmailInput] = useState<string>("");
-  const [integrants, setIntegrants] = useState<string[]>([]);
+  const [integrants, setIntegrants] = useState<Array<string>>([]);
+  
+  //Snackbar states
+  const [ message, setSnackBarMessage ] = useState<string>("");
+  const [ isError, setSnackBarIsError ] = useState<boolean>(false);
+  //Snackbar container
+  const snackBar : RefObject<null> = useRef(null);
 
   //Constants
   const screens = 6;
+
+  //Show snackbar function
+  const showSnackBar = (
+    message: string,
+    isError: boolean
+  ) => {
+    //Verifies if snackbar is avaible
+    if(!snackBar.current) return;
+
+    //Current snackbar
+    const current : HTMLElement = snackBar.current;
+
+    //Shows snackbar
+    current.classList.remove("hidden");
+    //Shows data
+    setSnackBarMessage(message);
+    setSnackBarIsError(isError);
+
+    //Hides snackbar after 2 seconds
+    setTimeout(() => {
+      current.classList.add("hidden");
+      //Clears snackbar's data
+      setSnackBarMessage(message);
+      setSnackBarIsError(isError);
+    }, 2000)
+  }
 
   //Handlers for arrays
   const addTag = () => {
@@ -56,8 +90,130 @@ export default function GetStarted() {
   // Estado para controlar si el dropdown está abierto
   const [isStatusOpen, setIsStatusOpen] = useState(false);
 
+  //Function for search all users inserted
+  const searchUsers = async(emails: Array<string>) => {
+    //Integrants found
+    let found = [];
+
+    //Makes this for every email inserted
+    await emails.forEach(async email => {
+      //Fetchs data
+      const res = await fetch(`api/users/search/${email}`, {
+        //Method
+        method: "GET",
+        headers: {
+          "Content-type": "application/json",
+          "x-api-key": process.env.NEXT_PUBLIC_API_KEY!
+        }
+      });
+
+      //Data from response
+      const data = await res.json();
+
+      //Status OK
+      if(res.status === 200) {
+        //Add the user found
+        found.push({
+          id: user[0].id,
+          email: user[0].email,
+          name: user[0].name,
+        });
+      }
+
+      //Status error
+      else {
+        //Shows error snackbar
+        showSnackBar("User not found", true);
+      }
+    });
+
+    const user = JSON.parse(localStorage.getItem("user")!);
+
+    found.push({
+      id: user.id,
+      email: user.email,
+      name: user.name
+    });
+
+    return found;
+  }
+
+  //Project creator
+  const createProject = async(found : Array<any>) => {
+    //Id isn't cached gets the data
+    const token = await getCookie("token") as string;
+
+    if(!token) {
+      //If hasn't token returns to log in form
+      window.location.href = "/auth/login";
+    };
+
+    let integrants_id : Array<string> = [];
+
+    found.forEach(integrant => {
+      integrants_id.push(integrant.id);
+    })
+
+    const newProject = {
+      name: newProjectName,
+      description: newProjectDescription,
+      integrants: found,
+      integrants_id: integrants_id,
+      tags: tags,
+      status: status
+    }
+
+    //Fetchs to api
+    const res = await fetch("/api/teams", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
+        "Authorization": token,
+      },
+      body: JSON.stringify(newProject)
+    });
+
+    //Handles the response
+    const data = await res.json();
+
+    //If success, returns the data
+    if(res.status === 200) {
+      //Clear all the inputs
+      setIntegrants([]);
+      setNewProjectName("");
+      setNewProjectDescription("");
+
+      //Returns success
+      return newProject;
+    }
+
+    //Else, returns error
+    showSnackBar(data.message, true);
+    return newProject;
+  }
+
+  //Function when users press "launch"
+  const handleCreateProject = async() => {
+    //Sets the users
+    const integrants_found = await searchUsers(integrants);
+
+    const newTeam = await createProject(integrants_found);
+
+    //If all is ok sets the data in cache
+    const user = JSON.parse(localStorage.getItem("user")!);
+    user.teams.push(newTeam);
+    window.localStorage.setItem("user", JSON.stringify(user));
+
+    window.location.href = "/dashboard";
+  }
+
   return (
     <div className="w-screen overflow-hidden min-h-screen bg-[#0A0A0A] text-zinc-200 relative font-sans selection:bg-indigo-500/30">
+    <SnackBar
+    message={message}
+    isError={isError}
+    ref={snackBar}/>
       
       {/* Linear-style Subtle Background Glow */}
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden flex justify-center">
@@ -67,32 +223,28 @@ export default function GetStarted() {
         {/* Moving radial glow */}
         <div
           className={
-            "absolute transition-all duration-1000 ease-out rounded-full bg-indigo-500/10 blur-[120px] " +
-            (screenSelected === 1 ? "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px]" :
-             screenSelected === 2 ? "top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px]" :
-             screenSelected === 3 ? "bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px]" :
-             screenSelected === 4 ? "top-1/4 left-1/4 w-[500px] h-[500px]" :
-             screenSelected === 5 ? "bottom-1/4 right-1/4 w-[600px] h-[600px]" :
-             "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-600/10")
+            "absolute transition-all duration-1000 ease-out rounded-full bg-main/15 blur-3xl animate-pulse aspect-square blockd " +
+            (screenSelected === 1 ? "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200" :
+             screenSelected === 2 ? "top-1/2 left-1/2 -translate-x-1/2 w-300" :
+             screenSelected === 3 ? "-top-1/2 left-1/2 -translate-x-1/2 w-250" :
+             screenSelected === 4 ? "top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-200" :
+             screenSelected === 5 ? "top-1/4 right-1/4 w-300" :
+             "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200")
           }
         />
       </div>
 
       {/* Screen 1: Start */}
       <section className={"flex-col justify-center items-center w-full min-h-screen text-center animate-fade-in px-6 py-2 relative z-10 " + (screenSelected === 1 ? "flex" : "hidden")}>
-        <div className="border border-white/10 bg-white/[0.02] backdrop-blur-md px-4 py-1.5 rounded-full mb-8 flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-          <span className="text-xs font-medium text-zinc-400 tracking-wide uppercase">PrismaFlow 2.0</span>
-        </div>
-        <h1 className="text-4xl xl:text-6xl font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 mb-6">
-          Streamline your workflow
+        <h1 className="text-4xl xl:text-6xl font-semibold tracking-tight text-text mb-6">
+          Welcome to this new experience
         </h1>
         <p className="text-base xl:text-lg text-zinc-400 font-light max-w-lg mb-10">
-          Plan, build, and ship your next big idea with absolute clarity.
+          In prismaflow our principal goal is a better flow in your proyect
         </p>
 
         <button
-          className="text-sm font-medium px-8 py-3 rounded-full bg-white text-black hover:bg-zinc-200 transition-all duration-200 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+          className="text-sm font-medium px-8 py-3 rounded-full bg-main text-text hover:brightness-80 duration-400 cursor-pointer"
           onClick={() => setScreenSelected(2)}
         >
           Start a new project
@@ -101,7 +253,7 @@ export default function GetStarted() {
 
       {/* Screen 2: Name */}
       <section className={"flex-col justify-center items-center w-full min-h-screen text-center animate-fade-in px-6 py-2 relative z-10 " + (screenSelected === 2 ? "flex" : "hidden")}>
-        <h1 className="text-3xl xl:text-5xl font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 mb-10">
+        <h1 className="text-2xl xl:text-3xl font-semibold tracking-tight text-text mb-6">
           What are we building?
         </h1>
 
@@ -112,19 +264,19 @@ export default function GetStarted() {
             onChange={(e) => setNewProjectName(e.target.value)}
             required
             placeholder="e.g. Project Apollo"
-            className="w-full bg-[#121212] border border-white/10 rounded-xl px-6 py-4 text-lg xl:text-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all duration-300 shadow-inner"
+            className="w-full bg-neutral-900 border border-white/10 rounded-xl px-6 py-4 text-lg xl:text-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all duration-300 shadow-inner"
           />
         </div>
 
         <div className="flex gap-4 mt-12">
           <button
-            className="text-sm font-medium px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all duration-200"
+            className="text-sm font-medium px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer"
             onClick={() => setScreenSelected(1)}
           >
             Back
           </button>
           <button
-            className="text-sm font-medium px-6 py-2.5 rounded-full bg-white text-black hover:bg-zinc-200 transition-all duration-200 disabled:opacity-50 disabled:hover:bg-white disabled:cursor-not-allowed shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+            className="text-sm font-medium px-6 py-2.5 rounded-full bg-main text-text hover:brightness-80 cursor-pointer transition-all duration-200 disabled:brightness-80 disabled:cursor-not-allowed"
             disabled={newProjectName.trim().length <= 0}
             onClick={() => setScreenSelected(3)}
           >
@@ -135,7 +287,7 @@ export default function GetStarted() {
 
       {/* Screen 3: Description */}
       <section className={"flex-col justify-center items-center w-full min-h-screen text-center animate-fade-in px-6 py-2 relative z-10 " + (screenSelected === 3 ? "flex" : "hidden")}>
-        <h1 className="text-3xl xl:text-5xl font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 mb-10">
+        <h1 className="text-3xl xl:text-5xl font-medium tracking-tight text-text mb-10">
           Describe your vision
         </h1>
 
@@ -148,14 +300,14 @@ export default function GetStarted() {
 
         <div className="flex gap-4 mt-12">
           <button
-            className="text-sm font-medium px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all duration-200"
+            className="text-sm font-medium px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer"
             onClick={() => setScreenSelected(2)}
           >
             Back
           </button>
           <button
-            className="text-sm font-medium px-6 py-2.5 rounded-full bg-white text-black hover:bg-zinc-200 transition-all duration-200 disabled:opacity-50 disabled:hover:bg-white disabled:cursor-not-allowed shadow-[0_0_15px_rgba(255,255,255,0.05)]"
-            disabled={newProjectDescription.trim().length <= 0}
+            className="text-sm font-medium px-6 py-2.5 rounded-full bg-main text-text hover:brightness-80 cursor-pointer transition-all duration-200 disabled:opacity-50 disabled:hover:bg-white disabled:cursor-not-allowed shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+            disabled={newProjectName.trim().length <= 0}
             onClick={() => setScreenSelected(4)}
           >
             Continue
@@ -165,72 +317,72 @@ export default function GetStarted() {
 
       {/* Screen 4: Tags & Status */}
       <section className={"flex-col justify-center items-center w-full min-h-screen animate-fade-in px-6 py-2 relative z-10 " + (screenSelected === 4 ? "flex" : "hidden")}>
-        <h1 className="text-3xl xl:text-5xl font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 mb-12 text-center">
+        <h1 className="text-3xl xl:text-5xl font-medium tracking-tight text-text mb-12 text-center">
           Details & Status
         </h1>
 
         <div className="flex flex-col gap-8 w-full max-w-xl">
           {/* Custom Status Selection */}
-<div className="w-full flex flex-col items-start gap-3 relative">
-  <label className="text-sm font-medium text-zinc-400 text-left">Project Status</label>
-  
-  {/* Trigger Button */}
-  <button
-    type="button"
-    onClick={() => setIsStatusOpen(!isStatusOpen)}
-    className="w-full flex items-center justify-between bg-[#121212] border border-white/10 rounded-lg px-4 py-3 text-white hover:bg-[#181818] transition-all duration-200 group"
-  >
-    <div className="flex items-center gap-3">
-      {/* Dynamic Status Icon */}
-      <span className={`w-2 h-2 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.1)] ${
-        statusOptions.find(opt => opt.value === status)?.color || "bg-zinc-500"
-      }`} />
-      <span className="text-sm font-medium">{status}</span>
-    </div>
-    
-    <svg 
-      className={`w-4 h-4 text-zinc-500 transition-transform duration-200 ${isStatusOpen ? 'rotate-180' : ''}`} 
-      fill="none" stroke="currentColor" viewBox="0 0 24 24"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-    </svg>
-  </button>
-
-  {/* Dropdown Menu */}
-  {isStatusOpen && (
-    <>
-      {/* Overlay invisible para cerrar al hacer click fuera */}
-      <div className="fixed inset-0 z-10" onClick={() => setIsStatusOpen(false)} />
-      
-      <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-[#161616] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-20 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200">
-        <div className="p-1">
-          {statusOptions.map((option) => (
+          <div className="w-full flex flex-col items-start gap-3 relative">
+            <label className="text-sm font-medium text-zinc-400 text-left">Project Status</label>
+            
+            {/* Trigger Button */}
             <button
-              key={option.value}
-              onClick={() => {
-                setStatus(option.value);
-                setIsStatusOpen(false);
-              }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 ${
-                status === option.value 
-                ? 'bg-white/10 text-white' 
-                : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-200'
-              }`}
+              type="button"
+              onClick={() => setIsStatusOpen(!isStatusOpen)}
+              className="w-full flex items-center justify-between bg-[#121212] border border-white/10 rounded-lg px-4 py-3 text-white hover:bg-[#181818] transition-all duration-200 group"
             >
-              <span className={`w-2 h-2 rounded-full ${option.color}`} />
-              <span className="flex-1 text-left">{option.label}</span>
-              {status === option.value && (
-                <svg className="w-4 h-4 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              )}
+              <div className="flex items-center gap-3">
+                {/* Dynamic Status Icon */}
+                <span className={`w-2 h-2 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.1)] ${
+                  statusOptions.find(opt => opt.value === status)?.color || "bg-zinc-500"
+                }`} />
+                <span className="text-sm font-medium">{status}</span>
+              </div>
+              
+              <svg 
+                className={`w-4 h-4 text-zinc-500 transition-transform duration-200 ${isStatusOpen ? 'rotate-180' : ''}`} 
+                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
             </button>
-          ))}
-        </div>
-      </div>
-    </>
-  )}
-</div>
+
+            {/* Dropdown Menu */}
+            {isStatusOpen && (
+              <>
+                {/* Overlay invisible para cerrar al hacer click fuera */}
+                <div className="fixed inset-0 z-10" onClick={() => setIsStatusOpen(false)} />
+                
+                <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-[#161616] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-20 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200">
+                  <div className="p-1">
+                    {statusOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => {
+                          setStatus(option.value);
+                          setIsStatusOpen(false);
+                        }}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 ${
+                          status === option.value 
+                          ? 'bg-white/10 text-white' 
+                          : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-200'
+                        }`}
+                      >
+                        <span className={`w-2 h-2 rounded-full ${option.color}`} />
+                        <span className="flex-1 text-left">{option.label}</span>
+                        {status === option.value && (
+                          <svg className="w-4 h-4 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
 
           {/* Tags Input */}
           <div className="w-full flex flex-col items-start gap-3">
@@ -246,7 +398,7 @@ export default function GetStarted() {
               />
               <button 
                 onClick={addTag}
-                className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/5 text-white text-sm font-medium rounded-lg transition-all duration-200"
+                className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/5 text-white text-sm font-medium rounded-lg transition-all duration-200 cursor-pointer"
               >
                 Add
               </button>
@@ -268,13 +420,14 @@ export default function GetStarted() {
 
         <div className="flex gap-4 mt-12">
           <button
-            className="text-sm font-medium px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all duration-200"
+            className="text-sm font-medium px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer"
             onClick={() => setScreenSelected(3)}
           >
             Back
           </button>
           <button
-            className="text-sm font-medium px-6 py-2.5 rounded-full bg-white text-black hover:bg-zinc-200 transition-all duration-200 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+            className="text-sm font-medium px-6 py-2.5 rounded-full bg-main text-text hover:brightness-80 cursor-pointer transition-all duration-200 disabled:opacity-50 disabled:hover:bg-white disabled:cursor-not-allowed shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+            disabled={newProjectName.trim().length <= 0}
             onClick={() => setScreenSelected(5)}
           >
             Continue
@@ -284,7 +437,7 @@ export default function GetStarted() {
 
       {/* Screen 5: Integrants */}
       <section className={"flex-col justify-center items-center w-full min-h-screen animate-fade-in px-6 py-2 relative z-10 " + (screenSelected === 5 ? "flex" : "hidden")}>
-        <h1 className="text-3xl xl:text-5xl font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 mb-12 text-center">
+        <h1 className="text-3xl xl:text-5xl font-medium tracking-tight text-text mb-12 text-center">
           Invite your team
         </h1>
 
@@ -300,7 +453,7 @@ export default function GetStarted() {
             />
             <button 
               onClick={addEmail}
-              className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-[0_0_15px_rgba(79,70,229,0.2)]"
+              className="px-6 py-3 bg-main hover:brightness-80 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-[0_0_15px_rgba(79,70,229,0.2)] cursor-pointer"
             >
               Invite
             </button>
@@ -311,7 +464,7 @@ export default function GetStarted() {
             {integrants.map((email, idx) => (
               <div key={idx} className="flex justify-between items-center bg-[#121212] px-4 py-3 rounded-lg border border-white/5">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-main to-blue-950 flex items-center justify-center text-xs font-bold text-white">
                     {email.charAt(0).toUpperCase()}
                   </div>
                   <span className="text-sm font-medium text-zinc-300">{email}</span>
@@ -326,16 +479,16 @@ export default function GetStarted() {
 
         <div className="flex gap-4 mt-12">
           <button
-            className="text-sm font-medium px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all duration-200"
+            className="text-sm font-medium px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer"
             onClick={() => setScreenSelected(4)}
           >
             Back
           </button>
           <button
-            className="text-sm font-medium px-6 py-2.5 rounded-full bg-white text-black hover:bg-zinc-200 transition-all duration-200 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+            className="text-sm font-medium px-6 py-2.5 rounded-full bg-main text-text hover:brightness-80 cursor-pointer transition-all duration-200 disabled:opacity-50 disabled:hover:bg-white disabled:cursor-not-allowed shadow-[0_0_15px_rgba(255,255,255,0.05)]"
             onClick={() => setScreenSelected(6)}
           >
-            Review Project
+            Review your proyect
           </button>
         </div>
       </section>
@@ -343,7 +496,7 @@ export default function GetStarted() {
       {/* Screen 6: Finished Summary */}
       <section className={"flex-col justify-center items-center w-full min-h-screen animate-fade-in px-6 py-2 relative z-10 " + (screenSelected === 6 ? "flex" : "hidden")}>
         <div className="w-full max-w-2xl">
-          <h1 className="text-3xl xl:text-5xl font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 mb-8 text-center">
+          <h1 className="text-3xl xl:text-5xl font-medium tracking-tight text-text mb-8 text-center">
             Ready to launch
           </h1>
 
@@ -389,19 +542,18 @@ export default function GetStarted() {
 
           <div className="flex justify-center gap-4 mt-10">
             <button
-              className="text-sm font-medium px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all duration-200"
+              className="text-sm font-medium px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer"
               onClick={() => setScreenSelected(5)}
             >
               Go Back
             </button>
             <button
-              className="text-sm font-medium px-8 py-2.5 rounded-full bg-indigo-600 text-white hover:bg-indigo-500 transition-all duration-200 shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)]"
-              onClick={() => {
-                console.log("Creating Project...", { name: newProjectName, description: newProjectDescription, status, tags, team: integrants });
-                alert("Project created successfully!");
+              className="text-sm font-medium px-8 py-2.5 rounded-full text-text bg-main cursor-pointer hover:brightness-80"
+              onClick={async() => {
+                await handleCreateProject();
               }}
             >
-              Create Project
+              Launch
             </button>
           </div>
         </div>
