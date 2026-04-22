@@ -8,10 +8,10 @@ import { useEffect, useState, useRef, RefObject } from "react";
 import { getCached } from "@/hooks/cache";
 
 //Components imports
-import SideBar from "@/components/dashboard/sidebar";
+import SideBar from "@/components/ui/sidebar";
 import CreatorForm from "@/components/forms/creatorForm";
 import CreatorInput from "@/components/forms/creatorInputs";
-import AIChat from "@/components/dashboard/ai_chat";
+import AIChat from "@/components/ui/ai_chat";
 import SnackBar from "@/components/containers/snackbar";
 
 //Types imports

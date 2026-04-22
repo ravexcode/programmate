@@ -9,10 +9,14 @@ interface CreatorFormProps {
 export default function CreatorForm(props: CreatorFormProps) {
   return (
     <form
-    onSubmit={(e: any) => {
+    onSubmit={(e: React.SubmitEvent) => {
       props.action(e);
     }}
-    className="animate-fade-in-up w-100 bg-neutral-900 rounded-lg px-6 py-4 flex flex-col justify-center items-center">
+    onClick={(e: React.MouseEvent) => {
+      e.nativeEvent.stopImmediatePropagation();
+      e.stopPropagation();
+    }}
+    className="animate-fade-in-up w-100 bg-neutral-900 rounded-lg px-6 py-4 flex flex-col justify-center items-center my-auto">
 
       <h2
       className="text-lg w-full text-start mb-3">

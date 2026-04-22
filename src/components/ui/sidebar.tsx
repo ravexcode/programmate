@@ -23,9 +23,9 @@ function Icon(props : IconProps) {
   return (
     <a
     href={props.action}
-    className="w-full flex justify-start items-center gap-2 px-2 py-2 rounded-lg hover:bg-ultramarine-800 cursor-pointer transition focus:outline-none opacity-80">
+    className={"flex justify-start items-center gap-2 px-2 py-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-80 duration-400 " + (props.isDisplayed ? "w-50 md:w-64" : "w-full")}>
       {props.children}
-      {props.isDisplayed && <span className="text-sm"> {props.name} </span>}
+      {props.isDisplayed && <span className="text-sm animate-fade-in-right"> {props.name} </span>}
     </a>
   )
 }
@@ -33,6 +33,7 @@ function Icon(props : IconProps) {
 interface SideBarProps {
   email?: string;
   plan?: string;
+  children?: ReactNode;
 }
 
 export default function SideBar(props: SideBarProps) {
@@ -51,7 +52,7 @@ export default function SideBar(props: SideBarProps) {
           <img
           src={expanded ? "/logos/large.svg" : "/logos/logo.svg"}
           alt="Logo made by RavexCode"
-          className={expanded ? "h-5" : "aspect-square w-3 md:w-5"}/>
+          className={"animate-fade-in-right " + (expanded ? "h-5" : "aspect-square w-3 md:w-5")}/>
         </a>
       </div>
       
@@ -61,13 +62,13 @@ export default function SideBar(props: SideBarProps) {
 
         <button
           onClick={() => setExpanded(prev => !prev)}
-          className="w-full flex justify-start items-center gap-2 px-2 py-2 rounded-lg hover:bg-ultramarine-800 cursor-pointer transition opacity-80">
+          className={"flex justify-start items-center gap-2 px-2 py-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-80 duration-800 " + (expanded ? "w-50 md:w-64" : "w-full")}>
           <IconLayoutSidebar
           size={23}
           stroke={2}
           color="white" />
 
-          {expanded && <span className="text-sm"> Close </span>}
+          {expanded && <span className="text-sm animate-fade-in-right"> Close </span>}
 
         </button>
 
@@ -104,6 +105,10 @@ export default function SideBar(props: SideBarProps) {
           stroke={2}
           color="white" />
         </Icon>
+
+        {
+          props.children
+        }
 
         <div
         className="mt-auto flex flex-col gap-1 pb-3">

@@ -119,11 +119,12 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest){
   try {
     //Gets the data
-    const { teamId, newName, newDescription } = await req.json();
+    const { teamId, newName, newDescription, newStatus, newTags } = await req.json();
+
     const token = (await headers()).get("Authorization");
 
     //Verifies if the data is OK
-    if(!teamId || !token || (!newName && !newDescription)) return NextResponse.json({
+    if(!teamId || !token || (!newName && !newDescription && newStatus && newTags)) return NextResponse.json({
       message: "Data sent error",
       error: "Bad request"
     }, {
@@ -173,192 +174,39 @@ export async function PUT(req: NextRequest){
     });
 
     //Verifies if the user is in the team
-    if(!team?.users_id.includes(user.id)) return NextResponse.json({
+    if(!team?.integrants_id.includes(user.id)) return NextResponse.json({
       message: "Oops... You aren't in the team",
       error: "Unauthorized"
     }, {
       status: 401
     });
 
-    //Do the function from the data inserted
-    if(newName && newDescription) {
-      //Saves the value in the DB
-      const { error: updateTeamError } = await supabase
-      .from("teams")
-      .update({
-        name: newName,
-        description: newDescription
-      })
-      .eq("team_id", teamId);
-
-      //Verifies if there's no error
-      if(updateTeamError) return NextResponse.json({
-        message: "Trying to update team error",
-        error: updateTeamError.message
-      }, {
-        status: 500
-      });
-
-      //if all is ok returns success msg
-      return NextResponse.json({
-        message: "Team updated in both data"
-      });
-    };
-
-
-    if(newName) {
-      //Saves the value in the DB
-      const { error: updateTeamError } = await supabase
-      .from("teams")
-      .update({
-        name: newName
-      })
-      .eq("team_id", teamId);
-
-      //Verifies if there's no error
-      if(updateTeamError) return NextResponse.json({
-        message: "Trying to update team error",
-        error: updateTeamError.message
-      }, {
-        status: 500
-      });
-
-      //if all is ok returns success msg
-      return NextResponse.json({
-        message: "Team name updated"
-      });
-    };
-
-
-    if(newDescription) {
-      //Saves the value in the DB
-      const { error: updateTeamError } = await supabase
-      .from("teams")
-      .update({
-        description: newDescription
-      })
-      .eq("team_id", teamId);
-
-      //Verifies if there's no error
-      if(updateTeamError) return NextResponse.json({
-        message: "Trying to update team error",
-        error: updateTeamError.message
-      }, {
-        status: 500
-      });
-
-      //if all is ok returns success msg
-      return NextResponse.json({
-        message: "Team description updated"
-      });
-    };
-
-    //Error handler
-    return NextResponse.json({
-      message: "An error has happened",
-      error: "Bad request",
-      data_inserted: {
-        name: newName,
-        description: newDescription
-      }
-    }, {
-      status: 500
-    });
-  } catch(e: any) {
-    //Server errors
-    return NextResponse.json({
-      message: "An error has happened in the server",
-      error: e.message
-    }, {
-      status: 500
-    });
-  }
-}
-
-//Delete the team function
-export async function DELETE(req: NextRequest){
-  try {
-    //Gets the data
-    const { teamId } = await req.json();
-    const token = (await headers()).get("Authorization");
-
-    //Verifies if the data is OK
-    if(!teamId || !token) return NextResponse.json({
-      message: "Data sent error",
-      error: "Bad request"
-    }, {
-      status: 403
-    });
-
-    //Gets the user from Supabase Auth
-    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
-
-    //Verifies if the user has been returned
-    if(!user) return NextResponse.json({
-      message: "User not found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
-
-    //Verifies if there's an error
-    if(getUserError) return NextResponse.json({
-      message: getUserError.message,
-      error: getUserError
-    }, {
-      status: 500
-    });
-
-    //Gets the team data
-    const { data: team, error: getTeamError } = await supabase
+    //Saves the value in the DB
+    const { error: updateTeamError } = await supabase
     .from("teams")
-    .select("*")
-    .eq("team_id", teamId)
-    .maybeSingle();
-
-    //Verifies if the team data has been gotten
-    if(!team) return NextResponse.json({
-      message: "The team doesn't exists",
-      error: "Not found"
-    }, {
-      status: 404
-    });
-
-    //Verifies if there's no error
-    if(getTeamError) return NextResponse.json({
-      message: "Trying to get team error",
-      error: getTeamError.message
-    }, {
-      status: 500
-    });
-
-    //Verifies if the user is in the team
-    if(!team?.users_id.includes(user.id)) return NextResponse.json({
-      message: "Oops... You aren't in the team",
-      error: "Unauthorized"
-    }, {
-      status: 401
-    });
-
-    //If all is ok, deletes the team
-    const { error: deleteTeamError } = await supabase
-    .from("teams")
-    .delete()
+    .update({
+      name: newName,
+      description: newDescription,
+      status: newStatus,
+      tags: newTags,
+    })
     .eq("team_id", teamId);
 
     //Verifies if there's no error
-    if(deleteTeamError) return NextResponse.json({
-      message: "Trying to get team error",
-      error: deleteTeamError.message
+    if(updateTeamError) return NextResponse.json({
+      message: "Trying to update team error",
+      error: updateTeamError.message
     }, {
       status: 500
     });
 
-    //If everything is fine, returns success message
+    //if all is ok returns success msg
     return NextResponse.json({
-      message: "Team deleted successfully"
+      message: "Team updated"
     });
   } catch(e: any) {
+    console.error(e);
+
     //Server errors
     return NextResponse.json({
       message: "An error has happened in the server",

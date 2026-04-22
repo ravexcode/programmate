@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v21.0:**
+  1. Dashboard *casi* completamente funcional, se pueden editar, eliminar, crear de manera **COMPLETA** en los projectos.
+  2. Se actualizó la ubicación del chat IA y el SideBar (/components/dashboard -> /components/ui).
+  3. Arreglo de errores en API e implementación de los tags y el status
+
 - **Indev v20.1:**
   1. Get started screen fix
   2. little Bugfixes in /api/teams, /dashboard, /settings

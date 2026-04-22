@@ -2,12 +2,12 @@
 "use client";
 
 //Prebuilt components
-import SideBar from "@/components/dashboard/sidebar";
+import SideBar from "@/components/ui/sidebar";
 
 //React imports
 import { useEffect, useState } from "react";
 import { deleteCookie } from "cookies-next";
-import AIChat from "@/components/dashboard/ai_chat";
+import AIChat from "@/components/ui/ai_chat";
 import { getCookie } from "cookies-next/client";
 
 //Config button
