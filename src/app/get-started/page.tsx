@@ -1,10 +1,10 @@
 //Client side
 "use client";
 
-import SnackBar from "@/components/containers/snackbar";
+import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
 import { getCookie } from "cookies-next/client";
 //React imports
-import { useState, KeyboardEvent, useRef, RefObject } from "react";
+import { useState, KeyboardEvent, useRef } from "react";
 
 export default function GetStarted() {
   //State handlers
@@ -21,40 +21,11 @@ export default function GetStarted() {
   const [emailInput, setEmailInput] = useState<string>("");
   const [integrants, setIntegrants] = useState<Array<string>>([]);
   
-  //Snackbar states
-  const [ message, setSnackBarMessage ] = useState<string>("");
-  const [ isError, setSnackBarIsError ] = useState<boolean>(false);
   //Snackbar container
-  const snackBar : RefObject<null> = useRef(null);
+  const snackBar = useRef<SnackbarRef>(null);
 
   //Constants
   const screens = 6;
-
-  //Show snackbar function
-  const showSnackBar = (
-    message: string,
-    isError: boolean
-  ) => {
-    //Verifies if snackbar is avaible
-    if(!snackBar.current) return;
-
-    //Current snackbar
-    const current : HTMLElement = snackBar.current;
-
-    //Shows snackbar
-    current.classList.remove("hidden");
-    //Shows data
-    setSnackBarMessage(message);
-    setSnackBarIsError(isError);
-
-    //Hides snackbar after 2 seconds
-    setTimeout(() => {
-      current.classList.add("hidden");
-      //Clears snackbar's data
-      setSnackBarMessage(message);
-      setSnackBarIsError(isError);
-    }, 2000)
-  }
 
   //Handlers for arrays
   const addTag = () => {
@@ -123,7 +94,7 @@ export default function GetStarted() {
       //Status error
       else {
         //Shows error snackbar
-        showSnackBar("User not found", true);
+        snackBar.current?.showSnackBar("User not found", true);
       }
     });
 
@@ -189,7 +160,7 @@ export default function GetStarted() {
     }
 
     //Else, returns error
-    showSnackBar(data.message, true);
+    snackBar.current?.showSnackBar(data.message, true);
     return newProject;
   }
 
@@ -210,10 +181,7 @@ export default function GetStarted() {
 
   return (
     <div className="w-screen overflow-hidden min-h-screen bg-[#0A0A0A] text-zinc-200 relative font-sans selection:bg-indigo-500/30">
-    <SnackBar
-    message={message}
-    isError={isError}
-    ref={snackBar}/>
+    <SnackBar />
       
       {/* Linear-style Subtle Background Glow */}
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden flex justify-center">

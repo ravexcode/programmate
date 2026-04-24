@@ -3,10 +3,12 @@ import { ReactNode, useState } from "react";
 
 //Icons imports
 import {
+  IconBolt,
   IconChecklist,
   IconLayoutDashboard,
   IconLayoutSidebar,
   IconSettings,
+  IconSparkles,
   IconUserCircle
 } from "@tabler/icons-react";
 
@@ -15,15 +17,16 @@ interface IconProps {
   action: string;
   name: string;
   isDisplayed: boolean;
-  children: ReactNode
+  children: ReactNode;
+  disabled?: boolean;
 }
 
 //Icon button component
-function Icon(props : IconProps) {
+export function Icon(props : IconProps) {
   return (
     <a
     href={props.action}
-    className={"flex justify-start items-center gap-2 px-2 py-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-80 duration-400 " + (props.isDisplayed ? "w-50 md:w-64" : "w-full")}>
+    className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-90 duration-400 " + (props.disabled && "grayscale brightness-50 pointer-events-none ") + (props.isDisplayed ? "w-46 md:w-60" : "w-full")}>
       {props.children}
       {props.isDisplayed && <span className="text-sm animate-fade-in-right"> {props.name} </span>}
     </a>
@@ -34,19 +37,21 @@ interface SideBarProps {
   email?: string;
   plan?: string;
   children?: ReactNode;
+  setExpanded?: (expanded : boolean) => void;
 }
+
 
 export default function SideBar(props: SideBarProps) {
   const [expanded, setExpanded] = useState(false);
-
+  
   return (
     <aside
-      className={`text-xs md:text-sm min-h-screen bg-neutral-950 text-text transition-all duration-300 flex flex-col animate-fade-in
+      className={`text-xs md:text-sm scrollbar-hide h-screen bg-neutral-950 text-text transition-all duration-400 flex flex-col animate-fade-in overflow-y-auto overflow-x-hidden 
         ${expanded ? "w-50 md:w-64" : "w-12 md:w-16"}
       `}>
 
       <div
-      className="px-3 pt-3 flex flex-col justify-center items-center mt-1 mb-3">
+      className="p-2 md:p-3 flex flex-col justify-center items-center mt-1 mb-3">
         <a href="/"
         className="duration-300 hover:scale-105 hover:brightness-120">
           <img
@@ -61,8 +66,11 @@ export default function SideBar(props: SideBarProps) {
       <div className="px-3">
 
         <button
-          onClick={() => setExpanded(prev => !prev)}
-          className={"flex justify-start items-center gap-2 px-2 py-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-80 duration-800 " + (expanded ? "w-50 md:w-64" : "w-full")}>
+          onClick={() => {
+            setExpanded(prev => !prev)
+            props.setExpanded && props.setExpanded(expanded);
+          }}
+          className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-90 duration-800 " + (expanded ? "w-46 md:w-60" : "w-full")}>
           <IconLayoutSidebar
           size={23}
           stroke={2}
@@ -75,7 +83,7 @@ export default function SideBar(props: SideBarProps) {
       </div>
 
       {/* Items */}
-      <nav className="flex flex-col gap-1 px-3 h-full">
+      <nav className="flex flex-col gap-1 px-3 h-full duration-400">
 
         <Icon
         action="/dashboard"
@@ -87,18 +95,11 @@ export default function SideBar(props: SideBarProps) {
           color="white" />
         </Icon>
 
-        {
-          expanded && (
-            <span
-            className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
-              User
-            </span>
-          )
-        }
+        { expanded && ( <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right"> User </span> ) }
 
         <Icon
         action="/to-do-list"
-        name="ToDo list"
+        name="To Do lists"
         isDisplayed={expanded} >
           <IconChecklist
           size={23}
@@ -112,6 +113,28 @@ export default function SideBar(props: SideBarProps) {
 
         <div
         className="mt-auto flex flex-col gap-1 pb-3">
+          {
+            props.plan === "free" && expanded && (
+              <div
+              className="w-full border-2 border-neutral-600 rounded-md p-2 bg-neutral-900 w-40 md:w-60 animate-fade-in-right mt-10">
+                <div className="w-full flex items-center gap-1 pt-1">
+                  <IconBolt
+                  size={23}
+                  stroke={2}
+                  color="#2b5ffb"/>
+                  <p className="font-semibold text-wrap text-center bg-gradient-to-r from-main via-blue-200 to-blue-500 w-max bg-clip-text text-transparent text-lg"> Get plan pro </p>
+                </div>
+                <p className="text-text/60 text-sm pb-2 px-1">
+                  Upgrade your projects workflow with a monhtly subscription
+                </p>
+                <button
+                className="bg-main rounded-md w-full px-2 py-1 cursor-pointer text-center duration-400 hover:brightness-80">
+                  Upgrade now
+                </button>
+              </div>
+            )
+          }
+
           {
             expanded && (
               <span

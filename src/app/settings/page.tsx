@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { deleteCookie } from "cookies-next";
 import AIChat from "@/components/ui/ai_chat";
 import { getCookie } from "cookies-next/client";
+import User from "@/modules/user.types";
 
 //Config button
 function ConfigButton({
@@ -30,10 +31,7 @@ function ConfigButton({
 export default function ConfigurationPage(){
   //State handlers
   //User data
-  const [ user, setUserData ] = useState<{
-    email: string,
-    name: string
-  }>();
+  const [ user, setUserData ] = useState<User>();
   //Is confirmation section visible
   const [ isConfirmationVisible, setIsConfirmationVisible ] = useState<boolean>(false);
   //Confirmation text
@@ -161,7 +159,8 @@ export default function ConfigurationPage(){
       </div>
 
       <SideBar
-      email={user?.email}/>
+      email={user?.email}
+      plan={user?.plan}/>
 
       <AIChat />
 

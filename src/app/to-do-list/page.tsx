@@ -12,7 +12,7 @@ import SideBar from "@/components/ui/sidebar";
 import CreatorForm from "@/components/forms/creatorForm";
 import CreatorInput from "@/components/forms/creatorInputs";
 import AIChat from "@/components/ui/ai_chat";
-import SnackBar from "@/components/containers/snackbar";
+import SnackBar from "@/components/ui/snackbar";
 
 //Types imports
 import { UserData } from "@/types/user.types";

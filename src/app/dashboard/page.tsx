@@ -20,7 +20,7 @@ import LoadingDashboard from "@/components/screens/loading_dashboard";
 import AIChat from "@/components/ui/ai_chat";
 import CreatorForm from "@/components/forms/creatorForm";
 import CreatorInput from "@/components/forms/creatorInputs";
-import SnackBar from "@/components/containers/snackbar";
+import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
 
 //Modules imports
 import { getCookie } from "cookies-next";
@@ -174,12 +174,6 @@ export default function Dashboard(){
   //Current tag
   const [ currentTag, setCurrentTag ] = useState<string | null>(null);
 
-  //Snackbar
-  //Message
-  const [ snackBarMessage, setSnackBarMessage ] = useState<string | null>(null);
-  //Status
-  const [ snackBarIsError, setSnackBarIsError ] = useState<boolean>(false);
-
   //Projects options state
   const [ openMenuIndex, setOpenMenuIndex ] = useState<number | null>(null);
 
@@ -208,7 +202,7 @@ export default function Dashboard(){
   const project_container : RefObject<null> = useRef(null);
 
   //Snackbar container
-  const snackBar : RefObject<null> = useRef(null);
+  const snackbarRef = useRef<SnackbarRef>(null);
 
   //Project editor
   const project_edit_container : RefObject<null> = useRef(null);
@@ -228,32 +222,6 @@ export default function Dashboard(){
     //Remove the event listener
     return () => document.removeEventListener("click", closeMenu);
   }, []);
-
-  //Show snackbar function
-  const showSnackBar = (
-    message: string,
-    isError: boolean
-  ) => {
-    //Verifies if snackbar is avaible
-    if(!snackBar.current) return;
-
-    //Current snackbar
-    const current : HTMLElement = snackBar.current;
-
-    //Shows snackbar
-    current.classList.remove("hidden");
-    //Shows data
-    setSnackBarMessage(message);
-    setSnackBarIsError(isError);
-
-    //Hides snackbar after 2 seconds
-    setTimeout(() => {
-      current.classList.add("hidden");
-      //Clears snackbar's data
-      setSnackBarMessage(message);
-      setSnackBarIsError(isError);
-    }, 2000)
-  }
 
   //Gets user data
   useEffect(() => {
@@ -412,7 +380,7 @@ export default function Dashboard(){
     }
 
     //Else, returns error
-    showSnackBar(data.message, true);
+    snackbarRef.current?.showSnackBar(data.message, true);
     setIsLoading(false);
     return;
   }
@@ -477,11 +445,11 @@ export default function Dashboard(){
       }
 
       //Error handler
-      showSnackBar(data.message!, true);
+      snackbarRef.current?.showSnackBar(data.message!, true);
       return;
     } catch(e: any) {
       console.log(e);
-      showSnackBar(e.message, true);
+      snackbarRef.current?.showSnackBar(e.message, true);
       return;
     }
   };
@@ -548,11 +516,11 @@ export default function Dashboard(){
       }
 
       //Error handler
-      showSnackBar(data.message!, true);
+      snackbarRef.current?.showSnackBar(data.message!, true);
       return;
     } catch(e: any) {
       console.log(e);
-      showSnackBar(e.message, true);
+      snackbarRef.current?.showSnackBar(e.message, true);
       return;
     }
   }
@@ -561,10 +529,7 @@ export default function Dashboard(){
     <div className="min-h-screen bg-background grid grid-cols-[auto_1fr] overflow-hidden text-text">
       {/* Layout sections */}
       <AIChat />
-      <SnackBar
-      message={snackBarMessage}
-      isError={snackBarIsError}
-      ref={snackBar}/>
+      <SnackBar />
 
 
       {/* Project editor form */}
@@ -995,7 +960,7 @@ export default function Dashboard(){
       {
         user && user.email ? (
           <>
-            <SideBar email={user.email} />
+            <SideBar email={user.email} plan={user.plan}/>
             <main className="relative flex flex-col h-screen overflow-y-auto px-4 md:px-8 animate-fade-in">
               {
                 user.plan && (

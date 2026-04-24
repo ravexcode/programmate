@@ -1,5 +1,12 @@
 # Indev
 
+- **Indev 22.0:**
+  1. Se movió el snackbar de lugar (/components/containers -> /components/ui). 📁
+  2. Dashboard de projectos iniciado. ⚙️ 
+  3. Código del snackbar refactorizado. 🛠️
+  4. ruta GET de /api/teams creada. ⚙️
+  5. Arreglos menores al refactorizar el navbar. 🪲
+
 - **Indev v21.0:**
   1. Dashboard *casi* completamente funcional, se pueden editar, eliminar, crear de manera **COMPLETA** en los projectos.
   2. Se actualizó la ubicación del chat IA y el SideBar (/components/dashboard -> /components/ui).
