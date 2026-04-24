@@ -58,7 +58,16 @@ export default function TicketsTeamPage(){
 
         <header
         className="text-2xl h-max py-4 px-8 border-b border-neutral-600 flex justify-between items-center">
-          { team.name } Tickets
+          <div
+          className="flex gap-2 justify-center items-center">
+            <a
+            href={`/teams/${team.team_id}`}>
+              <IconArrowLeft
+              size={25}
+              stroke={2} />
+            </a>
+            <p> { team.name } Tickets </p>
+          </div>
 
           <a
           href={`/teams/${team.team_id}/tickets/create`}
@@ -74,8 +83,8 @@ export default function TicketsTeamPage(){
             team.tickets && team.tickets.length > 0 ? team.tickets.map((ticket: any, index: number) =>
               <article
               key={index}
-              className="group relative bg-neutral-900/50 border border-neutral-800 hover:border-main/50 rounded-xl p-5 w-full max-w-sm transition-all duration-300 shadow-sm hover:shadow-main/5"
-            >
+              className="group relative bg-neutral-900/50 border border-neutral-800 hover:border-main/50 rounded-xl p-5 w-full max-w-sm transition-all duration-300 shadow-sm hover:shadow-main/5 cursor-pointer"
+              onClick={() => { window.location.href = `/teams/${team.team_id}/tickets/${index}` }}>
               <div className="absolute left-0 top-1/2 -translate-y-1/2 h-10 w-1 bg-main/40 rounded-r-full opacity-0 group-hover:opacity-100 transition-opacity" />
 
               <div className="flex flex-col gap-4">

@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v23.1:**
+  1. Arreglo de errores graves. 🪲
+  2. Mejoras pequeñas. 🛠️
+  3. Nueva página para ver los tickets. ✅
+
 - **Indev v23.0:**
   1. Rutas de tickets (crear, eliminar, actualizar) creados. 🛠️
   2. Formulario para crear tickets creados. ✅

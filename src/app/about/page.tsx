@@ -86,7 +86,7 @@ export default function AboutPage(){
             <FeaturesCard
             title="Ticket creator"
             description="Your teammates and your work organized in tickets!"
-            image_url="/images/dashboard.png" />
+            image_url="/images/tickets.png" />
             
             <FeaturesCard
             title="JSON Editor"

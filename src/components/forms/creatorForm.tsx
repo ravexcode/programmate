@@ -1,9 +1,11 @@
 interface CreatorFormProps {
-  action: (e : any) => void,
-  title: string,
-  children: React.ReactNode,
-  hideAction?: () => void,
-  actionIsDisabled?: boolean,
+  action: (e : any) => void;
+  title: string;
+  children?: React.ReactNode;
+  hideAction?: () => void;
+  actionIsDisabled?: boolean;
+  confirmMessage?: string;
+  isDangerous?: boolean;
 }
 
 export default function CreatorForm(props: CreatorFormProps) {
@@ -16,7 +18,7 @@ export default function CreatorForm(props: CreatorFormProps) {
       e.nativeEvent.stopImmediatePropagation();
       e.stopPropagation();
     }}
-    className="animate-fade-in-up w-100 bg-neutral-900 rounded-lg px-6 py-4 flex flex-col justify-center items-center my-auto">
+    className="animate-fade-in-up w-100 bg-neutral-900 rounded-lg px-6 py-4 flex flex-col justify-center items-center my-auto text-text">
 
       <h2
       className="text-lg w-full text-start mb-3">
@@ -35,9 +37,9 @@ export default function CreatorForm(props: CreatorFormProps) {
         </button>
 
         <button type="submit"
-        className="px-4 py-1 rounded-md bg-main duration-200 hover:brightness-80 cursor-pointer disabled:brightness-50 disabled:cursor-not-allowed disabled:hover:brightness-50"
+        className={"px-4 py-1 rounded-md duration-200 hover:brightness-80 cursor-pointer disabled:brightness-50 disabled:cursor-not-allowed disabled:hover:brightness-50 " + (props.isDangerous ? "bg-red-600" : "bg-main")}
         disabled={props.actionIsDisabled}>
-          Create
+          { props.confirmMessage ?? "Create" }
         </button>
       </div>
     </form>

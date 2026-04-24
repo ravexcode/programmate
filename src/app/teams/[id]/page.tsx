@@ -91,7 +91,6 @@ export default function TeamPage(){
     //Sets data
     setUser(parsed);
 
-
     //Gets team data
     searchTeamData(
       snackbar,
@@ -155,7 +154,7 @@ export default function TeamPage(){
             action="/"
             name="ERD Creator"
             isDisplayed={expanded}
-            disabled={ user?.plan === "free" }>
+            disabled={ user?.plan === "Free" }>
               <IconDatabase
               size={23}
               stroke={2}
@@ -166,7 +165,7 @@ export default function TeamPage(){
             action="/"
             name="Chat"
             isDisplayed={expanded}
-            disabled={ user?.plan === "free" }>
+            disabled={ user?.plan === "Free" }>
               <IconMessage
               size={23}
               stroke={2}
@@ -177,7 +176,7 @@ export default function TeamPage(){
             action="/"
             name="JSON Preview"
             isDisplayed={expanded}
-            disabled={ user?.plan === "free" }>
+            disabled={ user?.plan === "Free" }>
               <IconEye
               size={23}
               stroke={2}
@@ -188,7 +187,7 @@ export default function TeamPage(){
             action="/"
             name="Kanban board"
             isDisplayed={expanded}
-            disabled={ user?.plan === "free" }>
+            disabled={ user?.plan === "Free" }>
               <IconLayoutKanban
               size={23}
               stroke={2}
@@ -199,7 +198,7 @@ export default function TeamPage(){
             action="/"
             name="Calendar"
             isDisplayed={expanded}
-            disabled={ user?.plan === "free" }>
+            disabled={ user?.plan === "Free" }>
               <IconCalendar
               size={23}
               stroke={2}
@@ -241,7 +240,18 @@ export default function TeamPage(){
 
               <p
               className="text-sm opacity-80 font-light mt-2">
-                Team ID: {team?.team_id}
+                Team ID: {team.team_id}
+              </p>
+
+              <p
+              className="mt-1 flex gap-2 justify-center items-center w-max rounded-full text-sm">
+                <span className={"w-1.5 h-1.5 rounded-full block " + (
+                  team.status === "Backlog" ? "bg-zinc-500" :
+                  team.status === "Planning" ? "bg-blue-400" :
+                  team.status === "In Progress" ? "bg-orange-400" :
+                  team.stratus === "On Hold" ? "bg-red-400" :
+                  "bg-purple-500" ) }></span>
+                { team?.status }
               </p>
             </section>
 

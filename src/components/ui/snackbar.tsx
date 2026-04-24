@@ -28,19 +28,19 @@ const SnackBar = forwardRef<SnackbarRef, SnackbarProps>((_, ref) => {
       // Show snackbar
       current.classList.remove("hidden");
 
-      // Hide after 2 sec
+      // Hide after 3 sec
       setTimeout(() => {
         current.classList.add("hidden");
         setsbmsg("");
         setsbie(false);
-      }, 2000);
+      }, 3000);
     },
   }));
 
   return (
     <span
       ref={snackbar}
-      className={`hidden fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-md text-white animate-fade-in-up ${
+      className={`hidden fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-md text-white animate-fade-in-up z-99 ${
         sbie ? "bg-red-700" : "bg-green-700"
       }`}
     >

@@ -7,6 +7,7 @@ import Footer from "@/components/ui/footer";
 import IconCarousel from "@/components/icon_carrousel";
 //Custom components
 import SmoothProvider from "@/lib/components/lennis";
+import { IconCheck } from "@tabler/icons-react";
 
 function Card(props: any) {
   return (
@@ -28,7 +29,7 @@ function Card(props: any) {
 function PricingCard(props: any){
   return (
     <div
-    className={"flex flex-col px-6 py-4 rounded-xl h-100 shadow-lg shadow-ultramarine-950/50 mb-10 w-60 timeline-[view(y)] animate-fade-in animate-range-[entry_0%_cover_30%] relative bg-neutral-950 " + ( props.isRecomended && "scale-110" )}>
+    className={"flex flex-col px-6 py-4 rounded-xl h-100 shadow-lg shadow-ultramarine-950/50 mb-10 w-60 timeline-[view(y)] animate-fade-in animate-range-[entry_0%_cover_30%] relative border-2 border-neutral-800 bg-neutral-950 " + ( props.isRecomended && "scale-110" )}>
       {props.isRecomended ? (
         <div>
           <span
@@ -47,8 +48,8 @@ function PricingCard(props: any){
       {props.benefits.map((value : any, index : any) => (
         <div
         key={"price_" + props.plan + "_" + index}
-        className="text-text/80">
-          ✓ {value}
+        className="text-text/80 justify-start items-center flex gap-1">
+          <IconCheck size={18} /> {value}
         </div>
       ))}
 
@@ -162,6 +163,7 @@ export default function HomePage(){
               "Unlimited proyects",
               "ERD Tool",
               "JSON viewer tool",
+              "Prismaflow AI +"
             ]}/>
 
             <PricingCard

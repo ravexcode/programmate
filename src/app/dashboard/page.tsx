@@ -188,8 +188,6 @@ export default function Dashboard(){
   const [ newTeamTags, setNewTeamTags ] = useState<Array<string>>([]);
   //New current tags
   const [ newTeamCurrentTag, setNewTeamCurrentTag ] = useState<string>("");
-  //Loading status
-  const [ newTeamFormIsLoading, setNewTeamFormIsLoading ] = useState<boolean>(false);
   //Team selected data
   const [ selectedTeamData, setSelectedTeamData ] = useState<any>();
   //New status
