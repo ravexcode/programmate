@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v23.0:**
+  1. Rutas de tickets (crear, eliminar, actualizar) creados. 🛠️
+  2. Formulario para crear tickets creados. ✅
+  3. Bugfix menores. 🖼️
+
 - **Indev 22.0:**
   1. Se movió el snackbar de lugar (/components/containers -> /components/ui). 📁
   2. Dashboard de projectos iniciado. ⚙️ 

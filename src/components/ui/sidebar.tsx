@@ -114,7 +114,7 @@ export default function SideBar(props: SideBarProps) {
         <div
         className="mt-auto flex flex-col gap-1 pb-3">
           {
-            props.plan === "free" && expanded && (
+            props.plan === "Free" && expanded && (
               <div
               className="w-full border-2 border-neutral-600 rounded-md p-2 bg-neutral-900 w-40 md:w-60 animate-fade-in-right mt-10">
                 <div className="w-full flex items-center gap-1 pt-1">

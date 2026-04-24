@@ -16,14 +16,26 @@ export default function CreatorInput(props: CreatorInputProps) {
           props.required && <span className="text-red-600">*</span>
         }
       </label>
-      <input
-      required={props.required}
-      type={props.type || "text"}
-      placeholder={props.placeholder}
-      className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400"
-      onChange={(e) => {
-        props.onChange(e);
-      }}/>
+      {
+        props.type === "textarea" ? (
+          <textarea
+          required={props.required}
+          placeholder={props.placeholder}
+          className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400 min-h-50 max-h-50"
+          onChange={(e) => {
+            props.onChange(e);
+          }}/>
+        ) : (
+          <input
+          required={props.required}
+          type={props.type || "text"}
+          placeholder={props.placeholder}
+          className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400"
+          onChange={(e) => {
+            props.onChange(e);
+          }}/>
+        )
+      }
     </>
   )
 }

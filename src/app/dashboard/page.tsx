@@ -131,7 +131,7 @@ function ProjectCard(props : ProjectCardProps) {
       </p>
       
       <div
-      className="flex gap-2 mt-2">
+      className="flex gap-2 mt-2 flex-wrap">
         {
           props.tags && props.tags.map((tag: string, index) => (
             <div

@@ -6,7 +6,7 @@ import { useParams } from "next/navigation"
 import { getCookie } from "cookies-next/client";
 
 //React imports
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, RefObject } from "react";
 
 //Types imports
 import User from "@/modules/user.types";
@@ -30,6 +30,42 @@ import {
   IconUsers
 } from "@tabler/icons-react";
 
+//Functions for export
+//Function for search team data
+export async function searchTeamData (snackbar : RefObject<SnackbarRef | null>, params: any, setTeam: any) {
+  //Gets user's token
+  const token : string | undefined = await getCookie("token");
+
+  //If token isn't returned sends to login
+  if(!token) return window.location.href = "/auth/login";
+
+  //Gets the response from fetch
+  const res = await fetch(`/api/teams/${params.id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": token,
+      "x-api-key": process.env.NEXT_PUBLIC_API_KEY!
+    }
+  });
+
+  //Process the data from response
+  const data = await res.json();
+
+  //Verifies status
+  if(res.status === 200) {
+    //Sets team data
+    setTeam(data.team);
+    //Debug
+    console.log(data.team);
+    return;
+  }
+  
+  //If there's an error shows it
+  snackbar.current?.showSnackBar(data.message, true);
+  return;
+}
+
 export default function TeamPage(){
   //URL id
   const params = useParams();
@@ -45,41 +81,6 @@ export default function TeamPage(){
   //Snackbar container
   const snackbar = useRef<SnackbarRef>(null);
 
-  //Function for search team data
-  const searchData = async() => {
-    //Gets user's token
-    const token : string | undefined = await getCookie("token");
-
-    //If token isn't returned sends to login
-    if(!token) return window.location.href = "/auth/login";
-
-    //Gets the response from fetch
-    const res = await fetch(`/api/teams/${params.id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": token,
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY!
-      }
-    });
-
-    //Process the data from response
-    const data = await res.json();
-
-    //Verifies status
-    if(res.status === 200) {
-      //Sets team data
-      setTeam(data.team);
-      //Debug
-      console.log(data.team);
-      return;
-    }
-    
-    //If there's an error shows it
-    snackbar.current?.showSnackBar(data.message, true);
-    return;
-  }
-
   //Sets the data
   useEffect(() => {
     //Gets user from cache
@@ -92,7 +93,11 @@ export default function TeamPage(){
 
 
     //Gets team data
-    searchData();
+    searchTeamData(
+      snackbar,
+      params,
+      setTeam
+    );
   }, []);
   
   return (
@@ -127,7 +132,7 @@ export default function TeamPage(){
             </Icon>
 
             <Icon
-            action="/"
+            action={`/teams/${team.team_id}/tickets`}
             name="Tickets"
             isDisplayed={expanded}>
               <IconFolder
@@ -275,7 +280,7 @@ export default function TeamPage(){
                       className="flex flex-col text-neutral-500 justfiy-cente items-center py-8">
                         <IconUsers
                         size={40}
-                        stroke={2} />
+                        stroke={1} />
                         <p className="text-center">No members found</p>
                       </div>
                     )}
@@ -295,26 +300,33 @@ export default function TeamPage(){
                   </h3>
                 </header>
 
-                <ul className="space-y-1 cursor-default">
+                <ul className="space-y-1 cursor-default px-6 py-2">
                     {team.tickets && team.tickets.length > 0 ? (
-                      team.tickets.map((ticket: string, index: number) => (
+                      team.tickets.map((ticket: any, index: number) => (
                         <li
-                          key={index}
-                          className="grid grid-cols-2 gap-4 py-3 px-2 rounded-lg transition-colors hover:bg-white/5 items-center group truncate">
-                            { ticket }
-                        </li>
+                        key={index}
+                        className="grid grid-cols-2 items-center gap-4 px-4 py-3 rounded-xl border border-white/5 bg-white/[0.02] text-sm text-neutral-200 transition-all duration-200 hover:bg-white/[0.05] hover:border-white/10 hover:shadow-md group cursor-pointer overflow-hidden mb-2"
+                      >
+                        <span className="truncate font-medium text-white">
+                          {ticket.creator}
+                        </span>
+
+                        <span className="truncate text-right text-neutral-400 group-hover:text-neutral-200 transition-colors">
+                          → {ticket.to}
+                        </span>
+                      </li>
                       ))
                     ) : (
                       <div
                       className="flex flex-col text-neutral-500 justfiy-center items-center py-10">
                         <IconFolderCancel
                         size={40}
-                        stroke={2} />
+                        stroke={1} />
                         <p className="text-center">No Tickets Made yet</p>
 
                         <a
-                        href={`/teams/${team.team_id}/tickets`}
-                        className="px-4 py-1 mt-3 rounded-md text-text/70 bg-main/60 duration-400 cursor-pointer hover:bg-main hover:text-text">
+                        href={`/teams/${team.team_id}/tickets/create`}
+                        className="px-4 py-1 mt-3 rounded-lg text-text/70 border-2 border-main/60 duration-400 cursor-pointer hover:border-main hover:text-text">
                           Create new <span className="font-bold relative -top-0.5 ml-1">+</span>
                         </a>
                       </div>
