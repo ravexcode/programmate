@@ -1,10 +1,9 @@
 export interface Ticket {
-  id: string; //Who is this guy? 😭
-  creator: string; //Email
+  creator: string | null; //Username
   to: string; //Email
   message: string;
   importance: "High" | "Medium" | "Low"; //Valid values
-  created_at: string;
+  created_at?: string;
 }
 
 export interface IntegrantData {

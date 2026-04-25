@@ -6,14 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 
 //Types
-interface Ticket {
-  id: string;
-  creator: string;
-  to: string;
-  message: string;
-  importance: string;
-  created_at: string;
-}
+import { Ticket } from "@/types/team.types";
+import { Decrypt, Encrypt } from "@/functions/crypto";
 
 //Get all tickets from a team
 export async function GET(req: NextRequest, { params }: { params: { teamId: Promise<string | null | undefined> }}){
@@ -80,10 +74,22 @@ export async function GET(req: NextRequest, { params }: { params: { teamId: Prom
       status: 401
     });
 
+    //Decrypt all the tickets
+    //Const for decrypted
+    const decrypted_tickets : Array<Ticket> | null = [];
+    //Team tickets decrypts for all
+    team.tickets && team.tickets.forEach(( ticket: Ticket ) => {
+      //Decrypts the ticket
+      ticket.message = Decrypt(ticket.message);
+
+      //Sets in decrypted tickets
+      decrypted_tickets.push(ticket);
+    });
+
     //If all is ok, returns the tickets
     return NextResponse.json({
       message: "Tickets retrieved successfully",
-      tickets: team.tickets || []
+      tickets: decrypted_tickets || []
     });
   } catch(e: any) {
     console.error(e);
@@ -163,12 +169,13 @@ export async function POST(req: NextRequest, { params }: { params: { teamId: Pro
       status: 401
     });
 
+    const encrypted_message : string = Encrypt(message);
+
     //Create new ticket
     const newTicket: Ticket = {
-      id: `ticket_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       creator,
       to,
-      message,
+      message: encrypted_message,
       importance,
       created_at: new Date().toISOString()
     };
@@ -217,11 +224,11 @@ export async function PUT(req: NextRequest, { params }: { params: { teamId: Prom
   try {
     //Gets the data
     const { teamId } = await params;
-    const { ticketId, creator, to, message, importance } = await req.json();
+    const { ticketIndex, to, message, importance } = await req.json();
     const token = (await headers()).get("Authorization");
 
     //Verifies if the data is OK
-    if(!teamId || !token || !ticketId) return NextResponse.json({
+    if(!teamId || !token || !ticketIndex) return NextResponse.json({
       message: "Data sent error",
       error: "Bad request"
     }, {
@@ -278,21 +285,19 @@ export async function PUT(req: NextRequest, { params }: { params: { teamId: Prom
       status: 401
     });
 
-    //Find and update ticket
-    const tickets = team.tickets || [];
-    const ticketIndex = tickets.findIndex((t: Ticket) => t.id === ticketId);
-
-    if(ticketIndex === -1) return NextResponse.json({
-      message: "Ticket not found",
+    if(team.tickets === undefined || team.tickets === null) return NextResponse.json({
+      message: "The team has'nt tickets",
       error: "Not found"
     }, {
       status: 404
     });
 
+    //Find and update ticket
+    const tickets = team.tickets;
+
     //Update ticket fields if provided
-    if(creator) tickets[ticketIndex].creator = creator;
     if(to) tickets[ticketIndex].to = to;
-    if(message) tickets[ticketIndex].message = message;
+    if(message) tickets[ticketIndex].message = Encrypt(message);
     if(importance) tickets[ticketIndex].importance = importance;
 
     //Update team with modified tickets
@@ -310,6 +315,8 @@ export async function PUT(req: NextRequest, { params }: { params: { teamId: Prom
     }, {
       status: 500
     });
+
+    tickets[ticketIndex].message = Decrypt(tickets[ticketIndex].message)
 
     //If all is ok, returns success message
     return NextResponse.json({

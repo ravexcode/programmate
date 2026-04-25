@@ -1,9 +1,19 @@
 //Client side
 "use client";
 
+//React imports
 import { useState, useEffect, useRef, RefObject } from "react";
-import { useParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
+
+//Next imports
+import { useParams } from "next/navigation";
+import { getCookie } from "cookies-next/client";
+
+//Prebuild ui imports
+import CreatorForm from "@/components/forms/creatorForm";
+import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
+
+//Icons imports
 import { 
   IconArrowLeft, 
   IconEdit, 
@@ -12,24 +22,35 @@ import {
   IconX, 
   IconTicket 
 } from "@tabler/icons-react";
-import { getCookie } from "cookies-next/client";
-import { searchTeamData } from "../../page";
-import CreatorForm from "@/components/forms/creatorForm";
-import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
+
+//Services imports
+import { searchTeamData } from "@/app/teams/[id]/page";
+import Team, { Ticket } from "@/types/team.types";
+import LoadingDashboard from "@/components/screens/loading_dashboard";
 
 export default function TicketView() {
+  //Params data
   const params = useParams();
   const ticketIndex = parseInt(params.index as string);
 
-  const [user, setUser] = useState<any>();
-  const [team, setTeam] = useState<any>();
+  //States handlers
+  //Team data
+  const [team, setTeam] = useState<Team>();
+  //Ticket data
+  const [ ticket, setTicket ] = useState<Ticket | null>();
+  //Editing values
+  //Editing loading state
+  const [ isLoading, setIsLoading ] = useState(false);
+  //Editing or not state
   const [isEditing, setIsEditing] = useState(false);
+  //Ticket made for
+  const [ ticketTo, setTicketTo ] = useState<string>("");
+  //Ticket message
+  const [ ticketMessage, setTicketMessage ] = useState<string>("");
+  //Ticket importance
+  const [importance, setImportance] = useState<"Low" | "Medium" | "High">("Low");
+  //Confirmation enabled/disabled state
   const [ formDisabled, setFormDisabled ] = useState<boolean>(false);
-  
-  const [formData, setFormData] = useState({
-    to: "",
-    description: ""
-  });
 
   const snackbar = useRef<SnackbarRef>(null);
   const containerRef : RefObject<null> = useRef(null);
@@ -51,53 +72,59 @@ export default function TicketView() {
   };
 
   useEffect(() => {
-    const cached = window.localStorage.getItem("user");
-    if (!cached) window.location.href = "/auth/login";
-    
-    const parsed = JSON.parse(cached!);
-    setUser(parsed);
- 
-    searchTeamData(
-      snackbar,
-      params,
-      setTeam
-    );
+    const getTeamData = async() => {
+      const team = await searchTeamData(
+        snackbar,
+        params,
+        setTeam
+      );
+
+      setTicket(team?.tickets[ticketIndex]);
+      setTicketTo(team?.tickets[ticketIndex].to);
+      setTicketMessage(team?.tickets[ticketIndex].message);
+    }
+
+    getTeamData()
   }, []);
 
-  const fetchTeamData = async () => {
+  const handleUpdate = async () => {
+    setIsLoading(true);
     const token = await getCookie("token");
 
-    try {
-      const res = await fetch(`/api/teams/${params.id}/tickets/`, {
-        method: "GET",
-        headers: {
-          "Content-type": "application/json",
-          "Authorization": token!,
-          "x-api-key": process.env.NEXT_PUBLIC_API_KEY!
-        }
-      });
+    if(!token) window.location.href = "/auth/login";
 
-      const data = await res.json();
-      setTeam({ ...team, tickets: data });
-      
-      const currentTicket = data[ticketIndex];
-      if (currentTicket) {
-        setFormData({
-          to: currentTicket.to || "",
-          description: currentTicket.message || ""
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching tickets", error);
+    const updatedTicket = {
+      to: ticketTo,
+      message: ticketMessage,
+      importance: importance,
+      ticketIndex: params.index,
     }
-  };
 
-  const handleUpdate = async () => {
-    try {
-      // await fetch(`/api/teams/${params.team_id}/tickets/`, { method: "PUT", body: JSON.stringify({ index: ticketIndex, ...formData }) })
+    const res = await fetch(`/api/teams/${params.id}/tickets`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": token!,
+        "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+      },
+      body: JSON.stringify(updatedTicket)
+    });
+
+    const data = await res.json();
+
+    if(res.status === 200) {
+      setTicket(data.ticket);
+      setTicketMessage(data.ticket.message);
+      setTicketTo(data.ticket.to);
+      setImportance(data.ticket.importance);
+      setIsLoading(false);
       setIsEditing(false);
-    } catch (error) {
+      return;
     }
+
+    snackbar.current?.showSnackBar(data.message, true);
+    setIsLoading(false);
+    return;
   };
 
   const handleDelete = async (e: React.SubmitEvent) => {
@@ -129,113 +156,110 @@ export default function TicketView() {
     setFormDisabled(true);
   };
 
-  // Validaciones de carga
-  if (!team || !team.tickets) return <div className="text-neutral-500 p-10 text-center">Cargando...</div>;
-  
-  const ticket = team.tickets[ticketIndex];
-  if (!ticket) return <div className="text-neutral-500 p-10 text-center">Ticket no encontrado</div>;
-
   return (
-    <div className="max-w-3xl mx-auto p-6 space-y-6">
-      <SnackBar ref={snackbar} />
+    team ? ( <div className="max-w-3xl mx-auto p-6 space-y-6">
+        <SnackBar ref={snackbar} />
 
-      <div
-      ref={containerRef}
-      className="fixed w-screen h-screen flex justify-center items-center z-10 backdrop-blur backdrop-brightness-70 top-0 left-0 animate-fade-in hidden">
-        <CreatorForm
-        title="Are you sure to delete this ticket?"
-        action={(e) => { handleDelete(e) }}
-        hideAction={hideConfirmation}
-        confirmMessage="Delete"
-        isDangerous
-        actionIsDisabled={formDisabled}/>
-      </div>
+        <div
+        ref={containerRef}
+        className="fixed w-screen h-screen flex justify-center items-center z-10 backdrop-blur backdrop-brightness-70 top-0 left-0 animate-fade-in hidden">
+          <CreatorForm
+          title="Are you sure to delete this ticket?"
+          action={(e) => { handleDelete(e) }}
+          hideAction={hideConfirmation}
+          confirmMessage="Delete"
+          isDangerous
+          actionIsDisabled={formDisabled}/>
+        </div>
 
-      {/* Header con botón de regreso y acciones */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => window.location.href = `/teams/${params.id}/tickets`}
-            className="p-2 hover:bg-neutral-800 rounded-full transition-colors text-neutral-400 hover:text-white"
-          >
-            <IconArrowLeft size={24} />
-          </button>
-          <div className="flex items-center gap-3">
-            <div className="bg-main/10 p-2 rounded-lg">
-              <IconTicket size={24} color="blue" />
+        {/* Header con botón de regreso y acciones */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => window.location.href = `/teams/${params.id}/tickets`}
+              className="p-2 hover:bg-neutral-800 rounded-full transition-colors text-neutral-400 hover:text-white cursor-pointer">
+              <IconArrowLeft size={24} />
+            </button>
+            <div className="flex items-center gap-3">
+              <div className="bg-main/10 p-2 rounded-lg">
+                <IconTicket size={24} color="blue" />
+              </div>
+              <h1 className="text-xl font-bold text-neutral-200 uppercase tracking-wider">
+                Ticket #{ticketIndex + 1}
+              </h1>
             </div>
-            <h1 className="text-xl font-bold text-neutral-200 uppercase tracking-wider">
-              Ticket #{ticketIndex + 1}
-            </h1>
           </div>
-        </div>
 
-        {/* Botones de Acción */}
-        <div className="flex items-center gap-2">
-          {!isEditing ? (
-            <>
-              <button onClick={() => setIsEditing(true)} className="p-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg transition-colors">
-                <IconEdit size={20} />
-              </button>
-              <button onClick={showConfirmation} className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors">
-                <IconTrash size={20} />
-              </button>
-            </>
-          ) : (
-            <>
-              <button onClick={() => setIsEditing(false)} className="p-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg transition-colors">
-                <IconX size={20} />
-              </button>
-              <button onClick={handleUpdate} className="p-2 bg-green-500/10 hover:bg-green-500/20 text-green-500 rounded-lg transition-colors">
-                <IconDeviceFloppy size={20} />
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Contenido del Ticket */}
-      <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6 shadow-sm">
-        <div className="grid grid-cols-2 gap-6 mb-8 border-b border-neutral-800 pb-6">
-          <div className="flex flex-col gap-1">
-            <span className="text-xs text-neutral-500 uppercase tracking-wider">Made by</span>
-            <span className="text-base font-semibold text-neutral-200">{ticket.creator}</span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-xs text-neutral-500 uppercase tracking-wider">Asigned to</span>
+          {/* Botones de Acción */}
+          <div className="flex items-center gap-2">
             {!isEditing ? (
-              <span className="text-base font-medium text-neutral-300 italic">{ticket.to}</span>
+              <>
+                <button onClick={() => setIsEditing(true)} className="p-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg transition-colors">
+                  <IconEdit size={20} />
+                </button>
+                <button onClick={showConfirmation} className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors cursor-pointer">
+                  <IconTrash size={20} />
+                </button>
+              </>
             ) : (
-              <input
-                type="text"
-                value={formData.to}
-                onChange={(e) => setFormData({ ...formData, to: e.target.value })}
-                className="bg-neutral-950 border border-neutral-700 text-neutral-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 outline-none"
-              />
+              <>
+                <button onClick={() => setIsEditing(false)} className="p-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg transition-colors">
+                  <IconX size={20} />
+                </button>
+                <button
+                onClick={handleUpdate}
+                className="p-2 bg-green-500/10 hover:bg-green-500/20 cursor-pointer text-green-500 rounded-lg transition-colors disabled:hover:bg-green-500-10 disabled:grayscale disabled:cursor-wait"
+                disabled={isLoading}>
+                  <IconDeviceFloppy size={20} />
+                </button>
+              </>
             )}
           </div>
         </div>
 
-        {/* Sección de Descripción / Markdown */}
-        <div className="flex flex-col gap-2">
-          <span className="text-xs text-neutral-500 uppercase tracking-wider"> Problem description </span>
-          {!isEditing ? (
-            <div className="prose prose-invert max-w-none text-neutral-300 bg-neutral-950/30 p-4 rounded-lg border border-neutral-800/50">
-              <ReactMarkdown>
-                {ticket.message || "*There's no content in your ticket*"}
-              </ReactMarkdown>
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6 shadow-sm">
+          <div className="grid grid-cols-2 gap-6 mb-8 border-b border-neutral-800 pb-6">
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-neutral-500 uppercase tracking-wider">Made by</span>
+              <span className="text-base font-semibold text-neutral-200">{ticket?.creator}</span>
             </div>
-          ) : (
-            <textarea
-              rows={8}
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="bg-neutral-950 border border-neutral-700 text-neutral-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3 outline-none resize-y"
-              placeholder="Escribe la descripción usando Markdown..."
-            />
-          )}
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-neutral-500 uppercase tracking-wider">Asigned to</span>
+              {!isEditing ? (
+                <span className="text-base font-medium text-neutral-300 italic">{ticket?.to}</span>
+              ) : (
+                <input
+                  type="text"
+                  value={ticketTo}
+                  onChange={(e) => setTicketTo(e.target.value)}
+                  className="bg-neutral-950 border border-neutral-700 text-neutral-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 outline-none"
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <span className="text-xs text-neutral-500 uppercase tracking-wider"> Problem description </span>
+            {!isEditing ? (
+              <div className="prose prose-invert max-w-none text-neutral-300 bg-neutral-950/30 p-4 rounded-lg border border-neutral-800/50">
+                <ReactMarkdown>
+                  {ticket?.message || "*There's no content in your ticket*"}
+                </ReactMarkdown>
+              </div>
+            ) : (
+              <textarea
+                rows={8}
+                value={ticketMessage}
+                onChange={(e) => setTicketMessage(e.target.value)}
+                className="bg-neutral-950 border border-neutral-700 text-neutral-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3 outline-none resize-y"
+                placeholder="Escribe la descripción usando Markdown..."
+              />
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    ) : (
+      <LoadingDashboard />
+    )
   );
 }

@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v23.2:**
+  1. Paginas de tickets completadas y refactorizadas. ⚙️
+  2. Sección de API en los tickets completadas. ✅
+
 - **Indev v23.1:**
   1. Arreglo de errores graves. 🪲
   2. Mejoras pequeñas. 🛠️

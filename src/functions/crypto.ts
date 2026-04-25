@@ -16,9 +16,7 @@ function getSK(){
 //Function for decrypting
 export function Decrypt(encryptedText: string){
   //Decrypts the texts, and then turns into a text with encoding
-  const decrypted = CryptoJS.AES.decrypt(encryptedText, getSK()).toString(
-    CryptoJS.enc.Utf8
-  );
+  const decrypted = CryptoJS.AES.decrypt(encryptedText, getSK()).toString(CryptoJS.enc.Utf8);
 
   //Returns the decrypted text
   return decrypted;

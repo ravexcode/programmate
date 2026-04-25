@@ -19,6 +19,7 @@ import LoadingDashboard from "@/components/screens/loading_dashboard";
 
 //Icons imports
 import {
+  IconAppWindow,
   IconCalendar,
   IconCode,
   IconDatabase,
@@ -32,7 +33,11 @@ import {
 
 //Functions for export
 //Function for search team data
-export async function searchTeamData (snackbar : RefObject<SnackbarRef | null>, params: any, setTeam: any) {
+export async function searchTeamData (
+  snackbar : RefObject<SnackbarRef | null>,
+  params: any,
+  setTeam: any
+) {
   //Gets user's token
   const token : string | undefined = await getCookie("token");
 
@@ -56,9 +61,7 @@ export async function searchTeamData (snackbar : RefObject<SnackbarRef | null>, 
   if(res.status === 200) {
     //Sets team data
     setTeam(data.team);
-    //Debug
-    console.log(data.team);
-    return;
+    return data.team;
   }
   
   //If there's an error shows it
@@ -316,7 +319,7 @@ export default function TeamPage(){
                         <li
                         key={index}
                         className="grid grid-cols-2 items-center gap-4 px-4 py-3 rounded-xl border border-white/5 bg-white/[0.02] text-sm text-neutral-200 transition-all duration-200 hover:bg-white/[0.05] hover:border-white/10 hover:shadow-md group cursor-pointer overflow-hidden mb-2"
-                      >
+                        onClick={() => { window.location.href = `/teams/${params.id}/tickets/${index}` }}>
                         <span className="truncate font-medium text-white">
                           {ticket.creator}
                         </span>

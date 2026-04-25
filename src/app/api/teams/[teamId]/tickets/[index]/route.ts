@@ -5,16 +5,6 @@ import { headers } from "next/headers";
 //Lib imports
 import supabase from "@/lib/db";
 
-//Types
-interface Ticket {
-  id: string;
-  creator: string;
-  to: string;
-  message: string;
-  importance: string;
-  created_at: string;
-}
-
 //Delete a ticket by index
 export async function DELETE(
   req: NextRequest,

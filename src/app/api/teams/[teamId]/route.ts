@@ -4,6 +4,8 @@ import supabase from "@/lib/db";
 //Next imports
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { Ticket } from "@/types/team.types";
+import { Decrypt } from "@/functions/crypto";
 
 //Get the team function
 export async function GET(req: NextRequest, { params }: { params: { teamId: Promise<string | null | undefined> }}){
@@ -68,6 +70,18 @@ export async function GET(req: NextRequest, { params }: { params: { teamId: Prom
       error: "Unauthorized"
     }, {
       status: 401
+    });
+
+    //Decrypt all the tickets
+    //Const for decrypted
+    const decrypted_tickets : Array<Ticket> | null = [];
+    //Team tickets decrypts for all
+    team.tickets && team.tickets.forEach(( ticket: Ticket ) => {
+      //Decrypts the ticket
+      ticket.message = Decrypt(ticket.message);
+
+      //Sets in decrypted tickets
+      decrypted_tickets.push(ticket);
     });
 
     //If all is ok, returns the team data
