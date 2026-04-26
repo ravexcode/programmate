@@ -19,7 +19,24 @@ export interface ChatMessage {
   sent_at: string;
   message: string;
   reactions?: Array<string>;
+}
 
+export interface ERDTable {
+  name: string,
+  description?: string,
+  rows?: Array<{
+    value: string;
+    type: string;
+    connected_at?: {
+      table: string;
+      value: string;
+    };
+    connection_type?: string;
+  }>;
+  position: {
+    x: number,
+    y: number
+  }
 }
 
 export default interface Team {

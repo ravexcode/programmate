@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v24.0:**
+  1. Página de tablas ERD iniciada. ⚙️
+
 - **Indev v23.2:**
   1. Paginas de tickets completadas y refactorizadas. ⚙️
   2. Sección de API en los tickets completadas. ✅

@@ -19,9 +19,7 @@ import LoadingDashboard from "@/components/screens/loading_dashboard";
 
 //Icons imports
 import {
-  IconAppWindow,
   IconCalendar,
-  IconCode,
   IconDatabase,
   IconEye,
   IconFolder,
@@ -38,6 +36,9 @@ export async function searchTeamData (
   params: any,
   setTeam: any
 ) {
+  //Sets main page values
+  
+
   //Gets user's token
   const token : string | undefined = await getCookie("token");
 
@@ -144,17 +145,7 @@ export default function TeamPage(){
             </Icon>
 
             <Icon
-            action="/"
-            name="JSON Editor"
-            isDisplayed={expanded}>
-              <IconCode
-              size={23}
-              stroke={2}
-              color="white"/>
-            </Icon>
-
-            <Icon
-            action="/"
+            action={`/teams/${team.team_id}/erd`}
             name="ERD Creator"
             isDisplayed={expanded}
             disabled={ user?.plan === "Free" }>

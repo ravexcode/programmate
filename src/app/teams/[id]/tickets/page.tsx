@@ -37,6 +37,7 @@ import {
   IconUsers
 } from "@tabler/icons-react";
 import Team from "@/types/team.types";
+import Console from "@/components/ui/console";
 
 export default function TicketsTeamPage(){
   //Params data
@@ -147,9 +148,7 @@ export default function TicketsTeamPage(){
         //Sets the team
         const duplied_team = team;
         duplied_team?.tickets?.push(ticket);
-
         setTeam(duplied_team);
-
         //Hides the form
         hideForm();
         //Clears the data
@@ -171,6 +170,8 @@ export default function TicketsTeamPage(){
     team ? (
       <div
       className="bg-background text-text min-h-screen grid grid-cols-[auto_1fr]">
+        <Console
+        jsonObjects={team?.tickets && team.tickets} />
         <SnackBar />
         <SideBar
         email={user?.email}
@@ -211,16 +212,6 @@ export default function TicketsTeamPage(){
           name="Tickets"
           isDisplayed={expanded}>
             <IconFolder
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action="/"
-          name="JSON Editor"
-          isDisplayed={expanded}>
-            <IconCode
             size={23}
             stroke={2}
             color="white"/>

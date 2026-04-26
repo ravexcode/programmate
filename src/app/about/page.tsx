@@ -1,6 +1,9 @@
 //Client section
 "use client";
 
+//Next imports
+import Image from "next/image";
+
 //Prebuilt components
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
@@ -30,8 +33,11 @@ function FeaturesCard(props: FeaturesCardProps) {
         </p>
       </article>
 
-      <img src={props.image_url} alt="Foto real took by RavexCode"
-      className="w-full"/>
+      <Image
+      src={props.image_url}
+      alt="Foto real took by RavexCode"
+      width={600}
+      height={600} />
     </section>
   )
 }
