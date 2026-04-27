@@ -16,14 +16,11 @@
 
 .dotted-background {
   /* Create the dot pattern */
-  background-image: radial-gradient(circle, #41414153 2px, transparent 2px);
+  background-image: radial-gradient(circle, #72727253 2px, transparent 2px);
   
   /* Define the spacing between dots (repeat every 20px) */
   background-size: 20px 20px;
   
   /* Optional: Ensure dots are not clipped at edges */
   background-repeat: round;
-  
-  /* Set the background color behind the dots */
-  background-color: #0d0d0d;
 }   

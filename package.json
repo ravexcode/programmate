@@ -1,6 +1,6 @@
 {
   "name": "programmate",
-  "version": "Indev v15.0",
+  "version": "Indev v24.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -24,6 +24,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-markdown": "^10.1.0",
+    "react-xarrows": "^2.0.2",
     "stripe": "^22.0.0",
     "tailwind-animations": "^1.0.1"
   },

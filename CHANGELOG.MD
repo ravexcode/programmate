@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v24.3:**
+  1. Importación de reactxarrows. 📁
+  2. Página de ERD casi terminada. 👍
+
 - **Indev v24.2:**
   1. Mejoras en el ERD Tool. 🚀
   2. Mejoras en la pestaña de navegación, ahora muestra un resultado diferente en base a donde estés. ✅

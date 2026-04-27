@@ -3,6 +3,7 @@
 
 //React import
 import { useState, useRef, type RefObject } from "react";
+import Xarrow, { Xwrapper } from "react-xarrows";
 
 //Prebuilt ui imports
 import CreatorForm from "@/components/forms/creatorForm";
@@ -13,6 +14,7 @@ import {
   IconDatabase,
   IconDatabaseMinus,
   IconDatabasePlus,
+  IconDeviceFloppy,
   IconHandStop,
   IconMouse,
   IconTrash
@@ -79,6 +81,22 @@ export default function ErdCreatorPage() {
   const [ grabbingTable, setGrabbingTable ] = useState<number | null>(null);
   const [ connections, setConnections ] = useState<Array<ConnectionType> | null>(null);
 
+  const isAlreadyConnected = (
+    connections: ConnectionType[], 
+    newConn: { connector: Reference, connected: Reference }
+  ) => {
+    return connections.some(conn => 
+      (conn.connector.table === newConn.connector.table && 
+      conn.connector.row === newConn.connector.row &&
+      conn.connected.table === newConn.connected.table &&
+      conn.connected.row === newConn.connected.row) ||
+      (conn.connector.table === newConn.connected.table && 
+      conn.connector.row === newConn.connected.row &&
+      conn.connected.table === newConn.connector.table &&
+      conn.connected.row === newConn.connector.row)
+    );
+  };
+
   //Connections full class
   class Connection {
     //Type
@@ -135,42 +153,16 @@ export default function ErdCreatorPage() {
   //Ref components
   const dbForm : RefObject<null> = useRef(null);
 
-  const HandleUpdatePosition = (
-    //Vales after moving
-    index: number,
-    x: number,
-    y: number
-  ) => {
-    //Verifies if is valid
-    if(!tables || !tables[index]) return;
-
-    //Duplicate the table
-    let duplied_tables = tables;
-    //Sets values
-    duplied_tables[index].position.x = x;
-    duplied_tables[index].position.y = y;
-
-    //Update tables
-    setTables(duplied_tables);
+  const HandleUpdatePosition = (index: number, x: number, y: number) => {
+    setTables(prev => prev.map((table, i) => 
+      i === index ? { ...table, position: { ...table.position, x, y } } : table
+    ));
   };
 
-  const HandleUpdateOffSet = (
-    //Values before moving
-    index: number,
-    x: number,
-    y: number
-  ) => {
-    //Verifies
-    if(!tables || !tables[index]) return;
-
-    //Duplies the tables
-    let duplied_tables = tables;
-    //Sets offsets values
-    duplied_tables[index].position.offSet_x = x;
-    duplied_tables[index].position.offSet_y = y;
-
-    //Updates tables
-    setTables(duplied_tables);
+  const HandleUpdateOffSet = (index: number, x: number, y: number) => {
+    setTables(prev => prev.map((table, i) => 
+      i === index ? { ...table, position: { ...table.position, offSet_x: x, offSet_y: y } } : table
+    ));
   };
 
   //Function for open database create form
@@ -253,7 +245,7 @@ export default function ErdCreatorPage() {
 
   return (
     <div
-    className="text-text scrollbar-hidden dotted-background w-screen h-screen"
+    className="text-text scrollbar-hide dotted-background min-w-screen min-h-screen"
     onMouseDown={(e) => {
       if(
         buttonActive === "hand"
@@ -390,10 +382,16 @@ export default function ErdCreatorPage() {
       onClick={() => {
         setButtonActive("mouse");
         setCurrentMouse("default");
+      }}
+      onKeyDown={(e) => {
+        if(e.key === "Escape") {
+          setButtonActive("mouse");
+          setCurrentMouse("default");
+        }
       }}>
 
         <div
-        className="h-screen w-full md:w-2/10 bg-neutral-900 animate-fade-in-left px-4 py-4 overflow-y-auto"
+        className="h-screen w-full md:w-md bg-neutral-900 animate-fade-in-left px-4 py-4 overflow-y-auto flex flex-col items-center"
         onClick={(e) => {
           e.nativeEvent.stopPropagation();
           e.stopPropagation();
@@ -401,10 +399,10 @@ export default function ErdCreatorPage() {
           <h2 className="text-center text-xl md:text-2xl font-medium tracking-wider mb-5"> Databases </h2>
 
           {
-            tables && tables.length > 0 ? tables.map((table, index) => 
+            tables && tables.length > 0 ? tables.map((table, table_index) => 
               <div
-              key={index}
-              className="bg-black/30 px-6 pt-3 pb-6 rounded-lg">
+              key={table_index}
+              className="bg-black/30 px-6 pt-3 pb-6 rounded-lg max-w-md mb-20">
                 <div
                 className="w-full flex justify-between items-center">
                   <h2
@@ -422,9 +420,9 @@ export default function ErdCreatorPage() {
                 </div>
 
                 {
-                  table.rows?.map((row, index) => 
+                  table.rows?.map((row, row_index) => 
                     <div
-                    key={index}
+                    key={row_index}
                     className="w-full mb-2 flex flex-col gap-1">
                       <label
                       className="text-sm">
@@ -434,7 +432,14 @@ export default function ErdCreatorPage() {
                       type="text"
                       value={row.value}
                       onChange={(e) => {
-                        //TODO: Implement change logic
+                        const duplicated = [...tables];
+
+                        duplicated[table_index].rows![row_index] = {
+                          ...duplicated[table_index].rows![row_index],
+                          value: e.target.value,
+                        };
+
+                        setTables(duplicated);
                       }}
                       placeholder="e.g. email"
                       className="w-full px-4 py-2 rounded-md bg-neutral-900 border-2 border-neutral-600 duration-300 hover:brightness-80 focus:hover:brightness-100 focus:outline-none focus:border-main"/>
@@ -447,14 +452,35 @@ export default function ErdCreatorPage() {
                       type="text"
                       value={row.type}
                       onChange={(e) => {
-                        //TODO: Implement change logic
+                        const duplicated = [...tables];
+
+                        duplicated[table_index].rows![row_index] = {
+                          ...duplicated[table_index].rows![row_index],
+                          type: e.target.value,
+                        };
+
+                        setTables(duplicated);
                       }}
                       placeholder="e.g. text"
                       className="w-full px-4 py-2 rounded-md bg-neutral-900 border-2 border-neutral-600 duration-300 hover:brightness-80 focus:hover:brightness-100 focus:outline-none focus:border-main"/>
 
                       <button
                       type="button"
-                      className="bg-neutral-900 w-full rounded-md px-4 py-2 flex gap-2 justify-center items-center duration-400 mt-2 hover:scale-102 hover:bg-red-600 cursor-pointer">
+                      className="bg-neutral-900 w-full rounded-md px-4 py-2 flex gap-2 justify-center items-center duration-400 mt-2 hover:scale-102 hover:bg-red-600 cursor-pointer"
+                      onClick={() => {
+                        setTables((prev) =>
+                          prev.map((table, i) =>
+                            i === table_index
+                              ? {
+                                  ...table,
+                                  rows: table.rows?.filter(
+                                    (_, indexDeleted) => indexDeleted !== row_index
+                                  ),
+                                }
+                              : table
+                          )
+                        );
+                      }}>
                         <IconTrash
                         size={20}
                         />
@@ -618,11 +644,20 @@ export default function ErdCreatorPage() {
         size={25} />
       </a>
 
-      {
-        tables && tables.length > 0 && tables.map((table, index) => (
+      <button
+      type="button"
+      className="z-10 fixed top-2 right-2 cursor-pointer duration-200 p-3 rounded-full hover:bg-white/20 text-green-500">
+        <IconDeviceFloppy
+        size={25} />
+      </button>
+
+      {/* Tables & Connections section */}
+      <Xwrapper>
+        {
+          tables && tables.length > 0 && tables.map((table, index) => (
           <section
           key={index}
-          className="pb-2 rounded-md bg-neutral-800 w-60 fixed z-2 border-2 border-neutral-600"
+          className="pb-2 rounded-md bg-neutral-800 w-60 relative z-2 border-2 border-neutral-600"
           onMouseDown={(e) => {
             if(buttonActive === "hand") {
               setGrabbingTable(index);
@@ -659,67 +694,36 @@ export default function ErdCreatorPage() {
               </article>
 
               {table && table.rows?.map(
-                (row, index) => (
+                (row, row_index) => (
                   <article
-                  key={index}
+                  key={row_index}
                   className={"flex justify-between items-center text-sm border-t-2 border-neutral-700 p-2 relative " + ( buttonActive === "connection" && "cursor-pointer" )}
+                  id={`row-${table.name}-${row.value}`}
                   onClick={() => {
-                    if(buttonActive === "connection") {
-                      setRowConnector(prev => {
-
-                        //Row selected not in this table
-                        if(prev && prev.table !== table.name) {
-                          //defines values
-                          //First row
-                          const connector : Reference = {
-                            table: prev.table,
-                            row: prev.value
-                          };
-
-                          //Second row
-                          const connected : Reference = {
-                            table: table.name,
-                            row: row.value
-                          };
-
-                          //Type
-                          const type = "oto";
-
-                          //New connection (const for debbuging)
-                          new Connection(
-                            connector,
-                            connected,
-                            type
-                          );
-
-                          return null;
-                        }
-
-                        //Deleting selection
-                        if(
-                          prev &&
-                          prev.table === table.name && 
-                          prev.value === row.value
-                        ) {
-                          return null;
-                        }
-
-                        //Same table
-                        if(prev && prev.table === table.name) {
-                          return {
-                            table: table.name,
-                            value: row.value
-                          }
-                        }
-
-                        //If there's no connections before
-                        return {
-                          table: table.name,
-                          value: row.value
+                  if (buttonActive === "connection") {
+                    setRowConnector(prev => {
+                      if (prev && prev.table !== table.name) {
+                        const newConnectionData = {
+                          connector: { table: prev.table, row: prev.value },
+                          connected: { table: table.name, row: row.value }
                         };
-                      })
-                    }
-                  }}>
+
+                        // VALIDACIÓN: Solo agrega si no existe
+                        if (!isAlreadyConnected(connections || [], newConnectionData)) {
+                          new Connection(
+                            newConnectionData.connector,
+                            newConnectionData.connected,
+                            "oto"
+                          );
+                        } else {
+                          console.warn("Esta conexión ya existe");
+                        }
+                        return null;
+                      }
+                      return { table: table.name, value: row.value };
+                    });
+                  }
+                }}>
                     {
                       rowConnector &&
                       rowConnector.table === table.name &&
@@ -734,7 +738,8 @@ export default function ErdCreatorPage() {
                       )
                     }
 
-                    <p>
+                    <p
+                    className="lowercase">
                       {row.value}
                     </p>
 
@@ -749,6 +754,31 @@ export default function ErdCreatorPage() {
           </section>
         ))
       }
+
+      {/* Renderizado de Conexiones */}
+      {connections && connections.map((conn, index) => (
+        <Xarrow
+          key={index}
+          start={`row-${conn.connector.table}-${conn.connector.row}`}
+          end={`row-${conn.connected.table}-${conn.connected.row}`}
+          color="#6b7280" // neutral-500
+          strokeWidth={2}
+          path="smooth"
+          showHead={false} // Quitamos la flecha clásica si prefieres el punto
+          // Añadimos el punto en el medio de la línea
+          labels={{
+            start: (
+              <div className="w-5 h-5 bg-neutral-900 rounded-full border-3 border-neutral-400 shadow-sm relative translate-y-1.5" />
+            ),
+            end: (
+              <div className="w-5 h-5 bg-neutral-900 rounded-full border-3 border-neutral-400 shadow-sm relative -translate-y-1.5" />
+            )
+          }}
+          tailShape="circle"
+          headShape="circle"
+        />
+      ))}
+      </Xwrapper>
     </div>
   )
 }
