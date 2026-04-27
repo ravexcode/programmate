@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v24.2:**
+  1. Mejoras en el ERD Tool. 🚀
+  2. Mejoras en la pestaña de navegación, ahora muestra un resultado diferente en base a donde estés. ✅
+
 - **Indev v24.1a:**
   1. Bugfix casi completa. 🪲
   2. Sección de ERD casi terminada, solo falta lo de conexiones, para después ir por la API. 👍

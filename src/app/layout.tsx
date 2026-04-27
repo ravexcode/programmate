@@ -4,7 +4,7 @@ import "./animations.css";
 import "./config.css";
 
 export const metadata: Metadata = {
-  title: "Programmate",
+  title: "Prismaflow",
   description: "The aplication from programmers to programmers"
 };
 

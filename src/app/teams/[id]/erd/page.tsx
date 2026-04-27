@@ -7,7 +7,16 @@ import { useState, useRef, type RefObject } from "react";
 //Prebuilt ui imports
 import CreatorForm from "@/components/forms/creatorForm";
 import CreatorInput from "@/components/forms/creatorInputs";
-import { IconArrowLeft, IconConnection, IconDatabasePlus, IconHandStop, IconMouse, IconTrash } from "@tabler/icons-react";
+import {
+  IconArrowLeft,
+  IconConnection,
+  IconDatabase,
+  IconDatabaseMinus,
+  IconDatabasePlus,
+  IconHandStop,
+  IconMouse,
+  IconTrash
+} from "@tabler/icons-react";
 
 //Types imports
 import { type ERDTable } from "@/types/team.types";
@@ -375,15 +384,190 @@ export default function ErdCreatorPage() {
         </CreatorForm>
       </div>
 
+      {/* Settings section */}
+      <section
+      className={"w-screen h-screen flex justify-end backdrop-brightness-60 animate-fade-in fixed top-0 left-0 z-20 " + (buttonActive !== "settings" && "hidden")}
+      onClick={() => {
+        setButtonActive("mouse");
+        setCurrentMouse("default");
+      }}>
+
+        <div
+        className="h-screen w-full md:w-2/10 bg-neutral-900 animate-fade-in-left px-4 py-4 overflow-y-auto"
+        onClick={(e) => {
+          e.nativeEvent.stopPropagation();
+          e.stopPropagation();
+        }}>
+          <h2 className="text-center text-xl md:text-2xl font-medium tracking-wider mb-5"> Databases </h2>
+
+          {
+            tables && tables.length > 0 ? tables.map((table, index) => 
+              <div
+              key={index}
+              className="bg-black/30 px-6 pt-3 pb-6 rounded-lg">
+                <div
+                className="w-full flex justify-between items-center">
+                  <h2
+                  className="font-medium traking-wide uppercase text-center text-lg">
+                    { table.name }
+                  </h2>
+
+                  <button
+                  type="button"
+                  className="text-red-500 cursor-pointer"
+                  title="Delete this database">
+                    <IconDatabaseMinus
+                    size={20} />
+                  </button>
+                </div>
+
+                {
+                  table.rows?.map((row, index) => 
+                    <div
+                    key={index}
+                    className="w-full mb-2 flex flex-col gap-1">
+                      <label
+                      className="text-sm">
+                        Row value
+                      </label>
+                      <input
+                      type="text"
+                      value={row.value}
+                      onChange={(e) => {
+                        //TODO: Implement change logic
+                      }}
+                      placeholder="e.g. email"
+                      className="w-full px-4 py-2 rounded-md bg-neutral-900 border-2 border-neutral-600 duration-300 hover:brightness-80 focus:hover:brightness-100 focus:outline-none focus:border-main"/>
+
+                      <label
+                      className="text-sm">
+                        Row type
+                      </label>
+                      <input
+                      type="text"
+                      value={row.type}
+                      onChange={(e) => {
+                        //TODO: Implement change logic
+                      }}
+                      placeholder="e.g. text"
+                      className="w-full px-4 py-2 rounded-md bg-neutral-900 border-2 border-neutral-600 duration-300 hover:brightness-80 focus:hover:brightness-100 focus:outline-none focus:border-main"/>
+
+                      <button
+                      type="button"
+                      className="bg-neutral-900 w-full rounded-md px-4 py-2 flex gap-2 justify-center items-center duration-400 mt-2 hover:scale-102 hover:bg-red-600 cursor-pointer">
+                        <IconTrash
+                        size={20}
+                        />
+
+                        Delete this row
+                      </button>
+                    </div>
+                  )
+                }
+
+                <label
+                className="text-sm">
+                  Position
+                </label>
+
+                <div
+                className="flex justify-center items-center gap-3">
+                  <p> X: </p>
+                  <input
+                  type="text"
+                  value={table.position.x}
+                  onChange={(e) => {
+                    //TODO: Implement change logic
+                  }}
+                  placeholder="e.g. 100"
+                  className="w-full px-4 py-2 rounded-md bg-neutral-900 border-2 border-neutral-600 duration-300 hover:brightness-80 focus:hover:brightness-100 focus:outline-none focus:border-main text-sm"/>
+
+                  <p> Y: </p>
+                  <input
+                  type="text"
+                  value={table.position.y}
+                  onChange={(e) => {
+                    //TODO: Implement change logic
+                  }}
+                  placeholder="e.g. 100"
+                  className="w-full px-4 py-2 rounded-md bg-neutral-900 border-2 border-neutral-600 duration-300 hover:brightness-80 focus:hover:brightness-100 focus:outline-none focus:border-main"/>
+                </div>
+
+                <label
+                className="text-sm">
+                  Offset
+                </label>
+
+                <div
+                className="flex justify-center items-center gap-3">
+                  <p> X: </p>
+                  <input
+                  type="text"
+                  value={table.position.offSet_x || 0}
+                  onChange={(e) => {
+                    //TODO: Implement change logic
+                  }}
+                  placeholder="e.g. 100"
+                  className="w-full px-4 py-2 rounded-md bg-neutral-900 border-2 border-neutral-600 duration-300 hover:brightness-80 focus:hover:brightness-100 focus:outline-none focus:border-main text-sm"/>
+
+                  <p> Y: </p>
+                  <input
+                  type="text"
+                  value={table.position.offSet_y || 0}
+                  onChange={(e) => {
+                    //TODO: Implement change logic
+                  }}
+                  placeholder="e.g. 100"
+                  className="w-full px-4 py-2 rounded-md bg-neutral-900 border-2 border-neutral-600 duration-300 hover:brightness-80 focus:hover:brightness-100 focus:outline-none focus:border-main"/>
+                </div>
+              </div>
+            ) : (
+              <div
+              className="text-text/60 w-full flex flex-col justify-center items-center gap-1 mt-10">
+                <IconDatabaseMinus
+                size={35} />
+                <p
+                className="text-lg">
+                  Actually you don't have databases now...
+                </p>
+                <button
+                className="bg-main px-6 py-2 mt-4 rounded-md text-text cursor-pointer duration-300 hover:bg-main/60"
+                onClick={() => {
+                  setCurrentMouse("default");
+                  toggleDBForm();
+                }}>
+                  + Create one
+                </button>
+              </div>
+            )
+          }
+
+          { tables.length > 0 && (
+            <button
+            type="button"
+            className="bg-main w-full py-2 text-lg font-medium tracking-wide mt-4 rounded-md text-text cursor-pointer duration-300 hover:bg-main/60"
+            onClick={() => {
+              setCurrentMouse("default");
+              toggleDBForm();
+            }}>
+              + Create a new database
+            </button>
+          )
+            
+          }
+        </div>
+
+      </section>
+
       {/* Bottom bar */}
       <section
-      className="fixed bottom-2 left-1/2 -translate-x-1/2 bg-neutral-800 rounded-sm px-8 py-2 z-2 flex gap-3">
+      className="fixed bottom-2 left-1/2 -translate-x-1/2 bg-neutral-800 rounded-sm p-2 z-2 flex gap-3">
 
         <button
         className={"p-3 rounded-lg cursor-pointer duration-200 " + (buttonActive === "mouse" ? "backdrop-brightness-60 hover:backdrop-brightness-40" : "hover:backdrop-brightness-80")}
         onClick={() => {
           setButtonActive("mouse");
-          setCurrentMouse("default")
+          setCurrentMouse("default");
         }}>
           <IconMouse
           size={20} />
@@ -412,6 +596,16 @@ export default function ErdCreatorPage() {
           setButtonActive(prev => prev === "connection" ? "mouse" : "connection")
         }}>
           <IconConnection
+          size={20} />
+        </button>
+
+        <button
+        className={"p-3 rounded-lg cursor-pointer duration-200 " + (buttonActive === "settings" ? "backdrop-brightness-60 hover:backdrop-brightness-40" : "hover:backdrop-brightness-80")}
+        onClick={() => {
+          setButtonActive(prev => prev === "settings" ? "mouse" : "settings")
+          setCurrentMouse("default")
+        }}>
+          <IconDatabase
           size={20} />
         </button>
 
