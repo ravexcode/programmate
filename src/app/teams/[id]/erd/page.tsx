@@ -7,13 +7,36 @@ import { useState, useRef, type RefObject } from "react";
 //Prebuilt ui imports
 import CreatorForm from "@/components/forms/creatorForm";
 import CreatorInput from "@/components/forms/creatorInputs";
-import { IconArrowLeft, IconConnection, IconDatabasePlus, IconMouse } from "@tabler/icons-react";
-import { Row } from "@/components/ui/table";
+import { IconArrowLeft, IconConnection, IconDatabasePlus, IconHandStop, IconMouse, IconTrash } from "@tabler/icons-react";
 
 //Types imports
 import { type ERDTable } from "@/types/team.types";
 import { useParams } from "next/navigation";
 
+//Types declarations
+//Table rows
+interface Row {
+  value: string;
+  type: string;
+  connected_at?: {
+    table: string;
+    value: string;
+  };
+  connection_type?: string;
+}
+
+//Connection reference
+interface Reference {
+  table: string;
+  row: string;
+};
+
+//Connection type
+interface ConnectionType {
+  connector: Reference;
+  connected: Reference;
+  type: "oto" | "mto" | "mtm";
+}
 
 export default function ErdCreatorPage() {
   const params = useParams();
@@ -31,93 +54,10 @@ export default function ErdCreatorPage() {
   //DB total rows
   const [ rows, setRows ] = useState<Array<Row>>([]);
   //Tables
-  const [ tables, setTables ] = useState<Array<ERDTable>>([
-    {
-      name: "users",
-      description: "Lorem Ipsum ...",
-      rows: [
-        {
-          value: "id",
-          type: "pk"
-        },
-        {
-          value: "username",
-          type: "text"
-        },
-        {
-          value: "email",
-          type: "text"
-        },
-        {
-          value: "password",
-          type: "text"
-        },
-        {
-          value: "posts",
-          type: "jsonb[]",
-          connected_at: {
-            table: "posts",
-            value: "post_id"
-          },
-          connection_type: "many-to-one"
-        },
-        {
-          value: "created_at",
-          type: "timestampz"
-        },
-      ],
-      position: {
-        x: 100,
-        y: 150
-      }
-    },
-    {
-      name: "posts",
-      description: "Lorem Ipsum ...",
-      rows: [
-        {
-          value: "post_id",
-          type: "pk"
-        },
-        {
-          value: "user_id",
-          type: "int",
-          connected_at: {
-            table: "users",
-            value: "id"
-          },
-          connection_type: "one-to-one"
-        },
-        {
-          value: "content",
-          type: "text"
-        },
-        {
-          value: "reposts",
-          type: "jsonb[]"
-        },
-        {
-          value: "comments",
-          type: "jsonb[]"
-        },
-        {
-          value: "likes",
-          type: "jsonb[]"
-        },
-        {
-          value: "views",
-          type: "number"
-        },
-      ],
-      position: {
-        x: 500,
-        y: 300
-      }
-    }
-  ]);
+  const [ tables, setTables ] = useState<Array<ERDTable>>([]);
 
   //Table states
-  const [ currentMouse, setCurrentMouse ] = useState<string>("grab");
+  const [ currentMouse, setCurrentMouse ] = useState<string>("default");
   const [ rowConnector, setRowConnector ] = useState<{
     table: string,
     value: string
@@ -127,42 +67,47 @@ export default function ErdCreatorPage() {
     y: number
   }>();
 
-  interface ConnectionType {
-      table: string,
-      row: string
-    };
-
   const [ grabbingTable, setGrabbingTable ] = useState<number | null>(null);
   const [ connections, setConnections ] = useState<Array<ConnectionType> | null>(null);
 
   //Connections full class
-  class ConnectionClass {
+  class Connection {
     //Type
-    private table: string;
-    private row: string;
+    public connector: Reference;
+    public connected: Reference;
+    public type: "oto" | "mto" | "mtm";
 
     //Constructor (new)
     constructor(
-      table: string,
-      row: string
+      connector: Reference,
+      connected: Reference,
+      type: "oto" | "mto" | "mtm"
     ) {
-      this.table = table;
-      this.row = row;
+      this.connector = connector;
+      this.connected = connected;
+      this.type = type;
 
-      //Auto Adds
-      const connection : ConnectionType = {
-        table: this.table,
-        row: this.row
-      };
-      
-      setConnections(
-        curr => curr ? [
-          ...curr,
-          connection
-        ] : [
-          connection
-        ]
-      )
+      //Auto adds
+      setConnections(prev => {
+        if(prev) {
+          return [
+            ...prev,
+            {
+              connector,
+              connected,
+              type
+            }
+          ]
+        }
+
+        return [
+          {
+            connector,
+            connected,
+            type
+          }
+        ];
+      });
     };
 
     //Remove function
@@ -219,14 +164,6 @@ export default function ErdCreatorPage() {
     setTables(duplied_tables);
   };
 
-  //Function for connectiing tables values
-  const handleConnectRows = (
-    connector: ConnectionType,
-    connected: ConnectionType,
-  ) => {
-    //Add connection logic
-  }
-
   //Function for open database create form
   const toggleDBForm = () => {
     //Prevent errors
@@ -238,13 +175,17 @@ export default function ErdCreatorPage() {
     if(current.classList.contains("hidden")) {
       //Is hidden
       current.classList.remove("hidden");
+      //Sets cursor selection
+      setCurrentMouse("default");
       setButtonActive("create")
       return;
     };
 
     //Is shown
     current.classList.add("hidden");
-    setButtonActive("mouse")
+    //Sets cursor selection
+    setCurrentMouse("default");
+    setButtonActive("mouse");
     return;
   };
 
@@ -305,23 +246,31 @@ export default function ErdCreatorPage() {
     <div
     className="text-text scrollbar-hidden dotted-background w-screen h-screen"
     onMouseDown={(e) => {
-      setCurrentMouse("grabbing");
+      if(
+        buttonActive === "hand"
+      ) {
+        setCurrentMouse("grabbing");
+      }
     }}
     onMouseMove={(e) => {
       if(
-        buttonActive !== "connection" &&
-        currentMouse === "grabbing"
+        buttonActive === "hand" &&
+        currentMouse === "grabbing" &&
+        grabbingTable !== null
       ) {
         setCurrentPosition({
-          x: e.clientX - tables[grabbingTable!].position.offSet_x!,
-          y: e.clientY - tables[grabbingTable!].position.offSet_y!,
+          x: e.clientX - tables[grabbingTable].position.offSet_x!,
+          y: e.clientY - tables[grabbingTable].position.offSet_y!,
         });
       }
     }}
     onMouseUp={() => {
       setCurrentMouse("grab");
+      setGrabbingTable(null);
+      setCurrentPosition(undefined);
     }}>
 
+      {/* DB Form */ }
       <div
       ref={dbForm}
       onClick={toggleDBForm}
@@ -333,7 +282,7 @@ export default function ErdCreatorPage() {
         }}
         title="Create a new table"
         hideAction={toggleDBForm}
-        actionIsDisabled={!rows || !dbName}>
+        actionIsDisabled={!rows || rows.length < 0 || !dbName}>
 
           <CreatorInput
           label="Insert Database name"
@@ -354,33 +303,32 @@ export default function ErdCreatorPage() {
             setDBDescription(e.target.value);
           }}/>
 
-          <button
-          type="button"
-          className="w-full bg-neutral-800 border-2 border-dashed border-neutral-600 text-neutral-400 py-2 rounded-md cursor-pointer duration-200 hover:brightness-80"
-          onClick={() => {
-            setRows(prev => prev ? [
-              ...prev,
-              {
-                value: "",
-                type: ""
-              }
-            ] : [
-              {
-                value: "",
-                type: ""
-              }
-            ]);
-          }}>
-            Add a new row
-          </button>
-
           {
             rows && rows.length > 0 && rows.map((row: Row, index: number) => 
               <div
               key={index}
               className="w-full mt-2 flex flex-col justify-center items-center">
-                <label
-                className="text-sm text-neutral-300"> Row #{index + 1} </label>
+                <div
+                className="flex w-full justify-between py-1">
+                  <label
+                  className="text-sm text-neutral-300">
+                    Row #{index + 1}
+                  </label>
+
+                  <button
+                  type="button"
+                  className="text-red-500 cursor-pointer"
+                  onClick={() => {
+                    setRows(prev =>
+                      prev.filter(
+                        (_, row_index) => row_index !== index
+                      )
+                    )
+                  }}>
+                    <IconTrash
+                    size={20} />
+                  </button>
+                </div>
                 <input
                 type="text"
                 placeholder="e.g. email"
@@ -398,37 +346,56 @@ export default function ErdCreatorPage() {
                 onChange={(e) => {
                   handleUpdateField(index, rows[index].value, e.target.value);
                 }} />
-
-                <button
-                type="button"
-                className="w-max mx-auto text-xs text-center px-4 py-2 rounded-sm duration-300 bg-red-700 hover:bg-red-900 cursor-pointer"
-                onClick={() => {
-                  setRows(prev =>
-                    prev.filter(
-                      (_, row_index) => row_index !== index
-                    )
-                  )
-                }}>
-                  Delete a This row
-                </button>
               </div>
             )
           }
+
+          <button
+          type="button"
+          className="w-full bg-neutral-800 border-2 border-dashed border-neutral-600 text-neutral-400 py-2 rounded-md cursor-pointer duration-200 hover:brightness-80 mt-3"
+          onClick={() => {
+            setRows(prev => prev ? [
+              ...prev,
+              {
+                value: "",
+                type: ""
+              }
+            ] : [
+              {
+                value: "",
+                type: ""
+              }
+            ]);
+          }}>
+            Add a new row
+          </button>
 
           <span className="h-6"></span>
 
         </CreatorForm>
       </div>
 
+      {/* Bottom bar */}
       <section
       className="fixed bottom-2 left-1/2 -translate-x-1/2 bg-neutral-800 rounded-sm px-8 py-2 z-2 flex gap-3">
 
         <button
         className={"p-3 rounded-lg cursor-pointer duration-200 " + (buttonActive === "mouse" ? "backdrop-brightness-60 hover:backdrop-brightness-40" : "hover:backdrop-brightness-80")}
         onClick={() => {
-          setButtonActive("mouse")
+          setButtonActive("mouse");
+          setCurrentMouse("default")
         }}>
           <IconMouse
+          size={20} />
+        </button>
+
+        <button
+        className={"p-3 rounded-lg cursor-pointer duration-200 " + (buttonActive === "hand" ? "backdrop-brightness-60 hover:backdrop-brightness-40" : "hover:backdrop-brightness-80")}
+        onClick={() => {
+          setButtonActive(prev => prev === "hand" ? "mouse" : "hand")
+          setCurrentMouse("grab")
+        }}>
+          <IconHandStop
           size={20} />
         </button>
 
@@ -463,34 +430,27 @@ export default function ErdCreatorPage() {
           key={index}
           className="pb-2 rounded-md bg-neutral-800 w-60 fixed z-2 border-2 border-neutral-600"
           onMouseDown={(e) => {
-            if(buttonActive !== "connection") {
+            if(buttonActive === "hand") {
+              setGrabbingTable(index);
               HandleUpdateOffSet(
                 index,
                 e.clientX - tables[index].position.x,
                 e.clientY - tables[index].position.y,
               );
-              setGrabbingTable(index);
-            }
-          }}
-          onMouseMove={(e) => {
-            if(
-              buttonActive !== "connection" &&
-              currentMouse === "grabbing"
-            ) {
               setCurrentPosition({
-                x: e.clientX - tables[index].position.offSet_x!,
-                y: e.clientY - tables[index].position.offSet_y!,
-              });
+                x: tables[index].position.x,
+                y: tables[index].position.y
+              })
             }
           }}
-          onMouseUp={() => {
-            if(buttonActive !== "connection") {
+          onMouseUp={(e) => {
+            if(buttonActive === "hand") {
               HandleUpdatePosition(index, currentPosition?.x!, currentPosition?.y!);
               setGrabbingTable(null);
             }
           }}
           style={{
-            cursor: buttonActive === "connection" ? "default" : currentMouse!,
+            cursor: currentMouse ?? "default",
             transform: `translate3d(${grabbingTable !== null && grabbingTable === index ? currentPosition?.x : tables[index].position.x}px, ${grabbingTable !== null && grabbingTable === index ? currentPosition?.y : tables[index].position.y}px, 0)`,
             userSelect: "none"
           }}>
@@ -511,15 +471,59 @@ export default function ErdCreatorPage() {
                   className={"flex justify-between items-center text-sm border-t-2 border-neutral-700 p-2 relative " + ( buttonActive === "connection" && "cursor-pointer" )}
                   onClick={() => {
                     if(buttonActive === "connection") {
-                      setRowConnector(
-                        prev =>
-                        prev && prev.table === table.name && prev.value === row.value ?
-                        null :
-                        {
+                      setRowConnector(prev => {
+
+                        //Row selected not in this table
+                        if(prev && prev.table !== table.name) {
+                          //defines values
+                          //First row
+                          const connector : Reference = {
+                            table: prev.table,
+                            row: prev.value
+                          };
+
+                          //Second row
+                          const connected : Reference = {
+                            table: table.name,
+                            row: row.value
+                          };
+
+                          //Type
+                          const type = "oto";
+
+                          //New connection (const for debbuging)
+                          new Connection(
+                            connector,
+                            connected,
+                            type
+                          );
+
+                          return null;
+                        }
+
+                        //Deleting selection
+                        if(
+                          prev &&
+                          prev.table === table.name && 
+                          prev.value === row.value
+                        ) {
+                          return null;
+                        }
+
+                        //Same table
+                        if(prev && prev.table === table.name) {
+                          return {
+                            table: table.name,
+                            value: row.value
+                          }
+                        }
+
+                        //If there's no connections before
+                        return {
                           table: table.name,
                           value: row.value
-                        }
-                      )
+                        };
+                      })
                     }
                   }}>
                     {

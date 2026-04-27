@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v24.1a:**
+  1. Bugfix casi completa. 🪲
+  2. Sección de ERD casi terminada, solo falta lo de conexiones, para después ir por la API. 👍
+
 - **Indev v24.1**
   1. Refactor en las tablas ERD (Ahora si funcionan bien). 👍
 
@@ -30,7 +34,8 @@
 - **Indev v21.0:**
   1. Dashboard *casi* completamente funcional, se pueden editar, eliminar, crear de manera **COMPLETA** en los projectos.
   2. Se actualizó la ubicación del chat IA y el SideBar (/components/dashboard -> /components/ui).
-  3. Arreglo de errores en API e implementación de los tags y el status
+  3. Arreglo de e
+  rrores en API e implementación de los tags y el status
 
 - **Indev v20.1:**
   1. Get started screen fix
