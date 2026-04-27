@@ -8,11 +8,12 @@ import { useState, useRef, type RefObject } from "react";
 import CreatorForm from "@/components/forms/creatorForm";
 import CreatorInput from "@/components/forms/creatorInputs";
 import { IconArrowLeft, IconConnection, IconDatabasePlus, IconMouse } from "@tabler/icons-react";
-import Table, { Row } from "@/components/ui/table";
+import { Row } from "@/components/ui/table";
 
 //Types imports
 import { type ERDTable } from "@/types/team.types";
 import { useParams } from "next/navigation";
+
 
 export default function ErdCreatorPage() {
   const params = useParams();
@@ -115,8 +116,116 @@ export default function ErdCreatorPage() {
     }
   ]);
 
+  //Table states
+  const [ currentMouse, setCurrentMouse ] = useState<string>("grab");
+  const [ rowConnector, setRowConnector ] = useState<{
+    table: string,
+    value: string
+  } | null>();
+  const [ currentPosition, setCurrentPosition ] = useState<{
+    x: number,
+    y: number
+  }>();
+
+  interface ConnectionType {
+      table: string,
+      row: string
+    };
+
+  const [ grabbingTable, setGrabbingTable ] = useState<number | null>(null);
+  const [ connections, setConnections ] = useState<Array<ConnectionType> | null>(null);
+
+  //Connections full class
+  class ConnectionClass {
+    //Type
+    private table: string;
+    private row: string;
+
+    //Constructor (new)
+    constructor(
+      table: string,
+      row: string
+    ) {
+      this.table = table;
+      this.row = row;
+
+      //Auto Adds
+      const connection : ConnectionType = {
+        table: this.table,
+        row: this.row
+      };
+      
+      setConnections(
+        curr => curr ? [
+          ...curr,
+          connection
+        ] : [
+          connection
+        ]
+      )
+    };
+
+    //Remove function
+    remove(index : number) {
+      setConnections(
+        //Using filter with index
+        curr => curr && curr.filter(
+        (_, curr_index) => {
+          curr_index !== index
+          }
+        )
+      );
+    }
+  }
+
   //Ref components
   const dbForm : RefObject<null> = useRef(null);
+
+  const HandleUpdatePosition = (
+    //Vales after moving
+    index: number,
+    x: number,
+    y: number
+  ) => {
+    //Verifies if is valid
+    if(!tables || !tables[index]) return;
+
+    //Duplicate the table
+    let duplied_tables = tables;
+    //Sets values
+    duplied_tables[index].position.x = x;
+    duplied_tables[index].position.y = y;
+
+    //Update tables
+    setTables(duplied_tables);
+  };
+
+  const HandleUpdateOffSet = (
+    //Values before moving
+    index: number,
+    x: number,
+    y: number
+  ) => {
+    //Verifies
+    if(!tables || !tables[index]) return;
+
+    //Duplies the tables
+    let duplied_tables = tables;
+    //Sets offsets values
+    duplied_tables[index].position.offSet_x = x;
+    duplied_tables[index].position.offSet_y = y;
+
+    //Updates tables
+    setTables(duplied_tables);
+  };
+
+  //Function for connectiing tables values
+  const handleConnectRows = (
+    connector: ConnectionType,
+    connected: ConnectionType,
+  ) => {
+    //Add connection logic
+  }
 
   //Function for open database create form
   const toggleDBForm = () => {
@@ -169,7 +278,9 @@ export default function ErdCreatorPage() {
       rows: rows,
       position: {
         x: 0,
-        y: 0
+        y: 0,
+        offSet_x: 0,
+        offSet_y: 0
       }
     };
 
@@ -192,9 +303,24 @@ export default function ErdCreatorPage() {
 
   return (
     <div
-    className="text-text scrollbar-hidden">
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 block aspect-square w-150 rounded-full bg-main/20 blur-2xl animate-pulse z-0"></div>
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 block aspect-square w-50 rounded-full bg-white/10 blur-2xl animate-pulse z-1"></div>
+    className="text-text scrollbar-hidden dotted-background w-screen h-screen"
+    onMouseDown={(e) => {
+      setCurrentMouse("grabbing");
+    }}
+    onMouseMove={(e) => {
+      if(
+        buttonActive !== "connection" &&
+        currentMouse === "grabbing"
+      ) {
+        setCurrentPosition({
+          x: e.clientX - tables[grabbingTable!].position.offSet_x!,
+          y: e.clientY - tables[grabbingTable!].position.offSet_y!,
+        });
+      }
+    }}
+    onMouseUp={() => {
+      setCurrentMouse("grab");
+    }}>
 
       <div
       ref={dbForm}
@@ -333,13 +459,96 @@ export default function ErdCreatorPage() {
 
       {
         tables && tables.length > 0 && tables.map((table, index) => (
-          <Table
-            key={index}
-            name={table.name}
-            description={table.description}
-            rows={table.rows!}
-            isConnectionMode={buttonActive === "connection"}
-            position={table.position} />
+          <section
+          key={index}
+          className="pb-2 rounded-md bg-neutral-800 w-60 fixed z-2 border-2 border-neutral-600"
+          onMouseDown={(e) => {
+            if(buttonActive !== "connection") {
+              HandleUpdateOffSet(
+                index,
+                e.clientX - tables[index].position.x,
+                e.clientY - tables[index].position.y,
+              );
+              setGrabbingTable(index);
+            }
+          }}
+          onMouseMove={(e) => {
+            if(
+              buttonActive !== "connection" &&
+              currentMouse === "grabbing"
+            ) {
+              setCurrentPosition({
+                x: e.clientX - tables[index].position.offSet_x!,
+                y: e.clientY - tables[index].position.offSet_y!,
+              });
+            }
+          }}
+          onMouseUp={() => {
+            if(buttonActive !== "connection") {
+              HandleUpdatePosition(index, currentPosition?.x!, currentPosition?.y!);
+              setGrabbingTable(null);
+            }
+          }}
+          style={{
+            cursor: buttonActive === "connection" ? "default" : currentMouse!,
+            transform: `translate3d(${grabbingTable !== null && grabbingTable === index ? currentPosition?.x : tables[index].position.x}px, ${grabbingTable !== null && grabbingTable === index ? currentPosition?.y : tables[index].position.y}px, 0)`,
+            userSelect: "none"
+          }}>
+            <h2 className="uppercase font-medium border-b-2 border-neutral-600 p-2 mb-2 bg-black/30 text-center">
+              {table.name}
+            </h2>
+
+            <div className="flex flex-col px-4">
+              <article className="flex justify-between items-center text-sm mb-2 uppercase font-medium p-2">
+                <p>value</p>
+                <p>type</p>
+              </article>
+
+              {table && table.rows?.map(
+                (row, index) => (
+                  <article
+                  key={index}
+                  className={"flex justify-between items-center text-sm border-t-2 border-neutral-700 p-2 relative " + ( buttonActive === "connection" && "cursor-pointer" )}
+                  onClick={() => {
+                    if(buttonActive === "connection") {
+                      setRowConnector(
+                        prev =>
+                        prev && prev.table === table.name && prev.value === row.value ?
+                        null :
+                        {
+                          table: table.name,
+                          value: row.value
+                        }
+                      )
+                    }
+                  }}>
+                    {
+                      rowConnector &&
+                      rowConnector.table === table.name &&
+                      rowConnector.value === row.value && 
+                      buttonActive === "connection" && (
+                        <span
+                        className="w-5 aspect-square block rounded-full border-3 border-neutral-400 z-3 absolute -right-6 top-1/2 -translate-y-1/2 bg-neutral-950 animate-zoom-in"
+                        style={{
+                          //Custom duration
+                          animationDuration: "200ms"
+                        }} />
+                      )
+                    }
+
+                    <p>
+                      {row.value}
+                    </p>
+
+                    <p
+                    className="text-text/80 font-light uppercase">
+                      {row.type}
+                    </p>
+                  </article>
+                )
+              )}
+            </div>
+          </section>
         ))
       }
     </div>

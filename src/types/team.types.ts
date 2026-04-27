@@ -35,7 +35,9 @@ export interface ERDTable {
   }>;
   position: {
     x: number,
-    y: number
+    y: number,
+    offSet_x?: number,
+    offSet_y?: number,
   }
 }
 

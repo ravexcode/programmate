@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v24.1**
+  1. Refactor en las tablas ERD (Ahora si funcionan bien). 👍
+
 - **Indev v24.0:**
   1. Página de tablas ERD iniciada. ⚙️
 
