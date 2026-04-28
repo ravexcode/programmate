@@ -54,4 +54,5 @@ export default interface Team {
   tickets?: Array<Ticket>
   calendar?: string;
   created_at: string;
+  ERD?: Array<ERDTable>;
 }

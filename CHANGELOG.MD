@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v24.4:**
+  1. ERD Page terminado. 🚀
+
 - **Indev v24.3:**
   1. Importación de reactxarrows. 📁
   2. Página de ERD casi terminada. 👍

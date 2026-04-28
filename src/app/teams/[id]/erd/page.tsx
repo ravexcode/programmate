@@ -2,12 +2,18 @@
 "use client";
 
 //React import
-import { useState, useRef, type RefObject } from "react";
+import { useState, useRef, type RefObject, useEffect } from "react";
 import Xarrow, { Xwrapper } from "react-xarrows";
+
+//Hooks imports
+import { saveERD, getERD } from "./hooks";
 
 //Prebuilt ui imports
 import CreatorForm from "@/components/forms/creatorForm";
 import CreatorInput from "@/components/forms/creatorInputs";
+import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
+
+//Icons imports
 import {
   IconArrowLeft,
   IconConnection,
@@ -23,6 +29,8 @@ import {
 //Types imports
 import { type ERDTable } from "@/types/team.types";
 import { useParams } from "next/navigation";
+import { getCookie } from "cookies-next/client";
+import LoadingDashboard from "@/components/screens/loading_dashboard";
 
 //Types declarations
 //Table rows
@@ -65,7 +73,7 @@ export default function ErdCreatorPage() {
   //DB total rows
   const [ rows, setRows ] = useState<Array<Row>>([]);
   //Tables
-  const [ tables, setTables ] = useState<Array<ERDTable>>([]);
+  const [ tables, setTables ] = useState<Array<ERDTable> | null>(null);
 
   //Table states
   const [ currentMouse, setCurrentMouse ] = useState<string>("default");
@@ -80,6 +88,9 @@ export default function ErdCreatorPage() {
 
   const [ grabbingTable, setGrabbingTable ] = useState<number | null>(null);
   const [ connections, setConnections ] = useState<Array<ConnectionType> | null>(null);
+
+  //Snackbar container
+  const snackbar = useRef<SnackbarRef>(null);
 
   const isAlreadyConnected = (
     connections: ConnectionType[], 
@@ -96,6 +107,30 @@ export default function ErdCreatorPage() {
       conn.connected.row === newConn.connector.row)
     );
   };
+
+  //Get the db data
+  useEffect(() => {
+    async function getERDData(){
+      const token = await getCookie("token");
+
+      const data : Array<ERDTable> | undefined = await getERD(
+        params.id,
+        token!
+      );
+
+      if(data) {
+        setTables(data);
+
+        console.log(data)
+        return;
+      }
+
+      setTables([]);
+      return;
+    }
+
+    getERDData();
+  }, []);
 
   //Connections full class
   class Connection {
@@ -154,13 +189,13 @@ export default function ErdCreatorPage() {
   const dbForm : RefObject<null> = useRef(null);
 
   const HandleUpdatePosition = (index: number, x: number, y: number) => {
-    setTables(prev => prev.map((table, i) => 
+    setTables(prev => prev!.map((table, i) => 
       i === index ? { ...table, position: { ...table.position, x, y } } : table
     ));
   };
 
   const HandleUpdateOffSet = (index: number, x: number, y: number) => {
-    setTables(prev => prev.map((table, i) => 
+    setTables(prev => prev!.map((table, i) => 
       i === index ? { ...table, position: { ...table.position, offSet_x: x, offSet_y: y } } : table
     ));
   };
@@ -244,6 +279,7 @@ export default function ErdCreatorPage() {
   };
 
   return (
+     tables ? (
     <div
     className="text-text scrollbar-hide dotted-background min-w-screen min-h-screen"
     onMouseDown={(e) => {
@@ -260,8 +296,8 @@ export default function ErdCreatorPage() {
         grabbingTable !== null
       ) {
         setCurrentPosition({
-          x: e.clientX - tables[grabbingTable].position.offSet_x!,
-          y: e.clientY - tables[grabbingTable].position.offSet_y!,
+          x: e.clientX - tables![grabbingTable].position.offSet_x!,
+          y: e.clientY - tables![grabbingTable].position.offSet_y!,
         });
       }
     }}
@@ -270,6 +306,8 @@ export default function ErdCreatorPage() {
       setGrabbingTable(null);
       setCurrentPosition(undefined);
     }}>
+
+      <SnackBar ref={snackbar} />
 
       {/* DB Form */ }
       <div
@@ -398,6 +436,8 @@ export default function ErdCreatorPage() {
         }}>
           <h2 className="text-center text-xl md:text-2xl font-medium tracking-wider mb-5"> Databases </h2>
 
+
+
           {
             tables && tables.length > 0 ? tables.map((table, table_index) => 
               <div
@@ -419,8 +459,30 @@ export default function ErdCreatorPage() {
                   </button>
                 </div>
 
+                <label
+                className="text-sm">
+                  Description
+                </label>
+                <textarea
+                value={table.description}
+                onChange={(e) => {
+                  const duplicated = [...tables];
+
+                  duplicated[table_index] = {
+                    ...duplicated[table_index],
+                    description: e.target.value,
+                  };
+
+                  setTables(duplicated);
+                }}
+                placeholder="e.g. email"
+                className="w-full px-4 py-2 rounded-md bg-neutral-900 border-2 border-neutral-600 duration-300 hover:brightness-80 focus:hover:brightness-100 focus:outline-none focus:border-main mb-3 min-h-30 max-h-30"/>
+
+                <p
+                className="text-lg font-medium mb-2">Rows</p>
+
                 {
-                  table.rows?.map((row, row_index) => 
+                  tables[table_index].rows!.map((row, row_index) => 
                     <div
                     key={row_index}
                     className="w-full mb-2 flex flex-col gap-1">
@@ -469,7 +531,7 @@ export default function ErdCreatorPage() {
                       className="bg-neutral-900 w-full rounded-md px-4 py-2 flex gap-2 justify-center items-center duration-400 mt-2 hover:scale-102 hover:bg-red-600 cursor-pointer"
                       onClick={() => {
                         setTables((prev) =>
-                          prev.map((table, i) =>
+                          prev!.map((table, i) =>
                             i === table_index
                               ? {
                                   ...table,
@@ -490,6 +552,30 @@ export default function ErdCreatorPage() {
                     </div>
                   )
                 }
+
+                <button
+                type="button"
+                className="w-full py-2 rounded-md cursor-pointer duration-300 bg-main mt-2 mb-1 hover:bg-main/70"
+                onClick={() => {
+                  setTables(prev =>
+                    prev!.map((table, i) =>
+                      i === table_index
+                        ? {
+                            ...table,
+                            rows: [
+                              ...(table.rows || []),
+                              {
+                                value: "",
+                                type: "",
+                              },
+                            ],
+                          }
+                        : table
+                    )
+                  );
+                }}>
+                  Add new row
+                </button>
 
                 <label
                 className="text-sm">
@@ -568,7 +654,7 @@ export default function ErdCreatorPage() {
             )
           }
 
-          { tables.length > 0 && (
+          { tables!.length > 0 && (
             <button
             type="button"
             className="bg-main w-full py-2 text-lg font-medium tracking-wide mt-4 rounded-md text-text cursor-pointer duration-300 hover:bg-main/60"
@@ -646,7 +732,20 @@ export default function ErdCreatorPage() {
 
       <button
       type="button"
-      className="z-10 fixed top-2 right-2 cursor-pointer duration-200 p-3 rounded-full hover:bg-white/20 text-green-500">
+      className="z-10 fixed top-2 right-2 cursor-pointer duration-200 p-3 rounded-full hover:bg-white/20 text-green-500 disabled:grayscale disabled:hover:bg-transparent disabled:cursor-wait"
+      disabled={dbFormDisabled}
+      onClick={async () => {
+        setDBFormDisabled(true);
+        const token = await getCookie("token");
+
+        await saveERD(
+          params.id,
+          tables!,
+          token!,
+          snackbar
+        )
+        setDBFormDisabled(false);
+      }}>
         <IconDeviceFloppy
         size={25} />
       </button>
@@ -740,12 +839,12 @@ export default function ErdCreatorPage() {
 
                     <p
                     className="lowercase">
-                      {row.value}
+                      {row.value || "unnamed row"}
                     </p>
 
                     <p
                     className="text-text/80 font-light uppercase">
-                      {row.type}
+                      {row.type || "n/a"}
                     </p>
                   </article>
                 )
@@ -779,6 +878,8 @@ export default function ErdCreatorPage() {
         />
       ))}
       </Xwrapper>
-    </div>
+    </div>) : (
+      <LoadingDashboard />
+    )
   )
 }
