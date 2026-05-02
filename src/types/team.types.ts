@@ -55,4 +55,15 @@ export default interface Team {
   calendar?: string;
   created_at: string;
   ERD?: Array<ERDTable>;
+  ERD_connections?: Array<{
+    connector: {
+      table: string;
+      row: string;
+    };
+    connected: {
+      table: string;
+      row: string;
+    };
+    type: "oto" | "mto" | "mtm";
+  }>
 }

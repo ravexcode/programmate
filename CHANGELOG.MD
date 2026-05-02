@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v25.0**
+  1. ERD Arreglado completamente. ✔️
+  2. Nuevo mensaje de página en construcción. 🛠️
+  3. Inicialización del chat. 💬
+
 - **Indev v24.4:**
   1. ERD Page terminado. 🚀
 

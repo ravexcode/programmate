@@ -5,6 +5,17 @@ import Team, { ERDTable } from "@/types/team.types";
 export async function saveERD(
   teamID: any,
   erd: Array<ERDTable>,
+  connections: Array<{
+    connector: {
+      table: string;
+      row: string;
+    };
+    connected: {
+      table: string;
+      row: string;
+    };
+    type: "oto" | "mto" | "mtm";
+  }>,
   token: string,
   snackBar: any
 ) {
@@ -23,7 +34,8 @@ export async function saveERD(
       "x-api-key": process.env.NEXT_PUBLIC_API_KEY!
     },
     body: JSON.stringify({
-      erd: erd
+      erd: erd,
+      connections: connections
     })
   });
 
@@ -60,7 +72,10 @@ export async function getERD(
 
   if(res.status === 200) {
     const team : Team = data.team;
-    return team.ERD;
+    return {
+      tables: team.ERD,
+      connections: team.ERD_connections
+    };
   }
 
   return;

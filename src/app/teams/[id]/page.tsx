@@ -125,7 +125,7 @@ export default function TeamPage(){
             }
 
             <Icon
-            action="/"
+            action={`/teams/${team.team_id}/integrants`}
             name="Integrants"
             isDisplayed={expanded}>
               <IconUsers
@@ -156,7 +156,7 @@ export default function TeamPage(){
             </Icon>
 
             <Icon
-            action="/"
+            action={`/teams/${team.team_id}/chat`}
             name="Chat"
             isDisplayed={expanded}
             disabled={ user?.plan === "Free" }>
@@ -167,7 +167,7 @@ export default function TeamPage(){
             </Icon>
 
             <Icon
-            action="/"
+            action={`/teams/${team.team_id}/json-preview`}
             name="JSON Preview"
             isDisplayed={expanded}
             disabled={ user?.plan === "Free" }>
@@ -178,7 +178,7 @@ export default function TeamPage(){
             </Icon>
 
             <Icon
-            action="/"
+            action={`/teams/${team.team_id}/kanban-board`}
             name="Kanban board"
             isDisplayed={expanded}
             disabled={ user?.plan === "Free" }>
@@ -189,7 +189,7 @@ export default function TeamPage(){
             </Icon>
 
             <Icon
-            action="/"
+            action={`/teams/${team.team_id}/calendar`}
             name="Calendar"
             isDisplayed={expanded}
             disabled={ user?.plan === "Free" }>

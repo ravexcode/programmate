@@ -11,11 +11,11 @@ export async function POST(
 ){
   try {
     //Gets the data
-    const { erd } = await req.json();
+    const { erd, connections } = await req.json();
     const { teamId } = await params;
     const token = (await headers()).get("Authorization");
 
-    if(!teamId || !token || !erd) return NextResponse.json({
+    if(!teamId || !token || !erd || !connections) return NextResponse.json({
       message: "Data send error",
       error: "Bad request"
     }, {
@@ -75,7 +75,7 @@ export async function POST(
     //Saves the ERD
     const { error: updateERDError } = await supabase
     .from("teams")
-    .update( { ERD: erd } )
+    .update( { ERD: erd, ERD_connections: connections } )
     .eq("team_id", teamId);
 
     //Error handler

@@ -113,19 +113,19 @@ export default function ErdCreatorPage() {
     async function getERDData(){
       const token = await getCookie("token");
 
-      const data : Array<ERDTable> | undefined = await getERD(
+      const data = await getERD(
         params.id,
         token!
       );
 
       if(data) {
-        setTables(data);
-
-        console.log(data)
+        setTables(data.tables!);
+        setConnections(data.connections!);
         return;
       }
 
       setTables([]);
+      setConnections([]);
       return;
     }
 
@@ -741,6 +741,7 @@ export default function ErdCreatorPage() {
         await saveERD(
           params.id,
           tables!,
+          connections!,
           token!,
           snackbar
         )
