@@ -13,9 +13,11 @@ export interface IntegrantData {
 }
 
 export interface ChatMessage {
-  sender: string; //Email
-  sender_username: string;
-  sender_id: string;
+  sender: {
+    email: string,
+    id: string,
+    username: string
+  }
   sent_at: string;
   message: string;
   reactions?: Array<string>;

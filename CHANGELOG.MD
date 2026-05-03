@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v25.1:**
+  1. Refactor en el chat component. 🛠️
+  2. Realtime agregado al chat. 👁️‍🗨️
+  3. Nuevo Supabase client connector. 🛜
+
 - **Indev v25.0**
   1. ERD Arreglado completamente. ✔️
   2. Nuevo mensaje de página en construcción. 🛠️
