@@ -18,8 +18,9 @@ export interface ChatMessage {
     id: string,
     username: string
   }
-  sent_at: string;
-  message: string;
+  sent_at?: string;
+  content: string;
+  isEdited?: boolean;
   reactions?: Array<string>;
 }
 

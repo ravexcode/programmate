@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v25.2:**
+  1. Realtime implementado correctamente! 🛜
+  2. Se suben y se pueden mirar los mensajes. 🛠️
+
 - **Indev v25.1:**
   1. Refactor en el chat component. 🛠️
   2. Realtime agregado al chat. 👁️‍🗨️
