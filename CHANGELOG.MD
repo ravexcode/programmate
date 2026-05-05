@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v25.3:**
+  1. Arreglo en params de rutas, al parcer rotas. Ahora funcionales. 🛠️
+  2. CryptoClient creado y agregado en realtime con el chat. 🔒
+  3. Bugfix en cosas menores. 🐛
+
 - **Indev v25.2:**
   1. Realtime implementado correctamente! 🛜
   2. Se suben y se pueden mirar los mensajes. 🛠️

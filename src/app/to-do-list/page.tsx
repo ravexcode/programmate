@@ -188,8 +188,6 @@ export default function ToDoListPage() {
           email={user?.email}/>
           <AIChat />
           <SnackBar
-          message={snackBarMessage}
-          isError={snackBarIsError}
           ref={snackBar}/>
 
           {/* Creator form */}

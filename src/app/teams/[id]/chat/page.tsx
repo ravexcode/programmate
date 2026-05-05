@@ -15,7 +15,8 @@ import { getCached } from "@/hooks/cache";
 import UpdateUserData from "@/services/update.user";
 
 //Lib imports
-import supabase_client from "@/lib/db_client";
+import supabase_client from "@/lib/client/db";
+import { ClientEncrypt, ClientDecrypt } from "@/lib/client/crypto";
 
 //Prebuild UI Imports
 import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
@@ -99,7 +100,8 @@ export default function ChatPage() {
       setIntegrants(
         team_fetched.integrants.filter(integrant => integrant.id !== user_id)
       );
-      setMessages(team_fetched.chat);
+
+      setMessages(team_fetched.chat || []);
 
       return
     };
@@ -119,8 +121,6 @@ export default function ChatPage() {
           table: 'teams'
         },
         (payload: any) => {
-          console.log(payload);
-
           if (payload.new?.chat?.length > 0) {
             const newChat = payload.new.chat;
             const lastMessage = newChat[newChat.length - 1];
@@ -158,7 +158,7 @@ export default function ChatPage() {
         email: user.email,
         username: user.name
       },
-      content: messageToSend,
+      content: ClientEncrypt(messageToSend),
       sent_at: (new Date()).toLocaleTimeString()
     }
 
@@ -260,7 +260,7 @@ export default function ChatPage() {
 
             <h2
             className="text-xl font-medium tracking-wider">
-              Your team chat
+              { team.name.slice(0, 1).toUpperCase() + team.name.slice(1) } chat
             </h2>
           </header>
 
@@ -287,7 +287,7 @@ export default function ChatPage() {
                     </span>
 
                     <p
-                    className={"w-max max-w-1/3 rounded-xl px-6 py-2 flex flex-col "  + ( message.sender.id === user?.id ? "rounded-br-none bg-main" : "bg-neutral-900 rounded-bl-none" ) }>
+                    className={"w-max max-w-3/4 rounded-xl px-6 py-2 flex flex-col "  + ( message.sender.id === user?.id ? "rounded-br-none bg-main" : "bg-neutral-900 rounded-bl-none" ) }>
                       {
                         message.sender.id !== user?.id ? (
                           <span
@@ -302,7 +302,7 @@ export default function ChatPage() {
                         )
                       }
 
-                      { message.content } <br />
+                      { ClientDecrypt(message.content) } <br />
 
                       <span
                       className="w-full text-end text-xs font-light opacity-80 uppercase mt-1">
@@ -326,8 +326,8 @@ export default function ChatPage() {
             value={messageToSend}
             onKeyDown={async(e) => {
               if(e.key === "Enter" && user && messageToSend && messageToSend.length > 0) {
-                await saveMsgHandler();
                 setMessageToSend("");
+                await saveMsgHandler();
               }
             }}
             className="bg-neutral-900 h-full py-2 px-5 rounded-lg outline-none border-2 border-transparent duration-300 focus:border-main w-full" />
@@ -335,8 +335,8 @@ export default function ChatPage() {
             <button
             onClick={async() => {
               if(user && messageToSend && messageToSend.length > 0) {
-                await saveMsgHandler();
                 setMessageToSend("");
+                await saveMsgHandler();
               }
             }}
             className="p-4 rounded-full bg-neutral-900 cursor-pointer duration-400 hover:bg-neutral-900/60">

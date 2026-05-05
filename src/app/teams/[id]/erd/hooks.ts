@@ -35,7 +35,8 @@ export async function saveERD(
     },
     body: JSON.stringify({
       erd: erd,
-      connections: connections
+      connections: connections,
+      teamId: teamID
     })
   });
 
@@ -73,8 +74,8 @@ export async function getERD(
   if(res.status === 200) {
     const team : Team = data.team;
     return {
-      tables: team.ERD,
-      connections: team.ERD_connections
+      tables: team.ERD || [],
+      connections: team.ERD_connections || []
     };
   }
 

@@ -8,7 +8,7 @@ import { Ticket } from "@/types/team.types";
 import { Decrypt } from "@/functions/crypto";
 
 //Get the team function
-export async function GET(req: NextRequest, { params }: { params: { teamId: Promise<string | null | undefined> }}){
+export async function GET(req: NextRequest, { params }: { params: Promise<{ teamId: string | undefined }>}){
   try {
     //Gets the data
     const { teamId } = await params;
@@ -102,7 +102,7 @@ export async function GET(req: NextRequest, { params }: { params: { teamId: Prom
 }
 
 //Delete the team function
-export async function DELETE(req: NextRequest, { params }: { params: { teamId: Promise<string | null | undefined> }}){
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ teamId: string | undefined }>}){
   try {
     //Gets the data
     const { teamId } = await params;

@@ -8,15 +8,7 @@ import supabase from "@/lib/db";
 //Delete a ticket by index
 export async function DELETE(
   req: NextRequest,
-  {
-    params
-  }: {
-    params:
-    {
-      teamId: string | undefined,
-      index: number
-    }
-  } ) {
+  { params }: { params: Promise<{ teamId: string | undefined, index: number | string | undefined }>} ) {
   try {
     //Gets the data
     const { teamId, index } = await params;

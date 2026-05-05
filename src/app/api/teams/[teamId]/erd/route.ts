@@ -5,14 +5,10 @@ import supabase from "@/lib/db";
 import { type NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { teamId: Promise<string | null | undefined> }}
-){
+export async function POST( req: NextRequest) {
   try {
     //Gets the data
-    const { erd, connections } = await req.json();
-    const { teamId } = await params;
+    const { erd, connections, teamId } = await req.json();
     const token = (await headers()).get("Authorization");
 
     if(!teamId || !token || !erd || !connections) return NextResponse.json({

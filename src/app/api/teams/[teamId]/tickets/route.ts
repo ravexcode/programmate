@@ -10,7 +10,7 @@ import { Ticket } from "@/types/team.types";
 import { Decrypt, Encrypt } from "@/functions/crypto";
 
 //Get all tickets from a team
-export async function GET(req: NextRequest, { params }: { params: { teamId: Promise<string | null | undefined> }}){
+export async function GET(req: NextRequest, { params }: { params: Promise<{ teamId: string | undefined }>}){
   try {
     //Gets the data
     const { teamId } = await params;
@@ -104,7 +104,7 @@ export async function GET(req: NextRequest, { params }: { params: { teamId: Prom
 }
 
 //Create a new ticket
-export async function POST(req: NextRequest, { params }: { params: { teamId: Promise<string | null | undefined> }}){
+export async function POST(req: NextRequest, { params }: { params: Promise<{ teamId: string | undefined }>}){
   try {
     //Gets the data
     const { teamId } = await params;
@@ -220,7 +220,7 @@ export async function POST(req: NextRequest, { params }: { params: { teamId: Pro
 }
 
 //Update a ticket
-export async function PUT(req: NextRequest, { params }: { params: { teamId: Promise<string | null | undefined> }}){
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ teamId: string | undefined }>}){
   try {
     //Gets the data
     const { teamId } = await params;
