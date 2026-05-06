@@ -61,6 +61,7 @@ export default function TicketView() {
     const current : HTMLElement = containerRef.current;
 
     current.classList.add("hidden")
+    current.classList.remove("flex")
   };
 
   const showConfirmation = () => {
@@ -69,6 +70,7 @@ export default function TicketView() {
     const current : HTMLElement = containerRef.current;
 
     current.classList.remove("hidden");
+    current.classList.add("flex");
   };
 
   useEffect(() => {
@@ -162,7 +164,7 @@ export default function TicketView() {
 
         <div
         ref={containerRef}
-        className="fixed w-screen h-screen flex justify-center items-center z-10 backdrop-blur backdrop-brightness-70 top-0 left-0 animate-fade-in hidden">
+        className="fixed w-screen h-screen justify-center items-center z-10 backdrop-blur backdrop-brightness-70 top-0 left-0 animate-fade-in hidden">
           <CreatorForm
           title="Are you sure to delete this ticket?"
           action={(e) => { handleDelete(e) }}

@@ -6,6 +6,7 @@ import { useRef, useEffect , useState} from "react";
 //Next imports
 import { useParams } from "next/navigation";
 import { getCookie } from "cookies-next";
+import Link from "next/link";
 
 //Hooks imports
 import { searchTeamData } from "../page";
@@ -25,6 +26,8 @@ import LoadingDashboard from "@/components/screens/loading_dashboard";
 //Icons imports
 import {
   IconArrowLeft,
+  IconCancel,
+  IconClock,
   IconSend
 } from "@tabler/icons-react";
 
@@ -92,6 +95,11 @@ export default function ChatPage() {
         setTeam
       );
 
+      const { data: chat_fetched } = await supabase_client
+      .from("chats")
+      .select("*")
+      .eq("team_id", team_fetched?.team_id);
+
       if(!team_fetched) return window.location.href = "/dashboard";
 
       const user_id = user_fetched ? user_fetched?.id : cached?.id;
@@ -101,7 +109,7 @@ export default function ChatPage() {
         team_fetched.integrants.filter(integrant => integrant.id !== user_id)
       );
 
-      setMessages(team_fetched.chat || []);
+      setMessages(chat_fetched || []);
 
       return
     };
@@ -109,36 +117,47 @@ export default function ChatPage() {
     setAllData();
   }, []);
 
-  //Realtime connection
+  //Realtime handler
   useEffect(() => {
+    if (!params?.id) return;
+
     const channel = supabase_client
-      .channel('custom-all-channel')
+      .channel(`realtime-chats-${params.id}`)
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
-          table: 'teams'
+          table: 'chats',
+          filter: `team_id=eq.${Number(params.id)}`
         },
         (payload: any) => {
-          if (payload.new?.chat?.length > 0) {
-            const newChat = payload.new.chat;
-            const lastMessage = newChat[newChat.length - 1];
+          const newMessage = payload.new;
 
-            setMessages((prev: any[]) => {
-              if (!prev) return newChat;
+          setMessages((prev : Array<ChatMessage>) => {
+            const exists = prev.some(
+              msg => msg.message_id === payload.new.message_id
+            );
 
-              const alreadyExists = prev.some(
-                (msg) =>
-                  msg.sent_at === lastMessage.sent_at &&
-                  msg.content === lastMessage.content
+            if (exists) return prev;
+
+            const similarOptimistic = prev.find(
+              msg =>
+                typeof msg.message_id === "string" && 
+                msg.content === payload.new.content &&
+                msg.sender_id === payload.new.sender_id
+            );
+
+            if (similarOptimistic) {
+              return prev.map(msg =>
+                msg === similarOptimistic
+                  ? { ...payload.new, status: "sent" }
+                  : msg
               );
+            }
 
-              if (alreadyExists) return prev;
-
-              return [...prev, lastMessage];
-            });
-          }
+            return [...prev, payload.new];
+          });
         }
       )
       .subscribe();
@@ -146,40 +165,60 @@ export default function ChatPage() {
     return () => {
       supabase_client.removeChannel(channel);
     };
-  }, []);
+  }, [params.id]);
 
   //Save message handler
-  const saveMsgHandler = async() => {
-    if(!user || !team) return;
+  const saveMsgHandler = async () => {
+    if (!user || !team) return;
 
-    const message : ChatMessage = {
-      sender: {
-        id: user.id,
-        email: user.email,
-        username: user.name
-      },
+    const tempId = `temp-${Date.now()}`;
+
+    const optimisticMessage: ChatMessage = {
+      sent_id: tempId,
+      team_id: team.team_id,
+      sender_id: user.id,
+      sender_email: user.email,
+      sender_name: user.name,
       content: ClientEncrypt(messageToSend),
-      sent_at: (new Date()).toLocaleTimeString()
-    }
+      sent_at: new Date(),
+      status: "sending",
+    };
 
-    const { error } = await supabase_client
-    .from("teams")
-    .update({
-      chat: [
-        ...team.chat || [],
-        message,
-      ]
-    })
-    .eq("team_id", team.team_id);
+    setMessages((prev : Array<ChatMessage>) => [...prev, optimisticMessage]);
 
-    if(error) {
-      snackbar.current?.showSnackBar(error.message, true);
+    const { data, error } = await supabase_client
+      .from("chats")
+      .insert({
+        team_id: team.team_id,
+        sender_id: user.id,
+        sender_email: user.email,
+        sender_name: user.name,
+        content: optimisticMessage.content,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      setMessages((prev : Array<ChatMessage>) =>
+        prev.map(msg =>
+          msg.sent_id === tempId
+            ? { ...msg, status: "error" }
+            : msg
+        )
+      );
+
       console.error(error);
       return;
     }
 
-    return;
-  }
+    setMessages((prev : Array<ChatMessage>) =>
+      prev.map(msg =>
+        msg.sent_id === tempId
+          ? { ...data, status: "sent" }
+          : msg
+      )
+    );
+  };
 
   return (
     team ? (
@@ -251,12 +290,12 @@ export default function ChatPage() {
 
           <header
           className="px-6 py-3 flex gap-3 justify-start items-center w-full h-max bg-neutral-900 z-2">
-            <a
+            <Link
             href={`/teams/${params.id}`}
             className="p-2 rounded-full duration-200 hover:bg-white/20">
               <IconArrowLeft
               size={20} />
-            </a>
+            </Link>
 
             <h2
             className="text-xl font-medium tracking-wider">
@@ -272,14 +311,14 @@ export default function ChatPage() {
             </div>
 
             <div
-            className="z-2 h-full py-5 px-8 flex flex-col justify-start w-full gap-4 z-10">
+            className="h-full py-5 px-8 flex flex-col justify-start w-full gap-4 z-10">
               {
                 messages && messages.length > 0 && messages.map((message : ChatMessage, index: number) =>
                   <section
                   key={index}
-                  className={"flex items-end w-full gap-2 " + ( message.sender.id === user?.id ? "justify-end" : "justify-start" )}>
+                  className={"flex items-end w-full gap-2 " + ( message.sender_id === user?.id ? "justify-end" : "justify-start" )}>
                     <span
-                    className={"p-2 w-9 text-center text-xs rounded-full bg-radial-[at_25%_25%] from-sky-600 to-blue-900 " + ( message.sender.id === user?.id && "hidden" ) }>
+                    className={"p-2 w-9 text-center text-xs rounded-full bg-radial-[at_25%_25%] from-sky-600 to-blue-900 " + ( message.sender_id === user?.id && "hidden" ) }>
                       {
                         user?.name.slice(0, 1) +
                         (user?.name.split(' ').slice(1).join(' ').slice(0, 1) || "")
@@ -287,12 +326,12 @@ export default function ChatPage() {
                     </span>
 
                     <p
-                    className={"w-max max-w-3/4 rounded-xl px-6 py-2 flex flex-col "  + ( message.sender.id === user?.id ? "rounded-br-none bg-main" : "bg-neutral-900 rounded-bl-none" ) }>
+                    className={"w-max max-w-3/4 rounded-xl px-6 py-2 flex flex-col "  + ( message.sender_id === user?.id ? "rounded-br-none bg-main" : "bg-neutral-900 rounded-bl-none" ) }>
                       {
-                        message.sender.id !== user?.id ? (
+                        message.sender_id !== user?.id ? (
                           <span
                           className="text-sm font-thin tracking-wider opacity-80">
-                            { message.sender.username } <span className="text-xs opacity-80"> ({ message.sender.email }) </span>
+                            { message.sender_name } <span className="text-xs opacity-80"> ({ message.sender_email }) </span>
                           </span>
                         ) : (
                           <span
@@ -306,9 +345,17 @@ export default function ChatPage() {
 
                       <span
                       className="w-full text-end text-xs font-light opacity-80 uppercase mt-1">
-                        { message.sent_at }
+                        { new Date(message.sent_at!).toLocaleTimeString() }
                       </span>
                     </p>
+
+                    {
+                      message.status === "sending" ? (
+                        <IconClock />
+                      ) : message.status === "error" && (
+                        <IconCancel />
+                      )
+                    }
                   </section>
                 )
               }

@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v26.0:**
+  1. Realtime funcional al 100%! 💬
+  2. Mejora de optimización. 🚀
+
 - **Indev v25.4:**
   1. Refactor en el diseño del frontend. 🛠️
   2. Mejoras de la vista en landing page, about page y auth forms. 👁️

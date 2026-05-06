@@ -4,6 +4,7 @@
 //Next imports
 import { useParams } from "next/navigation"
 import { getCookie } from "cookies-next/client";
+import Link from "next/link";
 
 //React imports
 import { useEffect, useState, useRef, RefObject } from "react";
@@ -12,7 +13,7 @@ import { useEffect, useState, useRef, RefObject } from "react";
 import User from "@/modules/user.types";
 
 //Prebuild ui imports
-import SideBar, { Icon } from "@/components/ui/sidebar";
+import SideBar, { IconProps } from "@/components/ui/sidebar";
 import AIChat from "@/components/ui/ai_chat";
 import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading_dashboard";
@@ -28,6 +29,18 @@ import {
   IconMessage,
   IconUsers
 } from "@tabler/icons-react";
+
+//Icon button component
+function Icon(props : IconProps) {
+  return (
+    <Link
+    href={props.action}
+    className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-90 duration-400 " + (props.disabled && "grayscale brightness-50 pointer-events-none ") + (props.isDisplayed ? "w-46 md:w-60" : "w-full")}>
+      {props.children}
+      {props.isDisplayed && <span className="text-sm animate-fade-in-right"> {props.name} </span>}
+    </Link>
+  )
+}
 
 //Functions for export
 //Function for search team data
@@ -119,7 +132,7 @@ export default function TeamPage(){
             {
               expanded && (
                 <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
-                  Team 
+                  Project 
                 </span>
               )
             }
@@ -309,7 +322,7 @@ export default function TeamPage(){
                       team.tickets.map((ticket: any, index: number) => (
                         <li
                         key={index}
-                        className="grid grid-cols-2 items-center gap-4 px-4 py-3 rounded-xl border border-white/5 bg-white/[0.02] text-sm text-neutral-200 transition-all duration-200 hover:bg-white/[0.05] hover:border-white/10 hover:shadow-md group cursor-pointer overflow-hidden mb-2"
+                        className="grid grid-cols-2 items-center gap-4 px-4 py-3 rounded-xl border border-white/5 bg-white/2 text-sm text-neutral-200 transition-all duration-200 hover:bg-white/5 hover:border-white/10 hover:shadow-md group cursor-pointer overflow-hidden mb-2"
                         onClick={() => { window.location.href = `/teams/${params.id}/tickets/${index}` }}>
                         <span className="truncate font-medium text-white">
                           {ticket.creator}

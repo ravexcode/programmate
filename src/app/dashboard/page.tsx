@@ -1,6 +1,9 @@
 //Client side
 "use client";
 
+//Next imports
+import Link from "next/link";
+
 //Table icons imports
 import {
   IconPlus,
@@ -54,17 +57,20 @@ function ProjectCard(props : ProjectCardProps) {
   const [ isDeleteDisabled, setIsDeleteDisabled ] = useState<boolean>(false);
 
   return (
-    <article 
-      className="group relative w-full flex flex-col rounded-xl border border-ultramarine-50/10 bg-neutral-950 p-5"
-      onClick={() => {
-        window.location.href = `/teams/${props.id}`
-      }}>
-      <header className="flex items-start justify-between mb-3">
+    <Link 
+    href={`/teams/${props.id}`}
+    className="group relative w-full flex flex-col rounded-xl border border-ultramarine-50/10 bg-neutral-950 p-5">
+
+      <header
+      className="flex items-start justify-between mb-3">
+
         <div
         className="w-full flex flex-col gap-1">
-          <h3 className="text-lg font-semibold text-text">
+          <h3
+          className="text-lg font-semibold text-text">
             {props.title}
           </h3>
+
           <p
           className="text-sm font-extralight flex justify-start items-center gap-2">
             <span
@@ -74,20 +80,22 @@ function ProjectCard(props : ProjectCardProps) {
         </div>
         
         <button
-          className="flex h-8 w-8 -mr-2 -mt-2 items-center justify-center rounded-full text-text hover:bg-ultramarine-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine-400 cursor-pointer"
-          onClick={(e) => {
-            e.nativeEvent.stopImmediatePropagation();
-            e.stopPropagation();
-            props.showMenu();
-          }}>
-          <IconDotsVertical
-          size={16}
-          color="white"
-          stroke={3}/>
+        className="flex h-8 w-8 -mr-2 -mt-2 items-center justify-center rounded-full text-text hover:bg-ultramarine-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine-400 cursor-pointer"
+        onClick={(e) => {
+          e.nativeEvent.stopImmediatePropagation();
+          e.stopPropagation();
+          props.showMenu();
+        }}>
+        <IconDotsVertical
+        size={16}
+        color="white"
+        stroke={3}/>
         </button>
 
         { props.menuIndex === props.index && (
-          <div className="absolute right-2 top-10 z-20 w-36 overflow-hidden rounded-lg border border-ultramarine-50/10 bg-neutral-900 shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
+          <div
+          className="absolute right-2 top-10 z-20 w-36 overflow-hidden rounded-lg border border-ultramarine-50/10 bg-neutral-900 shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
+
             <button
             onClick={(e) => {
               e.nativeEvent.stopImmediatePropagation(); 
@@ -124,9 +132,11 @@ function ProjectCard(props : ProjectCardProps) {
           </button>
           </div>
       )}
+
       </header>
 
-      <p className="text-sm text-text/60 line-clamp-3 leading-relaxed">
+      <p
+      className="text-sm text-text/60 line-clamp-3 leading-relaxed">
         {props.description}
       </p>
       
@@ -142,7 +152,7 @@ function ProjectCard(props : ProjectCardProps) {
           ))
         }
       </div>
-    </article>
+    </Link>
   )
 }
 
@@ -273,6 +283,7 @@ export default function Dashboard(){
 
     //Shows
     current.classList.remove("hidden");
+    current.classList.add("flex");
   };
 
   //And function for hiding
@@ -285,6 +296,7 @@ export default function Dashboard(){
 
     //Hides
     current.classList.add("hidden");
+    current.classList.remove("flex");
   };
 
   //User searcher
@@ -464,6 +476,7 @@ export default function Dashboard(){
 
     //Shows
     current.classList.remove("hidden");
+    current.classList.add("flex");
   };
 
   //And function for hiding
@@ -476,6 +489,7 @@ export default function Dashboard(){
 
     //Hides
     current.classList.add("hidden");
+    current.classList.remove("flex");
   };
 
   //Function for update team
@@ -533,7 +547,7 @@ export default function Dashboard(){
       {/* Project editor form */}
       <div
       ref={project_edit_container}
-      className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex flex-col  items-center z-200 animate-fade-in overflow-y-auto py-10 hidden"
+      className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col  items-center z-200 animate-fade-in overflow-y-auto py-10 hidden"
       onClick={hideEditProjectContainer}
       onSubmit={async(e: React.SubmitEvent) => {
         e.preventDefault();
@@ -568,7 +582,7 @@ export default function Dashboard(){
           onChange={(e) => {
             setNewTeamName(e.target.value);
           }}
-          className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400 mb-3"/>
+          className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400"/>
 
           <label className="font-light w-full text-sm text-start mb-1 block">
             Project's new description
@@ -580,7 +594,7 @@ export default function Dashboard(){
           onChange={(e) => {
             setNewTeamDescription(e.target.value)
           }}
-          className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400 mb-3"/>
+          className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none text-text/80 border border-transparent focus:border-main duration-400 mb-3"/>
 
           {/* Status */}
           <div className="w-full flex flex-col items-start mb-2 relative">
@@ -660,7 +674,7 @@ export default function Dashboard(){
               }
             }
           }}
-          className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400 mb-3"/>
+          className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400"/>
 
           { /* Current tags */ }
           <div
@@ -712,7 +726,7 @@ export default function Dashboard(){
       {/* Project creator form */}
       <div
       ref={project_container}
-      className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex flex-col  items-center z-200 animate-fade-in hidden overflow-y-auto py-10"
+      className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col  items-center z-200 animate-fade-in hidden overflow-y-auto py-10"
       onClick={hideProjectContainer}>
         <CreatorForm
         title="Create a new project"
@@ -911,7 +925,7 @@ export default function Dashboard(){
         </label>
         <input
         type="text"
-        className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400 mb-3"
+        className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400"
         value={currentTag || ""}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           setCurrentTag(e.target.value)
@@ -990,7 +1004,7 @@ export default function Dashboard(){
                   </div>
 
                   <button
-                  className="text-sm py-2 px-6 border-2 border-ultramarine-50/30 rounded-full cursor-pointer duration-300 hover:border-ultramarine-50/60 h-max w-max flex gap-2 text-lg my-auto disabled:hover:brightness-80 disabled:hover:bg-transparent disabled:hover:scale-100 disabled:brightness-80 disabled:cursor-wait"
+                  className="text-sm py-2 px-6 border-2 border-ultramarine-50/30 rounded-full cursor-pointer duration-300 hover:border-ultramarine-50/60 h-max w-max flex gap-2 my-auto disabled:hover:brightness-80 disabled:hover:bg-transparent disabled:hover:scale-100 disabled:brightness-80 disabled:cursor-wait"
                   disabled={isReloading}
                   onClick={ async(e) => {
                     setIsReloading(true);

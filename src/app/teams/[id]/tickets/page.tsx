@@ -7,11 +7,12 @@ import { useEffect, useRef, useState } from "react";
 //Next imports
 import { useParams } from "next/navigation";
 import { getCookie } from "cookies-next/client";
+import Link from "next/link";
 
 //Prebuild UI imports
 import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading_dashboard";
-import SideBar, { Icon } from "@/components/ui/sidebar";
+import SideBar, { IconProps } from "@/components/ui/sidebar";
 import CreatorForm from "@/components/forms/creatorForm";
 import CreatorInput from "@/components/forms/creatorInputs";
 
@@ -20,13 +21,13 @@ import { searchTeamData } from "../page";
 
 //Types imports
 import User from "@/modules/user.types";
+import Team from "@/types/team.types";
 
 //Icons imports
 import {
   IconAppWindow,
   IconArrowLeft,
   IconCalendar,
-  IconCode,
   IconDatabase,
   IconEye,
   IconFolder,
@@ -36,8 +37,18 @@ import {
   IconTicket,
   IconUsers
 } from "@tabler/icons-react";
-import Team from "@/types/team.types";
-import Console from "@/components/ui/console";
+
+//Icon button component
+function Icon(props : IconProps) {
+  return (
+    <Link
+    href={props.action}
+    className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-90 duration-400 " + (props.disabled && "grayscale brightness-50 pointer-events-none ") + (props.isDisplayed ? "w-46 md:w-60" : "w-full")}>
+      {props.children}
+      {props.isDisplayed && <span className="text-sm animate-fade-in-right"> {props.name} </span>}
+    </Link>
+  )
+}
 
 export default function TicketsTeamPage(){
   //Params data
@@ -96,6 +107,7 @@ export default function TicketsTeamPage(){
     const current : HTMLElement = creatorContainer.current;
 
     current.classList.add("hidden");
+    current.classList.remove("flex");
   }
 
   const showForm = () => {
@@ -104,6 +116,7 @@ export default function TicketsTeamPage(){
     const current : HTMLElement = creatorContainer.current;
 
     current.classList.remove("hidden");
+    current.classList.add("flex");
   };
 
   //Handle submit
@@ -170,8 +183,6 @@ export default function TicketsTeamPage(){
     team ? (
       <div
       className="bg-background text-text min-h-screen grid grid-cols-[auto_1fr]">
-        <Console
-        jsonObjects={team?.tickets && team.tickets} />
         <SnackBar />
         <SideBar
         email={user?.email}
@@ -182,7 +193,7 @@ export default function TicketsTeamPage(){
           {
             expanded && (
               <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
-                Team 
+                Project 
               </span>
             )
           }
@@ -198,7 +209,7 @@ export default function TicketsTeamPage(){
           </Icon>
 
           <Icon
-          action="/"
+          action={`/teams/${team.team_id}/integrants`}
           name="Integrants"
           isDisplayed={expanded}>
             <IconUsers
@@ -218,7 +229,7 @@ export default function TicketsTeamPage(){
           </Icon>
 
           <Icon
-          action="/"
+          action={`/teams/${team.team_id}/erd`}
           name="ERD Creator"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -229,7 +240,7 @@ export default function TicketsTeamPage(){
           </Icon>
 
           <Icon
-          action="/"
+          action={`/teams/${team.team_id}/chat`}
           name="Chat"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -240,7 +251,7 @@ export default function TicketsTeamPage(){
           </Icon>
 
           <Icon
-          action="/"
+          action={`/teams/${team.team_id}/json-preview`}
           name="JSON Preview"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -251,7 +262,7 @@ export default function TicketsTeamPage(){
           </Icon>
 
           <Icon
-          action="/"
+          action={`/teams/${team.team_id}/kanban-board`}
           name="Kanban board"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -262,7 +273,7 @@ export default function TicketsTeamPage(){
           </Icon>
 
           <Icon
-          action="/"
+          action={`/teams/${team.team_id}/calendar`}
           name="Calendar"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -274,7 +285,7 @@ export default function TicketsTeamPage(){
         </SideBar>
 
         <div
-        className="fixed backdrop-blur backdrop-brightness-60 top-0 left-0 w-screen h-screen overflow-x-hidden overflow-y-auto flex justify-center py-10 z-20 hidden"
+        className="fixed backdrop-blur backdrop-brightness-60 top-0 left-0 w-screen h-screen overflow-x-hidden overflow-y-auto justify-center py-10 z-20 hidden"
         ref={creatorContainer}>
           <CreatorForm
           title="Create a new ticket"
@@ -307,7 +318,7 @@ export default function TicketsTeamPage(){
               <button
                 type="button"
                 onClick={() => setIsImportantOpen(!isImportantOpen)}
-                className={"w-full flex items-center justify-between bg-neutral-800 border-2 duration-400 hover:brightness-80 rounded-lg px-4 py-2 text-white duration-200 group" + (isImportantOpen ? " border-main" : " border-transparent")}>
+                className={"w-full flex items-center justify-between bg-neutral-800 border-2 duration-400 hover:brightness-80 rounded-lg px-4 py-2 text-white group" + (isImportantOpen ? " border-main" : " border-transparent")}>
                 <div className="flex items-center gap-3">
                   <span className={`w-2 h-2 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.1)] ${
                     importanceOptions.find(opt => opt.value === importance)?.color || "bg-zinc-500"

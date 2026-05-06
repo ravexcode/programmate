@@ -13,15 +13,17 @@ export interface IntegrantData {
 }
 
 export interface ChatMessage {
-  sender: {
-    email: string,
-    id: string,
-    username: string
-  }
-  sent_at?: string;
+  message_id?: number;
+  sent_id: string;
+  team_id: number | string;
+  sender_id: number | string;
+  sender_email: string;
+  sender_name: string;
+  sent_at?: Date;
   content: string;
   isEdited?: boolean;
   reactions?: Array<string>;
+  status?: "sending" | "sent" | "error";
 }
 
 export interface ERDTable {

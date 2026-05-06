@@ -104,11 +104,11 @@ export default function Console(props: ConsoleProps) {
           </div>
 
           {/* Contenedor del Editor */}
-          <div className="relative flex-grow overflow-auto">
+          <div className="relative grow overflow-auto">
             {/* Capa de Resaltado (Debajo) */}
             <pre
               aria-hidden="true"
-              className="absolute inset-0 pointer-events-none whitespace-pre-wrap break-words text-sm leading-relaxed p-0 m-0 border-none"
+              className="absolute inset-0 pointer-events-none whitespace-pre-wrap wrap-break-word text-sm leading-relaxed p-0 m-0 border-none"
               style={{ tabSize: 2 }}
               dangerouslySetInnerHTML={{ __html: highlightedHTML + "\n" }}
             />

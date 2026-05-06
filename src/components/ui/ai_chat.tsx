@@ -188,7 +188,7 @@ export default function AIChat(){
             { user && user.ai_chat && user.ai_chat.length >= 1 ? user.ai_chat.map((value, index) => (
               <span
               key={index}
-              className={"max-w-[80%] px-2 rounded-md px-2 py-3 text-sm text-wrap " + (value?.sent_by === "ai" ? "bg-neutral-800 mr-auto rounded-bl-none" : "bg-main ml-auto text-end rounded-br-none")}>
+              className={"max-w-[80%] rounded-md px-2 py-3 text-sm text-wrap " + (value?.sent_by === "ai" ? "bg-neutral-800 mr-auto rounded-bl-none" : "bg-main ml-auto text-end rounded-br-none")}>
                 <ReactMarkdown>{value?.message}</ReactMarkdown>
               </span>
             )) : (
@@ -245,7 +245,7 @@ export default function AIChat(){
               <img
                 src="/icons/buttons/send.svg"
                 alt="Icon made by RavexCode"
-                className="w-5 aspect-square block relative -translate-x-[1px] translate-y-[1px] duration-300 hover:scale-110"
+                className="w-5 aspect-square block relative -translate-x-px translate-y-px duration-300 hover:scale-110"
               />
             )}
           </button>

@@ -1,6 +1,10 @@
 //React imports
 import { ReactNode, useState } from "react";
 
+//Next imports
+import Link from "next/link";
+import Image from "next/image";
+
 //Icons imports
 import {
   IconBolt,
@@ -13,7 +17,7 @@ import {
 } from "@tabler/icons-react";
 
 //Icon interface
-interface IconProps {
+export interface IconProps {
   action: string;
   name: string;
   isDisplayed: boolean;
@@ -24,12 +28,12 @@ interface IconProps {
 //Icon button component
 export function Icon(props : IconProps) {
   return (
-    <a
+    <Link
     href={props.action}
     className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-90 duration-400 " + (props.disabled && "grayscale brightness-50 pointer-events-none ") + (props.isDisplayed ? "w-46 md:w-60" : "w-full")}>
       {props.children}
       {props.isDisplayed && <span className="text-sm animate-fade-in-right"> {props.name} </span>}
-    </a>
+    </Link>
   )
 }
 
@@ -52,13 +56,17 @@ export default function SideBar(props: SideBarProps) {
 
       <div
       className="p-2 md:p-3 flex flex-col justify-center items-center mt-1 mb-3">
-        <a href="/"
+        <Link
+        href="/"
         className="duration-300 hover:scale-105 hover:brightness-120">
-          <img
+          <Image
           src={expanded ? "/logos/large.svg" : "/logos/logo.svg"}
           alt="Logo made by RavexCode"
+          width={200}
+          height={200}
+          preload
           className={"animate-fade-in-right " + (expanded ? "h-5" : "aspect-square w-3 md:w-5")}/>
-        </a>
+        </Link>
       </div>
       
 
@@ -116,13 +124,13 @@ export default function SideBar(props: SideBarProps) {
           {
             props.plan === "Free" && expanded && (
               <div
-              className="w-full border-2 border-neutral-600 rounded-md p-2 bg-neutral-900 w-40 md:w-60 animate-fade-in-right mt-10">
+              className="w-full border-2 border-neutral-600 rounded-md p-2 bg-neutral-900 animate-fade-in-right mt-10">
                 <div className="w-full flex items-center gap-1 pt-1">
                   <IconBolt
                   size={23}
                   stroke={2}
                   color="#2b5ffb"/>
-                  <p className="font-semibold text-wrap text-center bg-gradient-to-r from-main via-blue-200 to-blue-500 w-max bg-clip-text text-transparent text-lg"> Get plan pro </p>
+                  <p className="font-semibold text-wrap text-center bg-linear-to-r from-main via-blue-200 to-blue-500 w-max bg-clip-text text-transparent text-lg"> Get plan pro </p>
                 </div>
                 <p className="text-text/60 text-sm pb-2 px-1">
                   Upgrade your projects workflow with a monhtly subscription
