@@ -1,14 +1,18 @@
+//Next imports
 import { getCookie } from "cookies-next/client";
+import Link from "next/link";
 
+//React imports
 import { useState, useEffect } from "react";
 
 function OptionsButton(props: any){
   return (
     <li>
-      <a href={props.link}
-       className="px-4 py-1 cursor-pointer opacity-80 rounded-md duration-200 hover:bg-ultramarine-50/10 hover:opacity-100">
+      <Link
+      href={props.link}
+      className="px-8 py-2 cursor-pointer opacity-80 rounded-full duration-200 hover:bg-ultramarine-50/10 hover:opacity-100">
         {props.children}
-      </a>
+      </Link>
     </li>
   )
 }
@@ -30,42 +34,25 @@ export default function Header(props: any){
   return (
     <header
     className="text-text flex justify-between items-center p-4 border-b border-ultramarine-50/30 text-sm sticky top-0 animate-slide-in-top z-10 backdrop-blur bg-black/40">
-      <a href="/"
-      className="duration-400 hover:brightness-150">
+      <Link href="/"
+      className="duration-400 hover:brightness-150 relative">
         <img src="/logos/large.svg" alt="Logo large made by RavexCode"
         className="h-6"/>
-      </a>
+      </Link>
 
       <ul
-      className="hidden md:flex gap-5 justify-center items-center">
+      className="hidden md:flex gap-2 justify-center items-center">
         <OptionsButton link="/about#features"> Product </OptionsButton>
         <OptionsButton link="/#pricing"> Pricing </OptionsButton>
         <OptionsButton link="/about#contact"> Contact </OptionsButton>
       </ul>
 
       <div className="min-w-30 flex justify-start items-center">
-        { props.isAuthForm ? null :
-          !isSignedIn ? (
-            <div className="flex gap-5 justify-center items-center text-xs md:text-sm">
-              <a
-              href="/auth/register"
-              className="px-4 py-1 cursor-pointer rounded-md duration-300 bg-main hover:brightness-150">
-                Get started
-              </a>
-              <a
-              href="/auth/login"
-              className="px-4 py-1 cursor-pointer rounded-md border border-ultramarine-50/30 duration-300 hover:bg-ultramarine-50/20">
-                Log in
-              </a>
-            </div>
-          ) : (
-            <a
-            href="/dashboard"
-            className="px-4 py-1 cursor-pointer rounded-md duration-300 bg-main hover:brightness-150">
-              Dashboard
-            </a>
-          )
-}
+        <Link
+        href={isSignedIn ? "/dashboard" : "/auth/register"}
+        className="bg-main hover:bg-main/80 duration-400 p-2 px-8 text-sm tracking-wide rounded-full">
+          {isSignedIn ? "Dashboard" : "Get started"}
+        </Link>
       </div>
     </header>
   )

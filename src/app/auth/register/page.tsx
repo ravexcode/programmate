@@ -6,18 +6,18 @@ import { useRef, useState } from "react";
 
 //Next imports
 import { setCookie } from "cookies-next";
+import Link from "next/link";
+import Image from "next/image";
 
-//Form components
+//Prebuilt ui components
 import AuthForm from "@/components/forms/authForm";
 import { Input, PasswordInput } from "@/components/forms/inputs";
-
-//Auth buttons
-import AuthGoogleButton from "@/components/forms/buttons/authGoogle";
-import AuthGithubButton from "@/components/forms/buttons/authGithub";
-
-//UI Components
-import Header from "@/components/ui/header";
+import ProviderButton from "@/components/forms/providerButton";
 import Footer from "@/components/ui/footer";
+import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
+
+//Icons imports
+import { IconArrowLeft } from "@tabler/icons-react";
 
 //User type
 interface User {
@@ -28,9 +28,20 @@ interface User {
 }
 
 export default function LogInPage() {
-  const form = useRef(null);
+  //Ref components
+  const snackbar = useRef<SnackbarRef>(null);
+
+  //States handler
+  //Form avaible/unavaible
   const [ isFormDisponible, setIsFormDisponible ] = useState(true);
-  const [ formMessage, setFormMessage ] = useState("");
+  //Emai
+  const [ email, setEmail ] = useState<string>("");
+  //Password
+  const [ name, setName ] = useState<string>("");
+  //Emai
+  const [ password, setPassword ] = useState<string>("");
+  //Password
+  const [ confirm, setConfirm ] = useState<string>("");
 
   //Form submit handler
   const handleSubmit = async(e: any) => {
@@ -39,31 +50,21 @@ export default function LogInPage() {
     //Turns off the form
     setIsFormDisponible(false);
 
-    //Verifies if form ref exists
-    if(!form.current) {
-      //Turns on
-      setIsFormDisponible(true);
-      return;
-    }
-
-    //Gets the form data
-    const current : any = form.current!;
-    const data = current.querySelectorAll("input");
     //Puts the data in the body
     const body : User = {
       //Puts the email in the body
-      email: data[0].value,
+      email,
       //Puts the email in the body
-      name: data[1].value,
+      name,
       //Puts the password in the body
-      password: data[2].value,
+      password,
       //Puts the password in the body
-      confirm: data[3].value,
+      confirm,
     };
 
     if(body.password !== body.confirm) {
       //If there's an error returns error
-      setFormMessage("The passwords don't match!");
+      snackbar.current?.showSnackBar("Passwords don't match", true);
       setIsFormDisponible(true);
     }
 
@@ -94,28 +95,43 @@ export default function LogInPage() {
     }
 
     //If there's an error returns error
-    setFormMessage(resData.message);
+    snackbar.current?.showSnackBar(resData.message, true);
     setIsFormDisponible(true);
     return;
   };
 
   return (
     <div className="bg-background min-h-dvh grid grid-rows-[1fr_auto]">
-        <main
-        className="flex flex-col justify-center items-center w-full h-full pt-5 pb-20 relative min-h-screen">
+      <SnackBar
+      ref={snackbar} />
+
+      <main
+      className="flex justify-start items-center w-full min-h-screen relative">
+
+        <section
+        className="bg-linear-to-t from-black to-neutral-900 w-full lg:w-max lg:min-w-150 p-10 h-full z-2 flex flex-col justify-center items-center relative">
+          <Link
+          href="/"
+          className="absolute top-2 left-2 p-2 rounded-full duration-300 hover:bg-white/15">
+            <IconArrowLeft
+            size={25}
+            stroke={2.5}
+            color="whitesmoke" />
+          </Link>
 
           <AuthForm
           onSubmit={(e: any) => { handleSubmit(e) }}
           title="Get started!"
           sumbitText="Sign up"
-          disponible={isFormDisponible ? false : true}
-          ref={form}
-          message={formMessage}>
+          disponible={isFormDisponible ? false : true}>
+
             <div
             className="flex flex-col gap-3 w-full justify-center items-center">
               <p>Sign up with</p>
-              <AuthGoogleButton />
-              <AuthGithubButton />
+              <ProviderButton
+              provider="Github" />
+              <ProviderButton
+              provider="Google" />
             </div>
 
             <div className="flex items-center w-full my-6">
@@ -129,39 +145,93 @@ export default function LogInPage() {
             </div>
 
             <Input
+            type="text"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value)
+            }}
+            guide="Jhon Doe"
+            title="Insert your username"
+            name="name"/>
+
+            <span className="h-3"></span>
+
+            <Input
             type="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value)
+            }}
             guide="me@email.com"
             title="Insert your email"
             name="email"/>
+
             <span className="h-3"></span>
-            <Input
-            type="text"
-            guide="Jhon Doe"
-            title="Create your username"
-            name="name"/>
-            <span className="h-3"></span>
+
             <PasswordInput
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value)
+            }}
             title="Insert your password"
             name="password"/>
+
             <span className="h-3"></span>
+
             <PasswordInput
+            value={password}
+            onChange={(e) => {
+              setConfirm(e.target.value)
+            }}
             title="Confirm your password"
             name="confirm"/>
           </AuthForm>
 
           <div
-          className="w-100 max-w-[95dvw] text-text flex flex-col justify-center z-2 animate-fade-in-up text-center">
-            <p> Have an account? <a href="/auth/login" className="text-blue-500 duration-200 hover:underline hover:text-blue-400">Sign in</a> </p>
-            <p> By signing up you agree to our <a download={true} href="/legal/terms-and-service" className="text-blue-500 duration-200 hover:underline hover:text-blue-400">terms of service</a> </p>
+          className="w-100 max-w-[95dvw] text-text flex flex-col justify-center z-2 animate-fade-in-up text-center tracking-wide">
+            <p>
+              Don't have an account {" "}
+               <Link
+               href="/auth/login"
+               className="text-sky-600 duration-200 hover:text-blue-400">
+                Sign in
+              </Link> 
+            </p>
+
+            <p>
+              By logging in you agree to our {" "}
+              <Link
+              download={true}
+              href="/legal/tos"
+              className="text-sky-600 duration-200 hover:text-blue-400">
+                Terms of service
+              </Link>
+            </p>
           </div>
 
+        </section>
+
+        <section
+        className="relative w-full h-full overflow-hidden animate-fade-in hidden lg:flex items-start justify-center text-text text-center">
+          <div className="w-[150%] aspect-square rounded-full absolute top-1/4 bg-radial-[at_50%_50%] from-blue-600/40 from-50% to-blue-900/40 to-50% left-1/2 -translate-x-1/2 blur-3xl animate-pulse"></div>
+
           <div
-          className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-            <div
-            className="absolute aspect-square block left-1/2 top-1/1 -translate-x-1/2 -translate-y-1/2 h-300 bg-main/40 blur-3xl rounded-full animate-pulse" />
-            <div className="bg-linear-to-t from-background to-transparent w-screen h-20 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
+          className="my-auto py-10 z-5">
+            <Image
+            src="/logos/large_white.svg"
+            alt="Logo made by ravexcode"
+            height={1}
+            width={300}
+            className="z-3" />
+
+            <p
+            className="text-lg font-medium tracking-wide mt-2">
+              All your projects in a single App
+            </p>
           </div>
-        </main>
+        </section>
+      </main>
+      
       <Footer />
     </div>
   )

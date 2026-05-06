@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v25.4:**
+  1. Refactor en el diseño del frontend. 🛠️
+  2. Mejoras de la vista en landing page, about page y auth forms. 👁️
+  3. Mejor optimización para la página. 🚀
+
 - **Indev v25.3:**
   1. Arreglo en params de rutas, al parcer rotas. Ahora funcionales. 🛠️
   2. CryptoClient creado y agregado en realtime con el chat. 🔒

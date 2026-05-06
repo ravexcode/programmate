@@ -24,7 +24,7 @@ function FeaturesCard(props: FeaturesCardProps) {
       <article
       className="flex flex-col gap-1 w-full">
         <h2 
-        className="text-xl font-semibold text-main w-full text-start">
+        className="text-xl font-semibold text-sky-600 tracking-wider w-full text-start">
           { props.title }
         </h2>
         <p
@@ -53,7 +53,7 @@ export default function AboutPage(){
       className="flex flex-col justify-start items-center pb-10">
 
         <section
-        className="flex flex-col justify-center items-center relative animate-fade-in-up overflow-hidden w-full text-text min-h-screen">
+        className="flex flex-col justify-center items-center relative animate-fade-in-up overflow-hidden w-full text-text min-h-220">
           <div
           className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
             <div
@@ -74,7 +74,7 @@ export default function AboutPage(){
         </section>
 
         <section 
-        className="text-text bg-background flex flex-col justify-center items-center gap-10 px-8 z-2 w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%]">
+        className="text-text bg-background flex flex-col justify-center items-center gap-10 px-8 z-2 w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_20%]">
           <p
           className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30"
           id="features">
@@ -93,11 +93,6 @@ export default function AboutPage(){
             title="Ticket creator"
             description="Your teammates and your work organized in tickets!"
             image_url="/images/tickets.png" />
-            
-            <FeaturesCard
-            title="JSON Editor"
-            description="Console mode for more personalization"
-            image_url="/images/dashboard.png" />
             
             <FeaturesCard
             title="ERD Creator Tool"

@@ -4,18 +4,8 @@ export default function AuthForm(props: any){
     className="flex flex-col justify-start items-center px-6 py-3 text-text max-w-[95dvw] w-120 z-2 animate-fade-in-up overflow-hidden"
     onSubmit={props.onSubmit}
     ref={props.ref}>
-
-      <a
-      href="/"
-      className="hover:brightness-80 duration-200">
-        <img
-        src="/logos/white.svg"
-        alt="Prismaflow Icon made by RavexCode"
-        className="aspect-square w-10"/>
-      </a>
-
       <h2
-      className="text-3xl">
+      className="text-3xl font-medium tracking-wider">
         {props.title}
       </h2>
 
@@ -26,7 +16,7 @@ export default function AuthForm(props: any){
 
       <button
       type="submit"
-      className="w-full py-2 rounded-md bg-main cursor-pointer duration-300 hover:brightness-80 active:scale-95 disabled:hover:brightness-100 disabled:active:scale-100 disabled:cursor-wait disabled:grayscale"
+      className="w-full py-2 rounded-full tracking-wider font-medium text-lg bg-main cursor-pointer duration-300 hover:brightness-120 hover:-translate-y-0.5 disabled:hover:translate-y-0 active:scale-95 disabled:hover:brightness-100 disabled:active:scale-100 disabled:cursor-wait disabled:grayscale"
       disabled={props.disponible ? true : false}>
         {props.sumbitText}
       </button>

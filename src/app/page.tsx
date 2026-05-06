@@ -1,18 +1,27 @@
 //view in client
 "use client";
 
+//Next imports
+import Link from "next/link";
+import Image from "next/image";
+
 //Prebuilt components
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 import IconCarousel from "@/components/icon_carrousel";
+
 //Custom components
 import SmoothProvider from "@/lib/components/lennis";
 import { IconCheck } from "@tabler/icons-react";
 
-function Card(props: any) {
+function Card(props: {
+  icon: string,
+  title: string,
+  children: React.ReactNode
+}) {
   return (
     <section 
-    className="rounded-xl border border-neutral-800 px-6 py-3 bg-neutral-950 flex flex-col justify-center items-start gap-1 w-75 text-start shadow-lg shadow-ultramarine-700/20 duration-400 hover:shadow-ultramarine-700/50 hover:-translate-y-2 hover:scale-105 cursor-default timeline-[view(y)] animate-fade-in animate-range-[entry_0%_cover_30%]">
+    className="rounded-xl border border-neutral-800 px-6 py-3 bg-neutral-950 flex flex-col justify-center items-start gap-1 w-75 text-start shadow-lg shadow-ultramarine-700/20 duration-400 hover:shadow-ultramarine-700/50 hover:-translate-y-2 hover:scale-105 cursor-default timeline-view-y animate-fade-in animate-range-[entry_0%_cover_30%]">
       <img src={"/icons/" + props.icon} alt={props.icon} />
       <h2 
       className="text-xl text-main w-full">
@@ -26,35 +35,46 @@ function Card(props: any) {
   )
 }
 
-function PricingCard(props: any){
+function PricingCard(props: {
+  isRecomended?: boolean,
+  plan: string,
+  cost: string,
+  benefits: Array<string>
+}){
+  const pricingCardClassess : string = "flex flex-col px-6 py-4 rounded-xl h-100 shadow-lg shadow-ultramarine-950/50 mb-10 w-60 timeline-view-y animate-fade-in animate-range-[entry_0%_cover_30%] relative border cursor-default " + (props.isRecomended ? "scale-110 border-blue-600 bg-blue-800/20 backdrop-brightness-40 backdrop-blur-2xl" : "border-neutral-600 bg-neutral-950");
+
   return (
     <div
-    className={"flex flex-col px-6 py-4 rounded-xl h-100 shadow-lg shadow-ultramarine-950/50 mb-10 w-60 timeline-[view(y)] animate-fade-in animate-range-[entry_0%_cover_30%] relative border-2 border-neutral-800 bg-neutral-950 " + ( props.isRecomended && "scale-110" )}>
+    className={pricingCardClassess}>
       {props.isRecomended ? (
         <div>
           <span
-          className="absolute -translate-y-6 -translate-x-10 px-3 py-1 rounded-md bg-main">
+          className="absolute -translate-y-6 -translate-x-8 px-3 py-1 rounded-md bg-main text-sm">
             Recomended
           </span>
 
           <span className="h-5 md:h-3 block"></span>
         </div>
       ) : null}
-      <p className="text-sm font-light">{props.plan} plan</p>
-      <h3 className="text-2xl font-semibold"> {props.cost} </h3>
+      <p className="text-sm font-semibold text-center">{props.plan}</p>
+      <h3 className="text-2xl font-bold mb-3 text-sky-600 tracking-wide text-center">
+        {props.cost}
+        <span
+        className="text-sm text-text/50 font-light ml-1 tracking-widest">
+          /month
+        </span>
+      </h3>
 
-      <span className="h-3 block"></span>
-
-      {props.benefits.map((value : any, index : any) => (
+      {props.benefits.map((value : string, index : number) => (
         <div
-        key={"price_" + props.plan + "_" + index}
-        className="text-text/80 justify-start items-center flex gap-1">
-          <IconCheck size={18} /> {value}
+        key={index}
+        className="text-text justify-start items-center flex gap-1 font-light tracking-wide">
+          <IconCheck size={15} stroke={2.3} /> {value}
         </div>
       ))}
 
       <button
-      className="w-full py-1 rounded-full mt-auto bg-main shadow-lg shadow-ultramarine-700/20 duration-300 hover:shadow-ultramarine-700/50 hover:scale-105 hover:-translate-y-1 cursor-pointer">
+      className="w-full text-text bg-main mt-auto tracking-wider py-2 rounded-full duration-300 hover:brightness-130 cursor-pointer hover:-translate-y-0.5 relative">
         Get started
       </button>
     </div>
@@ -71,7 +91,7 @@ export default function HomePage(){
       className="flex flex-col justify-center items-center">
         <SmoothProvider />
         <section
-        className="relative px-4 w-full min-h-screen flex flex-col justify-center items-center w-full text-text pt-20 pb-10 animate-fade-in-up overflow-hidden">
+        className="relative px-4 w-full min-h-screen flex flex-col justify-center items-center text-text pt-20 pb-10 animate-fade-in-up overflow-hidden">
 
           <div
           className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
@@ -93,15 +113,19 @@ export default function HomePage(){
 
           <div
           className="w-full md:w-[50%] flex justify-center items-center mt-5 z-2">
-            <a
+            <Link
             href="/about"
-            className="bg-main rounded-lg px-6 py-1 duration-200 hover:brightness-80">
+            className="bg-main rounded-full px-12 py-2 duration-200 hover:brightness-120 hover:-translate-y-0.5">
               Take a look
-            </a>
+            </Link>
           </div>
 
-          <img src="/images/dashboard.png" alt=""
-          className="z-2 w-[95%] md:w-[80%] max-w-300 mt-10 mx-auto rounded-xl md:rounded-4xl border-2 border-neutral-800"/>
+          <Image
+          src="/images/dashboard.png"
+          alt="Image made by RavexCode"
+          width={1000}
+          height={1000}
+          className="z-3 w-full max-w-300 mt-10 mx-auto rounded-xl md:rounded-4xl border-2 border-neutral-800"/>
         </section>
 
         <IconCarousel />
@@ -109,7 +133,7 @@ export default function HomePage(){
         <span className="h-10"></span>
 
         <section 
-        className="text-text bg-background flex flex-col justify-center items-center gap-5 px-4 z-2 w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%]">
+        className="text-text bg-background flex flex-col justify-center items-center gap-5 px-4 z-2 w-full timeline-view-y animate-zoom-in animate-range-[entry_0%_cover_30%]">
           <p
           className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30">
             Why Prismaflow?
@@ -135,7 +159,7 @@ export default function HomePage(){
         </section>
 
         <section
-        className="flex flex-col justify-center items-center bg-background gap-15 mt-10 text-text relative w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%] min-h-150 py-5">
+        className="flex flex-col justify-center items-center bg-background gap-15 mt-10 text-text relative w-full timeline-view-y animate-zoom-in animate-range-[entry_0%_cover_30%] min-h-150 py-5">
           <p
           id="pricing"
           className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30">
@@ -146,17 +170,16 @@ export default function HomePage(){
 
             <PricingCard
             plan="Free"
-            cost="Free"
+            cost="$0"
             benefits={[
               "2 proyects limit",
               "To do list",
               "Ticket creator",
-              "JSON Editor",
             ]}/>
 
             <PricingCard
             plan="Pro"
-            cost="$4 USD/month"
+            cost="$4"
             isRecomended={true}
             benefits={[
               "All free benefits +",
@@ -167,8 +190,8 @@ export default function HomePage(){
             ]}/>
 
             <PricingCard
-            plan="Team"
-            cost="$8 USD/month"
+            plan="Enterprise"
+            cost="$8"
             benefits={[
               "All pro plans +",
               "Chat IRT",
