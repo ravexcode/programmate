@@ -14,10 +14,12 @@ import User from "@/modules/user.types";
 //Config button
 function ConfigButton({
   title,
-  action
+  action,
+  type
 }: {
-  title: string,
-  action: () => void
+  title: string;
+  action: () => void;
+  type?: string;
 }) {
   return (
     <button
@@ -155,7 +157,7 @@ export default function ConfigurationPage(){
 
       {/* Gradient section */}
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute left-1/2 top-0 w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-main/10 blur-[100px] animate-pulse" />
+        <div className="absolute left-1/2 top-0 w-150 h-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-main/10 blur-[100px] animate-pulse" />
       </div>
 
       <SideBar
@@ -223,6 +225,7 @@ export default function ConfigurationPage(){
         </div>
 
         <ConfigButton
+        type="dangerous"
         title="Delete my account"
         action={() => { verifyConfirmation() }}/>
       </section>

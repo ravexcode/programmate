@@ -166,7 +166,13 @@ export default function LogInPage() {
 
           <section
           className="relative w-full h-full overflow-hidden animate-fade-in hidden lg:flex items-start justify-center text-text text-center">
-            <div className="w-[150%] aspect-square rounded-full absolute top-1/4 bg-radial-[at_50%_50%] from-blue-600/40 from-50% to-blue-900/40 to-50% left-1/2 -translate-x-1/2 blur-3xl animate-pulse"></div>
+            <div
+            className="w-[150%] aspect-square rounded-full absolute top-1/4 left-1/2 -translate-x-1/2 bg-blue-950/40 flex items-center justify-center blur-3xl animate-pulse">
+              <div
+              className="w-8/10 aspect-square rounded-full bg-blue-600/40 flex items-center justify-center">
+                <div className="w-7/10 aspect-square rounded-full bg-blue-500/40"> </div>
+              </div>
+            </div>
 
             <div
             className="my-auto py-10 z-5">

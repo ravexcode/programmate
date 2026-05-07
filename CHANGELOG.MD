@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v26.1:**
+  1. Mejora en el diseño de los auth forms
+
 - **Indev v26.0:**
   1. Realtime funcional al 100%! 💬
   2. Mejora de optimización. 🚀
