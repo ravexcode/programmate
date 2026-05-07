@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v27.0:**
+  1. Inicio de sección de integrantes. 👥
+  2. Nuevas rutas de APIs para invitar a usuarios. 📩
+  3. Cambios de guardado de datos en dashboard y get started page. 💽
+
 - **Indev v26.1:**
   1. Mejora en el diseño de los auth forms
 

@@ -9,7 +9,8 @@ export interface Ticket {
 export interface IntegrantData {
   id: string,
   email: string,
-  username: string
+  username: string,
+  type?: string,
 }
 
 export interface ChatMessage {

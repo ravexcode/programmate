@@ -51,6 +51,7 @@ interface ProjectCardProps {
 //Types imports
 import { UserData, UserBasic } from "@/types/user.types";
 import { getCached } from "@/hooks/cache";
+import { IntegrantData } from "@/types/team.types";
 
 function ProjectCard(props : ProjectCardProps) {
   //Delete enabled/disabled state
@@ -167,7 +168,7 @@ export default function Dashboard(){
   //Users searched
   const [ searched, setSearched ] = useState<string | undefined>();
   //Integrants
-  const [ integrants, setIntegrants ] = useState<Array<UserBasic> | undefined>();
+  const [ integrants, setIntegrants ] = useState<Array<IntegrantData> | undefined>();
   //Users found
   const [ found, setFound ] = useState<Array<UserBasic> | undefined>();
   //Project name
@@ -341,7 +342,8 @@ export default function Dashboard(){
     integrants_created.push({
       id: user?.id || "",
       email: user?.email || "",
-      username: user?.name || ""
+      username: user?.name || "",
+      type: "admin"
     });
 
     //Fetchs to api

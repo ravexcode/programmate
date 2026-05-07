@@ -85,9 +85,10 @@ export default function GetStarted() {
       if(res.status === 200) {
         //Add the user found
         found.push({
-          id: user[0].id,
-          email: user[0].email,
-          name: user[0].name,
+          id: data.user[0].id,
+          email: data.user[0].email,
+          username: data.user[0].name,
+          type: "member"
         });
       }
 
@@ -103,7 +104,8 @@ export default function GetStarted() {
     found.push({
       id: user.id,
       email: user.email,
-      name: user.name
+      username: user.name,
+      type: "admin"
     });
 
     return found;
@@ -186,7 +188,7 @@ export default function GetStarted() {
       {/* Linear-style Subtle Background Glow */}
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden flex justify-center">
         {/* Top subtle border glow */}
-        <div className="absolute top-0 w-[800px] h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        <div className="absolute top-0 w-200 h-px bg-linear-to-r from-transparent via-white/20 to-transparent" />
         
         {/* Moving radial glow */}
         <div
@@ -263,7 +265,7 @@ export default function GetStarted() {
           value={newProjectDescription}
           onChange={(e) => setNewProjectDescription(e.target.value)}
           placeholder="Briefly explain the core objective of this project..."
-          className="w-full max-w-2xl bg-[#121212] border border-white/10 rounded-xl px-6 py-4 text-base xl:text-lg text-zinc-300 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all duration-300 shadow-inner min-h-[160px] resize-none"
+          className="w-full max-w-2xl bg-[#121212] border border-white/10 rounded-xl px-6 py-4 text-base xl:text-lg text-zinc-300 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all duration-300 shadow-inner min-h-40 resize-none"
         />
 
         <div className="flex gap-4 mt-12">
@@ -432,7 +434,7 @@ export default function GetStarted() {
             {integrants.map((email, idx) => (
               <div key={idx} className="flex justify-between items-center bg-[#121212] px-4 py-3 rounded-lg border border-white/5">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-main to-blue-950 flex items-center justify-center text-xs font-bold text-white">
+                  <div className="w-8 h-8 rounded-full bg-linear-to-br from-main to-blue-950 flex items-center justify-center text-xs font-bold text-white">
                     {email.charAt(0).toUpperCase()}
                   </div>
                   <span className="text-sm font-medium text-zinc-300">{email}</span>
