@@ -7,6 +7,15 @@ import { headers } from "next/headers";
 import { Ticket } from "@/types/team.types";
 import { Decrypt } from "@/functions/crypto";
 
+//Handlers imports
+import {
+  serverErrorHandler,
+  notFoundErrorHandler,
+  supabaseErrorHandler,
+  unauthorizedErrorHandler,
+  badRequestErrorHandler
+} from "@/app/api/handlers";
+
 //Get the team function
 export async function GET(req: NextRequest, { params }: { params: Promise<{ teamId: string | undefined }>}){
   try {
@@ -15,31 +24,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ team
     const token = (await headers()).get("Authorization");
 
     //Verifies if the data is OK
-    if(!teamId || !token) return NextResponse.json({
-      message: "Data sent error",
-      error: "Bad request"
-    }, {
-      status: 403
-    });
+    if(!teamId) return badRequestErrorHandler();
+
+    if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user from Supabase Auth
     const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
-    if(!user) return NextResponse.json({
-      message: "User not found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!user) return notFoundErrorHandler("User not found");
 
     //Verifies if there's an error
-    if(getUserError) return NextResponse.json({
-      message: getUserError.message,
-      error: getUserError
-    }, {
-      status: 500
-    });
+    if(getUserError) return unauthorizedErrorHandler(getUserError.message)
 
     //Gets the team data
     const { data: team, error: getTeamError } = await supabase
@@ -49,28 +45,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ team
     .maybeSingle();
 
     //Verifies if the team data has been gotten
-    if(!team) return NextResponse.json({
-      message: "The team doesn't exists",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!team) return notFoundErrorHandler("Team not found");
 
     //Verifies if there's no error
-    if(getTeamError) return NextResponse.json({
-      message: "Trying to get team error",
-      error: getTeamError.message
-    }, {
-      status: 500
-    });
+    if(getTeamError) return supabaseErrorHandler(getTeamError);
 
     //Verifies if the user is in the team
-    if(!team?.integrants_id.includes(user.id)) return NextResponse.json({
-      message: "Oops... You aren't in the team",
-      error: "Unauthorized"
-    }, {
-      status: 401
-    });
+    if(!team?.integrants_id.includes(user.id)) return unauthorizedErrorHandler("You're not in the team");
 
     //Decrypt all the tickets
     //Const for decrypted
@@ -89,15 +70,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ team
       message: "Team retrieved successfully",
       team: team
     });
-  } catch(e: any) {
-    console.error(e);
-    //Server errors
-    return NextResponse.json({
-      message: "An error has happened in the server",
-      error: e.message
-    }, {
-      status: 500
-    });
+  } catch(e: unknown) {
+    serverErrorHandler(e);
   }
 }
 
@@ -109,31 +83,18 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ t
     const token = (await headers()).get("Authorization");
 
     //Verifies if the data is OK
-    if(!teamId || !token) return NextResponse.json({
-      message: "Data sent error",
-      error: "Bad request"
-    }, {
-      status: 403
-    });
+    if(!teamId) return badRequestErrorHandler();
+
+    if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user from Supabase Auth
     const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
-    if(!user) return NextResponse.json({
-      message: "User not found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!user) return notFoundErrorHandler("user not found");
 
     //Verifies if there's an error
-    if(getUserError) return NextResponse.json({
-      message: getUserError.message,
-      error: getUserError
-    }, {
-      status: 500
-    });
+    if(getUserError) return unauthorizedErrorHandler(getUserError.message);
 
     //Gets the team data
     const { data: team, error: getTeamError } = await supabase
@@ -143,28 +104,13 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ t
     .maybeSingle();
 
     //Verifies if the team data has been gotten
-    if(!team) return NextResponse.json({
-      message: "The team doesn't exists",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!team) return notFoundErrorHandler("Team not found");
 
     //Verifies if there's no error
-    if(getTeamError) return NextResponse.json({
-      message: "Trying to get team error",
-      error: getTeamError.message
-    }, {
-      status: 500
-    });
+    if(getTeamError) return supabaseErrorHandler(getTeamError);
 
     //Verifies if the user is in the team
-    if(!team?.integrants_id.includes(user.id)) return NextResponse.json({
-      message: "Oops... You aren't in the team",
-      error: "Unauthorized"
-    }, {
-      status: 401
-    });
+    if(!team?.integrants_id.includes(user.id)) return unauthorizedErrorHandler("You're not in the team");
 
     //If all is ok, deletes the team
     const { error: deleteTeamError } = await supabase
@@ -173,26 +119,14 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ t
     .eq("team_id", teamId);
 
     //Verifies if there's no error
-    if(deleteTeamError) return NextResponse.json({
-      message: "Trying to get team error",
-      error: deleteTeamError.message
-    }, {
-      status: 500
-    });
+    if(deleteTeamError) return supabaseErrorHandler(deleteTeamError);
 
     //If everything is fine, returns success message
     return NextResponse.json({
       message: "Team deleted successfully"
     });
-  } catch(e: any) {
-    console.error(e);
-    //Server errors
-    return NextResponse.json({
-      message: "An error has happened in the server",
-      error: e.message
-    }, {
-      status: 500
-    });
+  } catch(e: unknown) {
+    serverErrorHandler(e);
   }
 }
 

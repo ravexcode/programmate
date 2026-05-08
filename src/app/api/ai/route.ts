@@ -7,10 +7,18 @@ import supabase from "@/lib/db";
 //NextJS imports
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { PostgrestSingleResponse } from "@supabase/supabase-js";
 
 //Node modules imports
 import { Encrypt } from "@/functions/crypto";
+
+//Handlers imports
+import {
+  serverErrorHandler,
+  notFoundErrorHandler,
+  supabaseErrorHandler,
+  unauthorizedErrorHandler,
+  badRequestErrorHandler
+} from "@/app/api/handlers";
 
 //Exports function for making ai requests
 export async function POST(req: NextRequest){
@@ -20,74 +28,35 @@ export async function POST(req: NextRequest){
     //Gets the auth token
     const token = (await headers()).get("Authorization");
 
-    //Verifies if the data sent is OK
-    if(!message || !token) return NextResponse.json({
-      message: "Data don't sent correctly",
-      error: "Bad request"
-    }, {
-      status: 403
-    });
+    //Verifies if the data is OK
+    if(!message) return badRequestErrorHandler();
+
+    if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user's data
     const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
-    if(!user) return NextResponse.json({
-      message: "User not found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!user) return notFoundErrorHandler("User not found");
 
     //Verifies if there's an error
-    if(getUserError) return NextResponse.json({
-      message: getUserError.message,
-      error: getUserError
-    }, {
-      status: 500
-    });
-
-    //Payment data type
-    interface Payment {
-      id: number,
-      user_id: string,
-      payment_type: string,
-      payment: number,
-      paid_at: string,
-      plan: string
-    }
+    if(getUserError) return unauthorizedErrorHandler(getUserError.message);
 
     //User last payment
     const { data: payments } = await supabase
     .from("payments")
     .select("*")
-    .eq("user_id", user.id) as PostgrestSingleResponse<Array<Payment>> || null;
-
-    //Profile data type
-    interface Profile {
-      id: string,
-      email: string,
-      created_at: string,
-      display_name: string,
-      daily_requests: number,
-      last_updated: string,
-      ai_chat: Array<Object> | null
-    }
+    .eq("user_id", user.id);
 
     //User profile data
     const { data: profile } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
-    .maybeSingle() as PostgrestSingleResponse<Profile> || null;
+    .maybeSingle();
 
     //Profile data
-    if(!profile) return NextResponse.json({
-      message: "User don't found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!profile) return notFoundErrorHandler("Profile not found");
 
     //Now date
     const now = new Date();
@@ -164,25 +133,14 @@ export async function POST(req: NextRequest){
     .eq("id", profile.id);
 
     //Verifies if there's an error
-    if(updateUserError) return NextResponse.json({
-      message: updateUserError.message,
-      error: updateUserError
-    }, {
-      status: 500
-    });
+    if(updateUserError) return supabaseErrorHandler(updateUserError);
 
     //Result
     return NextResponse.json({
       message: "AI response got",
       result: response
     });
-  } catch(e: any) {
-    //Error handler
-    return NextResponse.json({
-      message: "Error inside in the server",
-      error: e
-    }, {
-      status: 500
-    });
+  } catch(e: unknown) {
+    serverErrorHandler(e);
   }
 }

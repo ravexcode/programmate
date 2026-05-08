@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v28.0:**
+  1. Inicio de refactor en api (error handlers). 🛠️
+  2. Resend integrado. 📩
+
 - **Indev v27.0:**
   1. Inicio de sección de integrantes. 👥
   2. Nuevas rutas de APIs para invitar a usuarios. 📩

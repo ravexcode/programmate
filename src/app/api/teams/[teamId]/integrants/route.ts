@@ -5,6 +5,15 @@ import { headers } from "next/headers";
 //Lib imports
 import supabase from "@/lib/db";
 
+//Handlers imports
+import {
+  serverErrorHandler,
+  notFoundErrorHandler,
+  supabaseErrorHandler,
+  unauthorizedErrorHandler,
+  badRequestErrorHandler
+} from "@/app/api/handlers";
+
 //Add the integrant
 export async function POST(
   req: NextRequest,
@@ -19,31 +28,18 @@ export async function POST(
     const token = (await headers()).get("Authorization");
 
     //Verifies if the data is OK
-    if(!teamId || !token) return NextResponse.json({
-      message: "Data sent error",
-      error: "Bad request"
-    }, {
-      status: 403
-    });
+    if(!teamId) return badRequestErrorHandler();
+
+    if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user from Supabase Auth
     const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
-    if(!user) return NextResponse.json({
-      message: "User not found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!user) return notFoundErrorHandler("User not found");
 
     //Verifies if there's an error
-    if(getUserError) return NextResponse.json({
-      message: getUserError.message,
-      error: getUserError
-    }, {
-      status: 500
-    });
+    if(getUserError) return unauthorizedErrorHandler(getUserError.message);
 
     //Gets the team data
     const { data: team, error: getTeamError } = await supabase
@@ -53,28 +49,13 @@ export async function POST(
     .maybeSingle();
 
     //Verifies if the team data has been gotten
-    if(!team) return NextResponse.json({
-      message: "The team doesn't exists",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!team) return notFoundErrorHandler("Team not found");
 
     //Verifies if there's no error
-    if(getTeamError) return NextResponse.json({
-      message: "Trying to get team error",
-      error: getTeamError.message
-    }, {
-      status: 500
-    });
+    if(getTeamError) return supabaseErrorHandler(getTeamError);
 
     //Verifies if the user is in the team
-    if(!team?.integrants_id.includes(user.id)) return NextResponse.json({
-      message: "Oops... You aren't in the team",
-      error: "Unauthorized"
-    }, {
-      status: 401
-    });
+    if(!team?.integrants_id.includes(user.id)) return unauthorizedErrorHandler("You're not in the team");
 
     //Integrant
     const new_integrant = {
@@ -96,26 +77,15 @@ export async function POST(
     .eq("team_id", teamId);
 
     //Supabase error handler
-    if(saveIntegrantError) return NextResponse.json({
-      message: saveIntegrantError.message,
-      error: saveIntegrantError
-    }, {
-      status: 401
-    });
+    if(saveIntegrantError) return supabaseErrorHandler(saveIntegrantError);
 
     //Success
     return NextResponse.json({
       message: "Integrant saved"
     })
-  }  catch(e: any) {
-    console.error(e);
-    //Server errors
-    return NextResponse.json({
-      message: "An error has happened in the server",
-      error: e.message
-    }, {
-      status: 500
-    });
+
+  } catch(e: unknown) {
+    serverErrorHandler(e);
   }
 }
 
@@ -134,31 +104,18 @@ export async function DELETE(
     const token = (await headers()).get("Authorization");
 
     //Verifies if the data is OK
-    if(!teamId || !token) return NextResponse.json({
-      message: "Data sent error",
-      error: "Bad request"
-    }, {
-      status: 403
-    });
+    if(!teamId) return badRequestErrorHandler();
+
+    if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user from Supabase Auth
     const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
-    if(!user) return NextResponse.json({
-      message: "User not found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!user) return notFoundErrorHandler("User not found");
 
     //Verifies if there's an error
-    if(getUserError) return NextResponse.json({
-      message: getUserError.message,
-      error: getUserError
-    }, {
-      status: 500
-    });
+    if(getUserError) return unauthorizedErrorHandler(getUserError.message);
 
     //Gets the team data
     const { data: team, error: getTeamError } = await supabase
@@ -168,28 +125,13 @@ export async function DELETE(
     .maybeSingle();
 
     //Verifies if the team data has been gotten
-    if(!team) return NextResponse.json({
-      message: "The team doesn't exists",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!team) return notFoundErrorHandler("Team not found");
 
     //Verifies if there's no error
-    if(getTeamError) return NextResponse.json({
-      message: "Trying to get team error",
-      error: getTeamError.message
-    }, {
-      status: 500
-    });
+    if(getTeamError) return supabaseErrorHandler(getTeamError);
 
     //Verifies if the user is in the team
-    if(!team?.integrants_id.includes(user.id)) return NextResponse.json({
-      message: "Oops... You aren't in the team",
-      error: "Unauthorized"
-    }, {
-      status: 401
-    });
+    if(!team?.integrants_id.includes(user.id)) return unauthorizedErrorHandler("You're not in the team");
 
     //Check if user is admin
     const currentUserIntegrant = team.integrants.find((integrant: any) => integrant.id === user.id);
@@ -213,25 +155,13 @@ export async function DELETE(
     .eq("team_id", teamId);
 
     //Supabase error handler
-    if(saveIntegrantError) return NextResponse.json({
-      message: saveIntegrantError.message,
-      error: saveIntegrantError
-    }, {
-      status: 401
-    });
+    if(saveIntegrantError) return supabaseErrorHandler(saveIntegrantError);
 
     //Success
     return NextResponse.json({
       message: "Integrant deleted"
     })
-  }  catch(e: any) {
-    console.error(e);
-    //Server errors
-    return NextResponse.json({
-      message: "An error has happened in the server",
-      error: e.message
-    }, {
-      status: 500
-    });
+  } catch(e: unknown) {
+    serverErrorHandler(e);
   }
 }
