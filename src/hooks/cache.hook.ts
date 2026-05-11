@@ -1,3 +1,4 @@
+//Types imports
 import { UserData } from "@/types/user.types";
 
 export function getCached() : UserData | null {

@@ -29,7 +29,8 @@ import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
 import { getCookie } from "cookies-next";
 
 //Services imports
-import UpdateUserData from "@/services/update.user";
+import UpdateUserData from "@/services/user.service";
+import { sendRequest } from "@/services/resend.service";
 
 //Types
 //Project card
@@ -50,16 +51,26 @@ interface ProjectCardProps {
 
 //Types imports
 import { UserData, UserBasic } from "@/types/user.types";
-import { getCached } from "@/hooks/cache";
 import { IntegrantData } from "@/types/team.types";
+
+//Hooks imports
+import { getCached } from "@/hooks/cache.hook";
 
 function ProjectCard(props : ProjectCardProps) {
   //Delete enabled/disabled state
   const [ isDeleteDisabled, setIsDeleteDisabled ] = useState<boolean>(false);
 
   return (
-    <Link 
-    href={`/teams/${props.id}`}
+    <section
+    onClick={() => {
+      window.location.href = `/teams/${props.id}`;
+    }}
+    onContextMenu={(e) => {
+      e.preventDefault();
+      e.nativeEvent.stopImmediatePropagation();
+      e.stopPropagation();
+      props.showMenu();
+    }}
     className="group relative w-full flex flex-col rounded-xl border border-ultramarine-50/10 bg-neutral-950 p-5">
 
       <header
@@ -153,7 +164,7 @@ function ProjectCard(props : ProjectCardProps) {
           ))
         }
       </div>
-    </Link>
+    </section>
   )
 }
 
@@ -203,8 +214,6 @@ export default function Dashboard(){
   const [ selectedTeamData, setSelectedTeamData ] = useState<any>();
   //New status
   const [ newTeamStatus, setNewTeamStatus ] = useState<string>();
-
-
 
   //Containers
   //Project creator
@@ -338,13 +347,14 @@ export default function Dashboard(){
     };
 
     //Insert user to integrants if not exists
-    const integrants_created = integrants ?? [];
-    integrants_created.push({
-      id: user?.id || "",
-      email: user?.email || "",
-      username: user?.name || "",
-      type: "admin"
-    });
+    const integrants_created = [
+      {
+        id: user?.id,
+        email: user?.id,
+        username: user?.name,
+        type: "admin",
+      }
+    ];
 
     //Fetchs to api
     const res = await fetch("/api/teams", {
@@ -386,6 +396,18 @@ export default function Dashboard(){
       setProjectDescription("");
       setStatus("Backlog");
       setTags([]);
+
+      //Sends invitations for integrants
+      if(found && found.length > 0) {
+        found.forEach(async( user ) => {
+          await sendRequest(
+            user.email,
+            data.team.id,
+            token,
+            snackbarRef
+          );
+        })
+      }
 
       //Returns success
       return;
@@ -543,7 +565,8 @@ export default function Dashboard(){
     <div className="min-h-screen bg-background grid grid-cols-[auto_1fr] overflow-hidden text-text">
       {/* Layout sections */}
       <AIChat />
-      <SnackBar />
+      <SnackBar
+      ref={snackbarRef} />
 
 
       {/* Project editor form */}

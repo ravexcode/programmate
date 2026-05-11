@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@openrouter/sdk": "^0.12.9",
+    "@react-email/render": "^2.0.8",
     "@supabase/supabase-js": "^2.100.1",
     "@tabler/icons-react": "^3.41.1",
     "@xyflow/react": "^12.10.2",

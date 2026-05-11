@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v29.0:**
+  1. Services files renamed. ✏️
+  2. hooks remade. 🔗
+  3. Request page made successfully. 🛠️
+  4. bugfixes. 🐛
+
 - **Indev v28.0:**
   1. Inicio de refactor en api (error handlers). 🛠️
   2. Resend integrado. 📩

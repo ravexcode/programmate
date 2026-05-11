@@ -6,7 +6,7 @@ import { useState, useRef, type RefObject, useEffect } from "react";
 import Xarrow, { Xwrapper } from "react-xarrows";
 
 //Hooks imports
-import { saveERD, getERD } from "./hooks";
+import { saveERD, getERD } from "@/hooks/erd.hook";
 
 //Prebuilt ui imports
 import CreatorForm from "@/components/forms/creatorForm";
@@ -210,6 +210,7 @@ export default function ErdCreatorPage() {
     //Verifies class
     if(current.classList.contains("hidden")) {
       //Is hidden
+      current.classList.add("flex");
       current.classList.remove("hidden");
       //Sets cursor selection
       setCurrentMouse("default");
@@ -219,6 +220,7 @@ export default function ErdCreatorPage() {
 
     //Is shown
     current.classList.add("hidden");
+    current.classList.remove("flex");
     //Sets cursor selection
     setCurrentMouse("default");
     setButtonActive("mouse");
@@ -313,7 +315,7 @@ export default function ErdCreatorPage() {
       <div
       ref={dbForm}
       onClick={toggleDBForm}
-      className="fixed w-screen h-screen top-0 left-0 backdrop-blur brightnes-70 animate-fade-in z-20 flex justify-center py-10 hidden overflow-auto">
+      className="fixed w-screen h-screen top-0 left-0 backdrop-blur brightnes-70 animate-fade-in z-20 justify-center py-10 hidden overflow-auto">
 
         <CreatorForm
         action={(e) => {

@@ -1,4 +1,5 @@
-//Types imports
+//Types
+//Imports
 import Team, { ERDTable } from "@/types/team.types";
 
 //Updater hook

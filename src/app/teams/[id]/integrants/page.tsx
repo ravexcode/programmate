@@ -10,9 +10,9 @@ import { useParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
 //Hooks imports
-import UpdateUserData from "@/services/update.user";
+import UpdateUserData from "@/services/user.service";
 import { searchTeamData } from "../page";
-import { getCached } from "@/hooks/cache";
+import { getCached } from "@/hooks/cache.hook";
 
 //Prebuilt ui imports
 import SideBar, { IconProps } from "@/components/ui/sidebar";
@@ -84,7 +84,8 @@ export default function Page(){
 
       setUser(user_value);
 
-      await searchTeamData(snackbar, params, setTeam);
+      const team = await searchTeamData(snackbar, params, setTeam);
+      console.log(team);
     }
 
     getData();
@@ -270,7 +271,7 @@ export default function Page(){
                   </div>
 
                   <ul className="space-y-1 cursor-default">
-                    {team.integrants.map((member: IntegrantData, index: number) => (
+                    { team.integrants && team.integrants.length > 0 && team.integrants.map((member: IntegrantData, index: number) => (
                       <li
                         key={index}
                         className="grid grid-cols-5 gap-4 py-3 px-2 rounded-lg transition-colors hover:bg-white/5 items-center group">

@@ -16,7 +16,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html
+    lang="en"
+    data-scroll-behavior="smooth">
       <link rel="shortcut icon" href="/logos/logo.svg" type="image/x-icon" />
       <body className="bg-black">
         <ViewTransition

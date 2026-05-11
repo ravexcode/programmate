@@ -1,17 +1,15 @@
 //Next imports
 import { type NextRequest, NextResponse } from "next/server";
+import { headers } from "next/headers";
 
 //Lib imports
 import supabase from "@/lib/db";
 import { Decrypt } from "@/functions/crypto";
 
-export async function GET(
-  req: NextRequest,
-  { params } : { params: Promise<{ token: string }> }
-) {
+export async function GET( req: NextRequest ) {
   try {
     //Gets the user token
-    const { token } = await params;
+    const token = (await headers()).get("Authorization");
 
     //Verifies if the token has been inserted
     if(!token) return NextResponse.json({

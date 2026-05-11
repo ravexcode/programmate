@@ -8,7 +8,7 @@ import { getCookie, deleteCookie } from "cookies-next/client";
 import ReactMarkdown from "react-markdown";
 
 //Function imports
-import { getCached } from "@/hooks/cache";
+import { getCached } from "@/hooks/cache.hook";
 
 //Types imports
 import { UserData } from "@/types/user.types";

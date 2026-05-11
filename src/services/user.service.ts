@@ -1,16 +1,17 @@
 //Next imports
-import { deleteCookie } from "cookies-next/client";
+import { deleteCookie, getCookie } from "cookies-next/client";
 
 //Types imports
 import { UserData } from "@/types/user.types";
 
-export default async function UpdateUserData(token : string) {
+export default async function UpdateUserData(token: string) {
   //Fetch to user api
-  const res = await fetch(`/api/users/me/${token}`, {
+  const res = await fetch('/api/users/me', {
     method: "GET",
     headers: {
       "Content-type": "application/json",
-      "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
+      "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+      "Authorization": token
     }
   });
 

@@ -29,8 +29,8 @@ function FooterColumn({ title, children }: { title: string; children: React.Reac
 
 export default function Footer() {
   return (
-    <footer className="relative bg-black text-white z-50 pt-16 pb-8">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <footer className="relative bg-black text-white z-50 h-max">
+      <div className="mx-auto px-6 lg:px-8 py-10">
         
         <div className="flex flex-col gap-12 xl:flex-row xl:justify-between">
           

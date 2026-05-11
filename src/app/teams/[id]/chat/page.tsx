@@ -13,7 +13,7 @@ import { searchTeamData } from "../page";
 import { getCached } from "@/hooks/cache";
 
 //Services
-import UpdateUserData from "@/services/update.user";
+import UpdateUserData from "@/services/user.service";
 
 //Lib imports
 import supabase_client from "@/lib/client/db";

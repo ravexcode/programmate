@@ -20,7 +20,7 @@ interface FeaturesCardProps{
 function FeaturesCard(props: FeaturesCardProps) {
   return (
     <section 
-    className="rounded-xl border border-neutral-800 px-12 py-8 bg-neutral-950 flex flex-col justify-center items-center gap-5 max-w-[80dvw] w-lg text-start shadow-xl shadow-main/5 duration-400 hover:shadow-lg hover:shadow-main/10 hover:-translate-y-1 hover:border-main cursor-default timeline-[view(y)] animate-fade-in animate-range-[entry_0%_cover_30%]">
+    className="rounded-xl border border-neutral-800 px-12 py-8 bg-neutral-950 flex flex-col justify-center items-center gap-5 max-w-[80dvw] w-lg text-start shadow-xl shadow-main/5 duration-400 hover:shadow-lg hover:shadow-main/10 hover:-translate-y-1 hover:border-main cursor-default timeline-view-y animate-fade-in animate-range-[entry_0%_cover_30%]">
       <article
       className="flex flex-col gap-1 w-full">
         <h2 
@@ -74,7 +74,7 @@ export default function AboutPage(){
         </section>
 
         <section 
-        className="text-text bg-background flex flex-col justify-center items-center gap-10 px-8 z-2 w-full timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_20%]">
+        className="text-text bg-background flex flex-col justify-center items-center gap-10 px-8 z-2 w-full timeline-view-y animate-zoom-in animate-range-[entry_0%_cover_20%]">
           <p
           className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30"
           id="features">
@@ -124,7 +124,7 @@ export default function AboutPage(){
 
           <section
           id="contact"
-          className="flex flex-col justify-center items-center gap-4 mt-20 mb-24 px-4 text-text relative w-full max-w-4xl mx-auto timeline-[view(y)] animate-zoom-in animate-range-[entry_0%_cover_30%]">
+          className="flex flex-col justify-center items-center gap-4 mt-20 mb-24 px-4 text-text relative w-full max-w-4xl mx-auto timeline-view-y animate-zoom-in animate-range-[entry_0%_cover_30%]">
           <p
           className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30">
             Contact us

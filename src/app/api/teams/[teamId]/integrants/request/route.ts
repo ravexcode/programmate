@@ -69,7 +69,7 @@ export async function POST(req: NextRequest, { params }: ParamsType) {
     //Error handlers
     if(!requested) return notFoundErrorHandler("Profile don't found");
 
-    if(getRequestedError) return supabaseErrorHandler(getRequestedError);
+    console.log(requested)
 
     //Sends the email
     const { error: resendError } = await resend
@@ -79,8 +79,8 @@ export async function POST(req: NextRequest, { params }: ParamsType) {
       to: requested_email,
       subject: "Request recivied",
       react: RequestTemplate({
-        username: requested.username,
-        link: `/teams/${teamId}/accept-request`
+        username: requested.display_name,
+        link: `${process.env.API_URL ?? "http://localhost:3000"}/teams/${teamId}/accept-request`
       })
     });
 
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest, { params }: ParamsType) {
     .from("profiles")
     .update({
       requests: [
-        ...requested.requests,
+        ...requested.requests || [],
         {
           name: team.name,
           id: teamId,
@@ -100,10 +100,15 @@ export async function POST(req: NextRequest, { params }: ParamsType) {
         }
       ]
     })
+    .eq("id", user.id);
+
+    if(saveRequestError) return supabaseErrorHandler(saveRequestError);
 
     //Success response
     return NextResponse.json({ message: "Request sent successfully!" });
   } catch(e: unknown) {
+    console.error(e);
+
     serverErrorHandler(e);
   }
 }
