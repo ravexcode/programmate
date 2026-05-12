@@ -49,25 +49,19 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-5 xl:mt-0 w-full xl:w-auto">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 xl:mt-0 w-full xl:w-auto">
             <FooterColumn title="About">
               <CustomLi link="/about">More info</CustomLi>
               <CustomLi link="/">Home</CustomLi>
-              <CustomLi link="/about#startup">Startup</CustomLi>
+              <CustomLi link="/about#features">Startup</CustomLi>
               <CustomLi link="/#pricing">Pricing</CustomLi>
-            </FooterColumn>
-
-            <FooterColumn title="Application">
-              <CustomLi link="/app">More info</CustomLi>
-              <CustomLi link="/blog">Blog</CustomLi>
-              <CustomLi link="/app#download">Download</CustomLi>
             </FooterColumn>
 
             <FooterColumn title="Developers">
               <CustomLi link="/devs">More info</CustomLi>
-              <CustomLi link="/devs/about">Technologies</CustomLi>
-              <CustomLi link="/devs/docs">Docs</CustomLi>
-              <CustomLi link="/devs/repo">Repository</CustomLi>
+              <CustomLi link="/devs#arch">Architecture</CustomLi>
+              <CustomLi link="/devs#techs">Technologies</CustomLi>
+              <CustomLi link="/devs#lnt">Libraries</CustomLi>
             </FooterColumn>
 
             <FooterColumn title="Social media">
@@ -87,7 +81,7 @@ export default function Footer() {
 
         <div className="mt-16 flex flex-col items-center justify-between border-t border-gray-800 pt-8 sm:flex-row gap-4">
           <p className="text-sm tracking-widest text-gray-500">
-            © {new Date().getFullYear()} Prismaflow. All rights reserved.
+            © 2026 Prismaflow.
           </p>
           <p className="text-sm tracking-widest text-gray-500">
             Powered by{" "}

@@ -33,7 +33,7 @@ export default function Header(props: any){
 
   return (
     <header
-    className="text-text flex justify-between items-center p-4 border-b border-ultramarine-50/30 text-sm sticky top-0 animate-slide-in-top z-10 backdrop-blur bg-black/40 h-max">
+    className="text-text flex justify-between items-center p-4 border-b border-ultramarine-50/30 text-sm sticky top-0 animate-slide-in-top z-10 backdrop-blur-xl bg-black/40 h-max">
       <Link href="/"
       className="duration-400 hover:brightness-150 relative">
         <img src="/logos/large.svg" alt="Logo large made by RavexCode"

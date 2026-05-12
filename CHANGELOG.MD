@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v29.2:**
+  1. Agregado de la página completa para desarolladores. 🧑‍💻
+  2. New screenshot. 🖼️
+
 - **Indev v29.1:**
   1. Sección de buscar usuarios aún en curso. 🔍
   2. Mejora en login - register. 🔒
