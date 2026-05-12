@@ -1,12 +1,14 @@
 //React imports
-import { IconBrandGithub, IconBrandGithubFilled, IconBrandGoogleFilled, IconMoodSad, IconZoomCancel } from "@tabler/icons-react";
+import { IconBrandGithubFilled, IconBrandGoogleFilled, IconZoomCancel } from "@tabler/icons-react";
 import { useState } from "react";
 
-export default function ProviderButton(props: { provider: string }) {
-  const [ isEnabled, setIsEnabled ] = useState(true);
-
+export default function ProviderButton(props: {
+  provider: string;
+  toggler: React.Dispatch<React.SetStateAction<boolean>>;
+  toggled: boolean;
+}) {
   const goToProviderAuth = async() => {
-    setIsEnabled(false);
+    props.toggler(false);
     const res = await fetch(`/api/auth/${props.provider.toLowerCase()}`, {
       method: "GET",
       headers: {
@@ -16,7 +18,7 @@ export default function ProviderButton(props: { provider: string }) {
     });
 
     if(!res) {
-      setIsEnabled(true);
+      props.toggler(true);
 
     } else if(res.status !== 200) {
 
@@ -35,7 +37,7 @@ export default function ProviderButton(props: { provider: string }) {
     onClick={() => {
       goToProviderAuth();
     }}
-    disabled={isEnabled ? false : true}
+    disabled={props.toggled ? false : true}
     className="bg-neutral-900 flex gap-2 text-lg font-bold rounded-full justify-center items-center w-full py-2 cursor-pointer duration-500 hover:-translate-y-0.5 hover:bg-main shadow-md disabled:grayscale disabled:hover:bg-black disabled:cursor-wait disabled:hover:scale-100 disabled:brightness-80 disabled:duration-100">
       {
         props.provider === "Github" ? (

@@ -125,6 +125,7 @@ export default function HomePage(){
           alt="Image made by RavexCode"
           width={1000}
           height={1000}
+          loading="eager"
           className="z-3 w-full max-w-300 mt-10 mx-auto rounded-xl md:rounded-4xl border-2 border-neutral-800"/>
         </section>
 

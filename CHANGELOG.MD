@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v29.1:**
+  1. Sección de buscar usuarios aún en curso. 🔍
+  2. Mejora en login - register. 🔒
+  3. Provider button cambiado para desactivar todo el formulario. 🛠️
+  4. tamaño de pantalla en /oauth/callback arreglado. 🛠️
+
 - **Indev v29.0:**
   1. Services files renamed. ✏️
   2. hooks remade. 🔗

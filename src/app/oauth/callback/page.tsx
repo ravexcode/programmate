@@ -34,14 +34,14 @@ export default function OAuthCallback(){
       //Saves cookie and redirects to dashboard
       setCookie("token", access_token);
       window.location.href = "/dashboard";
-    }, 3000);
+    }, 2000);
   }, []);
 
   return (
-    <div className="bg-background min-h-dvh grid">
+    <div className="bg-background min-h-screen grid grid-rows-[auto_1fr_auto]">
       <Header />
       <main
-      className="flex flex-col justify-center items-center px-4 py-6 min-h-130 animate-fade-in relative w-screen">
+      className="flex flex-col justify-center items-center px-4 py-6 min-h-130 animate-fade-in relative w-full overflow-hidden">
 
         <section
         className="px-4 py-10 bg-ultramarine-950 shadow-xl shadow-ultramarine-700/20 min-w-90 rounded-md flex flex-col justify-center items-center gap-2 border border-ultramarine-600/50 text-center show-element text-text z-2">

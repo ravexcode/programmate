@@ -106,9 +106,13 @@ export default function LogInPage() {
               className="flex flex-col gap-3 w-full justify-center items-center">
                 <p>Sign in with</p>
                 <ProviderButton
-                provider="Github" />
+                provider="Github"
+                toggler={setIsFormDisponible}
+                toggled={isFormDisponible} />
                 <ProviderButton
-                provider="Google" />
+                provider="Google"
+                toggler={setIsFormDisponible}
+                toggled={isFormDisponible} />
               </div>
 
               <div className="flex items-center w-full my-6">

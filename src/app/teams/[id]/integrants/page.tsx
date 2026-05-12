@@ -18,6 +18,7 @@ import { getCached } from "@/hooks/cache.hook";
 import SideBar, { IconProps } from "@/components/ui/sidebar";
 import LoadingDashboard from "@/components/screens/loading_dashboard";
 import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
+import CreatorForm from "@/components/forms/creatorForm";
 
 //Icons imports
 import {
@@ -62,8 +63,22 @@ export default function Page(){
   const [ expanded, setExpanded ] = useState<boolean>(false);
   //Team data
   const [ team, setTeam ] = useState<Team | null>(null);
+  //Form toggler
+  const [ formDisabled, setFormDisabled ] = useState<boolean>(false);
+  //Searcher value
+  const [ searched, setSearched ] = useState<string>("");
+  //Found
+  const [ found, setFound ] = useState<Array<{
+    email: string,
+    username: string
+  }> | undefined>();
+  //Searcher status
+  const [ searchStatus, setSearchStatus ] = useState<"not-searched" | "not-found" | "searching">("not-searched");
 
+  //Snackbar component
   const snackbar = useRef<SnackbarRef>(null);
+  //Form component
+  const addIntgForm = useRef(null);
 
   useEffect(() => {
     async function getData() {
@@ -91,7 +106,11 @@ export default function Page(){
     getData();
   }, []);
 
-  const save_integrant = async() => {
+  const save_integrant = async(e: SubmitEvent) => {
+    e.preventDefault();
+
+    setFormDisabled(true);
+
     const token = await getCookie("token");
 
     if(!token) return window.location.href = "/auth/login";
@@ -109,14 +128,58 @@ export default function Page(){
     });
 
     const data = await res.json();
+    setFormDisabled(false);
 
     if(res.status !== 200) {
       snackbar.current?.showSnackBar(data.message, true);
-
       return;
     }
 
     snackbar.current?.showSnackBar(data.message);
+    return;
+  }
+
+  const toggleForm = () => {
+    if(!addIntgForm.current) return;
+
+    const current : HTMLFormElement = addIntgForm.current;
+
+    if(current.classList.contains("grid")) {
+      current.classList.add("hidden");
+      current.classList.remove("grid");
+    } else {
+      current.classList.add("grid");
+      current.classList.remove("hidden");
+    }
+  }
+
+  //User searcher
+  const searchUsers = async() => {
+    setSearchStatus("searching");
+
+    if(!searched || searched.length < 1) {
+      setSearchStatus("not-searched")
+    }
+
+    //Fetch the api with user data
+    const res = await fetch(`/api/users/search/${searched}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
+      }
+    });
+
+    //Data from res
+    const data = await res.json();
+
+    //If success sets the users
+    if(res.status === 200) {
+      setFound(data.users);
+    }
+
+    //Else, returns error
+    setSearchStatus("not-found");
     return;
   }
 
@@ -126,6 +189,71 @@ export default function Page(){
       className="grid grid-cols-[auto_1fr] w-screen h-screen overflow-hidden bg-background text-text">
         <SnackBar
         ref={snackbar} />
+
+        {/* Form component */}
+        <section
+        className="fixed w-screen min-h-screen overflow-x-hidden p-10 hidden z-20 bg-black/30 backdrop-blur animate-fade-in justify-center items-center"
+        ref={addIntgForm}
+        onClick={toggleForm}>
+
+          <CreatorForm
+          action={async(e) => { await save_integrant(e) }}
+          title="Add a new teammate"
+          actionIsDisabled={formDisabled && (!found || found.length < 1)}
+          hideAction={toggleForm}>
+            
+            <label
+            className="text-sm font-light w-full text-start">
+              Search your teammate via email <span className="ml-auto text-red-500"> * </span>
+            </label>
+            <input
+            type="email"
+            onChange={(e) => {
+              setSearched(e.target.value);
+            }}
+            value={searched}
+            required
+            onKeyDown={(e) => {
+              if(e.key === "Enter" && e.ctrlKey && searched) {
+                searchUsers();
+              }
+            }}
+            className="w-full text-sm rounded-md bg-neutral-800 p-2 mt-1 border border-transparent outline-none duration-300 focus:border-main hover:bg-neutral-800/50 focus:hover:bg-neutral-800"
+            placeholder="Crtl + Enter" />
+
+            <label
+            className="text-sm font-light w-full text-start mt-3">
+              Users found
+            </label>
+            <section
+            className="w-full rounded-md bg-neutral-800 p-2 mb-4 ">
+              {
+                found && found.length > 0 ? found.map((user, index) => 
+                  <div
+                  key={index}>
+                    <p> { user.email } </p>
+                    <p> { user.username } </p>
+                  </div>
+                ) : (
+                  <p
+                  className="text-sm font-light cursor-default opacity-80 animate-pulse">
+                    {
+                      searchStatus === "not-searched" ? (
+                        "Search a user..."
+                      ) : searchStatus === "not-found" ? (
+                        "Not found..."
+                      ) : (
+                        "Searching..."
+                      )
+                    }
+                  </p>
+                )
+              }
+            </section>
+
+          </CreatorForm>
+
+        </section>
 
         <SideBar
         email={user?.email}
@@ -240,7 +368,8 @@ export default function Page(){
             className="flex gap-3 flex-wrap w-full justify-start items-center mt-5">
               <button
               type="button"
-              className="bg-main rounded-full px-6 py-2 flex gap-2 items-center justify-center duration-400 cursor-pointer hover:-translate-y-0.5 hover:brightness-125">
+              className="bg-main rounded-full px-6 py-2 flex gap-2 items-center justify-center duration-400 cursor-pointer hover:-translate-y-0.5 hover:brightness-125"
+              onClick={toggleForm}>
                 <IconUserPlus
                 size={20}
                 stroke={2} />
