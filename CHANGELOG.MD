@@ -1,5 +1,12 @@
 # Indev
 
+- **Indev v29.3:**
+  1. Mejoras en la optimización. 🚀
+  2. Implementación de auth con GitLab. ✅
+  3. Nuevas hooks gestoras de cookies. 🔒
+  4. Logout completamente funcional. ✅
+  5. Nodemailer y Redis retirados debido al nulo uso de estos. 🗑️
+
 - **Indev v29.2:**
   1. Agregado de la página completa para desarolladores. 🧑‍💻
   2. New screenshot. 🖼️

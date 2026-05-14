@@ -1,5 +1,5 @@
 //React imports
-import { IconBrandGithubFilled, IconBrandGoogleFilled, IconZoomCancel } from "@tabler/icons-react";
+import { IconBrandGithubFilled, IconBrandGitlab, IconBrandGoogleFilled, IconZoomCancel } from "@tabler/icons-react";
 import { useState } from "react";
 
 export default function ProviderButton(props: {
@@ -45,6 +45,9 @@ export default function ProviderButton(props: {
           size={20}/>
         ) : props.provider === "Google" ? (
           <IconBrandGoogleFilled
+          size={20}/>
+        ) : props.provider === "Gitlab" ? (
+          <IconBrandGitlab
           size={20}/>
         ) : (
           <IconZoomCancel

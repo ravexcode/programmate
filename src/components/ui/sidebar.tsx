@@ -124,7 +124,7 @@ export default function SideBar(props: SideBarProps) {
           {
             props.plan === "Free" && expanded && (
               <div
-              className="w-full border-2 border-neutral-600 rounded-md p-2 bg-neutral-900 animate-fade-in-right mt-10">
+              className="w-full rounded-xl border border-neutral-800 p-2 bg-neutral-900 animate-fade-in-right mt-10">
                 <div className="w-full flex items-center gap-1 pt-1">
                   <IconBolt
                   size={23}
@@ -136,7 +136,7 @@ export default function SideBar(props: SideBarProps) {
                   Upgrade your projects workflow with a monhtly subscription
                 </p>
                 <button
-                className="bg-main rounded-md w-full px-2 py-1 cursor-pointer text-center duration-400 hover:brightness-80">
+                className="bg-main rounded-md w-full px-2 py-1 cursor-pointer text-center duration-400 hover:brightness-80 shadow-lg shadow-blue-800/30">
                   Upgrade now
                 </button>
               </div>

@@ -5,7 +5,6 @@
 import { useRef, useState } from "react";
 
 //Next imports
-import { setCookie } from "cookies-next";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -18,6 +17,9 @@ import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
 
 //Icons imports
 import { IconArrowLeft } from "@tabler/icons-react";
+
+//Hooks imports
+import { useSaveToken } from "@/hooks/useCookies";
 
 export default function LogInPage() {
   //Ref components
@@ -63,9 +65,7 @@ export default function LogInPage() {
 
     if(res.status === 200) {
       //Saves the cookie
-      setCookie("token", resData.token, {
-        maxAge: 60 * 60 * 24 * 3 //3 Days
-      });
+      useSaveToken(resData.token);
       //Returns to dashboard
       window.location.href = "/dashboard";
       return;
@@ -111,6 +111,10 @@ export default function LogInPage() {
                 toggled={isFormDisponible} />
                 <ProviderButton
                 provider="Google"
+                toggler={setIsFormDisponible}
+                toggled={isFormDisponible} />
+                <ProviderButton
+                provider="Gitlab"
                 toggler={setIsFormDisponible}
                 toggled={isFormDisponible} />
               </div>

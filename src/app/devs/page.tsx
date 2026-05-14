@@ -118,7 +118,7 @@ export default function DevsPage(){
             <ArticleComponent  title="Backend (API)"   content="NextJS Server" />
             <ArticleComponent  title="Database"   content="Supabase" />
             <ArticleComponent  title="Auth"   content="Supabase Auth" />
-            <ArticleComponent  title="Providers"   content="Google & Github" />
+            <ArticleComponent  title="Providers"   content="Google, Github & Gitlab" />
             <ArticleComponent  title="Infraestucture"   content="Vercel" />
           </article>
         </section>
@@ -139,12 +139,11 @@ export default function DevsPage(){
               Services for make better your experience
             </p>
 
-            <ArticleComponent  title="Cookies gestor"   content="NextJS Cookies client" />
             <ArticleComponent  title="Lenis"   content="A better scroll experience" />
             <ArticleComponent  title="Resend"   content="Emails gestor" />
             <ArticleComponent  title="Stripe"   content="Payments gestor" />
-            <ArticleComponent  title="OpenRouter"   content="AI controller" />
-            <ArticleComponent  title="CryptoJS"   content="Encrypt/Descrypter" />
+            <ArticleComponent  title="OpenRouter"   content="AI gestor" />
+            <ArticleComponent  title="CryptoJS"   content="Encrypt text" />
             <ArticleComponent  title="Tailwind Animations"   content="Animations that makes better your experience" />
           </article>
         </section>

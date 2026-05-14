@@ -1,15 +1,15 @@
 //Client declaration
 "use client";
 
-//Next imports
-import { setCookie } from "cookies-next";
-
 //Components
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 
 //React imports
 import { useEffect } from "react";
+import { useSaveToken } from "@/hooks/useCookies";
+
+//Hooks imports
 
 export default function OAuthCallback(){
   //Starts the app
@@ -32,7 +32,7 @@ export default function OAuthCallback(){
     //Waits 3 seconds before redirecting to dashboard
     setTimeout(() => {
       //Saves cookie and redirects to dashboard
-      setCookie("token", access_token);
+      useSaveToken(access_token!);
       window.location.href = "/dashboard";
     }, 2000);
   }, []);

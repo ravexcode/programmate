@@ -3,7 +3,6 @@
 
 //Next imports
 import { useParams } from "next/navigation"
-import { getCookie } from "cookies-next/client";
 import Link from "next/link";
 
 //React imports
@@ -17,6 +16,9 @@ import SideBar, { IconProps } from "@/components/ui/sidebar";
 import AIChat from "@/components/ui/ai_chat";
 import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading_dashboard";
+
+//Hooks imports
+import { useGetToken } from "@/hooks/useCookies";
 
 //Icons imports
 import {
@@ -53,7 +55,7 @@ export async function searchTeamData (
   
 
   //Gets user's token
-  const token : string | undefined = await getCookie("token");
+  const token = useGetToken();
 
   //If token isn't returned sends to login
   if(!token) return window.location.href = "/auth/login";

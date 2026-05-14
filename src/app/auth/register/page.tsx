@@ -5,7 +5,6 @@
 import { useRef, useState } from "react";
 
 //Next imports
-import { setCookie } from "cookies-next";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -18,6 +17,9 @@ import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
 
 //Icons imports
 import { IconArrowLeft } from "@tabler/icons-react";
+
+//Hooks imports
+import { useSaveToken } from "@/hooks/useCookies";
 
 //User type
 interface User {
@@ -88,7 +90,7 @@ export default function LogInPage() {
 
     if(res.status === 201) {
       //Saves the cookie
-      setCookie("token", resData.token);
+      useSaveToken(resData.token);
       //Returns to dashboard
       window.location.href = "/oauth/success";
       return;
@@ -129,9 +131,17 @@ export default function LogInPage() {
             className="flex flex-col gap-3 w-full justify-center items-center">
               <p>Sign up with</p>
               <ProviderButton
-              provider="Github" />
+              provider="Github"
+              toggled={isFormDisponible}
+              toggler={setIsFormDisponible} />
               <ProviderButton
-              provider="Google" />
+              provider="Google"
+              toggled={isFormDisponible}
+              toggler={setIsFormDisponible} />
+              <ProviderButton
+              provider="Gitlab"
+              toggler={setIsFormDisponible}
+              toggled={isFormDisponible} />
             </div>
 
             <div className="flex items-center w-full my-6">

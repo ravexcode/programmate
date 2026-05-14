@@ -1,10 +1,14 @@
 //Client side
 "use client";
 
+//Prebuilt ui imports
 import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
-import { getCookie } from "cookies-next/client";
+
 //React imports
 import { useState, KeyboardEvent, useRef } from "react";
+
+//Hooks imports
+import { useGetToken } from "@/hooks/useCookies";
 
 export default function GetStarted() {
   //State handlers
@@ -114,7 +118,7 @@ export default function GetStarted() {
   //Project creator
   const createProject = async(found : Array<any>) => {
     //Id isn't cached gets the data
-    const token = await getCookie("token") as string;
+    const token = useGetToken();
 
     if(!token) {
       //If hasn't token returns to log in form
@@ -141,8 +145,8 @@ export default function GetStarted() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
-        "Authorization": token,
+        "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "Authorization": token!,
       },
       body: JSON.stringify(newProject)
     });

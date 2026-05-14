@@ -10,7 +10,8 @@ import Link from "next/link";
 
 //Hooks imports
 import { searchTeamData } from "../page";
-import { getCached } from "@/hooks/cache";
+import { useGetToken } from "@/hooks/useCookies";
+import { getCached } from "@/hooks/cache.hook";
 
 //Services
 import UpdateUserData from "@/services/user.service";
@@ -78,7 +79,7 @@ export default function ChatPage() {
         setUser(cached);
       } else {
         //Sets from db
-        const token = await getCookie("token");
+        const token = useGetToken();
         if(!token) return window.location.href = "/auth/login";
 
         user_fetched = await UpdateUserData(token);

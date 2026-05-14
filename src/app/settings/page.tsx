@@ -88,8 +88,6 @@ export default function ConfigurationPage(){
       const error = await res.json();
       setIsLoading(false);
       throw new Error(error.message || "Error deleting the user");
-
-      return;
     } catch(e) {
       //Error handler
       console.error(e);
@@ -191,7 +189,8 @@ export default function ConfigurationPage(){
           className="ml-auto cursor-pointer duration-200 hover:brightness-60"
           onClick={() => {
             deleteCookie("token");
-            window.location.href = "/auth/login"
+            window.localStorage.clear();
+            window.location.href = "/auth/login";
           }}>
             <img
             src="/icons/buttons/logout.svg"

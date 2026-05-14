@@ -1,9 +1,6 @@
 //Client side
 "use client";
 
-//Next imports
-import Link from "next/link";
-
 //Table icons imports
 import {
   IconPlus,
@@ -25,8 +22,8 @@ import CreatorForm from "@/components/forms/creatorForm";
 import CreatorInput from "@/components/forms/creatorInputs";
 import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
 
-//Modules imports
-import { getCookie } from "cookies-next";
+//Hooks imports
+import { useGetToken } from "@/hooks/useCookies";
 
 //Services imports
 import UpdateUserData from "@/services/user.service";
@@ -254,7 +251,7 @@ export default function Dashboard(){
     //Function to update the user data
     async function updateFromToken(){
       //Id isn't cached gets the data
-      const token = await getCookie("token") as string;
+      const token = useGetToken();
 
       if(!token) {
         //If hasn't token returns to log in form
@@ -262,7 +259,7 @@ export default function Dashboard(){
       };
 
       //Updates the user's data
-      const user = await UpdateUserData(token);
+      const user = await UpdateUserData(token!);
       if(user) {
         setUser(user)
       }
@@ -339,7 +336,7 @@ export default function Dashboard(){
     setIsLoading(true);
 
     //Id isn't cached gets the data
-    const token = await getCookie("token") as string;
+    const token = useGetToken();
 
     if(!token) {
       //If hasn't token returns to log in form
@@ -362,7 +359,7 @@ export default function Dashboard(){
       headers: {
         "Content-Type": "application/json",
         "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
-        "Authorization": token,
+        "Authorization": token!,
       },
       body: JSON.stringify({
         name: projectName,
@@ -403,7 +400,7 @@ export default function Dashboard(){
           await sendRequest(
             user.email,
             data.team.id,
-            token,
+            token!,
             snackbarRef
           );
         })
@@ -446,7 +443,7 @@ export default function Dashboard(){
 
   //Delete selected Project
   const deleteProject = async(id: number, index: number) => {
-    const token = await getCookie("token") as string;
+    const token = useGetToken();
 
     try {
       //Makes the request
@@ -518,7 +515,7 @@ export default function Dashboard(){
 
   //Function for update team
   const updateTeam = async() => {
-    const token = await getCookie("token") as string;
+    const token = useGetToken();
 
     try {
       //Makes the request
@@ -1033,9 +1030,9 @@ export default function Dashboard(){
                   disabled={isReloading}
                   onClick={ async(e) => {
                     setIsReloading(true);
-                    const token = await getCookie("token") as string;
+                    const token = useGetToken();
 
-                    await UpdateUserData(token);
+                    await UpdateUserData(token!);
                     setIsReloading(false);
                   }}>
                     <IconReload
