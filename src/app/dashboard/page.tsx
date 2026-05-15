@@ -994,7 +994,10 @@ export default function Dashboard(){
       {
         user && user.email ? (
           <>
-            <SideBar email={user.email} plan={user.plan}/>
+            <SideBar
+            email={user.email}
+            plan={user.plan}
+            avatar={user.avatar_url}/>
             <main className="relative flex flex-col h-screen overflow-y-auto px-4 md:px-8 animate-fade-in">
               {
                 user.plan && (

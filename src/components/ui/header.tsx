@@ -46,14 +46,12 @@ export default function Header(props: any){
         <OptionsButton link="/#pricing"> Pricing </OptionsButton>
         <OptionsButton link="/about#contact"> Contact </OptionsButton>
       </ul>
-
-      <div className="min-w-30 flex justify-start items-center">
-        <Link
-        href={isSignedIn ? "/dashboard" : "/auth/register"}
-        className="bg-main hover:bg-main/80 duration-400 p-2 px-8 text-sm tracking-wide rounded-full">
-          {isSignedIn ? "Dashboard" : "Get started"}
-        </Link>
-      </div>
+      
+      <Link
+      href={isSignedIn ? "/dashboard" : "/auth/register"}
+      className="bg-main hover:bg-main/80 duration-400 py-2 px-6 text-center text-sm tracking-wide rounded-full">
+        {isSignedIn ? "Dashboard" : "Get started"}
+      </Link>
     </header>
   )
 }

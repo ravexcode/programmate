@@ -12,7 +12,6 @@ import {
   IconLayoutDashboard,
   IconLayoutSidebar,
   IconSettings,
-  IconSparkles,
   IconUserCircle
 } from "@tabler/icons-react";
 
@@ -42,6 +41,7 @@ interface SideBarProps {
   plan?: string;
   children?: ReactNode;
   setExpanded?: (expanded : boolean) => void;
+  avatar?: string;
 }
 
 
@@ -152,15 +152,26 @@ export default function SideBar(props: SideBarProps) {
             )
           }
 
-          <Icon
-          action="/users/profile/me"
-          name={props.email!}
-          isDisplayed={expanded}>
-            <IconUserCircle
-            size={23}
-            stroke={2}
-            color="white" />
-          </Icon>
+          <Link
+          href="/"
+          className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-90 duration-400 " + (expanded ? "w-46 md:w-60" : "w-full")}>
+            {
+              props.avatar ? (
+                <Image
+                src={props.avatar}
+                alt={props.email + " avatar"}
+                width={23}
+                height={23}
+                className="rounded-full border border-neutral-800" />
+              ) : (
+                <IconUserCircle
+                size={23}
+                stroke={2}
+                color="white" />
+              )
+            }
+            {expanded && <span className="text-sm animate-fade-in-right"> {props.email} </span>}
+          </Link>
 
           <Icon
           action="/settings"

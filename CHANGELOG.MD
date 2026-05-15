@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v29.4:**
+  1. La página acepta ahora fotos de perfil
+  2. Inicio de sección legal
+  3. Sección de footer para asistencia de usuarios
+
 - **Indev v29.3:**
   1. Mejoras en la optimización. 🚀
   2. Implementación de auth con GitLab. ✅

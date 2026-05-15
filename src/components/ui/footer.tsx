@@ -49,7 +49,7 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 xl:mt-0 w-full xl:w-auto">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-5 xl:mt-0 w-full xl:w-auto">
             <FooterColumn title="About">
               <CustomLi link="/about">More info</CustomLi>
               <CustomLi link="/">Home</CustomLi>
@@ -71,10 +71,16 @@ export default function Footer() {
               <CustomLi link="/">Facebook</CustomLi>
             </FooterColumn>
 
+            <FooterColumn title="Support">
+              <CustomLi link="/support/bugs"> Report a bug </CustomLi>
+              <CustomLi link="/support/sugestions"> Make a sugestion </CustomLi>
+              <CustomLi link="/suppor/tickets"> Request a ticket </CustomLi>
+            </FooterColumn>
+
             <FooterColumn title="Legal">
-              <CustomLi link="/legacy/tos">Terms of service</CustomLi>
-              <CustomLi link="/legacy/privacy">Privacy policy</CustomLi>
-              <CustomLi link="/legacy/license">License</CustomLi>
+              <CustomLi link="/legal/tos">Terms of service</CustomLi>
+              <CustomLi link="/legal/privacy">Privacy policy</CustomLi>
+              <CustomLi link="/legal/license">License</CustomLi>
             </FooterColumn>
           </div>
         </div>

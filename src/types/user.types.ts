@@ -19,7 +19,8 @@ export interface UserData {
     }>
   }>,
   created_at?: string,
-  last_sign_in?: string
+  last_sign_in?: string,
+  avatar_url?: string,
 }
 
 //User basic data (for example teammates)
