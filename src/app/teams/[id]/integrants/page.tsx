@@ -32,13 +32,16 @@ import {
   IconUserPlus,
   IconTrash,
   IconShieldCheck,
-  IconShield
+  IconShield,
+  IconAppWindow
 } from "@tabler/icons-react";
 
 //Types imports
 import type Team from "@/types/team.types";
 import { UserData } from "@/types/user.types";
 import { IntegrantData } from "@/types/team.types";
+import Image from "next/image";
+import { sendRequest } from "@/services/resend.service";
 
 //Icon button component
 function Icon(props : IconProps) {
@@ -70,7 +73,12 @@ export default function Page(){
   //Found
   const [ found, setFound ] = useState<Array<{
     email: string,
-    username: string
+    display_name: string
+  }> | undefined>();
+  //Found
+  const [ added, setAdded ] = useState<Array<{
+    email: string,
+    display_name: string
   }> | undefined>();
   //Searcher status
   const [ searchStatus, setSearchStatus ] = useState<"not-searched" | "not-found" | "searching">("not-searched");
@@ -107,36 +115,43 @@ export default function Page(){
   }, []);
 
   const save_integrant = async(e: SubmitEvent) => {
-    e.preventDefault();
+    if(!added) return;
 
     setFormDisabled(true);
 
-    const token = await getCookie("token");
+    added.forEach(async (added) => {
+      e.preventDefault();
 
-    if(!token) return window.location.href = "/auth/login";
+      const token = await getCookie("token");
 
-    const res = await fetch(`/api/teams/${params.id}/integrants/send`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-        "Authorization": token
-      },
-      body: JSON.stringify({
-        //Add integrant data
-      })
+      if(!token) return window.location.href = "/auth/login";
+
+      const res = await fetch(`/api/teams/${params.id}/integrants/request`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+          "Authorization": token
+        },
+        body: JSON.stringify({
+          requested_email: added.email
+        })
+      });
+
+      const data = await res.json();
+
+      if(res.status !== 200) {
+        snackbar.current?.showSnackBar(data.message, true);
+        return;
+      }
+
+      snackbar.current?.showSnackBar(data.message);
+      return;
     });
 
-    const data = await res.json();
-    setFormDisabled(false);
-
-    if(res.status !== 200) {
-      snackbar.current?.showSnackBar(data.message, true);
-      return;
-    }
-
-    snackbar.current?.showSnackBar(data.message);
-    return;
+    toggleForm();
+    setFound(undefined);
+    setAdded(undefined);
   }
 
   const toggleForm = () => {
@@ -204,15 +219,14 @@ export default function Page(){
             
             <label
             className="text-sm font-light w-full text-start">
-              Search your teammate via email <span className="ml-auto text-red-500"> * </span>
+              Search your teammate via email
             </label>
             <input
-            type="email"
+            type="text"
             onChange={(e) => {
               setSearched(e.target.value);
             }}
             value={searched}
-            required
             onKeyDown={(e) => {
               if(e.key === "Enter" && e.ctrlKey && searched) {
                 searchUsers();
@@ -226,17 +240,34 @@ export default function Page(){
               Users found
             </label>
             <section
-            className="w-full rounded-md bg-neutral-800 p-2 mb-4 ">
+            className="w-full rounded-md bg-neutral-800 py-2 mb-3">
               {
                 found && found.length > 0 ? found.map((user, index) => 
-                  <div
-                  key={index}>
-                    <p> { user.email } </p>
-                    <p> { user.username } </p>
-                  </div>
+                  <button
+                  type="button"
+                  key={index}
+                  className="w-full text-sm p-2 hover:bg-black/20 cursor-pointer text-start"
+                  onClick={() => {
+                    setAdded(prev => prev ? [
+                      ...prev,
+                      user
+                    ] : [
+                      user
+                    ]);
+
+                    if(found.length === 1) {
+                      setSearchStatus("not-searched");
+                    }
+
+                    setFound(prev => prev?.filter((_, found_index) => found_index !== index));
+                  }}>
+                    <p> { user.display_name } </p>
+                    <p
+                    className="text-xs font-light opacity-80"> { user.email } </p>
+                  </button>
                 ) : (
                   <p
-                  className="text-sm font-light cursor-default opacity-80 animate-pulse">
+                  className="text-sm font-light cursor-default opacity-80 animate-pulse px-2">
                     {
                       searchStatus === "not-searched" ? (
                         "Search a user..."
@@ -251,6 +282,36 @@ export default function Page(){
               }
             </section>
 
+            
+
+            <label
+            className="text-sm font-light w-full text-start">
+              Integrants to request
+            </label>
+            <section
+            className="w-full rounded-md bg-neutral-800 py-2 mb-4">
+              {
+                added && added.length > 0 ? added.map((user, index) => 
+                  <button
+                  type="button"
+                  key={index}
+                  className="w-full text-sm p-2 hover:bg-black/20 cursor-pointer text-start"
+                  onClick={() => {
+                    setAdded(prev => prev?.filter((_, int_index) => int_index !== index));
+                  }}>
+                    <p> { user.display_name } </p>
+                    <p
+                    className="text-xs font-light opacity-80"> { user.email } </p>
+                  </button>
+                ) : (
+                  <p
+                  className="text-sm font-light cursor-default opacity-80 animate-pulse px-2">
+                    Add a user...
+                  </p>
+                )
+              }
+            </section>
+
           </CreatorForm>
 
         </section>
@@ -260,7 +321,8 @@ export default function Page(){
         setExpanded={(isExpanded : boolean) => {
           setExpanded(isExpanded === true ? false : true);
         }}
-        plan={user?.plan}>
+        plan={user?.plan}
+        avatar={user?.avatar_url}>
           {
             expanded && (
               <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
@@ -268,6 +330,16 @@ export default function Page(){
               </span>
             )
           }
+
+          <Icon
+          action={`/teams/${params.id}`}
+          name="Team dashboard"
+          isDisplayed={expanded}>
+            <IconAppWindow
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
 
           <Icon
           action={`/teams/${team.team_id}/integrants`}
@@ -405,13 +477,12 @@ export default function Page(){
                         key={index}
                         className="grid grid-cols-5 gap-4 py-3 px-2 rounded-lg transition-colors hover:bg-white/5 items-center group">
                         <div className="flex items-center gap-3">
-                          <span
-                          className="p-2 w-9 text-center text-xs rounded-full bg-radial-[at_25%_25%] from-sky-600 to-blue-900">
-                            {
-                              member?.username.slice(0, 1) +
-                              (member?.username.split(' ').slice(1).join(' ').slice(0, 1) || "")
-                            }
-                          </span>
+                          <Image
+                          src={user?.avatar_url!}
+                          alt={user?.email + " profile picture"}
+                          width={50}
+                          height={50}
+                          className="w-9 rounded-full" />
                           <span className="font-medium text-neutral-200 group-hover:text-blue-500 transition-colors">
                             {member.username}
                           </span>

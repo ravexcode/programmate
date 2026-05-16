@@ -20,7 +20,7 @@ import CreatorInput from "@/components/forms/creatorInputs";
 import { searchTeamData } from "../page";
 
 //Types imports
-import User from "@/modules/user.types";
+import { UserData } from "@/types/user.types";
 import Team from "@/types/team.types";
 
 //Icons imports
@@ -56,7 +56,7 @@ export default function TicketsTeamPage(){
 
   //States handler
   //User data
-  const [ user, setUser ] = useState<User>();
+  const [ user, setUser ] = useState<UserData>();
   //Team data
   const [ team, setTeam ] = useState<Team>();
   //Sidebar expanded
@@ -189,7 +189,8 @@ export default function TicketsTeamPage(){
         setExpanded={(isExpanded : boolean) => {
           setExpanded(isExpanded === true ? false : true);
         }}
-        plan={user?.plan}>
+        plan={user?.plan}
+        avatar={user?.avatar_url}>
           {
             expanded && (
               <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">

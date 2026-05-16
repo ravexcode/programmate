@@ -68,9 +68,7 @@ export async function POST(req: NextRequest, { params }: ParamsType) {
 
     //Error handlers
     if(!requested) return notFoundErrorHandler("Profile don't found");
-
-    console.log(requested)
-
+    
     //Sends the email
     const { error: resendError } = await resend
     .emails

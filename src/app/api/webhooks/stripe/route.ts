@@ -1,7 +1,7 @@
 //Lib imports
 import { stripe } from "@/lib/stripe";
 import supabase from "@/lib/db";
-import { sendEmail } from "@/lib/nodemailer";
+import { resend } from "@/lib/resend";
 
 //Next imports
 import { NextRequest, NextResponse } from "next/server";
@@ -61,11 +61,7 @@ export async function POST(req: NextRequest) {
         const content: string = "Thank you so much for helping us!, if you have a question or wanna report a bug tell us sending an email to help@prismaflow.dev"
 
         //Send a email to the user
-        await sendEmail(
-          event.data.object.metadata?.email,
-          "Payment made successfully! 🎉",
-          content
-        );
+        //TODO: Add logic
 
         break;
 

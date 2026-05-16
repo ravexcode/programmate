@@ -54,9 +54,6 @@ export async function POST(
     //Verifies if there's no error
     if(getTeamError) return supabaseErrorHandler(getTeamError);
 
-    //Verifies if the user is in the team
-    if(!team?.integrants_id.includes(user.id)) return unauthorizedErrorHandler("You're not in the team");
-
     //Integrant
     const new_integrant = {
       id,
@@ -72,7 +69,11 @@ export async function POST(
       integrants: [
         ...team.integrants,
         new_integrant
-      ]
+      ],
+      integrants_id: [
+        ...team.integrants_id,
+        new_integrant.id
+      ],
     })
     .eq("team_id", teamId);
 
@@ -82,8 +83,7 @@ export async function POST(
     //Success
     return NextResponse.json({
       message: "Integrant saved"
-    })
-
+    });
   } catch(e: unknown) {
     serverErrorHandler(e);
   }

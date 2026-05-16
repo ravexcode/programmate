@@ -363,7 +363,7 @@ export default function Dashboard(){
     const integrants_created = [
       {
         id: user?.id,
-        email: user?.id,
+        email: user?.email,
         username: user?.name,
         type: "admin",
       }
@@ -402,6 +402,7 @@ export default function Dashboard(){
       //Change loading state
       setIsLoading(false);
       //Clear all the inputs
+      setNewTeamName("");
       setFound([]);
       setSearched(undefined);
       setIntegrants([]);

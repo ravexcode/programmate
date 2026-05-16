@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v29.6:**
+  1. Arreglo de nodemailer. 🛠️
+  2. Agregación de integrantes arreglado. 🛠️
+  3. Página de integrantes avanzada. 🚀
+  4. Arreglo en la página de tickets. 🛠️
+
 - **Indev v29.5:**
   1. Mejoras en la vista. 🎨
   2. Cambio completo de vista en la sección de configuración. 🚀

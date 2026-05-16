@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useEffect, useState, useRef, RefObject } from "react";
 
 //Types imports
-import User from "@/modules/user.types";
+import { UserData } from "@/types/user.types";
 
 //Prebuild ui imports
 import SideBar, { IconProps } from "@/components/ui/sidebar";
@@ -91,7 +91,7 @@ export default function TeamPage(){
 
   //States handler
   //User data
-  const [ user, setUser ] = useState<User>();
+  const [ user, setUser ] = useState<UserData>();
   //Sidebar expanded
   const [ expanded, setExpanded ] = useState<boolean>(false);
   //Team data
@@ -130,7 +130,8 @@ export default function TeamPage(){
           setExpanded={(isExpanded : boolean) => {
             setExpanded(isExpanded === true ? false : true);
           }}
-          plan={user?.plan}>
+          plan={user?.plan}
+          avatar={user?.avatar_url}>
             {
               expanded && (
                 <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">

@@ -42,6 +42,7 @@ export default function AcceptRequestPage(){
         window.location.href = "/auth/login";
       }
 
+      setUser(user_data)
       setIsDisabled(false);
     }
 
