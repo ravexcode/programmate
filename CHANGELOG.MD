@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v29.5:**
+  1. Mejoras en la vista. 🎨
+  2. Cambio completo de vista en la sección de configuración. 🚀
+  3. Mejor UX al crear un team. 🛠️
+
 - **Indev v29.4:**
   1. La página acepta ahora fotos de perfil
   2. Inicio de sección legal

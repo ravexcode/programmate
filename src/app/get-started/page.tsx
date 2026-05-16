@@ -5,10 +5,11 @@
 import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
 
 //React imports
-import { useState, KeyboardEvent, useRef } from "react";
+import { useState, KeyboardEvent, useRef, useEffect } from "react";
 
 //Hooks imports
 import { useGetToken } from "@/hooks/useCookies";
+import UpdateUserData from "@/services/user.service";
 
 export default function GetStarted() {
   //State handlers
@@ -24,12 +25,36 @@ export default function GetStarted() {
   //Integrants state
   const [emailInput, setEmailInput] = useState<string>("");
   const [integrants, setIntegrants] = useState<Array<string>>([]);
+
+  //Form state
+  const [ disabled, setDisabled ] = useState<boolean>(false);
   
   //Snackbar container
   const snackBar = useRef<SnackbarRef>(null);
 
   //Constants
   const screens = 6;
+
+  useEffect(() => {
+    async function validator(){
+      const token = useGetToken();
+
+      if(!token) return window.location.href = "/auth/login";
+
+      const user = await UpdateUserData(token);
+      
+      //Created at to Date
+      const created_at = new Date(user.created_at!);
+      //Date now
+      const now = new Date();
+
+      if(created_at.getDay() !== now.getDay() || user.teams?.length! > 0) {
+        return window.location.href = "dashboard";
+      }
+    }
+
+    validator();
+  }, []);
 
   //Handlers for arrays
   const addTag = () => {
@@ -65,58 +90,8 @@ export default function GetStarted() {
   // Estado para controlar si el dropdown está abierto
   const [isStatusOpen, setIsStatusOpen] = useState(false);
 
-  //Function for search all users inserted
-  const searchUsers = async(emails: Array<string>) => {
-    //Integrants found
-    let found = [];
-
-    //Makes this for every email inserted
-    await emails.forEach(async email => {
-      //Fetchs data
-      const res = await fetch(`api/users/search/${email}`, {
-        //Method
-        method: "GET",
-        headers: {
-          "Content-type": "application/json",
-          "x-api-key": process.env.NEXT_PUBLIC_API_KEY!
-        }
-      });
-
-      //Data from response
-      const data = await res.json();
-
-      //Status OK
-      if(res.status === 200) {
-        //Add the user found
-        found.push({
-          id: data.user[0].id,
-          email: data.user[0].email,
-          username: data.user[0].name,
-          type: "member"
-        });
-      }
-
-      //Status error
-      else {
-        //Shows error snackbar
-        snackBar.current?.showSnackBar("User not found", true);
-      }
-    });
-
-    const user = JSON.parse(localStorage.getItem("user")!);
-
-    found.push({
-      id: user.id,
-      email: user.email,
-      username: user.name,
-      type: "admin"
-    });
-
-    return found;
-  }
-
   //Project creator
-  const createProject = async(found : Array<any>) => {
+  const createProject = async() => {
     //Id isn't cached gets the data
     const token = useGetToken();
 
@@ -124,6 +99,16 @@ export default function GetStarted() {
       //If hasn't token returns to log in form
       window.location.href = "/auth/login";
     };
+
+    const user = JSON.parse(localStorage.getItem("user")!);
+
+    //Only the current user as admin
+    const found = [{
+      id: user.id,
+      email: user.email,
+      username: user.name,
+      type: "admin"
+    }];
 
     let integrants_id : Array<string> = [];
 
@@ -161,27 +146,111 @@ export default function GetStarted() {
       setNewProjectName("");
       setNewProjectDescription("");
 
-      //Returns success
-      return newProject;
+      //Returns success with the team data
+      return { success: true, team: data.team };
     }
 
     //Else, returns error
     snackBar.current?.showSnackBar(data.message, true);
-    return newProject;
+    return { success: false, team: null };
+  }
+
+  //Send invitations to the emails inserted
+  const sendInvitations = async(teamId: string | number) => {
+    const token = useGetToken();
+
+    if(!token) {
+      window.location.href = "/auth/login";
+      return;
+    }
+
+    //Get current user email
+    const user = JSON.parse(localStorage.getItem("user")!);
+    const currentUserEmail = user.email;
+
+    //Send invitation to each email
+    for (const email of integrants) {
+      try {
+        //Check if user is trying to invite themselves
+        if(email === currentUserEmail) {
+          snackBar.current?.showSnackBar(`You can't invite yourself`, true);
+          continue;
+        }
+
+        //First, verify if the user exists
+        const searchRes = await fetch(`/api/users/search/${email}`, {
+          method: "GET",
+          headers: {
+            "Content-type": "application/json",
+            "x-api-key": process.env.NEXT_PUBLIC_API_KEY!
+          }
+        });
+
+        const searchData = await searchRes.json();
+
+        //If user doesn't exist, show error
+        if(searchRes.status !== 200 || !searchData.users || searchData.users.length === 0) {
+          snackBar.current?.showSnackBar(`User not found: ${email}`, true);
+          continue;
+        }
+
+        //Send the invitation
+        const res = await fetch(`/api/teams/${teamId}/integrants/request`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+            "Authorization": token,
+          },
+          body: JSON.stringify({
+            requested_email: email
+          })
+        });
+
+        //Handles the response
+        const data = await res.json();
+
+        //If success, show success message
+        if(res.status === 200) {
+          snackBar.current?.showSnackBar(`Invitation sent to ${email}`, false);
+        }
+        //Else, show error
+        else {
+          snackBar.current?.showSnackBar(`Failed to send invitation to ${email}`, true);
+        }
+      } catch (error) {
+        console.error(`Error sending invitation to ${email}:`, error);
+        snackBar.current?.showSnackBar(`Error sending invitation to ${email}`, true);
+      }
+    }
   }
 
   //Function when users press "launch"
   const handleCreateProject = async() => {
-    //Sets the users
-    const integrants_found = await searchUsers(integrants);
+    //Disable button during process
+    setDisabled(true);
 
-    const newTeam = await createProject(integrants_found);
+    //Create the project
+    const result = await createProject();
+
+    if(!result.success || !result.team) {
+      setDisabled(false);
+      return;
+    }
+
+    const teamId = result.team.team_id;
+
+    //Send invitations to all emails
+    if(integrants.length > 0) {
+      await sendInvitations(teamId);
+    }
 
     //If all is ok sets the data in cache
     const user = JSON.parse(localStorage.getItem("user")!);
-    user.teams.push(newTeam);
+    user.teams.push(result.team);
     window.localStorage.setItem("user", JSON.stringify(user));
 
+    setDisabled(false);
     window.location.href = "/dashboard";
   }
 
@@ -209,7 +278,7 @@ export default function GetStarted() {
       </div>
 
       {/* Screen 1: Start */}
-      <section className={"flex-col justify-center items-center w-full min-h-screen text-center animate-fade-in px-6 py-2 relative z-10 " + (screenSelected === 1 ? "flex" : "hidden")}>
+      <section className={"flex-col justify-center items-center w-full min-h-screen text-center animate-fade-in-up px-6 py-2 relative z-10 " + (screenSelected === 1 ? "flex" : "hidden")}>
         <h1 className="text-4xl xl:text-6xl font-semibold tracking-tight text-text mb-6">
           Welcome to this new experience
         </h1>
@@ -226,7 +295,7 @@ export default function GetStarted() {
       </section>
 
       {/* Screen 2: Name */}
-      <section className={"flex-col justify-center items-center w-full min-h-screen text-center animate-fade-in px-6 py-2 relative z-10 " + (screenSelected === 2 ? "flex" : "hidden")}>
+      <section className={"flex-col justify-center items-center w-full min-h-screen text-center animate-fade-in-up px-6 py-2 relative z-10 " + (screenSelected === 2 ? "flex" : "hidden")}>
         <h1 className="text-2xl xl:text-3xl font-semibold tracking-tight text-text mb-6">
           What are we building?
         </h1>
@@ -290,7 +359,7 @@ export default function GetStarted() {
       </section>
 
       {/* Screen 4: Tags & Status */}
-      <section className={"flex-col justify-center items-center w-full min-h-screen animate-fade-in px-6 py-2 relative z-10 " + (screenSelected === 4 ? "flex" : "hidden")}>
+      <section className={"flex-col justify-center items-center w-full min-h-screen animate-fade-in-up px-6 py-2 relative z-10 " + (screenSelected === 4 ? "flex" : "hidden")}>
         <h1 className="text-3xl xl:text-5xl font-medium tracking-tight text-text mb-12 text-center">
           Details & Status
         </h1>
@@ -366,7 +435,9 @@ export default function GetStarted() {
                 type="text"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => { if (e.key === 'Enter') addTag(); }}
+                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+                  if (e.key === 'Enter' || e.key === " ") addTag();
+                }}
                 placeholder="e.g. Frontend, Marketing"
                 className="flex-1 bg-[#121212] border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all duration-300"
               />
@@ -410,7 +481,7 @@ export default function GetStarted() {
       </section>
 
       {/* Screen 5: Integrants */}
-      <section className={"flex-col justify-center items-center w-full min-h-screen animate-fade-in px-6 py-2 relative z-10 " + (screenSelected === 5 ? "flex" : "hidden")}>
+      <section className={"flex-col justify-center items-center w-full min-h-screen animate-fade-in-up px-6 py-2 relative z-10 " + (screenSelected === 5 ? "flex" : "hidden")}>
         <h1 className="text-3xl xl:text-5xl font-medium tracking-tight text-text mb-12 text-center">
           Invite your team
         </h1>
@@ -468,7 +539,7 @@ export default function GetStarted() {
       </section>
 
       {/* Screen 6: Finished Summary */}
-      <section className={"flex-col justify-center items-center w-full min-h-screen animate-fade-in px-6 py-2 relative z-10 " + (screenSelected === 6 ? "flex" : "hidden")}>
+      <section className={"flex-col justify-center items-center w-full min-h-screen animate-fade-in-up px-6 py-2 relative z-10 " + (screenSelected === 6 ? "flex" : "hidden")}>
         <div className="w-full max-w-2xl">
           <h1 className="text-3xl xl:text-5xl font-medium tracking-tight text-text mb-8 text-center">
             Ready to launch
@@ -516,18 +587,28 @@ export default function GetStarted() {
 
           <div className="flex justify-center gap-4 mt-10">
             <button
-              className="text-sm font-medium px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer"
+              className="text-sm font-medium px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer disabled:hover:bg-white/5 disabled:hover:text-zinc-300 disabled:brightness-70 disabled:grayscale disabled:cursor-wait"
+              disabled={disabled}
               onClick={() => setScreenSelected(5)}
             >
               Go Back
             </button>
             <button
-              className="text-sm font-medium px-8 py-2.5 rounded-full text-text bg-main cursor-pointer hover:brightness-80"
-              onClick={async() => {
-                await handleCreateProject();
-              }}
+              className="text-sm font-medium px-8 py-2.5 rounded-full text-text bg-main cursor-pointer hover:brightness-80 disabled:hover:brightness-100 disabled:opacity-70 disabled:cursor-wait transition-all duration-200 flex items-center gap-2"
+              disabled={disabled}
+              onClick={handleCreateProject}
             >
-              Launch
+              {disabled ? (
+                <>
+                  <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Creating...
+                </>
+              ) : (
+                'Launch'
+              )}
             </button>
           </div>
         </div>

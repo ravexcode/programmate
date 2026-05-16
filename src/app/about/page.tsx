@@ -96,8 +96,8 @@ export default function AboutPage(){
             
             <FeaturesCard
             title="ERD Creator Tool"
-            description="More organized DB datas"
-            image_url="/images/dashboard.png" />
+            description="More organized DB diagrams"
+            image_url="/images/erd.webp" />
             
             <FeaturesCard
             title="JSON Preview"

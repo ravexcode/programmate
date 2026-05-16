@@ -121,10 +121,10 @@ export default function HomePage(){
           </div>
 
           <Image
-          src="/images/dashboard.png"
+          src="/images/dashboard.webp"
           alt="Image made by RavexCode"
-          width={1000}
-          height={1000}
+          width={1800}
+          height={1800}
           loading="eager"
           className="z-3 w-full max-w-300 mt-10 mx-auto rounded-xl md:rounded-4xl border-2 border-neutral-800"/>
         </section>

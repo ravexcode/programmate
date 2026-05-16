@@ -106,7 +106,7 @@ export default function SideBar(props: SideBarProps) {
         { expanded && ( <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right"> User </span> ) }
 
         <Icon
-        action="/to-do-list"
+        action="/todo"
         name="To Do lists"
         isDisplayed={expanded} >
           <IconChecklist
@@ -175,7 +175,7 @@ export default function SideBar(props: SideBarProps) {
 
           <Icon
           action="/settings"
-          name="Configuration"
+          name="Settings"
           isDisplayed={expanded}>
             <IconSettings
             size={23}

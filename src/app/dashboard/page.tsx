@@ -23,7 +23,7 @@ import CreatorInput from "@/components/forms/creatorInputs";
 import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
 
 //Hooks imports
-import { useGetToken } from "@/hooks/useCookies";
+import { useDeleteCookie, useGetToken } from "@/hooks/useCookies";
 
 //Services imports
 import UpdateUserData from "@/services/user.service";
@@ -259,10 +259,26 @@ export default function Dashboard(){
       };
 
       //Updates the user's data
-      const user = await UpdateUserData(token!);
-      if(user) {
-        setUser(user)
+      const user_data = await UpdateUserData(token!);
+      //Created at to Date
+      const created_at = new Date(user_data.created_at!);
+      //Date now
+      const now = new Date();
+
+      if(user_data && (created_at.getDay() === now.getDay() && user_data.teams?.length! <= 0)) {
+        window.location.href = "/get-started";
+
+        return;
+      } else if(user_data) {
+        setUser(user_data);
+
+        return;
       }
+
+      useDeleteCookie("token");
+      localStorage.clear();
+      window.localStorage.clear();
+      return window.location.href = "/auth/login";
     }
 
     //Executes the function
@@ -415,22 +431,6 @@ export default function Dashboard(){
     setIsLoading(false);
     return;
   }
-
-  //Verifies if user is new
-  useEffect(() => {
-    //Verifies if exists
-    if(!user) return;
-
-    //Created at to Date
-    const created_at = new Date(user.created_at!);
-    //Date now
-    const now = new Date();
-
-    //Verifies if the sign up dat and now have the same day value, and teams don't exists
-    if(created_at.getDay() === now.getDay() && user.teams?.length! <= 0) {
-      window.location.href = "/get-started";
-    }
-  }, [user]);
   
   //Status options for project
   const statusOptions = [
