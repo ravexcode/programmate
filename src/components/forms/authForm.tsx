@@ -1,7 +1,7 @@
 export default function AuthForm(props: any){
   return (
     <form
-    className="flex flex-col justify-start items-center px-6 py-3 max-w-100 text-text w-full z-2 animate-fade-in-up overflow-hidden"
+    className="flex flex-col justify-start items-center px-6 py-3 max-w-120 text-text w-full z-2 animate-fade-in-up overflow-hidden"
     onSubmit={props.onSubmit}
     ref={props.ref}>
       <h2

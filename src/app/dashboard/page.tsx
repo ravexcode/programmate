@@ -13,6 +13,7 @@ import {
 
 //React imports
 import { useEffect, useState, useRef, RefObject } from "react";
+import { useRouter } from "next/navigation";
 
 //Components imports
 import SideBar from "@/components/ui/sidebar";
@@ -56,11 +57,12 @@ import { getCached } from "@/hooks/cache.hook";
 function ProjectCard(props : ProjectCardProps) {
   //Delete enabled/disabled state
   const [ isDeleteDisabled, setIsDeleteDisabled ] = useState<boolean>(false);
+  const router = useRouter();
 
   return (
     <section
     onClick={() => {
-      window.location.href = `/teams/${props.id}`;
+      router.push(`/teams/${props.id}`);
     }}
     onContextMenu={(e) => {
       e.preventDefault();

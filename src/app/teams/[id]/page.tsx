@@ -33,7 +33,7 @@ import {
 } from "@tabler/icons-react";
 
 //Icon button component
-function Icon(props : IconProps) {
+export function Icon(props : IconProps) {
   return (
     <Link
     href={props.action}

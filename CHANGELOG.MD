@@ -1,10 +1,15 @@
 # Indev
 
+- **Indev v31.0:**
+  1. Inicio de refactor **ABSOLUTO** a la página de ERD. 🛠️
+  2. Eliminación de Layouts innecesarios. 🗑️
+  3. Router de Next Nav integrado. 🛠️
+
 - **Indev v30.0**
   1. Página de integrantes terminada. 👥
   2. Icono de usuario en el sidebar. 👤
   3. Cambios leves en imagenes y API. 🛠️
-  4. Tipo de teams iniciado para el JSON Visualizer
+  4. Tipo de teams iniciado para el JSON Visualizer. 🚀
 
 - **Indev v29.6:**
   1. Arreglo de nodemailer. 🛠️
