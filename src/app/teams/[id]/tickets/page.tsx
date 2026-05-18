@@ -185,12 +185,13 @@ export default function TicketsTeamPage(){
       className="bg-background text-text min-h-screen grid grid-cols-[auto_1fr]">
         <SnackBar />
         <SideBar
-        email={user?.email}
+        email={user?.email!}
+        plan={user?.plan!}
+        avatar={user?.avatar_url}
+        username={user?.name!}
         setExpanded={(isExpanded : boolean) => {
           setExpanded(isExpanded === true ? false : true);
-        }}
-        plan={user?.plan}
-        avatar={user?.avatar_url}>
+        }}>
           {
             expanded && (
               <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">

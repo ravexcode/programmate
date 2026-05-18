@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v30.0**
+  1. Página de integrantes terminada. 👥
+  2. Icono de usuario en el sidebar. 👤
+  3. Cambios leves en imagenes y API. 🛠️
+  4. Tipo de teams iniciado para el JSON Visualizer
+
 - **Indev v29.6:**
   1. Arreglo de nodemailer. 🛠️
   2. Agregación de integrantes arreglado. 🛠️

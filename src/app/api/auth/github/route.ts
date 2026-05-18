@@ -11,13 +11,13 @@ import * as Handler from "@/app/api/handlers";
 export async function GET(req: NextRequest) {
   try {
     //Saves the API_URL
-    const api_url = process.env.API_URL || "http://localhost:3000";
+    const callback_url = process.env.IS_PRODUCTION ? "https://demo.prismaflow.ravexcode.com/oauth/callback" : "http://localhost:3000/oauth/callback";
 
     //signs with google 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
-        redirectTo: api_url + "/oauth/callback",
+        redirectTo: callback_url,
       }
     });
 

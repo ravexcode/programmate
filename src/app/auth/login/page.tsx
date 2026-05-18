@@ -78,7 +78,7 @@ export default function LogInPage() {
   };
 
   return (
-    <div className="bg-background min-h-dvh grid grid-rows-[1fr_auto]">
+    <div className="bg-background min-h-screeb grid grid-rows-[1fr_auto]">
         <SnackBar
         ref={snackbar} />
 
@@ -149,7 +149,7 @@ export default function LogInPage() {
             </AuthForm>
 
             <div
-            className="w-100 max-w-[95dvw] text-text flex flex-col justify-center z-2 animate-fade-in-up text-center tracking-wide">
+            className="max-w-100 text-text flex flex-col justify-center z-2 animate-fade-in-up text-center tracking-wide">
               <p>
                 Don't have an account {" "}
                 <Link

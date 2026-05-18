@@ -4,6 +4,7 @@
 //Next imports
 import Link from "next/link";
 import { getCookie } from "cookies-next";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 
 //React imports
@@ -40,11 +41,9 @@ import {
 import type Team from "@/types/team.types";
 import { UserData } from "@/types/user.types";
 import { IntegrantData } from "@/types/team.types";
-import Image from "next/image";
-import { sendRequest } from "@/services/resend.service";
 
 //Icon button component
-function Icon(props : IconProps) {
+export function Icon(props : IconProps) {
   return (
     <Link
     href={props.action}
@@ -199,7 +198,7 @@ export default function Page(){
   }
 
   return (
-    team ? (
+    team && user ? (
       <div
       className="grid grid-cols-[auto_1fr] w-screen h-screen overflow-hidden bg-background text-text">
         <SnackBar
@@ -317,12 +316,13 @@ export default function Page(){
         </section>
 
         <SideBar
-        email={user?.email}
+        email={user?.email!}
+        plan={user?.plan!}
+        avatar={user?.avatar_url}
+        username={user?.name!}
         setExpanded={(isExpanded : boolean) => {
           setExpanded(isExpanded === true ? false : true);
-        }}
-        plan={user?.plan}
-        avatar={user?.avatar_url}>
+        }}>
           {
             expanded && (
               <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">

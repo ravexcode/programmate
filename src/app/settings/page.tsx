@@ -13,7 +13,7 @@ import { deleteCookie } from "cookies-next";
 import AIChat from "@/components/ui/ai_chat";
 import { getCookie } from "cookies-next/client";
 import { UserData } from "@/types/user.types";
-import { IconBug, IconKey, IconLogout, IconMail, IconSparkles, IconUserCircle } from "@tabler/icons-react";
+import { IconBug, IconLogout, IconMail, IconSparkles, IconTrash } from "@tabler/icons-react";
 import LoadingDashboard from "@/components/screens/loading_dashboard";
 
 //Config button
@@ -30,7 +30,7 @@ function ActionButton({
 }) {
   return (
     <button
-    className={"py-4 rounded-lg flex justify-between items-center px-8 gap-5 border  duration-400  hover:-translate-y-1 w-full outline-none bg-[#101010] cursor-pointer text-center " + (isDangerous ? "border-red-900/40 hover:border-red-700" : "border-neutral-900 hover:border-main")}
+    className={"py-4 rounded-lg flex justify-between items-center px-8 gap-5 border  duration-200  hover:-translate-y-1 w-full outline-none bg-[#101010] cursor-pointer text-center " + (isDangerous ? "border-red-900/40 hover:border-red-700" : "border-neutral-900 hover:border-main")}
     onClick={action}>
       <p
       className="text-lg tracking-wide">
@@ -132,9 +132,9 @@ export default function ConfigurationPage(){
       <section
       className={`fixed inset-0 z-10 flex justify-center items-center bg-black/50 backdrop-blur-sm transition-opacity duration-300 animate-fade-in-up ${isConfirmationVisible ? "flex" : "hidden"}`}>
         <div
-        className="w-md bg-neutral-900 p-5 rounded-md flex flex-col justify-center items-center">
+        className="w-md bg-neutral-900 border border-red-950 p-5 rounded-md flex flex-col justify-center items-center">
           <span
-          className="text-sm text-red-500 font-light mb-1">
+          className="font-xl text-red-500 mb-1">
             Alert
           </span>
 
@@ -149,14 +149,14 @@ export default function ConfigurationPage(){
             onClick={() => {
               cancelConfirmation();
             }}
-            className="px-4 py-1 border border-neutral-700 rounded-md hover:border-neutral-500 duration-200 cursor-pointer">
+            className="px-4 py-1 rounded-md hover:bg-neutral-700 duration-200 cursor-pointer">
               Cancel
             </button>
             <button
             onClick={() => {
               if(confirmationAction) confirmationAction();
             }}
-            className="px-4 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 duration-200 cursor-pointer disabled:brightness-80 disabled:cursor-wait  disabled:hover:brightness-80 disabled:grayscale"
+            className="px-4 py-1 bg-red-600 text-white rounded-md hover:bg-red-900 duration-200 cursor-pointer disabled:brightness-80 disabled:cursor-wait  disabled:hover:brightness-80 disabled:grayscale"
             disabled={isLoading}>
               Confirm
             </button>
@@ -165,9 +165,10 @@ export default function ConfigurationPage(){
       </section>
 
       <SideBar
-      email={user?.email}
-      plan={user?.plan}
-      avatar={user?.avatar_url}/>
+      email={user?.email!}
+      plan={user?.plan!}
+      avatar={user?.avatar_url}
+      username={user?.name!}/>
 
       <AIChat />
 
@@ -180,7 +181,7 @@ export default function ConfigurationPage(){
             </div>
 
             <section
-            className="w-full max-w-6xl flex flex-col gap-6 z-2 items-center justify-center">
+            className="w-full max-w-4xl flex flex-col gap-6 z-2 items-center justify-center">
               <article className="bg-[#101010] text-white p-5 flex flex-col w-full rounded-xl items-center h-max mt-16">
                 <div className="-mt-16 mb-4 bg-[#101010] rounded-full w-32 aspect-square p-3">
                   <Image
@@ -211,21 +212,6 @@ export default function ConfigurationPage(){
                 </p>
                 <div className="w-full bg-zinc-50 h-px rounded-full"></div>
               </div>
-
-              <ActionButton
-              title="Change username"
-              action={() => {  }}>
-                <IconUserCircle
-                stroke={1.5} />
-              </ActionButton>
-
-              
-              <ActionButton
-              title="Change password"
-              action={() => {  }}>
-                <IconKey
-                stroke={1.5} />
-              </ActionButton>
 
               
               <ActionButton
@@ -284,10 +270,12 @@ export default function ConfigurationPage(){
               </div>
 
               <ActionButton
-              title="Report a bug"
-              action={() => {  }}
+              title="Delete account"
+              action={() => {
+                verifyConfirmation();
+              }}
               isDangerous>
-                <IconBug
+                <IconTrash
                 stroke={1.5} />
               </ActionButton>
 

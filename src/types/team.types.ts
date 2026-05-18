@@ -47,6 +47,34 @@ export interface ERDTable {
   }
 }
 
+export interface JSONNode {
+  id: string;
+  label: string;
+  type: "object" | "array" | "string" | "number" | "boolean" | "null";
+  value?: string | number | boolean | null;
+  children?: Array<string>;
+  parentId?: string;
+  position: {
+    x: number;
+    y: number;
+  };
+  offset?: {
+    x: number;
+    y: number;
+  };
+}
+
+export interface JSON_views {
+  id: string;
+  name: string;
+  rootNodeId: string;
+  nodes: Array<JSONNode>;
+  connections?: Array<{
+    parent: string;
+    child: string;
+  }>;
+}
+
 export default interface Team {
   team_id: number;
   name: string;
@@ -71,5 +99,6 @@ export default interface Team {
       row: string;
     };
     type: "oto" | "mto" | "mtm";
-  }>
+  }>;
+  json_views: Array<JSON_views>;
 }

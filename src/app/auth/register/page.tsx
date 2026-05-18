@@ -29,7 +29,7 @@ interface User {
   confirm: string,
 }
 
-export default function LogInPage() {
+export default function RegisterPage() {
   //Ref components
   const snackbar = useRef<SnackbarRef>(null);
 
@@ -103,7 +103,7 @@ export default function LogInPage() {
   };
 
   return (
-    <div className="bg-background min-h-dvh grid grid-rows-[1fr_auto]">
+    <div className="bg-background min-h-screen grid grid-rows-[1fr_auto]">
       <SnackBar
       ref={snackbar} />
 

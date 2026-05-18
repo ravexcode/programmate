@@ -37,8 +37,9 @@ export function Icon(props : IconProps) {
 }
 
 interface SideBarProps {
-  email?: string;
-  plan?: string;
+  email: string;
+  plan: string;
+  username: string;
   children?: ReactNode;
   setExpanded?: (expanded : boolean) => void;
   avatar?: string;
@@ -142,19 +143,10 @@ export default function SideBar(props: SideBarProps) {
               </div>
             )
           }
-
-          {
-            expanded && (
-              <span
-              className="w-full text-base font-bold p-2 animate-fade-in-right">
-                Configuration
-              </span>
-            )
-          }
-
-          <Link
-          href="/"
-          className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-90 duration-400 " + (expanded ? "w-46 md:w-60" : "w-full")}>
+          <Icon
+          action="/settings"
+          name=""
+          isDisplayed={expanded}>
             {
               props.avatar ? (
                 <Image
@@ -170,17 +162,16 @@ export default function SideBar(props: SideBarProps) {
                 color="white" />
               )
             }
-            {expanded && <span className="text-sm animate-fade-in-right"> {props.email} </span>}
-          </Link>
 
-          <Icon
-          action="/settings"
-          name="Settings"
-          isDisplayed={expanded}>
-            <IconSettings
-            size={23}
-            stroke={2}
-            color="white" />
+            {
+              expanded && (
+                <div
+                className="flex flex-col">
+                  <p className="animate-fade-in-right"> {props.username} </p>
+                  <p className="animate-fade-in-right text-xs font-light text-neutral-300"> {props.email} </p>
+                </div>
+              )
+            }
           </Icon>
         </div>
       </nav>
