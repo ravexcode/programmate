@@ -1,3 +1,4 @@
+//Client side
 "use client";
 
 //Prebuilt ui compontents
@@ -13,8 +14,7 @@ export default function TOSPage() {
     className="min-h-screen bg-background grid grid-rows-[auto_1fr_auto] text-text">
       <Header />
 
-      <main
-      className="">
+      <main>
         <SmoothProvider />
 
         <section
@@ -41,7 +41,7 @@ export default function TOSPage() {
 
         <section
         className="p-10 flex flex-col items-center justify-center">
-
+          
         </section>
 
       </main>

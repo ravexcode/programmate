@@ -164,7 +164,8 @@ export default function ToDoListPage() {
           <SideBar
           email={user?.email}
           avatar={user.avatar_url}
-          plan={user.plan}/>
+          plan={user.plan}
+          username={user.name}/>
           <AIChat />
           <SnackBar
           ref={snackBar}/>

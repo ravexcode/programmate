@@ -27,24 +27,27 @@ export interface ChatMessage {
   status?: "sending" | "sent" | "error";
 }
 
+export interface ERDColumns {
+  id: string;
+  name: string;
+  type: string;
+
+  primary?: boolean;
+  foreign?: boolean;
+  nullable?: boolean;
+};
+
 export interface ERDTable {
-  name: string,
-  description?: string,
-  rows?: Array<{
-    value: string;
-    type: string;
-    connected_at?: {
-      table: string;
-      value: string;
-    };
-    connection_type?: string;
-  }>;
-  position: {
-    x: number,
-    y: number,
-    offSet_x?: number,
-    offSet_y?: number,
-  }
+  id: string;
+  name: string;
+  description?: string;
+  content: Array<ERDColumns>
+}
+
+export interface ERDConnections {
+  c_id: string;
+  connector: string;
+  connected: string;
 }
 
 export interface JSONNode {
@@ -89,16 +92,6 @@ export default interface Team {
   calendar?: string;
   created_at: string;
   ERD?: Array<ERDTable>;
-  ERD_connections?: Array<{
-    connector: {
-      table: string;
-      row: string;
-    };
-    connected: {
-      table: string;
-      row: string;
-    };
-    type: "oto" | "mto" | "mtm";
-  }>;
+  ERD_connections?: Array<ERDConnections>;
   json_views: Array<JSON_views>;
 }
