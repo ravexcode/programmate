@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v31.1:**
+> New page, Design fix, Dev update
+  1. Página to do con lógica, solo falta conectar la db. 🛠️
+  2. Cambios en la página dev (cambios minimos). 🧑‍💻
+  3. Ahora las versiones se etiquetarán en varios estados. Para más información ir a version_variants.md 🚀
+
 - **Indev v31.0:**
   1. Inicio de refactor **ABSOLUTO** a la página de ERD. 🛠️
   2. Eliminación de Layouts innecesarios. 🗑️

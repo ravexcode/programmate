@@ -1,9 +1,6 @@
 //Client side
 "use client";
 
-//Next imports
-import Image from "next/image";
-
 //Prebuilt ui components
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
@@ -42,7 +39,7 @@ export default function DevsPage(){
         <SmoothProvider />
 
         <section
-        className="relative px-4 w-full min-h-screen flex flex-col justify-center items-center pt-20 pb-10 animate-fade-in-up overflow-hidden">
+        className="relative px-4 w-full min-h-screen flex flex-col justify-center items-center animate-fade-in-up overflow-hidden">
 
           <div
           className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
@@ -53,7 +50,7 @@ export default function DevsPage(){
           </div>
 
           <h1
-          className="text-6xl font-bold mb-4 z-2 text-center">
+          className="text-6xl font-bold z-2 text-center">
             Explore Prismaflow <br />
             from the inside
           </h1>
@@ -61,14 +58,6 @@ export default function DevsPage(){
           className="opacity-80 z-2">
             Learn about API, techs used and more!
           </p>
-
-          <Image
-          src="/images/dev_screen.webp"
-          alt="Image made by RavexCode"
-          width={1500}
-          height={1500}
-          loading="eager"
-          className="z-3 w-full max-w-300 mt-10 mx-auto rounded-xl md:rounded-4xl brightness-150"/>
         </section>
 
         <section
@@ -89,7 +78,7 @@ export default function DevsPage(){
             <ArticleComponent  title="Frontend"   content="NextJS Client" />
             <IconArrowDown
             className="opacity-70" />
-            <ArticleComponent  title="API"        content="NestJS Server" />
+            <ArticleComponent  title="API"        content="NextJS Server" />
             <IconArrowDown
             className="opacity-70" />
             <ArticleComponent  title="Database"   content="Supabase" />

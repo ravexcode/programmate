@@ -1,11 +1,15 @@
 //Client side
 "use client";
 
+//Next imports
+import { useRouter } from "next/navigation";
+
 //React imports
-import { useEffect, useState, useRef, RefObject } from "react";
+import { useEffect, useState, useRef } from "react";
 
 //Hooks imports
 import { getCached } from "@/hooks/cache.hook";
+import { useGetToken } from "@/hooks/useCookies";
 
 //Components imports
 import SideBar from "@/components/ui/sidebar";
@@ -17,16 +21,23 @@ import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
 //Types imports
 import { UserData } from "@/types/user.types";
 
-import { useGetToken } from "@/hooks/useCookies";
-
 //Services imports
 import UpdateUserData from "@/services/user.service";
 import LoadingDashboard from "@/components/screens/loading_dashboard";
 
 //Icons imports
-import { IconDotsVertical, IconPencil, IconPlus, IconReload, IconTrash } from "@tabler/icons-react";
+import {
+  IconDotsVertical,
+  IconPencil,
+  IconPlus,
+  IconReload,
+  IconTrash
+} from "@tabler/icons-react";
 
 export default function ToDoListPage() {
+  //Router settings
+  const router = useRouter();
+
   //States handler
   //User data
   const [user, setUser] = useState<UserData | null>(null);
@@ -70,12 +81,6 @@ export default function ToDoListPage() {
       setUser(user);
     }
   }, []);
-
-  //Function to update user's data
-  const updateUserData = async(token: any) => {
-    const updatedUser = await UpdateUserData(token);
-    setUser(updatedUser);
-  };
 
   //Function to handle project creation
   const handleCreateToDoList = async(e: any) => {
@@ -277,6 +282,9 @@ export default function ToDoListPage() {
                         e.nativeEvent.stopImmediatePropagation();
                         e.stopPropagation();
                         setOpenMenuIndex(prev => prev === index ? null : index);
+                      }}
+                      onClick={() => {
+                        router.push(`/todo/${index}`);
                       }}>
 
                         <header className="flex items-start justify-between mb-3">

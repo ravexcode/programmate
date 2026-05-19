@@ -1,3 +1,14 @@
+export interface Task {
+  title: string,
+  isCompleted?: boolean
+}
+
+export interface ToDoList {
+  title: string,
+  description: string,
+  tasks?: Array<Task>
+}
+
 //User data type
 export interface UserData {
   id: string,
@@ -9,15 +20,7 @@ export interface UserData {
     sent_by: string,
     message: string
   }>,
-  to_do_list?: Array<{
-    title: string,
-    description: string,
-    tasks?: Array<{
-      title: string,
-      isCompleted?: boolean,
-      expiration_date?: Date
-    }>
-  }>,
+  to_do_list?: Array<ToDoList>,
   created_at?: string,
   last_sign_in?: string,
   avatar_url?: string,
