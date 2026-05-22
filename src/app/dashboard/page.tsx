@@ -17,10 +17,10 @@ import { useRouter } from "next/navigation";
 
 //Components imports
 import SideBar from "@/components/ui/sidebar";
-import LoadingDashboard from "@/components/screens/loading_dashboard";
-import AIChat from "@/components/ui/ai_chat";
-import CreatorForm from "@/components/forms/creatorForm";
-import CreatorInput from "@/components/forms/creatorInputs";
+import LoadingDashboard from "@/components/screens/loading-screen";
+import AIChat from "@/components/ui/ai-chat";
+import CreatorForm from "@/components/forms/creator-form";
+import CreatorInput from "@/components/forms/creator-inputs";
 import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
 
 //Hooks imports

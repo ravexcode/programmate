@@ -10,8 +10,9 @@ import { useParams } from "next/navigation";
 import { getCookie } from "cookies-next/client";
 
 //Prebuild ui imports
-import CreatorForm from "@/components/forms/creatorForm";
+import CreatorForm from "@/components/forms/creator-form";
 import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
+import LoadingDashboard from "@/components/screens/loading-screen";
 
 //Icons imports
 import { 
@@ -26,7 +27,6 @@ import {
 //Services imports
 import { searchTeamData } from "@/app/teams/[id]/page";
 import Team, { Ticket } from "@/types/team.types";
-import LoadingDashboard from "@/components/screens/loading_dashboard";
 
 export default function TicketView() {
   //Params data

@@ -22,7 +22,7 @@ import { ClientEncrypt, ClientDecrypt } from "@/lib/client/crypto";
 
 //Prebuild UI Imports
 import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
-import LoadingDashboard from "@/components/screens/loading_dashboard";
+import LoadingDashboard from "@/components/screens/loading-screen";
 
 //Icons imports
 import {

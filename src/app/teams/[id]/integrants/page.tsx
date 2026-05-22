@@ -17,9 +17,9 @@ import { getCached } from "@/hooks/cache.hook";
 
 //Prebuilt ui imports
 import SideBar, { IconProps } from "@/components/ui/sidebar";
-import LoadingDashboard from "@/components/screens/loading_dashboard";
+import LoadingDashboard from "@/components/screens/loading-screen";
 import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
-import CreatorForm from "@/components/forms/creatorForm";
+import CreatorForm from "@/components/forms/creator-form";
 
 //Icons imports
 import {

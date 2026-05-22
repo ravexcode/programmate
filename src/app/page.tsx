@@ -8,7 +8,7 @@ import Image from "next/image";
 //Prebuilt components
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
-import IconCarousel from "@/components/icon_carrousel";
+import IconCarousel from "@/components/icon-carrousel";
 
 //Custom components
 import SmoothProvider from "@/lib/components/lennis";

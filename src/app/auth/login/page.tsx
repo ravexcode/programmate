@@ -9,9 +9,9 @@ import Link from "next/link";
 import Image from "next/image";
 
 //Prebuilt ui components
-import AuthForm from "@/components/forms/authForm";
+import AuthForm from "@/components/forms/auth";
 import { Input, PasswordInput } from "@/components/forms/inputs";
-import ProviderButton from "@/components/forms/providerButton";
+import ProviderButton from "@/components/forms/provider-buttons";
 import Footer from "@/components/ui/footer";
 import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
 

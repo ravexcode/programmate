@@ -11,7 +11,9 @@ import { PostgrestSingleResponse } from "@supabase/supabase-js";
 //Types imports
 import { UserData } from "@/types/user.types";
 
-//------------- Create list handler -------------//
+//Responses imports
+import * as Handlers from "@/app/api/handlers";
+
 export async function POST(req: NextRequest) {
   try {
     //Gets the new list data
@@ -20,38 +22,19 @@ export async function POST(req: NextRequest) {
     const token = (await headers()).get("Authorization");
 
     //Verifies if data is inserted
-    if(!list_title || !list_description) return NextResponse.json({
-      message: "Data hasn't been sent correctly",
-      error: "Bad request"
-    }, {
-      status: 403
-    });
+    if(!list_title || !list_description) return Handlers.badRequestErrorHandler();
+
     //Verifies if token is sent
-    if(!token) return NextResponse.json({
-      message: "Token hasn't been sent correctly",
-      error: "Unauthorized"
-    }, {
-      status: 401
-    });
+    if(!token) return Handlers.unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user's data
     const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
-    if(!user) return NextResponse.json({
-      message: "User not found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!user) return Handlers.notFoundErrorHandler("Account not found");
 
     //Verifies if there's an error
-    if(getUserError) return NextResponse.json({
-      message: getUserError.message,
-      error: getUserError
-    }, {
-      status: 500
-    });
+    if(getUserError) return Handlers.unauthorizedErrorHandler(getUserError.message);
 
     //User profile data
     const { data: profile } = await supabase
@@ -61,12 +44,7 @@ export async function POST(req: NextRequest) {
     .maybeSingle() as PostgrestSingleResponse<UserData> || null;
 
     //Profile data
-    if(!profile) return NextResponse.json({
-      message: "User don't found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!profile) return Handlers.notFoundErrorHandler("Profile not found");
 
     //Inserts the new list
     const { error: insertNewListError } = await supabase
@@ -80,12 +58,7 @@ export async function POST(req: NextRequest) {
     .eq("id", user.id);
 
     //Verifies if there's an error
-    if(insertNewListError) return NextResponse.json({
-      message: insertNewListError.message,
-      error: insertNewListError
-    }, {
-      status: 500
-    });
+    if(insertNewListError) return Handlers.supabaseErrorHandler(insertNewListError);
 
     //Returns success response
     return NextResponse.json({
@@ -93,61 +66,38 @@ export async function POST(req: NextRequest) {
     }, {
       status: 200
     });
-  } catch(e: any) {
+
+  } catch(e: unknown) {
     //Error handler
-    return NextResponse.json({
-      message: "Error inside in the server",
-      error: e
-    }, {
-      status: 500
-    });
+    return Handlers.serverErrorHandler(e);
   }
 }
 
-
-
-
-//------------- Update list handler -------------//
 export async function PUT(req: NextRequest) {
   try {
     //Gets the new list data
-    const { list_title, list_description, list_index } = await req.json();
+    const { list_index, content, tasks } = await req.json();
     //Gets the auth token
     const token = (await headers()).get("Authorization");
 
     //Verifies if data is inserted
-    if(!list_title || !list_description || list_index === undefined || list_index === null) return NextResponse.json({
-      message: "Data hasn't been sent correctly",
-      error: "Bad request"
-    }, {
-      status: 403
-    });
+    if(
+      (!content || !tasks || tasks.length < 1) ||
+      list_index === undefined ||
+      list_index === null
+    ) return Handlers.badRequestErrorHandler();
+
     //Verifies if token is sent
-    if(!token) return NextResponse.json({
-      message: "Token hasn't been sent correctly",
-      error: "Unauthorized"
-    }, {
-      status: 401
-    });
+    if(!token) return Handlers.unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user's data
     const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
-    if(!user) return NextResponse.json({
-      message: "User not found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!user) return Handlers.notFoundErrorHandler("Account not found");
 
     //Verifies if there's an error
-    if(getUserError) return NextResponse.json({
-      message: getUserError.message,
-      error: getUserError
-    }, {
-      status: 500
-    });
+    if(getUserError) return Handlers.unauthorizedErrorHandler(getUserError.message);
 
     //User profile data
     const { data: profile } = await supabase
@@ -156,20 +106,20 @@ export async function PUT(req: NextRequest) {
     .eq("id", user.id)
     .maybeSingle() as PostgrestSingleResponse<UserData> || null;
 
-    //Profile data
-    if(!profile) return NextResponse.json({
-      message: "User don't found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!profile) return Handlers.notFoundErrorHandler("Profile not found");
 
     //Updates the list
     const updated_lists = profile.to_do_list || [];
-    updated_lists[list_index] = {
-      title: list_title,
-      description: list_description
-    };
+    
+    //Changes the update type
+    if(content) {
+      //List data
+      updated_lists[list_index].title = content.title;
+      updated_lists[list_index].description = content.description;
+    } else if(tasks) {
+      //List tasks
+      updated_lists[list_index].tasks = tasks;
+    }
 
     //Uploads the updated list
     const { error: updateListError } = await supabase
@@ -180,33 +130,17 @@ export async function PUT(req: NextRequest) {
     .eq("id", user.id);
 
     //Verifies if there's an error
-    if(updateListError) return NextResponse.json({
-      message: updateListError.message,
-      error: updateListError
-    }, {
-      status: 500
-    });
+    if(updateListError) return Handlers.supabaseErrorHandler(updateListError);
 
     //Returns success response
     return NextResponse.json({
       message: "List updated successfully"
     });
-  } catch(e: any) {
-    console.error("Error creating new list:", e);
-    //Error handler
-    return NextResponse.json({
-      message: "Error inside in the server",
-      error: e
-    }, {
-      status: 500
-    });
+  } catch(e: unknown) {
+    return Handlers.serverErrorHandler(e);
   }
 }
 
-
-
-
-//------------- Delete list handler -------------//
 export async function DELETE(req: NextRequest) {
   try {
     //Gets the list index
@@ -215,39 +149,19 @@ export async function DELETE(req: NextRequest) {
     const token = (await headers()).get("Authorization");
 
     //Verifies if list index is provided
-    if(list_index === undefined || list_index === null) return NextResponse.json({
-      message: "List index hasn't been sent correctly",
-      error: "Bad request"
-    }, {
-      status: 403
-    });
+    if(list_index === undefined || list_index === null) return Handlers.badRequestErrorHandler();
 
     //Verifies if token is sent
-    if(!token) return NextResponse.json({
-      message: "Token hasn't been sent correctly",
-      error: "Unauthorized"
-    }, {
-      status: 401
-    });
+    if(!token) return Handlers.unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user's data
     const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
-    if(!user) return NextResponse.json({
-      message: "User not found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!user) return Handlers.notFoundErrorHandler("Account not found");
 
     //Verifies if there's an error
-    if(getUserError) return NextResponse.json({
-      message: getUserError.message,
-      error: getUserError
-    }, {
-      status: 500
-    });
+    if(getUserError) return Handlers.unauthorizedErrorHandler(getUserError.message);
 
     //User profile data
     const { data: profile } = await supabase
@@ -256,27 +170,13 @@ export async function DELETE(req: NextRequest) {
     .eq("id", user.id)
     .maybeSingle() as PostgrestSingleResponse<UserData> || null;
 
-    //Profile data
-    if(!profile) return NextResponse.json({
-      message: "User don't found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!profile) return Handlers.notFoundErrorHandler("Profile not found");
 
     //Deletes the list
     const updated_lists = profile.to_do_list || [];
-    
-    //Verifies if index is valid
-    if(list_index < 0 || list_index >= updated_lists.length) return NextResponse.json({
-      message: "List index is out of bounds",
-      error: "Bad request"
-    }, {
-      status: 403
-    });
 
     //Removes the list at the specified index
-    updated_lists.splice(list_index, 1);
+    updated_lists.filter((_, i) => i !== list_index );
 
     //Uploads the updated list
     const { error: deleteListError } = await supabase
@@ -287,12 +187,7 @@ export async function DELETE(req: NextRequest) {
     .eq("id", user.id);
 
     //Verifies if there's an error
-    if(deleteListError) return NextResponse.json({
-      message: deleteListError.message,
-      error: deleteListError
-    }, {
-      status: 500
-    });
+    if(deleteListError) return Handlers.supabaseErrorHandler(deleteListError);
 
     //Returns success response
     return NextResponse.json({
@@ -300,14 +195,7 @@ export async function DELETE(req: NextRequest) {
     }, {
       status: 200
     });
-  } catch(e: any) {
-    console.error("Error deleting list:", e);
-    //Error handler
-    return NextResponse.json({
-      message: "Error inside in the server",
-      error: e
-    }, {
-      status: 500
-    });
+  } catch(e: unknown) {
+    return Handlers.serverErrorHandler(e);
   }
 }

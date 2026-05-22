@@ -21,7 +21,7 @@ import {
 //Prebuilt ui imports
 import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
 import SideBar from "@/components/ui/sidebar";
-import LoadingDashboard from "@/components/screens/loading_dashboard";
+import LoadingDashboard from "@/components/screens/loading-screen";
 import { Icon } from "../page";
 
 //Services imports

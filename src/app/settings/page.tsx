@@ -10,11 +10,11 @@ import SideBar from "@/components/ui/sidebar";
 //React imports
 import { useEffect, useState } from "react";
 import { deleteCookie } from "cookies-next";
-import AIChat from "@/components/ui/ai_chat";
+import AIChat from "@/components/ui/ai-chat";
 import { getCookie } from "cookies-next/client";
 import { UserData } from "@/types/user.types";
 import { IconBug, IconLogout, IconMail, IconSparkles, IconTrash } from "@tabler/icons-react";
-import LoadingDashboard from "@/components/screens/loading_dashboard";
+import LoadingDashboard from "@/components/screens/loading-screen";
 
 //Config button
 function ActionButton({

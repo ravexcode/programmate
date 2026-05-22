@@ -239,6 +239,15 @@ export default function ToDoListPage() {
                   </section>
                 )
               }
+
+              <button
+              type="button"
+              className="w-30 p-2 bg-main rounded-xl cursor-pointer duration-300 hover:bg-main/80 hover:-translate-y-1"
+              onClick={() => {
+                
+              }}>
+                Save
+              </button>
             </section>
           </main>
       </div>

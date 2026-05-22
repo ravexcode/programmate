@@ -1,4 +1,4 @@
-import InConstruction from "@/components/screens/in_construction";
+import InConstruction from "@/components/screens/in-construction";
 
 export default function Page(){
   return InConstruction();

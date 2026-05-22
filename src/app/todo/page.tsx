@@ -13,9 +13,9 @@ import { useGetToken } from "@/hooks/useCookies";
 
 //Components imports
 import SideBar from "@/components/ui/sidebar";
-import CreatorForm from "@/components/forms/creatorForm";
-import CreatorInput from "@/components/forms/creatorInputs";
-import AIChat from "@/components/ui/ai_chat";
+import CreatorForm from "@/components/forms/creator-form";
+import CreatorInput from "@/components/forms/creator-inputs";
+import AIChat from "@/components/ui/ai-chat";
 import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
 
 //Types imports
@@ -23,7 +23,7 @@ import { UserData } from "@/types/user.types";
 
 //Services imports
 import UpdateUserData from "@/services/user.service";
-import LoadingDashboard from "@/components/screens/loading_dashboard";
+import LoadingDashboard from "@/components/screens/loading-screen";
 
 //Icons imports
 import {

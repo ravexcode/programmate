@@ -1,5 +1,3 @@
-import Image from 'next/image';
-
 interface IconProps {
   src: string;
   alt: string;

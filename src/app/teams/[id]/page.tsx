@@ -13,9 +13,9 @@ import { UserData } from "@/types/user.types";
 
 //Prebuild ui imports
 import SideBar, { IconProps } from "@/components/ui/sidebar";
-import AIChat from "@/components/ui/ai_chat";
+import AIChat from "@/components/ui/ai-chat";
 import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
-import LoadingDashboard from "@/components/screens/loading_dashboard";
+import LoadingDashboard from "@/components/screens/loading-screen";
 
 //Hooks imports
 import { useGetToken } from "@/hooks/useCookies";

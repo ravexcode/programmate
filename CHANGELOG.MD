@@ -1,5 +1,14 @@
 # Indev
 
+- **Indev v32.0:**
+> Refactor, Dev update, Settings update
+  1. Refactor de /api/todos. 🛠️
+  2. Cambio de nombre de documentos. ⚙️
+  3. Guía de .env agregado. ✅
+  4. Tickets retirados del proyecto. 🗑️
+  5. Guia de etiquetas de versión. ✅
+  6. Ahora el proyecto funciona con pnpm. 🚀
+
 - **Indev v31.1:**
 > New page, Design fix, Dev update
   1. Página to do con lógica, solo falta conectar la db. 🛠️

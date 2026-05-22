@@ -11,10 +11,10 @@ import Link from "next/link";
 
 //Prebuild UI imports
 import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
-import LoadingDashboard from "@/components/screens/loading_dashboard";
+import LoadingDashboard from "@/components/screens/loading-screen";
 import SideBar, { IconProps } from "@/components/ui/sidebar";
-import CreatorForm from "@/components/forms/creatorForm";
-import CreatorInput from "@/components/forms/creatorInputs";
+import CreatorForm from "@/components/forms/creator-form";
+import CreatorInput from "@/components/forms/creator-inputs";
 
 //Hooks imports
 import { searchTeamData } from "../page";
