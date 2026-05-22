@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v33.0:**
+> Page finished, bugfix leve
+  1. Página de todo terminada. 🚀
+  2. Cambio de miniaturas de imágenes en /about. 🖼️
+  3. Imagenes nuevas en /about. 🖼️
+
 - **Indev v32.0:**
 > Refactor, Dev update, Settings update
   1. Refactor de /api/todos. 🛠️

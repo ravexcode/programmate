@@ -13,9 +13,7 @@ import { useGetToken } from "@/hooks/useCookies";
 
 //Components imports
 import SideBar from "@/components/ui/sidebar";
-import CreatorForm from "@/components/forms/creatorForm";
-import CreatorInput from "@/components/forms/creatorInputs";
-import AIChat from "@/components/ui/ai_chat";
+import AIChat from "@/components/ui/ai-chat";
 import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
 
 //Types imports
@@ -23,8 +21,8 @@ import { UserData, Task, ToDoList } from "@/types/user.types";
 
 //Services imports
 import UpdateUserData from "@/services/user.service";
-import LoadingDashboard from "@/components/screens/loading_dashboard";
-import { IconCheck } from "@tabler/icons-react";
+import LoadingDashboard from "@/components/screens/loading-screen";
+import { IconCheck, IconTrash } from "@tabler/icons-react";
 
 export default function ToDoListPage() {
   //Next settings
@@ -34,44 +32,20 @@ export default function ToDoListPage() {
   //States handler
   //User data
   const [user, setUser] = useState<UserData | null>(null);
-  //Is reloading button
-  const [ isReloading, setIsReloading ] = useState<boolean>(false);
-  //Creator form states
-  const [projectName, setProjectName] = useState<string>("");
-  const [projectDescription, setProjectDescription] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  //List options state
-  const [ openMenuIndex, setOpenMenuIndex ] = useState<number | null>(null);
   //Data statuses
   const [ toDoList, setToDoList ] = useState<ToDoList>();
   //Tasks
   const [ tasks, setTasks ] = useState<Array<Task>>();
+  //Initial tasks (for prevent autosave)
+  const [ initialTasks, setInitialTasks ] = useState<Array<Task>>();
 
   //New task values
   const [ taskName, setTaskName ] = useState<string>("");
   const [ taskCompleted, setTaskCompleted ] = useState<boolean>(false);
 
-  //Components refs
-  const project_container = useRef<HTMLDivElement>(null);
   //Snackbar
   const snackBar = useRef<SnackbarRef>(null);
-  const form = useRef(null);
-
-  //Function for hide the menu of to do list when user clicks outside
-  useEffect(() => {
-    //Function for close menu
-    const closeMenu = () => {
-      //Menu index
-      setOpenMenuIndex(null);
-      return;
-    }
-    
-    //Event that listens the click
-    document.addEventListener("click", closeMenu);
-    
-    //Remove the event listener
-    return () => document.removeEventListener("click", closeMenu);
-  }, []);
 
   //Data fetching form cache
   useEffect(() => {
@@ -83,23 +57,17 @@ export default function ToDoListPage() {
 
       if(!token) return router.push('/auth/login');
 
-      //Variable data
-      let user_data : UserData | null;
-
-      //Gets the cached user
-      user_data = getCached();
-
-      //If there is a cached user, sets the user data
-      if(!user_data) {
-        //Sets data if there's no data cached
-        user_data = await UpdateUserData(token);
-      }
+      //Sets data if there's no data cached
+      const user_data = await UpdateUserData(token);
 
       //Sets the value of state
       setUser(user_data);
-      
-      setToDoList(user_data.to_do_list![Number(params.index!)]);
-      setTasks(user_data.to_do_list![Number(params.index!)].tasks || []);
+
+      console.log(user_data)
+
+      setToDoList(user_data.to_do_list![Number(params.index)]);
+      setTasks(user_data.to_do_list![Number(params.index)].tasks || []);
+      setInitialTasks(user_data.to_do_list![Number(params.index)].tasks || []);
 
       return;
     }
@@ -107,7 +75,44 @@ export default function ToDoListPage() {
     GetData();
   }, []);
 
-  const handleCreateTask = async() => {
+  const handleSaveToDoList = async() => {
+    setIsLoading(true);
+
+    const token = useGetToken();
+
+    if(!token) return router.push("/auth/login");
+
+    const res = await fetch(
+      `/api/todos`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json",
+          "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+          "Authorization": token
+        },
+        body: JSON.stringify({
+          tasks,
+          list_index: params.index
+        })
+      }
+    );
+
+    if(!res) {
+      snackBar.current?.showSnackBar("Server error", true);
+    }
+
+    const data = await res.json();
+
+    if(res.status === 200) {
+      snackBar.current?.showSnackBar("Tasks saved");
+      setInitialTasks(tasks);
+    }
+
+    snackBar.current?.showSnackBar(data.message, true);
+
+    setIsLoading(false);
+    return
   }
 
   return (
@@ -133,7 +138,7 @@ export default function ToDoListPage() {
             <section
             className="z-2 flex flex-col justify-center items-center w-full">
               <p
-              className="text-2xl font-medium tracking-wider text-center mb-10">
+              className="text-2xl font-medium tracking-wider text-center mb-10 animate-fade-in-down">
                 { toDoList.title } <br />
                 <span
                 className="text-lg font-light tracking-normal">
@@ -142,7 +147,7 @@ export default function ToDoListPage() {
               </p>
 
               <section
-              className="w-full rounded-md bg-neutral-900 flex justify-center items-center p-4 max-w-3xl my-1 gap-3 mb-10">
+              className="w-full rounded-md bg-neutral-900 flex justify-center items-center p-4 max-w-3xl my-1 gap-3 mb-10 animate-fade-in-up">
                 <button
                 className={`aspect-square w-7 flex items-center justify-center rounded-full border border-neutral-700 cursor-pointer duration-200 hover:border-neutral-600 ${taskCompleted && "bg-main"}`}
                 type="button"
@@ -207,20 +212,19 @@ export default function ToDoListPage() {
                 tasks && tasks.length > 0 && tasks.map((task: Task, index: number) => 
                   <section
                   key={index}
-                  className="w-full rounded-md bg-neutral-900 flex justify-center items-center p-4 max-w-3xl my-1 gap-3 border border-transparent duration-300 hover:border-main hover:-translate-y-1">
-                    <button
-                    className={`aspect-square w-7 flex items-center justify-center rounded-full border border-neutral-700 cursor-pointer duration-200 hover:border-neutral-600 ${task.isCompleted && "bg-main"}`}
-                    type="button"
-                    onClick={() => {
-                      setTasks(prev => 
-                        prev?.map((prev_task, i) => 
-                          i === index ? {
-                            ...prev_task,
-                            isCompleted: (prev_task.isCompleted ? false : true)
-                          } : prev_task
-                        )
+                  className="w-full rounded-md bg-neutral-900 flex justify-center items-center p-4 max-w-3xl my-1 gap-3 border border-transparent duration-300 hover:border-main hover:-translate-y-1 cursor-pointer animate-fade-in-up"
+                  onClick={() => {
+                    setTasks(prev => 
+                      prev?.map((prev_task, i) => 
+                        i === index ? {
+                          ...prev_task,
+                          isCompleted: (prev_task.isCompleted ? false : true)
+                        } : prev_task
                       )
-                    }}>
+                    )
+                  }}>
+                    <div
+                    className={`aspect-square w-7 h-7 flex items-center justify-center rounded-full border border-neutral-700 cursor-pointer duration-200 hover:border-neutral-600 ${task.isCompleted && "bg-main"}`}>
                       {
                         task.isCompleted && (
                           <IconCheck
@@ -230,22 +234,38 @@ export default function ToDoListPage() {
                           className="animate-fade-in animate-duration-200" />
                         )
                       }
-                    </button>
+                    </div>
 
                     <p
                     className={`w-full outline-none duration-200 ${task.isCompleted ? "line-through text-text/60" : "text-text"}`}>
                       { task.title }
                     </p>
+
+                    <button
+                    type="button"
+                    className="ml-auto w-7 h-7 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.nativeEvent.stopPropagation();
+
+                      setTasks( prev => 
+                        prev?.filter((_, i) => i !== index)
+                      );
+                    }}>
+                      <IconTrash
+                      color="red"
+                      size={22}
+                      stroke={1.5} />
+                    </button>
                   </section>
                 )
               }
 
               <button
               type="button"
-              className="w-30 p-2 bg-main rounded-xl cursor-pointer duration-300 hover:bg-main/80 hover:-translate-y-1"
-              onClick={() => {
-                
-              }}>
+              className={`w-30 p-2 bg-main rounded-xl cursor-pointer duration-300 hover:bg-main/80 hover:-translate-y-1 mt-10 disabled:grayscale hover:disabled:bg-main hover:disabled:translate-y-0 animate-fade-in-up ${tasks === initialTasks ? "disabled:cursor-not-allowed" : "disabled:cursor-wait"}`}
+              onClick={handleSaveToDoList}
+              disabled={isLoading || tasks === initialTasks}>
                 Save
               </button>
             </section>

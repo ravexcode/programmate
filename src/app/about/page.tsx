@@ -87,7 +87,7 @@ export default function AboutPage(){
             <FeaturesCard
             title="To Do list"
             description="A way to get order in your projects"
-            image_url="/images/dashboard.webp" />
+            image_url="/images/todo.webp" />
             
             <FeaturesCard
             title="Ticket creator"
@@ -97,27 +97,27 @@ export default function AboutPage(){
             <FeaturesCard
             title="ERD Creator Tool"
             description="More organized DB diagrams"
-            image_url="/images/erd.webp" />
+            image_url="/images/inconstruction.webp" />
             
             <FeaturesCard
             title="JSON Preview"
             description="Looking the JSON data in interface"
-            image_url="/images/dashboard.webp" />
+            image_url="/images/inconstruction.webp" />
             
             <FeaturesCard
             title="Chat IRT"
             description="For you and your team"
-            image_url="/images/dashboard.webp" />
+            image_url="/images/inconstruction.webp" />
             
             <FeaturesCard
             title="Kanban board"
             description="Organize your workflow"
-            image_url="/images/dashboard.webp" />
+            image_url="/images/inconstruction.webp" />
             
             <FeaturesCard
             title="Team callendar"
             description="For reunions and more!"
-            image_url="/images/dashboard.webp" />
+            image_url="/images/inconstruction.webp" />
 
           </article>
         </section>

@@ -15,3 +15,4 @@ A continuación verás los tipos de versiones de la app
   8. Module uploaded: Indica la implementación de modulos de npm.
   9. Settings update: Actualización de configuración desde next.config.ts hasta package.json.
   10. Dev update: Cambios en el entorno de desarollo.
+  11. Page finished: Página terminada al 100%

@@ -82,7 +82,7 @@ export async function PUT(req: NextRequest) {
 
     //Verifies if data is inserted
     if(
-      (!content || !tasks || tasks.length < 1) ||
+      (!content && (!tasks || tasks.length < 1)) ||
       list_index === undefined ||
       list_index === null
     ) return Handlers.badRequestErrorHandler();
