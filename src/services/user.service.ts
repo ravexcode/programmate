@@ -1,5 +1,5 @@
-//Next imports
-import { deleteCookie, getCookie } from "cookies-next/client";
+//Hooks imports
+import { useDeleteToken } from "@/hooks/useCookies";
 
 //Types imports
 import { UserData } from "@/types/user.types";
@@ -22,11 +22,13 @@ export default async function UpdateUserData(token: string) {
   if(res.status !== 200) {
     //If there's an error
     //Deletes token auth
-    deleteCookie("token");
+    useDeleteToken();
     //Deletes cache
-    localStorage.clear();
+    window.localStorage.clear();
     //Returns to log in page
     window.location.href = "/auth/login";
+
+    return;
   }
 
   //Plan default
@@ -74,7 +76,7 @@ export default async function UpdateUserData(token: string) {
   }
 
   //Saves in cache
-  localStorage.setItem("user", JSON.stringify(user));
+  window.localStorage.setItem("user", JSON.stringify(user));
   //Returns as user
   return user;
 }

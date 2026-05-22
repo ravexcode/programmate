@@ -46,7 +46,7 @@ export default function RegisterPage() {
   const [ confirm, setConfirm ] = useState<string>("");
 
   //Form submit handler
-  const handleSubmit = async(e: any) => {
+  const handleSubmit = async(e: React.SubmitEvent<HTMLFormElement>) => {
     //Prevents reloads
     e.preventDefault();
     //Turns off the form
@@ -122,9 +122,9 @@ export default function RegisterPage() {
           </Link>
 
           <AuthForm
-          onSubmit={(e: any) => { handleSubmit(e) }}
+          onSubmit={(e) => { handleSubmit(e) }}
           title="Get started!"
-          sumbitText="Sign up"
+          submitText="Sign up"
           disponible={isFormDisponible ? false : true}>
 
             <div

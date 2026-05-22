@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v33.1:**
+> Bugfix moderada
+  1. Arreglo de tipado en authforms. 🛠️
+  2. Arreglo de configuración en next.config.ts. ⚙️
+  3. Arreglo de returns en user service y auth endpoint. 🛠️
+
 - **Indev v33.0:**
 > Page finished, bugfix leve
   1. Página de todo terminada. 🚀

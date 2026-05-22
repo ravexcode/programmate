@@ -32,8 +32,7 @@ export async function POST(req: NextRequest) {
       message: "Logged in from Supabase successfully",
       token: data.session?.access_token
     });
-
   } catch(e: unknown) {
-    serverErrorHandler(e);
+    return serverErrorHandler(e);
   }
 }

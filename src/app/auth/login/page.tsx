@@ -34,7 +34,7 @@ export default function LogInPage() {
   const [ password, setPassword ] = useState<string>("");
 
   //Form submit handler
-  const handleSubmit = async(e: any) => {
+  const handleSubmit = async(e: React.SubmitEvent<HTMLFormElement>) => {
     //Prevents reloads
     e.preventDefault();
     //Turns off the form
@@ -97,9 +97,9 @@ export default function LogInPage() {
             </Link>
 
             <AuthForm
-            onSubmit={(e: any) => { handleSubmit(e) }}
+            onSubmit={(e) => { handleSubmit(e) }}
             title="Welcome back!"
-            sumbitText="Sign in"
+            submitText="Sign in"
             disponible={isFormDisponible ? false : true}>
 
               <div

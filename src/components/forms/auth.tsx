@@ -1,4 +1,13 @@
-export default function AuthForm(props: any){
+interface Props {
+  onSubmit: (e: React.SubmitEvent<HTMLFormElement>) => void;
+  ref?: React.Ref<HTMLFormElement>;
+  title: string;
+  children: React.ReactNode;
+  disponible: boolean;
+  submitText: string;
+}
+
+export default function AuthForm(props: Props){
   return (
     <form
     className="flex flex-col justify-start items-center px-6 py-3 max-w-120 text-text w-full z-2 animate-fade-in-up overflow-hidden"
@@ -18,11 +27,8 @@ export default function AuthForm(props: any){
       type="submit"
       className="w-full py-2 rounded-full tracking-wider font-medium text-lg bg-main cursor-pointer duration-300 hover:brightness-120 hover:-translate-y-0.5 disabled:hover:translate-y-0 active:scale-95 disabled:hover:brightness-100 disabled:active:scale-100 disabled:cursor-wait disabled:grayscale"
       disabled={props.disponible ? true : false}>
-        {props.sumbitText}
+        {props.submitText}
       </button>
-
-      <p
-      className="text-red-500 mb-2 mt-1">{props.message}</p>
     </form>
   )
 }

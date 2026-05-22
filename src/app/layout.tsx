@@ -8,8 +8,6 @@ export const metadata: Metadata = {
   description: "The aplication from programmers to programmers"
 };
 
-import { ViewTransition } from "react";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -21,10 +19,7 @@ export default function RootLayout({
     data-scroll-behavior="smooth">
       <link rel="shortcut icon" href="/logos/logo.svg" type="image/x-icon" />
       <body className="bg-black">
-        <ViewTransition
-        name="page">
         {children}
-        </ViewTransition>
       </body>
     </html>
   );
