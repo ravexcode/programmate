@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v34.0:**
+> New page
+  1. Página para ERD ya con avances creados por IA, pendientes de revisión. 🛠️
+
 - **Indev v33.1:**
 > Bugfix moderada
   1. Arreglo de tipado en authforms. 🛠️

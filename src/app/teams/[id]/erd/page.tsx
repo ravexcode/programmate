@@ -23,6 +23,7 @@ import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
 import SideBar from "@/components/ui/sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import { Icon } from "../page";
+import ColumnNode from "@/components/ui/column-node";
 
 //Services imports
 import UpdateUserData from "@/services/user.service";
@@ -34,6 +35,7 @@ import { useGetToken } from "@/hooks/useCookies";
 //Types imports
 import { type UserData } from "@/types/user.types";
 import Team, { ERDTable, ERDColumns, ERDConnections } from "@/types/team.types";
+import { TableNodeData } from "@/types/table.types";
 
 //React flow imports
 import {
@@ -41,8 +43,18 @@ import {
   BackgroundVariant,
   ReactFlow,
   type Node,
-  type Edge
+  type Edge,
+  useNodesState,
+  useEdgesState,
+  NodeTypes
 } from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import { TableContainerNode } from "@/components/ui/table-node";
+
+const nodeTypes: NodeTypes = {
+  tableContainer: TableContainerNode,
+  columnHandle: ColumnNode,
+};
 
 export default function Page(){
   //Next router data
@@ -60,8 +72,8 @@ export default function Page(){
   const [ expanded, setExpanded ] = useState<boolean>(false);
 
   //React flow states
-  const [ nodes, setNodes ] = useState<Array<Node>>([]);
-  const [ edges, setEdges ] = useState<Array<Edge>>([]);
+  //const [ nodes, setNodes ] = useState<Array<Node>>([]);
+  //const [ edges, setEdges ] = useState<Array<Edge>>([]);
 
   //Components
   const snackbar = useRef<SnackbarRef>(null);
@@ -84,7 +96,92 @@ export default function Page(){
     }
 
     fetchData();
-  }, [])
+  }, []);
+
+
+
+
+  
+  //Debug
+
+// Alturas calculadas a partir de las clases de Tailwind (h-9 = 36px)
+const ROW_HEIGHT = 36;
+const HEADER_HEIGHT = 38;
+
+const initialNodes: Node[] = [
+  // ==========================================
+  // TABLA: USERS
+  // ==========================================
+  {
+    id: 'users-table',
+    type: 'tableContainer',
+    position: { x: 100, y: 100 },
+    data: {
+      tableName: 'users',
+      columns: [
+        { name: 'id', type: 'INT', isPk: true },
+        { name: 'email', type: 'VARCHAR(255)' },
+      ],
+    } satisfies TableNodeData,
+  },
+  {
+    id: 'col-users-id',
+    type: 'columnHandle',
+    parentId: 'users-table',draggable: false,
+    extent: 'parent',
+    position: { x: 0, y: HEADER_HEIGHT + (ROW_HEIGHT * 0) },
+  },
+  {
+    id: 'col-users-email',
+    type: 'columnHandle',
+    parentId: 'users-table',
+    extent: 'parent',draggable: false,
+    position: { x: 0, y: HEADER_HEIGHT + (ROW_HEIGHT * 1) },
+  },
+
+  // ==========================================
+  // TABLA: ORDERS
+  // ==========================================
+  {
+    id: 'orders-table',
+    type: 'tableContainer',
+    position: { x: 550, y: 150 },
+    data: {
+      tableName: 'orders',
+      columns: [
+        { name: 'id', type: 'INT', isPk: true },
+        { name: 'user_id', type: 'INT' },
+      ],
+    } satisfies TableNodeData,
+  },
+  {
+    id: 'col-orders-id',
+    type: 'columnHandle',
+    parentId: 'orders-table',draggable: false,
+    extent: 'parent',
+    position: { x: 0, y: HEADER_HEIGHT + (ROW_HEIGHT * 0) },
+  },
+  {
+    id: 'col-orders-user_id',
+    type: 'columnHandle',
+    parentId: 'orders-table',draggable: false,
+    extent: 'parent',
+    position: { x: 0, y: HEADER_HEIGHT + (ROW_HEIGHT * 1) },
+  },
+];
+
+const initialEdges: Edge[] = [
+  {
+    id: 'edge-users-orders',
+    source: 'col-users-id',
+    target: 'col-orders-user_id',
+    className: 'stroke-amber-500 stroke-2', // Clases Tailwind para estilizar la línea
+  },
+];
+
+  //@ts-ignore
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   return (
     team && user ? (
@@ -184,6 +281,21 @@ export default function Page(){
             color="white"/>
           </Icon>
         </SideBar>
+
+        <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        nodeTypes={nodeTypes}
+        fitView
+        colorMode="dark"
+        draggable
+        nodesDraggable>
+          <Background
+          variant={BackgroundVariant.Dots} />
+        </ReactFlow>
+        
       </div>
     ) : (
       <LoadingDashboard />
