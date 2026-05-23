@@ -60,6 +60,8 @@ export default function ToDoListPage() {
       //Sets data if there's no data cached
       const user_data = await UpdateUserData(token);
 
+      if(!user_data) return router.push("/");
+
       //Sets the value of state
       setUser(user_data);
 
@@ -118,7 +120,7 @@ export default function ToDoListPage() {
   return (
     user && toDoList ? (
       <div
-      className="w-screen min-h-screen bg-background grid grid-cols-[auto_1fr] text-text">
+      className="min-h-screen bg-background grid grid-cols-[auto_1fr] text-text">
           <SideBar
           email={user?.email}
           avatar={user.avatar_url}
@@ -129,7 +131,7 @@ export default function ToDoListPage() {
           ref={snackBar}/>
 
           <main
-          className="flex flex-col w-full min-h-screen items-center justify-start p-10 relative">
+          className="flex flex-col w-full min-h-screen items-center justify-start relative">
             <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
               <div className="absolute left-1/2 top-1/2 aspect-square block w-200 -translate-x-1/2 -translate-y-1/2 rounded-full bg-main/15 blur-3xl animate-pulse" />
             </div>
@@ -138,7 +140,7 @@ export default function ToDoListPage() {
             <section
             className="z-2 flex flex-col justify-center items-center w-full">
               <p
-              className="text-2xl font-medium tracking-wider text-center mb-10 animate-fade-in-down">
+              className="text-2xl font-medium tracking-wider text-center my-10 animate-fade-in-down">
                 { toDoList.title } <br />
                 <span
                 className="text-lg font-light tracking-normal">
@@ -171,7 +173,7 @@ export default function ToDoListPage() {
                 onChange={(e) => {
                   setTaskName(e.target.value)
                 }}
-                placeholder="e.g. Refactor the auth api..."
+                placeholder="e.g. Refactor App API..."
                 className={`w-full outline-none duration-200 ${taskCompleted ? "line-through text-text/60" : "text-text"}`}
                 onKeyDown={(e) => {
                   if(e.key === "Enter" && taskName && taskName.length > 0) {
@@ -263,7 +265,7 @@ export default function ToDoListPage() {
 
               <button
               type="button"
-              className={`w-30 p-2 bg-main rounded-xl cursor-pointer duration-300 hover:bg-main/80 hover:-translate-y-1 mt-10 disabled:grayscale hover:disabled:bg-main hover:disabled:translate-y-0 animate-fade-in-up ${tasks === initialTasks ? "disabled:cursor-not-allowed" : "disabled:cursor-wait"}`}
+              className={`w-30 p-2 bg-main rounded-xl cursor-pointer duration-300 hover:bg-main/80 hover:-translate-y-1 mt-10 disabled:grayscale hover:disabled:bg-main hover:disabled:translate-y-0 animate-fade-in-up mb-10 ${tasks === initialTasks ? "disabled:cursor-not-allowed" : "disabled:cursor-wait"}`}
               onClick={handleSaveToDoList}
               disabled={isLoading || tasks === initialTasks}>
                 Save

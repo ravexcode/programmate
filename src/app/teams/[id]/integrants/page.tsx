@@ -89,7 +89,7 @@ export default function Page(){
 
   useEffect(() => {
     async function getData() {
-      let user_value : UserData;
+      let user_value : UserData | undefined;
       const token = await getCookie("token");
 
       if(!token) return window.location.href = "/auth/login";

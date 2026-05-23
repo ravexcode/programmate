@@ -11,7 +11,13 @@ import { useState, KeyboardEvent, useRef, useEffect } from "react";
 import { useGetToken } from "@/hooks/useCookies";
 import UpdateUserData from "@/services/user.service";
 
+//Next import
+import { useRouter } from "next/navigation";
+
 export default function GetStarted() {
+  //Router statement
+  const router = useRouter();
+
   //State handlers
   const [screenSelected, setScreenSelected] = useState<number>(1);
   const [newProjectName, setNewProjectName] = useState<string>("");
@@ -42,6 +48,8 @@ export default function GetStarted() {
       if(!token) return window.location.href = "/auth/login";
 
       const user = await UpdateUserData(token);
+
+      if(!user) return router.push("/");
       
       //Created at to Date
       const created_at = new Date(user.created_at!);

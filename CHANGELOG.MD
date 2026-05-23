@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v34.1:**
+> Dev update, Settings update, Bugfix leve
+  1. Avances en el ERD Tool creator
+  2. Pnpm integrado completamente
+  3. Solución de error de tipado con los datos del usuario
+
 - **Indev v34.0:**
 > New page
   1. Página para ERD ya con avances creados por IA, pendientes de revisión. 🛠️

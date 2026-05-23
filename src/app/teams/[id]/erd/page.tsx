@@ -11,10 +11,15 @@ import { useParams, useRouter } from "next/navigation";
 import {
   IconCalendar,
   IconDatabase,
+  IconDatabasePlus,
   IconEye,
+  IconEyeOff,
   IconFolder,
+  IconHandStop,
   IconLayoutKanban,
   IconMessage,
+  IconMouse,
+  IconTrash,
   IconUsers
 } from "@tabler/icons-react";
 
@@ -24,6 +29,7 @@ import SideBar from "@/components/ui/sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import { Icon } from "../page";
 import ColumnNode from "@/components/ui/column-node";
+import ButtonControl from "@/components/ui/button-control";
 
 //Services imports
 import UpdateUserData from "@/services/user.service";
@@ -34,8 +40,7 @@ import { useGetToken } from "@/hooks/useCookies";
 
 //Types imports
 import { type UserData } from "@/types/user.types";
-import Team, { ERDTable, ERDColumns, ERDConnections } from "@/types/team.types";
-import { TableNodeData } from "@/types/table.types";
+import Team from "@/types/team.types";
 
 //React flow imports
 import {
@@ -50,11 +55,22 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { TableContainerNode } from "@/components/ui/table-node";
+import CreatorForm from "@/components/forms/creator-form";
+import CreatorInput from "@/components/forms/creator-inputs";
 
 const nodeTypes: NodeTypes = {
   tableContainer: TableContainerNode,
   columnHandle: ColumnNode,
 };
+
+type Row = {
+  value: string;
+  type: string;
+  is_pk?: boolean;
+}
+
+const ROW_HEIGHT = 36;
+const HEADER_HEIGHT = 38;
 
 export default function Page(){
   //Next router data
@@ -70,13 +86,24 @@ export default function Page(){
   const [ team, setTeam ] = useState<Team>();
   //Sidebar expanded
   const [ expanded, setExpanded ] = useState<boolean>(false);
+  //React flow draggable
+  const [ cursor, setCursor ] = useState<"drag" | "mouse" | "create" | "edit">("drag");
 
   //React flow states
-  //const [ nodes, setNodes ] = useState<Array<Node>>([]);
-  //const [ edges, setEdges ] = useState<Array<Edge>>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  //Creator form states
+  //Title
+  const [ newName, setNewName ] = useState<string>("");
+  //Title
+  const [ newRows, setNewRows ] = useState<Array<Row>>([]);
 
   //Components
+  //Snackbar
   const snackbar = useRef<SnackbarRef>(null);
+  //Creator form
+  const form = useRef(null);
 
   //Data fetching
   useEffect(() => {
@@ -98,97 +125,163 @@ export default function Page(){
     fetchData();
   }, []);
 
+  const toggleCreatorForm = () => {
+    if(!form.current) return;
 
+    const current : HTMLElement = form.current;
 
+    if(current.classList.contains("hidden")) {
+      current.classList.remove("hidden");
+      current.classList.add("flex");
+      setCursor("create");
 
-  
-  //Debug
+      return;
+    }
+    
+    current.classList.add("hidden");
+    current.classList.remove("flex");
+    setCursor("mouse");
 
-// Alturas calculadas a partir de las clases de Tailwind (h-9 = 36px)
-const ROW_HEIGHT = 36;
-const HEADER_HEIGHT = 38;
+    return;
+  };
 
-const initialNodes: Node[] = [
-  // ==========================================
-  // TABLA: USERS
-  // ==========================================
-  {
-    id: 'users-table',
-    type: 'tableContainer',
-    position: { x: 100, y: 100 },
-    data: {
-      tableName: 'users',
-      columns: [
-        { name: 'id', type: 'INT', isPk: true },
-        { name: 'email', type: 'VARCHAR(255)' },
-      ],
-    } satisfies TableNodeData,
-  },
-  {
-    id: 'col-users-id',
-    type: 'columnHandle',
-    parentId: 'users-table',draggable: false,
-    extent: 'parent',
-    position: { x: 0, y: HEADER_HEIGHT + (ROW_HEIGHT * 0) },
-  },
-  {
-    id: 'col-users-email',
-    type: 'columnHandle',
-    parentId: 'users-table',
-    extent: 'parent',draggable: false,
-    position: { x: 0, y: HEADER_HEIGHT + (ROW_HEIGHT * 1) },
-  },
+  const handleUpdateField = (
+    index: number,
+    value?: string,
+    type?: string
+  ) => {
+    //Duplicate the value
+    let rows_duplied = [... newRows];
 
-  // ==========================================
-  // TABLA: ORDERS
-  // ==========================================
-  {
-    id: 'orders-table',
-    type: 'tableContainer',
-    position: { x: 550, y: 150 },
-    data: {
-      tableName: 'orders',
-      columns: [
-        { name: 'id', type: 'INT', isPk: true },
-        { name: 'user_id', type: 'INT' },
-      ],
-    } satisfies TableNodeData,
-  },
-  {
-    id: 'col-orders-id',
-    type: 'columnHandle',
-    parentId: 'orders-table',draggable: false,
-    extent: 'parent',
-    position: { x: 0, y: HEADER_HEIGHT + (ROW_HEIGHT * 0) },
-  },
-  {
-    id: 'col-orders-user_id',
-    type: 'columnHandle',
-    parentId: 'orders-table',draggable: false,
-    extent: 'parent',
-    position: { x: 0, y: HEADER_HEIGHT + (ROW_HEIGHT * 1) },
-  },
-];
+    //Sets value
+    rows_duplied[index].value = value || "";
 
-const initialEdges: Edge[] = [
-  {
-    id: 'edge-users-orders',
-    source: 'col-users-id',
-    target: 'col-orders-user_id',
-    className: 'stroke-amber-500 stroke-2', // Clases Tailwind para estilizar la línea
-  },
-];
+    //Sets type
+    rows_duplied[index].type = type || "";
 
-  //@ts-ignore
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    //Updates
+    setNewRows(rows_duplied);
+  }
 
   return (
     team && user ? (
       <div
-      className="bg-background grid grid-cols-[auto_1fr] min-h-screen w-screen text-text">
-        
+      className="bg-background grid grid-cols-[auto_1fr] min-h-screen w-screen text-text overflow-hidden">
         <SnackBar ref={snackbar} />
+
+        <div
+        className="w-screen h-screen fixed flex items-start justify-center backdrop-brightness-50 backdrop-blur-xs z-10 overflow-hidden"
+        ref={form}
+        onClick={toggleCreatorForm}>
+
+          <CreatorForm
+          title="Create a new table"
+          action={() => {}}
+          actionIsDisabled={!newName || !newRows || newRows.length < 1}
+          hideAction={toggleCreatorForm}>
+
+            <CreatorInput
+            onChange={(e) => {
+              setNewName(e.target.value);
+            }}
+            label="Set table name"
+            value={newName}
+            placeholder="e.g. Users" />
+
+            {
+              newRows && newRows.length > 0 && newRows.map((row, index) =>
+                <section
+                className="flex flex-col gap-1 w-full my-2"
+                key={index}>
+
+                  <div
+                  className="flex justify-between items-center text-sm mb-2">
+                    <p
+                    className="tracking-wide">
+                      {
+                        newRows[index].value ? newRows[index].value.slice(0, 1).toUpperCase() +
+                        newRows[index].value.slice(1, 10) +
+                        ( newRows[index].value.length > 10 ? "..." : "" )
+                        + "'s " :
+                        "Undefined's "
+                      }
+                      row
+                    </p>
+
+                    <button
+                    type="button"
+                    onClick={() => {
+                      setNewRows(prev => 
+                        prev.filter((_, _index) =>
+                          _index !== index
+                        )
+                      )
+                    }}
+                    className="cursor-pointer">
+                      <IconTrash
+                      size={18}
+                      stroke={2}
+                      color="red" />
+                    </button>
+                  </div>
+
+                  <div
+                  className="grid grid-cols-2 gap-3 w-full">
+
+                    <div
+                    className="flex flex-col gap-1 text-sm">
+                      <label
+                      className="uppercase text-xs font-medium tracking-wide">
+                        Value
+                      </label>
+                      <input
+                      placeholder="e.g. email"
+                      className="rounded-md w-full border border-transparent duration-200 outline-none focus:border-main bg-neutral-800 p-2"
+                      value={newRows[index].value || ""}
+                      onChange={(e) => {
+                        handleUpdateField(index, e.target.value, newRows[index].type);
+                      }} />
+                    </div>
+
+                    <div
+                    className="flex flex-col gap-1 text-sm">
+                      <label
+                      className="uppercase text-xs font-medium tracking-wide">
+                        Type
+                      </label>
+                      <input
+                      placeholder="e.g. VARCHAR"
+                      className="rounded-md w-full border border-transparent duration-200 outline-none focus:border-main bg-neutral-800 p-2"
+                      value={newRows[index].type || ""}
+                      onChange={(e) => {
+                        handleUpdateField(index, newRows[index].value, e.target.value);
+                      }} />
+                    </div>
+
+                  </div>
+
+                </section>
+              ) 
+            }
+
+            <button
+            className="text-sm my-3 p-2 w-full rounded-md bg-neutral-800 opacity-50 border border-dashed border-neutral-600 cursor-pointer duration-400 hover:opacity-80"
+            type="button"
+            onClick={() =>{
+              setNewRows(prev => [
+                ...prev || [],
+                {
+                  type: "",
+                  value: ""
+                }
+              ])
+            }}>
+              Add a new row +
+            </button>
+
+          </CreatorForm>
+
+        </div>
 
         <SideBar
         email={user?.email!}
@@ -290,11 +383,47 @@ const initialEdges: Edge[] = [
         nodeTypes={nodeTypes}
         fitView
         colorMode="dark"
-        draggable
-        nodesDraggable>
+        panOnDrag={cursor === "drag"}
+        zoomOnScroll={cursor === "drag"}
+        className="relative">
           <Background
-          variant={BackgroundVariant.Dots} />
+          variant={BackgroundVariant.Dots}
+          className="brightness-75" />
         </ReactFlow>
+
+        <section
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-md flex gap-3 justify-center items-center bg-neutral-900 duration-500 border border-neutral-700 animate-fade-in-up">
+          {/* Mouse toggler */}
+          <ButtonControl
+          content="Set mouse"
+          action={() => {
+            setCursor("mouse");
+          }}
+          active={cursor === "mouse"}>
+            <IconMouse
+            size={20} />
+          </ButtonControl>
+
+          {/* Drag toggler */}
+          <ButtonControl
+          content="Toggle drag"
+          action={() => {
+            setCursor(prev => prev === "drag" ? "mouse" : "drag");
+          }}
+          active={cursor === "drag"}>
+            <IconHandStop
+            size={20} />
+          </ButtonControl>
+
+          {/* Table creator */}
+          <ButtonControl
+          content="Create new table"
+          action={toggleCreatorForm}
+          active={cursor === "create"}>
+            <IconDatabasePlus
+            size={20} />
+          </ButtonControl>
+        </section>
         
       </div>
     ) : (

@@ -263,7 +263,7 @@ export default function Dashboard(){
       //Updates the user's data
       const user_data = await UpdateUserData(token!);
       //Created at to Date
-      const created_at = new Date(user_data.created_at!);
+      const created_at = new Date(user_data!.created_at!);
       //Date now
       const now = new Date();
 
