@@ -16,3 +16,5 @@ A continuación verás los tipos de versiones de la app
   9. Settings update: Actualización de configuración desde next.config.ts hasta package.json.
   10. Dev update: Cambios en el entorno de desarollo.
   11. Page finished: Página terminada al 100%
+  12. Page update: Actualización de páginas
+  13. Page improvement: Mejora de páginas

@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v34.2:**
+> Page improvement
+  1. Ahora se pueden crear tablas. 🚀
+
 - **Indev v34.1:**
 > Dev update, Settings update, Bugfix leve
   1. Avances en el ERD Tool creator

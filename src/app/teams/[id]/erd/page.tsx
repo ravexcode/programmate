@@ -11,6 +11,8 @@ import { useParams, useRouter } from "next/navigation";
 import {
   IconCalendar,
   IconDatabase,
+  IconDatabaseEdit,
+  IconDatabaseOff,
   IconDatabasePlus,
   IconEye,
   IconEyeOff,
@@ -41,6 +43,7 @@ import { useGetToken } from "@/hooks/useCookies";
 //Types imports
 import { type UserData } from "@/types/user.types";
 import Team from "@/types/team.types";
+import { RowData, ParentNode } from "@/types/table.types";
 
 //React flow imports
 import {
@@ -63,12 +66,6 @@ const nodeTypes: NodeTypes = {
   columnHandle: ColumnNode,
 };
 
-type Row = {
-  value: string;
-  type: string;
-  is_pk?: boolean;
-}
-
 const ROW_HEIGHT = 36;
 const HEADER_HEIGHT = 38;
 
@@ -90,20 +87,22 @@ export default function Page(){
   const [ cursor, setCursor ] = useState<"drag" | "mouse" | "create" | "edit">("drag");
 
   //React flow states
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   //Creator form states
   //Title
   const [ newName, setNewName ] = useState<string>("");
   //Title
-  const [ newRows, setNewRows ] = useState<Array<Row>>([]);
+  const [ newRows, setNewRows ] = useState<Array<RowData>>([]);
 
   //Components
   //Snackbar
   const snackbar = useRef<SnackbarRef>(null);
-  //Creator form
+  //Table creator
   const form = useRef(null);
+  //Table editor
+  const editor = useRef(null);
 
   //Data fetching
   useEffect(() => {
@@ -145,6 +144,26 @@ export default function Page(){
     return;
   };
 
+  const toggleEditor = () => {
+    if(!editor.current) return;
+
+    const current : HTMLElement = editor.current;
+
+    if(current.classList.contains("hidden")) {
+      current.classList.remove("hidden");
+      current.classList.add("flex");
+      setCursor("edit");
+
+      return;
+    }
+    
+    current.classList.add("hidden");
+    current.classList.remove("flex");
+    setCursor("mouse");
+
+    return;
+  };
+
   const handleUpdateField = (
     index: number,
     value?: string,
@@ -154,7 +173,7 @@ export default function Page(){
     let rows_duplied = [... newRows];
 
     //Sets value
-    rows_duplied[index].value = value || "";
+    rows_duplied[index].name = value || "";
 
     //Sets type
     rows_duplied[index].type = type || "";
@@ -163,20 +182,74 @@ export default function Page(){
     setNewRows(rows_duplied);
   }
 
+  const createNewTable = (e: React.SubmitEvent) => {
+    e.preventDefault();
+
+    if(!newName || !newRows || newRows.length < 1) return;
+
+    //Nodes
+    const table_nodes : Array<Node> = [];
+
+    //Creates the table
+    const newTable : ParentNode = {
+      id: `${newName}-table`,
+      type: "tableContainer",
+      position: {
+        x: 0,
+        y: 0
+      },
+      data: {
+        tableName: newName,
+        columns: newRows
+      }
+    }
+
+    table_nodes.push(newTable);
+
+    //Creates the nodes
+    for (let index = 0; index < newRows.length; index++) {
+      const newNode: Node = {
+        id: `col-${newName}-${newRows[index].name}`,
+        type: "columnHandle",
+        parentId: `${newName}-table`,
+        extent: "parent",
+        position: {
+          x: 0,
+          y: HEADER_HEIGHT + (ROW_HEIGHT * index)
+        },
+        draggable: false,
+        data: {}
+      }
+
+      table_nodes.push(newNode);
+    }
+
+    //Saves the nodes
+    setNodes((prevNodes) => [...prevNodes, ...table_nodes]);
+
+    //Clears the data
+    setNewRows([]);
+    setNewName("");
+    toggleCreatorForm();
+  }
+
   return (
     team && user ? (
       <div
       className="bg-background grid grid-cols-[auto_1fr] min-h-screen w-screen text-text overflow-hidden">
         <SnackBar ref={snackbar} />
 
+        {/* Table creator form */}
         <div
-        className="w-screen h-screen fixed flex items-start justify-center backdrop-brightness-50 backdrop-blur-xs z-10 overflow-hidden"
+        className="w-screen h-screen fixed hidden items-start justify-center backdrop-brightness-50 backdrop-blur-xs z-10 overflow-hidden animate-fade-in"
         ref={form}
         onClick={toggleCreatorForm}>
 
           <CreatorForm
           title="Create a new table"
-          action={() => {}}
+          action={(e) => {
+            createNewTable(e);
+          }}
           actionIsDisabled={!newName || !newRows || newRows.length < 1}
           hideAction={toggleCreatorForm}>
 
@@ -185,7 +258,7 @@ export default function Page(){
               setNewName(e.target.value);
             }}
             label="Set table name"
-            value={newName}
+            value={newName || ""}
             placeholder="e.g. Users" />
 
             {
@@ -199,11 +272,11 @@ export default function Page(){
                     <p
                     className="tracking-wide">
                       {
-                        newRows[index].value ? newRows[index].value.slice(0, 1).toUpperCase() +
-                        newRows[index].value.slice(1, 10) +
-                        ( newRows[index].value.length > 10 ? "..." : "" )
+                        newRows[index].name ? newRows[index].name.slice(0, 1).toUpperCase() +
+                        newRows[index].name.slice(1, 10) +
+                        ( newRows[index].name.length > 10 ? "..." : "" )
                         + "'s " :
-                        "Undefined's "
+                        "Undefined "
                       }
                       row
                     </p>
@@ -237,7 +310,7 @@ export default function Page(){
                       <input
                       placeholder="e.g. email"
                       className="rounded-md w-full border border-transparent duration-200 outline-none focus:border-main bg-neutral-800 p-2"
-                      value={newRows[index].value || ""}
+                      value={newRows[index].name || ""}
                       onChange={(e) => {
                         handleUpdateField(index, e.target.value, newRows[index].type);
                       }} />
@@ -254,7 +327,7 @@ export default function Page(){
                       className="rounded-md w-full border border-transparent duration-200 outline-none focus:border-main bg-neutral-800 p-2"
                       value={newRows[index].type || ""}
                       onChange={(e) => {
-                        handleUpdateField(index, newRows[index].value, e.target.value);
+                        handleUpdateField(index, newRows[index].name, e.target.value);
                       }} />
                     </div>
 
@@ -272,7 +345,8 @@ export default function Page(){
                 ...prev || [],
                 {
                   type: "",
-                  value: ""
+                  name: "",
+                  key: `${newRows.length + 1}-id`
                 }
               ])
             }}>
@@ -280,6 +354,52 @@ export default function Page(){
             </button>
 
           </CreatorForm>
+
+        </div>
+
+        {/* Table editor */}
+        <div
+        className="w-screen h-screen fixed hidden items-center justify-end backdrop-brightness-50 backdrop-blur-xs z-10 overflow-hidden animate-fade-in"
+        ref={editor}
+        onClick={toggleEditor}>
+
+          <section
+          className="h-full w-120 animate-fade-in-left bg-neutral-900"
+          onClick={(e) => {
+            e.nativeEvent.stopPropagation();
+            e.stopPropagation();
+          }}>
+            {
+              nodes && nodes.length > 0 ? (
+                <p> tables </p>
+              ) : (
+                <div
+                className="flex flex-col items-center justify-start py-10">
+                  <IconDatabaseOff
+                  size={50}
+                  stroke={1} />
+                  <p
+                  className="text-xl font-medium tracking-wide mt-2">
+                    You don't have tables yet
+                  </p>
+                  <p
+                  className="text-neutral-400">
+                    Create a new table for this database!
+                  </p>
+
+                  <button
+                  type="button"
+                  className="mt-4 rounded-lg bg-main py-2 px-6 duration-400 hover:bg-main/60 cursor-pointer"
+                  onClick={() => {
+                    toggleCreatorForm();
+                    toggleEditor();
+                  }}>
+                    Create a new one
+                  </button>
+                </div>
+              )
+            }
+          </section>
 
         </div>
 
@@ -391,8 +511,9 @@ export default function Page(){
           className="brightness-75" />
         </ReactFlow>
 
+        {/* Buttons controls */}
         <section
-        className="absolute bottom-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-md flex gap-3 justify-center items-center bg-neutral-900 duration-500 border border-neutral-700 animate-fade-in-up">
+        className="fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-md flex gap-3 justify-center items-center bg-neutral-900 duration-500 border border-neutral-700 animate-fade-in-up">
           {/* Mouse toggler */}
           <ButtonControl
           content="Set mouse"
@@ -423,6 +544,22 @@ export default function Page(){
             <IconDatabasePlus
             size={20} />
           </ButtonControl>
+
+          {/* Table editor */}
+          <ButtonControl
+          content="Edit tables"
+          action={toggleEditor}
+          active={cursor === "edit"}>
+            <IconDatabaseEdit
+            size={20} />
+          </ButtonControl>
+
+          {/* Save handler */}
+          <button
+          type="button"
+          className="h-10 w-30 rounded-lg bg-main cursor-pointer duration-400 hover:bg-main/60 font-medium tracking-wide" >
+            Save
+          </button>
         </section>
         
       </div>
