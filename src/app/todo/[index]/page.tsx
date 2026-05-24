@@ -120,7 +120,7 @@ export default function ToDoListPage() {
   return (
     user && toDoList ? (
       <div
-      className="min-h-screen bg-background grid grid-cols-[auto_1fr] text-text">
+      className="h-screen bg-background grid grid-cols-[auto_1fr] text-text overflow-hidden">
           <SideBar
           email={user?.email}
           avatar={user.avatar_url}
@@ -131,7 +131,7 @@ export default function ToDoListPage() {
           ref={snackBar}/>
 
           <main
-          className="flex flex-col w-full min-h-screen items-center justify-start relative">
+          className="flex flex-col w-full min-h-screen items-center justify-start relative overflow-auto">
             <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
               <div className="absolute left-1/2 top-1/2 aspect-square block w-200 -translate-x-1/2 -translate-y-1/2 rounded-full bg-main/15 blur-3xl animate-pulse" />
             </div>

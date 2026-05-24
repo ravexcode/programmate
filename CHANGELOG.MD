@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v34.3:**
+> New page, bugfix leve
+  1. Página de 404 creada
+  2. Arreglo de errores al crear tablas, proyectos, formularios
+
 - **Indev v34.2:**
 > Page improvement
   1. Ahora se pueden crear tablas. 🚀

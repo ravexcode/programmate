@@ -399,6 +399,18 @@ export default function Dashboard(){
         teams: [ ...(prev.teams ?? []), data.team ]
       } : prev);
 
+      //Sends invitations for integrants
+      if(found && found.length > 0) {
+        found.forEach(async( user ) => {
+          await sendRequest(
+            user.email,
+            data.team.id,
+            token!,
+            snackbarRef
+          );
+        })
+      }
+
       //Hides the form
       hideProjectContainer();
       //Change loading state
@@ -412,18 +424,6 @@ export default function Dashboard(){
       setProjectDescription("");
       setStatus("Backlog");
       setTags([]);
-
-      //Sends invitations for integrants
-      if(found && found.length > 0) {
-        found.forEach(async( user ) => {
-          await sendRequest(
-            user.email,
-            data.team.id,
-            token!,
-            snackbarRef
-          );
-        })
-      }
 
       //Returns success
       return;
@@ -762,14 +762,16 @@ export default function Dashboard(){
           label="Project name"
           placeholder="My project"
           value={projectName || ""}
-          onChange={(e) => setProjectName(e.target.value)}/>
+          onChange={(e) => setProjectName(e.target.value)}
+          required />
 
           <CreatorInput
           label="Project description"
           placeholder="Describe your project"
           value={projectDescription || ""}
           onChange={(e) => setProjectDescription(e.target.value)}
-          type="textarea"/>
+          type="textarea"
+          required />
 
           <div className="w-full">
           <label 
