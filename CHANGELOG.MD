@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v34.4:**
+> Page improvement
+  1. Ahora se pueden conectar las tablas. 🚀
+
 - **Indev v34.3:**
 > New page, bugfix leve
   1. Página de 404 creada

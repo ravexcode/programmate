@@ -2,7 +2,7 @@
 "use client";
 
 //React imports
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 
 //Next imports
 import { useParams, useRouter } from "next/navigation";
@@ -32,6 +32,9 @@ import LoadingDashboard from "@/components/screens/loading-screen";
 import { Icon } from "../page";
 import ColumnNode from "@/components/ui/column-node";
 import ButtonControl from "@/components/ui/button-control";
+import { TableContainerNode } from "@/components/ui/table-node";
+import CreatorForm from "@/components/forms/creator-form";
+import CreatorInput from "@/components/forms/creator-inputs";
 
 //Services imports
 import UpdateUserData from "@/services/user.service";
@@ -51,19 +54,26 @@ import {
   BackgroundVariant,
   ReactFlow,
   type Node,
+  type Connection,
   type Edge,
   useNodesState,
   useEdgesState,
-  NodeTypes
+  NodeTypes,
+  addEdge,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { TableContainerNode } from "@/components/ui/table-node";
-import CreatorForm from "@/components/forms/creator-form";
-import CreatorInput from "@/components/forms/creator-inputs";
 
+//Reactflow settings
+//Node types
 const nodeTypes: NodeTypes = {
   tableContainer: TableContainerNode,
   columnHandle: ColumnNode,
+};
+//Edges settings
+const defaultEdgeOptions = {
+  type: 'default',
+  animated: true,
+  className: 'stroke-amber-500 stroke-2',
 };
 
 const ROW_HEIGHT = 36;
@@ -85,10 +95,12 @@ export default function Page(){
   const [ expanded, setExpanded ] = useState<boolean>(false);
   //React flow draggable
   const [ cursor, setCursor ] = useState<"drag" | "mouse" | "create" | "edit">("drag");
+  //Save button loading
+  const [ isSaveLoading, setIsSaveLoading ] = useState<boolean>(false);
 
   //React flow states
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
   //Creator form states
   //Title
@@ -114,16 +126,22 @@ export default function Page(){
       const user_data = await UpdateUserData(token);
       setUser(user_data);
 
-      await searchTeamData(
+      const team_data : Team = await searchTeamData(
         snackbar,
         params,
         setTeam
       )
+
+      if(!team_data) return router.push("/dashboard");
+
+      setNodes(team_data.ERD || []);
+      setEdges(team_data.ERD_connections || []);
     }
 
     fetchData();
   }, []);
 
+  //Togglers
   const toggleCreatorForm = () => {
     if(!form.current) return;
 
@@ -164,6 +182,7 @@ export default function Page(){
     return;
   };
 
+  //Row field updater
   const handleUpdateField = (
     index: number,
     value?: string,
@@ -180,8 +199,9 @@ export default function Page(){
 
     //Updates
     setNewRows(rows_duplied);
-  }
+  };
 
+  //Table creator
   const createNewTable = (e: React.SubmitEvent) => {
     e.preventDefault();
 
@@ -231,6 +251,49 @@ export default function Page(){
     setNewRows([]);
     setNewName("");
     toggleCreatorForm();
+  }
+
+  //Connection handler
+  const onConnect = useCallback((connection: Connection) => {
+    setEdges((prevEdges) => 
+      addEdge(connection, prevEdges)
+    );
+  }, [setEdges]);
+
+  //Database handler
+  const saveERD = async() => {
+    setIsSaveLoading(true);
+
+    const token = useGetToken();
+
+    if(!token) return router.push("/auth/login");
+
+    const res = await fetch(
+      `/api/teams/${params.id}/erd`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+          "Authorization": token
+        },
+        body: JSON.stringify({
+          teamId: params.id,
+          connections: edges || [],
+          erd: nodes || []
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if(res.status !== 200) {
+      snackbar.current?.showSnackBar(data.message, true);
+      setIsSaveLoading(false);
+      return;
+    }
+
+    setIsSaveLoading(false);
+    return;
   }
 
   return (
@@ -364,14 +427,38 @@ export default function Page(){
         onClick={toggleEditor}>
 
           <section
-          className="h-full w-120 animate-fade-in-left bg-neutral-900"
+          className="h-full w-120 animate-fade-in-left bg-neutral-900 px-4"
           onClick={(e) => {
             e.nativeEvent.stopPropagation();
             e.stopPropagation();
           }}>
             {
-              nodes && nodes.length > 0 ? (
-                <p> tables </p>
+              nodes && nodes.length > 0 ? 
+                nodes.map((node: any, node_index) =>
+                  node.data && node.data.tableName && (
+                    <section
+                    key={node_index}
+                    className="w-full flex flex-col gap-2 my-6 bg-neutral-800 py-3 px-5 rounded-xl text-center">
+                      <div
+                      className="flex justify-between items-center">
+                        <p
+                        className="font-medium tracking-wider uppercase">
+                          {node.data.tableName}
+                        </p>
+
+                        <IconTrash
+                        size={20}
+                        color="red"
+                        className="cursor-pointer" />
+                      </div>
+
+                      {
+                        node.data.colums && node.data.colums.map((column: any, column_index: number) => {
+                          
+                        })
+                      }
+                    </section>
+                  )
               ) : (
                 <div
                 className="flex flex-col items-center justify-start py-10">
@@ -505,7 +592,8 @@ export default function Page(){
         colorMode="dark"
         panOnDrag={cursor === "drag"}
         zoomOnScroll={cursor === "drag"}
-        className="relative">
+        onConnect={onConnect}
+        defaultEdgeOptions={defaultEdgeOptions}>
           <Background
           variant={BackgroundVariant.Dots}
           className="brightness-75" />
@@ -557,7 +645,11 @@ export default function Page(){
           {/* Save handler */}
           <button
           type="button"
-          className="h-10 w-30 rounded-lg bg-main cursor-pointer duration-400 hover:bg-main/60 font-medium tracking-wide" >
+          className="h-10 w-30 rounded-lg bg-main cursor-pointer duration-400 hover:bg-main/60 font-medium tracking-wide disabled:grayscale disabled:hover:bg-main disabled:cursor-wait"
+          disabled={isSaveLoading}
+          onClick={async() => {
+            await saveERD();
+          }} >
             Save
           </button>
         </section>

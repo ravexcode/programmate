@@ -12,11 +12,11 @@ export function TableContainerNode({ data }: TableContainerNodeProps) {
       <table className="w-full">
         <tbody>
           {data.columns.map((col : any) => (
-            <tr key={col.name} className="h-9 border-b border-neutral-700 last:border-0 hover:bg-neutral-900 flex justify-between items-center px-4">
-              <td className="text-slate-300 lowercase">
+            <tr key={col.name} className="h-9 border-b border-neutral-700 last:border-0 hover:bg-neutral-900">
+              <td className="text-slate-300 lowercase pl-4">
                 {col.name}
               </td>
-              <td className="text-right text-xs text-neutral-500 font-mono uppercase">
+              <td className="text-right text-xs text-neutral-500 font-mono uppercase pr-4">
                 {col.type}
               </td>
             </tr>

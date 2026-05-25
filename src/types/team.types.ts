@@ -1,3 +1,8 @@
+import {
+  type Node,
+  type Edge
+} from "@xyflow/react"
+
 export interface Ticket {
   creator: string | null; //Username
   to: string; //Email
@@ -25,29 +30,6 @@ export interface ChatMessage {
   isEdited?: boolean;
   reactions?: Array<string>;
   status?: "sending" | "sent" | "error";
-}
-
-export interface ERDColumns {
-  id: string;
-  name: string;
-  type: string;
-
-  primary?: boolean;
-  foreign?: boolean;
-  nullable?: boolean;
-};
-
-export interface ERDTable {
-  id: string;
-  name: string;
-  description?: string;
-  content: Array<ERDColumns>
-}
-
-export interface ERDConnections {
-  c_id: string;
-  connector: string;
-  connected: string;
 }
 
 export interface JSONNode {
@@ -91,7 +73,7 @@ export default interface Team {
   tickets?: Array<Ticket>
   calendar?: string;
   created_at: string;
-  ERD?: Array<ERDTable>;
-  ERD_connections?: Array<ERDConnections>;
+  ERD?: Node[];
+  ERD_connections?: Edge[];
   json_views: Array<JSON_views>;
 }
