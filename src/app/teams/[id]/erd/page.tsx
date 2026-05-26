@@ -12,6 +12,7 @@ import {
   IconCalendar,
   IconDatabase,
   IconDatabaseEdit,
+  IconDatabaseMinus,
   IconDatabaseOff,
   IconDatabasePlus,
   IconEye,
@@ -76,6 +77,12 @@ const defaultEdgeOptions = {
   className: 'stroke-amber-500 stroke-2',
 };
 
+//Colums type
+export interface Column {
+  key: string;
+  name: string;
+  type: string;
+}
 const ROW_HEIGHT = 36;
 const HEADER_HEIGHT = 38;
 
@@ -106,7 +113,7 @@ export default function Page(){
   //Title
   const [ newName, setNewName ] = useState<string>("");
   //Title
-  const [ newRows, setNewRows ] = useState<Array<RowData>>([]);
+  const [ newRows, setNewRows ] = useState<Array<Column>>([]);
 
   //Components
   //Snackbar
@@ -209,6 +216,16 @@ export default function Page(){
 
     //Nodes
     const table_nodes : Array<Node> = [];
+    //Rows
+    let rows : Column[] = [];
+
+    //Asigns the key for all columns
+    for (let l_i = 0; l_i < newRows.length; l_i++) {
+      const row = newRows[l_i];
+      row.key = `row-${newName}-${l_i}`;
+
+      rows.push(row);
+    }
 
     //Creates the table
     const newTable : ParentNode = {
@@ -220,7 +237,7 @@ export default function Page(){
       },
       data: {
         tableName: newName,
-        columns: newRows
+        columns: rows
       }
     }
 
@@ -229,7 +246,7 @@ export default function Page(){
     //Creates the nodes
     for (let index = 0; index < newRows.length; index++) {
       const newNode: Node = {
-        id: `col-${newName}-${newRows[index].name}`,
+        id: `col-${newName}-${index + 1}`,
         type: "columnHandle",
         parentId: `${newName}-table`,
         extent: "parent",
@@ -295,6 +312,98 @@ export default function Page(){
     setIsSaveLoading(false);
     return;
   }
+
+  //Node adder
+  const addNewNode = (table : Node) => {
+    //Adds the row values
+    setNodes((prev) =>
+      prev.map((node) => {
+        if (node.id !== table.id) return node
+
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            columns: [
+              ...(node.data.columns as Column[]) || [], {
+                key: `row-${table.data.tableName}-${(table.data.columns as Column []).length + 1}`,
+                name: "",
+                type: ""
+              }
+            ]
+          }
+        }
+      })
+    );
+
+    //Adds the connector node
+    setNodes((prev) => [
+      ...prev || [],
+      {
+        id: `col-${table.data.tableName}-${(table.data.columns as Column[]).length + 1}`,
+        type: "columnHandle",
+        parentId: `${table.data.tableName}-table`,
+        extent: "parent",
+        position: {
+          x: 0,
+          y: HEADER_HEIGHT + (ROW_HEIGHT * (table.data.columns as Column[]).length)
+        },
+        draggable: false,
+        data: {}
+      }
+    ]);
+
+    return;
+  }
+
+  const removeColumn = (table: Node, column_index: number) => {
+    //Deletes node container
+    setNodes((prev) =>
+      prev.map((node) => {
+        if (node.id !== table.id) return node
+
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            columns: (node.data.columns as Column[]).filter((_, index) =>
+              index !== column_index
+            )
+          }
+        }
+      })
+    );
+
+    //Removes the connector node
+    setNodes((prev) => {
+        const filtered_nodes = prev.filter((_, index) => column_index !== index);
+
+        let rowIndex = 0;
+
+        return filtered_nodes.map((node) => {
+          if(node.parentId === `${table.data.tableName}-table` && node.type === "columnHandle") {
+            const updatedNode = {
+              ...node,
+              position: {
+                x: 0,
+                y: HEADER_HEIGHT + (ROW_HEIGHT * rowIndex)
+              }
+            };
+            rowIndex++;
+
+            return updatedNode;
+          }
+
+          return node;
+        })
+      }
+    );
+  }
+
+  //Tables filtered
+  const tableNodes = nodes.filter(
+    (node) => node.type === "tableContainer"
+  )
 
   return (
     team && user ? (
@@ -409,7 +518,7 @@ export default function Page(){
                 {
                   type: "",
                   name: "",
-                  key: `${newRows.length + 1}-id`
+                  key: ""
                 }
               ])
             }}>
@@ -427,39 +536,126 @@ export default function Page(){
         onClick={toggleEditor}>
 
           <section
-          className="h-full w-120 animate-fade-in-left bg-neutral-900 px-4"
+          className="h-full w-130 animate-fade-in-left bg-neutral-900 px-4"
           onClick={(e) => {
             e.nativeEvent.stopPropagation();
             e.stopPropagation();
           }}>
+
             {
-              nodes && nodes.length > 0 ? 
-                nodes.map((node: any, node_index) =>
-                  node.data && node.data.tableName && (
-                    <section
-                    key={node_index}
-                    className="w-full flex flex-col gap-2 my-6 bg-neutral-800 py-3 px-5 rounded-xl text-center">
+              tableNodes && tableNodes.length > 0 ? tableNodes.map((table, table_index) =>(
+                <section
+                key={table_index}
+                className="w-full rounded-lg bg-neutral-800 px-4 flex flex-col items-center justify-center py-4 my-5 gap-4" >
+                  <div
+                  className="flex justify-between items-center w-full">
+                    <p
+                    className="tracking-wide font-medium uppercase">
+                      { table.data.tableName as String }
+                    </p>
+
+                    <IconDatabaseMinus
+                    size={20}
+                    color="red" />
+                  </div>
+
+                  {
+                    table.data.columns as Column[] && (table.data.columns as Column[]).map((column: Column, column_index) =>
                       <div
-                      className="flex justify-between items-center">
-                        <p
-                        className="font-medium tracking-wider uppercase">
-                          {node.data.tableName}
-                        </p>
+                      className="flex gap-2 items-end justify-center"
+                      key={column_index}>
 
-                        <IconTrash
-                        size={20}
-                        color="red"
-                        className="cursor-pointer" />
+                        <div
+                        className="flex flex-col items-center justify-center gap-1">
+                          <label
+                          className="text-sm tracking-wide font-medium w-full text-start uppercase">
+                            Value
+                          </label>
+                          <input
+                          type="text"
+                          defaultValue={column.name}
+                          onChange={(e) => {
+                            setNodes((prev) =>
+                              prev.map((node) => {
+                                if (node.id !== table.id) return node
+
+                                return {
+                                  ...node,
+                                  data: {
+                                    ...node.data,
+                                    columns: (node.data.columns as Column[]).map((col) =>
+                                      col.key === column.key
+                                        ? {
+                                            ...col,
+                                            name: e.target.value
+                                          }
+                                        : col
+                                    )
+                                  }
+                                }
+                              })
+                            )
+                          }}
+                          className="bg-neutral-900/50 p-2 rounded-md outline-none border border-transparent duration-400 focus:border-main" />
+                        </div>
+                        
+                        <div
+                        className="flex flex-col items-center justify-center gap-1">
+                          <label
+                          className="text-sm tracking-wide font-medium w-full text-start uppercase">
+                            Type
+                          </label>
+                          <input
+                          type="text"
+                          defaultValue={column.type}
+                          onChange={(e) => {
+                            setNodes((prev) =>
+                              prev.map((node) => {
+                                if (node.id !== table.id) return node
+
+                                return {
+                                  ...node,
+                                  data: {
+                                    ...node.data,
+                                    columns: (node.data.columns as Column[]).map((col) =>
+                                      col.key === column.key
+                                        ? {
+                                            ...col,
+                                            type: e.target.value
+                                          }
+                                        : col
+                                    )
+                                  }
+                                }
+                              })
+                            )
+                          }}
+                          className="bg-neutral-900/50 p-2 rounded-md outline-none border border-transparent duration-400 focus:border-main" />
+                        </div>
+
+                        <button
+                        type="button"
+                        className="bg-neutral-900/50 flex items-center justify-center p-2 rounded-md cursor-pointer duration-400 border border-transparent outline-none hover:border-main focus:border-main"
+                        onClick={() => {
+                          removeColumn(table, column_index);
+                        }}>
+                          <IconTrash
+                          color="red" />
+                        </button>
                       </div>
+                    )
+                  }
 
-                      {
-                        node.data.colums && node.data.colums.map((column: any, column_index: number) => {
-                          
-                        })
-                      }
-                    </section>
-                  )
-              ) : (
+                  <button
+                  type="button"
+                  className="w-full rounded-xl opacity-60 bg-neutral-900 text-center p-2 border border-neutral-600 border-dashed cursor-pointer duration-300 hover:opacity-80"
+                  onClick={() => {
+                    addNewNode(table);
+                  }}>
+                    Add a new row
+                  </button>
+                </section>
+              )) : (
                 <div
                 className="flex flex-col items-center justify-start py-10">
                   <IconDatabaseOff

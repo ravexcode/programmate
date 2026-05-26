@@ -9,14 +9,15 @@ import {
   IconPencil,
   IconDotsVertical,
   IconReload, 
-  IconAssembly} from "@tabler/icons-react";
+  IconAssembly,
+  IconFolder} from "@tabler/icons-react";
 
 //React imports
 import { useEffect, useState, useRef, RefObject } from "react";
 import { useRouter } from "next/navigation";
 
 //Components imports
-import SideBar from "@/components/ui/sidebar";
+import SideBar,  { Icon } from "@/components/ui/sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import AIChat from "@/components/ui/ai-chat";
 import CreatorForm from "@/components/forms/creator-form";
@@ -49,7 +50,7 @@ interface ProjectCardProps {
 
 //Types imports
 import { UserData, UserBasic } from "@/types/user.types";
-import { IntegrantData } from "@/types/team.types";
+import Team, { IntegrantData } from "@/types/team.types";
 
 //Hooks imports
 import { getCached } from "@/hooks/cache.hook";
@@ -213,6 +214,8 @@ export default function Dashboard(){
   const [ selectedTeamData, setSelectedTeamData ] = useState<any>();
   //New status
   const [ newTeamStatus, setNewTeamStatus ] = useState<string>();
+  //Sidebar expanded
+  const [ expanded, setExpanded ] = useState<boolean>(false);
 
   //Containers
   //Project creator
@@ -568,7 +571,6 @@ export default function Dashboard(){
       <SnackBar
       ref={snackbarRef} />
 
-
       {/* Project editor form */}
       <div
       ref={project_edit_container}
@@ -744,9 +746,6 @@ export default function Dashboard(){
           </div>
         </form>
       </div>
-
-
-
 
       {/* Project creator form */}
       <div
@@ -991,10 +990,6 @@ export default function Dashboard(){
         </CreatorForm>
       </div>
 
-
-
-
-
       {/* Main container */}
       {
         user && user.email ? (
@@ -1003,7 +998,29 @@ export default function Dashboard(){
             email={user.email}
             plan={user.plan}
             avatar={user.avatar_url}
-            username={user.name}/>
+            username={user.name}
+            setExpanded={(isExpanded : boolean) => {
+              setExpanded(isExpanded === true ? false : true);
+            }}>
+              {
+                expanded && (
+                  <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
+                    Projects
+                  </span>
+                )
+              }
+
+              {
+                user.teams && user.teams.length > 0 && user.teams.map((team: Team) => 
+                  <Icon
+                  action={`/teams/${team.team_id}`}
+                  name={team.name}
+                  isDisplayed={expanded}>
+                    <></>
+                  </Icon>
+                )
+              }
+            </SideBar>
             <main className="relative flex flex-col h-screen overflow-y-auto px-4 md:px-8 animate-fade-in">
               {
                 user.plan && (
@@ -1075,7 +1092,7 @@ export default function Dashboard(){
 
                   <div className={user.teams && user.teams.length >= 1 ? "grid grid-cols-1 lg:grid-cols-2 gap-6" : "flex flex-col justify-center items-center"}>
                     {
-                      user.teams && user.teams.length >= 1 ? user.teams.map((team : any, index) => (
+                      user.teams && user.teams.length >= 1 ? user.teams.map((team : Team, index: number) => (
                         <ProjectCard
                         key={ index }
                         id={ team.team_id }
@@ -1090,7 +1107,7 @@ export default function Dashboard(){
                         } }
                         menuIndex={ openMenuIndex! }
                         status={team.status}
-                        tags={ team.tags }
+                        tags={ team.tags! }
                         deleteProjectHandler={async() => {
                           await deleteProject(team.team_id, index);
                         }}
@@ -1098,7 +1115,7 @@ export default function Dashboard(){
                           setEditTeamId(team.team_id);
                           setNewTeamName(team.name);
                           setNewTeamDescription(team.description);
-                          setNewTeamTags(team.tags);
+                          setNewTeamTags(team.tags!);
                           setNewTeamStatus(team.status);
                           setSelectedTeamData(team)
                           showEditProjectContainer();

@@ -12,7 +12,7 @@ import { getCached } from "@/hooks/cache.hook";
 import { useGetToken } from "@/hooks/useCookies";
 
 //Components imports
-import SideBar from "@/components/ui/sidebar";
+import SideBar, { Icon } from "@/components/ui/sidebar";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
 import AIChat from "@/components/ui/ai-chat";
@@ -20,6 +20,7 @@ import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
 
 //Types imports
 import { UserData } from "@/types/user.types";
+import Team from "@/types/team.types";
 
 //Services imports
 import UpdateUserData from "@/services/user.service";
@@ -49,6 +50,8 @@ export default function ToDoListPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   //List options state
   const [ openMenuIndex, setOpenMenuIndex ] = useState<number | null>(null);
+  //Sidebar expanded
+  const [ expanded, setExpanded ] = useState<boolean>(false);
 
   //Components refs
   const project_container = useRef<HTMLDivElement>(null);
@@ -170,7 +173,29 @@ export default function ToDoListPage() {
           email={user?.email}
           avatar={user.avatar_url}
           plan={user.plan}
-          username={user.name}/>
+          username={user.name}
+          setExpanded={(isExpanded : boolean) => {
+            setExpanded(isExpanded === true ? false : true);
+          }}>
+            {
+              expanded && (
+                <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
+                  Projects
+                </span>
+              )
+            }
+
+            {
+              user.teams && user.teams.length > 0 && user.teams.map((team: Team) => 
+                <Icon
+                action={`/teams/${team.team_id}`}
+                name={team.name}
+                isDisplayed={expanded}>
+                  <></>
+                </Icon>
+              )
+            }
+          </SideBar>
           <AIChat />
           <SnackBar
           ref={snackBar}/>

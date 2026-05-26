@@ -1,3 +1,7 @@
+//Imports
+
+import Team from "./team.types"
+
 export interface Task {
   title: string,
   isCompleted?: boolean
@@ -15,7 +19,7 @@ export interface UserData {
   email: string,
   name: string,
   plan: string,
-  teams?: Array<Object | null>,
+  teams?: Team[],
   ai_chat?: Array<{
     sent_by: string,
     message: string
