@@ -10,6 +10,8 @@ import { useParams, useRouter } from "next/navigation";
 //Icons imports
 import {
   IconCalendar,
+  IconCheck,
+  IconCopy,
   IconDatabase,
   IconDatabaseEdit,
   IconDatabaseMinus,
@@ -109,6 +111,14 @@ export default function Page(){
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
+  //Export values
+  const [ sqlValue, setsqlValue ] = useState("");
+  const [ jsonValue, setJsonValue ] = useState("");
+
+  //Copy button success
+  const [ sqlCopied, setSqlCopied ] = useState(false);
+  const [ jsonCopied, setJsonCopied ] = useState(false);
+
   //Creator form states
   //Title
   const [ newName, setNewName ] = useState<string>("");
@@ -122,6 +132,8 @@ export default function Page(){
   const form = useRef(null);
   //Table editor
   const editor = useRef(null);
+  //Table exporter
+  const exporter = useRef(null);
 
   //Data fetching
   useEffect(() => {
@@ -173,6 +185,26 @@ export default function Page(){
     if(!editor.current) return;
 
     const current : HTMLElement = editor.current;
+
+    if(current.classList.contains("hidden")) {
+      current.classList.remove("hidden");
+      current.classList.add("flex");
+      setCursor("edit");
+
+      return;
+    }
+    
+    current.classList.add("hidden");
+    current.classList.remove("flex");
+    setCursor("mouse");
+
+    return;
+  };
+
+  const toggleExporter = () => {
+    if(!exporter.current) return;
+
+    const current : HTMLElement = exporter.current;
 
     if(current.classList.contains("hidden")) {
       current.classList.remove("hidden");
@@ -356,6 +388,7 @@ export default function Page(){
     return;
   }
 
+  //Node remover
   const removeColumn = (table: Node, column_index: number) => {
     //Deletes node container
     setNodes((prev) =>
@@ -400,6 +433,42 @@ export default function Page(){
     );
   }
 
+  //Table "translator"
+  //SQL
+  const translateToSQL = (json: {
+    tableName: String,
+    columns: Column[]
+  }) => {
+    const columns = json.columns
+    .map(col => `${col.name.toLowerCase()} ${col.type.toUpperCase()}`)
+    .join(",\n    ")
+
+const sql = `CREATE TABLE ${json.tableName} (
+    ${columns}
+);`;
+
+    return sql;
+  }
+  //Json (yep, it needs to be translated)
+  const translateToJson = (json: {
+    tableName: String,
+    columns: Column[]
+  }) => {
+    const exportJson = JSON.stringify(
+      {
+        name: json.tableName,
+        columns: json.columns.map(col => ({
+          name: col.name,
+          type: col.type
+        }))
+      },
+      null,
+      2
+    )
+
+    return exportJson
+  }
+
   //Tables filtered
   const tableNodes = nodes.filter(
     (node) => node.type === "tableContainer"
@@ -410,6 +479,129 @@ export default function Page(){
       <div
       className="bg-background grid grid-cols-[auto_1fr] min-h-screen w-screen text-text overflow-hidden">
         <SnackBar ref={snackbar} />
+
+        {/* DB Data exported */}
+        <div
+        className="w-screen h-screen fixed top-0 left-0 hidden justify-center items-start backdrop-brightness-50 backdrop-blur-xs z-10 overflow-y-auto animate-fade-in"
+        ref={exporter}
+        onClick={toggleExporter}>
+          <section
+          className="w-150 h-200 bg-neutral-900 my-10 mr-20 rounded-md px-6 py-3 flex flex-col gap-2 animate-fade-in-up"
+          onClick={(e) => {
+            e.stopPropagation();
+            e.nativeEvent.stopPropagation();
+          }}>
+            <div
+            className="w-full flex justify-between items-center">
+              <p
+              className="text-lg font-medium tracking-wide">
+                SQL
+              </p>
+
+              <button
+              type="button"
+              className="p-2 rounded-full duration-200 hover:bg-black cursor-pointer w-10 aspect-square flex items-center justify-center"
+              title="Copy as SQL"
+              onClick={() => {
+                setSqlCopied(true);
+
+                if(sqlValue) {
+                  navigator.clipboard.writeText(sqlValue)
+                  setInterval(() => {
+                    setSqlCopied(false);
+                  }, 1000);
+                  return;
+                }
+
+                navigator.clipboard.writeText((tableNodes.map(table => translateToSQL(table.data as { tableName: String, columns: Column[] }))).toString());
+                setInterval(() => {
+                  setSqlCopied(false);
+                }, 1000);
+                return;
+              }}>
+                {
+                  sqlCopied ? (
+                    <IconCheck
+                    size={18}
+                    stroke={2} />
+                  ) : (
+                    <IconCopy
+                    size={18}
+                    stroke={2} />
+                  )
+                }
+              </button>
+            </div>
+
+            <textarea
+            value={sqlValue || tableNodes.map(table => translateToSQL(table.data as { tableName: String, columns: Column[] }))}
+            onChange={(e) => {
+              setsqlValue(e.target.value);
+            }}
+            className="w-full min-h-max h-full bg-neutral-950/50 rounded-md outline-none p-3">
+              
+            </textarea>
+          </section>
+          
+          <section
+          className="w-150 h-200 bg-neutral-900 my-10 mr-20 rounded-md px-6 py-3 animate-fade-in-up"
+          onClick={(e) => {
+            e.stopPropagation();
+            e.nativeEvent.stopPropagation();
+          }}>
+            <div
+            className="w-full flex justify-between items-center">
+              <p
+              className="text-lg font-medium tracking-wide">
+                JSON
+              </p>
+
+              
+              <button
+              type="button"
+              className="p-2 rounded-full duration-200 hover:bg-black cursor-pointer w-10 aspect-square flex items-center justify-center"
+              title="Copy as SQL"
+              onClick={() => {
+                setJsonCopied(true);
+
+                if(jsonValue) {
+                  navigator.clipboard.writeText(jsonValue);
+                  setInterval(() => {
+                    setJsonCopied(false);
+                  }, 1000);
+                  return;
+                }
+
+                navigator.clipboard.writeText((tableNodes.map(table => translateToJson(table.data as { tableName: String, columns: Column[] }))).toString());
+                setInterval(() => {
+                  setJsonCopied(false);
+                }, 1000);
+                return;
+              }}>
+                {
+                  jsonCopied ? (
+                    <IconCheck
+                    size={18}
+                    stroke={2} />
+                  ) : (
+                    <IconCopy
+                    size={18}
+                    stroke={2} />
+                  )
+                }
+              </button>
+            </div>
+
+            <textarea
+            value={jsonValue || tableNodes.map(table => translateToJson(table.data as { tableName: String, columns: Column[] }))}
+            onChange={(e) => {
+              setJsonValue(e.target.value);
+            }}
+            className="w-full min-h-max h-full bg-neutral-950/50 rounded-md outline-none p-3">
+              
+            </textarea>
+          </section>
+        </div>
 
         {/* Table creator form */}
         <div
@@ -841,12 +1033,21 @@ export default function Page(){
           {/* Save handler */}
           <button
           type="button"
-          className="h-10 w-30 rounded-lg bg-main cursor-pointer duration-400 hover:bg-main/60 font-medium tracking-wide disabled:grayscale disabled:hover:bg-main disabled:cursor-wait"
+          className="h-10 w-25 rounded-sm bg-main cursor-pointer duration-400 hover:bg-main/60 font-medium tracking-wide disabled:grayscale disabled:hover:bg-main disabled:cursor-wait text-sm"
           disabled={isSaveLoading}
           onClick={async() => {
             await saveERD();
           }} >
             Save
+          </button>
+
+          {/* Export handler */}
+          <button
+          type="button"
+          className="h-10 w-25 rounded-sm bg-rose-500 cursor-pointer duration-400 hover:bg-rose-700 font-medium tracking-wide disabled:grayscale disabled:hover:bg-rose-500 disabled:cursor-wait text-sm"
+          disabled={isSaveLoading}
+          onClick={toggleExporter} >
+            Export
           </button>
         </section>
         

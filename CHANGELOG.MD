@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v34.6:**
+> Page finished, bugfix leve
+  1. La página ERD está completamente terminada
+
 - **Indev v34.5:**
 > Page improvement, bugfix leve
   1. La página ERD es completamente funcional, ahora solo es cuestión de implementar exportación a SQL y JSON

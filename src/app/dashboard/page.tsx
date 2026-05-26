@@ -1011,11 +1011,12 @@ export default function Dashboard(){
               }
 
               {
-                user.teams && user.teams.length > 0 && user.teams.map((team: Team) => 
+                user.teams && user.teams.length > 0 && user.teams.map((team: Team, index) => 
                   <Icon
                   action={`/teams/${team.team_id}`}
                   name={team.name}
-                  isDisplayed={expanded}>
+                  isDisplayed={expanded}
+                  key={team.team_id}>
                     <></>
                   </Icon>
                 )
