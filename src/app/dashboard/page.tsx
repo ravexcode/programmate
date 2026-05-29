@@ -22,7 +22,7 @@ import LoadingDashboard from "@/components/screens/loading-screen";
 import AIChat from "@/components/ui/ai-chat";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
-import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 
 //Hooks imports
 import { useDeleteCookie, useGetToken } from "@/hooks/useCookies";
@@ -222,7 +222,7 @@ export default function Dashboard(){
   const project_container : RefObject<null> = useRef(null);
 
   //Snackbar container
-  const snackbarRef = useRef<SnackbarRef>(null);
+  const snackbar = useRef(null);
 
   //Project editor
   const project_edit_container : RefObject<null> = useRef(null);
@@ -409,7 +409,7 @@ export default function Dashboard(){
             user.email,
             data.team.id,
             token!,
-            snackbarRef
+            snackbar
           );
         })
       }
@@ -433,7 +433,7 @@ export default function Dashboard(){
     }
 
     //Else, returns error
-    snackbarRef.current?.showSnackBar(data.message, true);
+    showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar)
     setIsLoading(false);
     return;
   }
@@ -482,11 +482,14 @@ export default function Dashboard(){
       }
 
       //Error handler
-      snackbarRef.current?.showSnackBar(data.message!, true);
+      showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar)
       return;
-    } catch(e: any) {
-      console.log(e);
-      snackbarRef.current?.showSnackBar(e.message, true);
+    } catch(e: unknown) {
+      if(e instanceof Error) {
+        showSnackbar(e.message, "critic", snackbar);
+      }
+      
+      showSnackbar("Server error", "critic", snackbar);
       return;
     }
   };
@@ -555,11 +558,14 @@ export default function Dashboard(){
       }
 
       //Error handler
-      snackbarRef.current?.showSnackBar(data.message!, true);
+      showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
       return;
-    } catch(e: any) {
-      console.log(e);
-      snackbarRef.current?.showSnackBar(e.message, true);
+    } catch(e: unknown) {
+      if(e instanceof Error) {
+        showSnackbar(e.message, "critic", snackbar);
+      }
+      
+      showSnackbar("Server error", "critic", snackbar);
       return;
     }
   }
@@ -569,7 +575,7 @@ export default function Dashboard(){
       {/* Layout sections */}
       <AIChat />
       <SnackBar
-      ref={snackbarRef} />
+      ref={snackbar} />
 
       {/* Project editor form */}
       <div
@@ -1016,7 +1022,7 @@ export default function Dashboard(){
                   action={`/teams/${team.team_id}`}
                   name={team.name}
                   isDisplayed={expanded}
-                  key={team.team_id}>
+                  key={index + "-proyect"}>
                     <></>
                   </Icon>
                 )

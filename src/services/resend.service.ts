@@ -1,10 +1,10 @@
-import { SnackbarRef } from "@/components/ui/snackbar";
+import { showSnackbar } from "@/components/ui/snackbar";
 
 export async function sendRequest(
   requested_email: string,
   team_id: string,
   token: string,
-  snackbar: React.RefObject<SnackbarRef | null>
+  snackbar: React.RefObject<null>
 ){
   //Response from api
   const res = await fetch(
@@ -27,15 +27,10 @@ export async function sendRequest(
 
   //Verifies status
   if(res.status === 200) {
-    snackbar.current?.showSnackBar(
-      data.message
-    );
+    showSnackbar(data.message, "valid", snackbar)
   }
 
-  snackbar.current?.showSnackBar(
-    data.message || "Server error",
-    true
-  );
+  showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
 };
 
 export async function sendLoginWarn(

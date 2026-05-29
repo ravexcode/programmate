@@ -10,7 +10,7 @@ import { getCookie } from "cookies-next/client";
 import Link from "next/link";
 
 //Prebuild UI imports
-import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import SideBar, { IconProps } from "@/components/ui/sidebar";
 import CreatorForm from "@/components/forms/creator-form";
@@ -74,7 +74,7 @@ export default function TicketsTeamPage(){
 
   //Ref Objects
   //Snackbar data
-  const snackbar = useRef<SnackbarRef>(null);
+  const snackbar = useRef(null);
   //Ticket creator
   const creatorContainer: React.RefObject<null> = useRef(null);
 
@@ -171,9 +171,14 @@ export default function TicketsTeamPage(){
         return;
       }
 
-      snackbar.current?.showSnackBar(data.message, true);
-    } catch (error: any) {
-      snackbar.current?.showSnackBar("An error occurred", true);
+      showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
+    } catch(e: unknown) {
+      if(e instanceof Error) {
+        showSnackbar(e.message, "critic", snackbar);
+      }
+      
+      showSnackbar("Server error", "critic", snackbar);
+      return;
     } finally {
       setLoading(false);
     }
@@ -183,7 +188,8 @@ export default function TicketsTeamPage(){
     team ? (
       <div
       className="bg-background text-text min-h-screen grid grid-cols-[auto_1fr]">
-        <SnackBar />
+        <SnackBar
+        ref={snackbar} />
         <SideBar
         email={user?.email!}
         plan={user?.plan!}

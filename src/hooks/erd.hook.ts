@@ -1,11 +1,11 @@
 //Types
 //Imports
-import Team, { ERDTable } from "@/types/team.types";
+import Team from "@/types/team.types";
 
 //Updater hook
 export async function saveERD(
   teamID: any,
-  erd: Array<ERDTable>,
+  erd: any,
   connections: Array<{
     connector: {
       table: string;

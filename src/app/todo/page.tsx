@@ -16,7 +16,7 @@ import SideBar, { Icon } from "@/components/ui/sidebar";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
 import AIChat from "@/components/ui/ai-chat";
-import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 
 //Types imports
 import { UserData } from "@/types/user.types";
@@ -56,7 +56,7 @@ export default function ToDoListPage() {
   //Components refs
   const project_container = useRef<HTMLDivElement>(null);
   //Snackbar
-  const snackBar = useRef<SnackbarRef>(null);
+  const snackbar = useRef(null);
 
   //Function for hide the menu of to do list when user clicks outside
   useEffect(() => {
@@ -144,7 +144,7 @@ export default function ToDoListPage() {
     
     //Verifies if there's an error
     if(data.error) {
-      snackBar.current?.showSnackBar(data.message, true);
+      showSnackbar(data.message, "critic", snackbar);
     }
     //Cancels loading status
     setIsLoading(false);
@@ -199,7 +199,7 @@ export default function ToDoListPage() {
           </SideBar>
           <AIChat />
           <SnackBar
-          ref={snackBar}/>
+          ref={snackbar}/>
 
           {/* Creator form */}
           <div

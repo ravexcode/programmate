@@ -2,36 +2,32 @@
 "use client";
 
 //React imports
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 //Next imports
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 //Prebuilt ui components
 import AuthForm from "@/components/forms/auth";
 import { Input, PasswordInput } from "@/components/forms/inputs";
 import ProviderButton from "@/components/forms/provider-buttons";
 import Footer from "@/components/ui/footer";
-import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 
 //Icons imports
 import { IconArrowLeft } from "@tabler/icons-react";
 
-//Hooks imports
-import { useSaveToken } from "@/hooks/useCookies";
-
-//User type
-interface User {
-  email: string,
-  name: string,
-  password: string,
-  confirm: string,
-}
+//Actions imports
+import { signUp, verify } from "@/actions/auth";
 
 export default function RegisterPage() {
+  //NextJS Setup
+  const router = useRouter();
+
   //Ref components
-  const snackbar = useRef<SnackbarRef>(null);
+  const snackbar = useRef(null);
 
   //States handler
   //Form avaible/unavaible
@@ -45,61 +41,30 @@ export default function RegisterPage() {
   //Password
   const [ confirm, setConfirm ] = useState<string>("");
 
+  //Verifies session status
+  useEffect(() => {
+    if(!verify()) return router.push("/dashboard");
+  }, []);
+
   //Form submit handler
   const handleSubmit = async(e: React.SubmitEvent<HTMLFormElement>) => {
-    //Prevents reloads
-    e.preventDefault();
-    //Turns off the form
-    setIsFormDisponible(false);
-
-    //Puts the data in the body
-    const body : User = {
-      //Puts the email in the body
-      email,
-      //Puts the email in the body
-      name,
-      //Puts the password in the body
-      password,
-      //Puts the password in the body
-      confirm,
-    };
-
-    if(body.password !== body.confirm) {
-      //If there's an error returns error
-      snackbar.current?.showSnackBar("Passwords don't match", true);
+      //Prevents reloads
+      e.preventDefault();
+      //Turns off the form
+      setIsFormDisponible(false);
+  
+      const credentials = {
+        email,
+        username: name,
+        password
+      };
+  
+      const res = await signUp(credentials, confirm);
       setIsFormDisponible(true);
-    }
-
-    //Makes the request
-    const res = await fetch(
-      //Route
-      "/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          //Api key
-          "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
-        },
-        //Log in data
-        body: JSON.stringify(body),
-      }
-    );
-
-    //Process the data
-    const resData = await res.json();
-
-    if(res.status === 201) {
-      //Saves the cookie
-      useSaveToken(resData.token);
-      //Returns to dashboard
-      window.location.href = "/oauth/success";
-      return;
-    }
-
-    //If there's an error returns error
-    snackbar.current?.showSnackBar(resData.message, true);
-    setIsFormDisponible(true);
-    return;
+  
+      if(res.error) return showSnackbar(res.message, (res.status! >= 500 ? "critic" : "warn"), snackbar);
+  
+      return router.push("/dashboard");
   };
 
   return (

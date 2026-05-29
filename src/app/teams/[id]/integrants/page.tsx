@@ -18,7 +18,7 @@ import { getCached } from "@/hooks/cache.hook";
 //Prebuilt ui imports
 import SideBar, { IconProps } from "@/components/ui/sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
-import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import CreatorForm from "@/components/forms/creator-form";
 
 //Icons imports
@@ -83,7 +83,7 @@ export default function Page(){
   const [ searchStatus, setSearchStatus ] = useState<"not-searched" | "not-found" | "searching">("not-searched");
 
   //Snackbar component
-  const snackbar = useRef<SnackbarRef>(null);
+  const snackbar = useRef(null);
   //Form component
   const addIntgForm = useRef(null);
 
@@ -140,11 +140,11 @@ export default function Page(){
       const data = await res.json();
 
       if(res.status !== 200) {
-        snackbar.current?.showSnackBar(data.message, true);
+        showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
         return;
       }
 
-      snackbar.current?.showSnackBar(data.message);
+      showSnackbar(data.message, "valid", snackbar);
       return;
     });
 
@@ -514,6 +514,7 @@ export default function Page(){
 
                         <div className="flex justify-end gap-2">
                           <button
+                          type="button"
                           className="p-1 rounded-md bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors duration-200"
                           title="Edit member">
                             <IconUsers

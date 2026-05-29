@@ -6,37 +6,25 @@ import { headers } from "next/headers";
 import supabase from "@/lib/db";
 import { Decrypt } from "@/functions/crypto";
 
+//Handlers imports
+import * as Handler from "@/app/api/handlers";
+
 export async function GET( req: NextRequest ) {
   try {
     //Gets the user token
     const token = (await headers()).get("Authorization");
 
     //Verifies if the token has been inserted
-    if(!token) return NextResponse.json({
-      message: "Token not inserted",
-      error: "Bad request"
-    }, {
-      status: 401
-    });
+    if(!token) return Handler.unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user data from the token
     const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
-    if(!user) return NextResponse.json({
-      message: "User not found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!user) return Handler.notFoundErrorHandler("User not found");
 
     //Verifies if there's an error
-    if(getUserError) return NextResponse.json({
-      message: getUserError.message,
-      error: getUserError
-    }, {
-      status: 500
-    });
+    if(getUserError) return Handler.unauthorizedErrorHandler(getUserError.message);
 
     //Gets the user's extra data
     const { data: teams } = await supabase
@@ -87,13 +75,7 @@ export async function GET( req: NextRequest ) {
       payments,
       profile
     })
-  } catch(e: any) {
-    //Error handler
-    return NextResponse.json({
-      message: "Error inside in the server",
-      error: e.message
-    }, {
-      status: 500
-    });
+  } catch(e: unknown) {
+    return Handler.serverErrorHandler(e);
   }
 }

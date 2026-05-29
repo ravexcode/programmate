@@ -8,13 +8,12 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
 //Hooks imports
-import { getCached } from "@/hooks/cache.hook";
 import { useGetToken } from "@/hooks/useCookies";
 
 //Components imports
 import SideBar from "@/components/ui/sidebar";
 import AIChat from "@/components/ui/ai-chat";
-import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 
 //Types imports
 import { UserData, Task, ToDoList } from "@/types/user.types";
@@ -45,7 +44,7 @@ export default function ToDoListPage() {
   const [ taskCompleted, setTaskCompleted ] = useState<boolean>(false);
 
   //Snackbar
-  const snackBar = useRef<SnackbarRef>(null);
+  const snackbar = useRef(null);
 
   //Data fetching form cache
   useEffect(() => {
@@ -100,18 +99,14 @@ export default function ToDoListPage() {
       }
     );
 
-    if(!res) {
-      snackBar.current?.showSnackBar("Server error", true);
-    }
-
     const data = await res.json();
 
     if(res.status === 200) {
-      snackBar.current?.showSnackBar("Tasks saved");
+      showSnackbar(data.message, "valid", snackbar);
       setInitialTasks(tasks);
     }
 
-    snackBar.current?.showSnackBar(data.message, true);
+    showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
 
     setIsLoading(false);
     return
@@ -128,7 +123,7 @@ export default function ToDoListPage() {
           username={user.name}/>
           <AIChat />
           <SnackBar
-          ref={snackBar}/>
+          ref={snackbar}/>
 
           <main
           className="flex flex-col w-full min-h-screen items-center justify-start relative overflow-auto">

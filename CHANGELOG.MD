@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v35.0:**
+> Estable, Refactor, Settings update
+  1. Refactor completo de snackbar debido a que no se solía mostrar cuando debía, ahora sí lo hace. 🛠️
+  2. Ahora el servidor de desarollo se abre en localhost:7000. ⚙️
+  3. Se agregaron actions de formularios, apenas por implementar. 🚀
+
 - **Indev v34.6:**
 > Page finished, bugfix leve
   1. La página ERD está completamente terminada

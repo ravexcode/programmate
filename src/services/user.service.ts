@@ -34,7 +34,7 @@ export default async function UpdateUserData(token: string) {
   //Plan default
   let plan : string = "Free";
   //Teams
-  let teams : Array<Object | null> = [];
+  let teams = [];
 
   //Payments section
   if(data.payments && data.payments.length >= 1) {

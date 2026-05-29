@@ -2,28 +2,32 @@
 "use client";
 
 //React imports
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 //Next imports
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 //Prebuilt ui components
 import AuthForm from "@/components/forms/auth";
 import { Input, PasswordInput } from "@/components/forms/inputs";
 import ProviderButton from "@/components/forms/provider-buttons";
 import Footer from "@/components/ui/footer";
-import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 
 //Icons imports
 import { IconArrowLeft } from "@tabler/icons-react";
 
-//Hooks imports
-import { useSaveToken } from "@/hooks/useCookies";
+//Actions imports
+import { signIn, verify } from "@/actions/auth";
 
 export default function LogInPage() {
+  //Next setup
+  const router = useRouter();
+
   //Ref components
-  const snackbar = useRef<SnackbarRef>(null);
+  const snackbar = useRef(null);
 
   //States handlers
   //Form enabled/disabled
@@ -33,48 +37,29 @@ export default function LogInPage() {
   //Password
   const [ password, setPassword ] = useState<string>("");
 
+  //Verifies session status
+  useEffect(() => {
+    if(!verify()) return router.push("/dashboard");
+  }, []);
+
   //Form submit handler
   const handleSubmit = async(e: React.SubmitEvent<HTMLFormElement>) => {
     //Prevents reloads
     e.preventDefault();
     //Turns off the form
     setIsFormDisponible(false);
-    //Puts the data in the body
-    const body : Object = {
+
+    const credentials = {
       email,
       password
     };
 
-    //Makes the request
-    const res = await fetch(
-      //Route
-      "/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          //Api key
-          "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
-        },
-        //Log in data
-        body: JSON.stringify(body),
-      }
-    );
-
-    //Process the data
-    const resData = await res.json();
-
-    if(res.status === 200) {
-      //Saves the cookie
-      useSaveToken(resData.token);
-      //Returns to dashboard
-      window.location.href = "/dashboard";
-      return;
-    }
-
-    //If there's an error returns error
+    const res = await signIn(credentials);
     setIsFormDisponible(true);
-    snackbar.current?.showSnackBar(resData.message, true);
-    return;
+
+    if(res.error) return showSnackbar(res.message, (res.status! >= 500 ? "critic" : "warn"), snackbar);
+
+    return router.push("/dashboard");
   };
 
   return (

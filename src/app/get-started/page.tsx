@@ -2,7 +2,7 @@
 "use client";
 
 //Prebuilt ui imports
-import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 
 //React imports
 import { useState, KeyboardEvent, useRef, useEffect } from "react";
@@ -36,7 +36,7 @@ export default function GetStarted() {
   const [ disabled, setDisabled ] = useState<boolean>(false);
   
   //Snackbar container
-  const snackBar = useRef<SnackbarRef>(null);
+  const snackbar = useRef(null);
 
   //Constants
   const screens = 6;
@@ -159,7 +159,7 @@ export default function GetStarted() {
     }
 
     //Else, returns error
-    snackBar.current?.showSnackBar(data.message, true);
+    showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar)
     return { success: false, team: null };
   }
 
@@ -181,7 +181,7 @@ export default function GetStarted() {
       try {
         //Check if user is trying to invite themselves
         if(email === currentUserEmail) {
-          snackBar.current?.showSnackBar(`You can't invite yourself`, true);
+          showSnackbar("You can't invite yourself", "warn", snackbar)
           continue;
         }
 
@@ -198,7 +198,7 @@ export default function GetStarted() {
 
         //If user doesn't exist, show error
         if(searchRes.status !== 200 || !searchData.users || searchData.users.length === 0) {
-          snackBar.current?.showSnackBar(`User not found: ${email}`, true);
+          showSnackbar("User don't found", "warn", snackbar)
           continue;
         }
 
@@ -220,15 +220,19 @@ export default function GetStarted() {
 
         //If success, show success message
         if(res.status === 200) {
-          snackBar.current?.showSnackBar(`Invitation sent to ${email}`, false);
+          showSnackbar("Invitation sent!", "valid", snackbar);
         }
         //Else, show error
         else {
-          snackBar.current?.showSnackBar(`Failed to send invitation to ${email}`, true);
+          showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar)
         }
-      } catch (error) {
-        console.error(`Error sending invitation to ${email}:`, error);
-        snackBar.current?.showSnackBar(`Error sending invitation to ${email}`, true);
+      } catch(e: unknown) {
+        if(e instanceof Error) {
+          showSnackbar(e.message, "critic", snackbar);
+        }
+        
+        showSnackbar("Server error", "critic", snackbar);
+        return;
       }
     }
   }
@@ -264,7 +268,7 @@ export default function GetStarted() {
 
   return (
     <div className="w-screen overflow-hidden min-h-screen bg-[#0A0A0A] text-zinc-200 relative font-sans selection:bg-indigo-500/30">
-    <SnackBar />
+    <SnackBar ref={snackbar} />
       
       {/* Linear-style Subtle Background Glow */}
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden flex justify-center">

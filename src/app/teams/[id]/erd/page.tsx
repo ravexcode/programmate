@@ -18,7 +18,6 @@ import {
   IconDatabaseOff,
   IconDatabasePlus,
   IconEye,
-  IconEyeOff,
   IconFolder,
   IconHandStop,
   IconLayoutKanban,
@@ -29,10 +28,9 @@ import {
 } from "@tabler/icons-react";
 
 //Prebuilt ui imports
-import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
-import SideBar from "@/components/ui/sidebar";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import SideBar, { Icon } from "@/components/ui/sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
-import { Icon } from "../page";
 import ColumnNode from "@/components/ui/column-node";
 import ButtonControl from "@/components/ui/button-control";
 import { TableContainerNode } from "@/components/ui/table-node";
@@ -49,7 +47,7 @@ import { useGetToken } from "@/hooks/useCookies";
 //Types imports
 import { type UserData } from "@/types/user.types";
 import Team from "@/types/team.types";
-import { RowData, ParentNode } from "@/types/table.types";
+import { ParentNode } from "@/types/table.types";
 
 //React flow imports
 import {
@@ -61,7 +59,7 @@ import {
   type Edge,
   useNodesState,
   useEdgesState,
-  NodeTypes,
+  type NodeTypes,
   addEdge,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -127,7 +125,7 @@ export default function Page(){
 
   //Components
   //Snackbar
-  const snackbar = useRef<SnackbarRef>(null);
+  const snackbar = useRef(null);
   //Table creator
   const form = useRef(null);
   //Table editor
@@ -336,7 +334,7 @@ export default function Page(){
     const data = await res.json();
 
     if(res.status !== 200) {
-      snackbar.current?.showSnackBar(data.message, true);
+      showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
       setIsSaveLoading(false);
       return;
     }

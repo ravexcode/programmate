@@ -1,52 +1,39 @@
-// React imports
-import { useRef, useState, useImperativeHandle, forwardRef } from "react";
-
-// Props type
-interface SnackbarProps {}
-
-export interface SnackbarRef {
-  showSnackBar: (message: string, isError?: boolean) => void;
+export default function SnackBar({ ref } : { ref :React.RefObject<null> }) {
+  return (
+    <div
+    className="fixed bottom-4 left-1/2 -translate-x-1/2 animate-fade-in-up z-100 text-white p-2 px-4 rounded-md font-medium w-max max-w-w-60 text-center hidden"
+    ref={ref}>
+      {/* There will be the snackbar content */}
+    </div>
+  )
 }
 
-const SnackBar = forwardRef<SnackbarRef, SnackbarProps>((_, ref) => {
-  const snackbar = useRef<HTMLSpanElement>(null);
+export function showSnackbar(
+  message: string,
+  type: "valid" | "warn" | "critic",
+  snackbar: React.RefObject<null>
+) {
+  if(!snackbar.current) return;
 
-  const [sbmsg, setsbmsg] = useState("");
-  const [sbie, setsbie] = useState(false);
+  const current : HTMLElement = snackbar.current;
 
-  // Expose function outside component
-  useImperativeHandle(ref, () => ({
-    showSnackBar(message: string, isError = false) {
-      if (!snackbar.current) return;
+  const bg_color =
+  type === "valid" ? "bg-green-600" :
+  type === "warn" ? "bg-orange-600" :
+  "bg-red-600";
 
-      const current = snackbar.current;
+  current.innerText = message;
 
-      // Set content
-      setsbmsg(message);
-      setsbie(isError);
+  current.classList.add(bg_color);
 
-      // Show snackbar
-      current.classList.remove("hidden");
+  current.classList.replace("hidden", "block");
 
-      // Hide after 3 sec
-      setTimeout(() => {
-        current.classList.add("hidden");
-        setsbmsg("");
-        setsbie(false);
-      }, 3000);
-    },
-  }));
+  const interval = setInterval(hideSnackbar, 2000);
 
-  return (
-    <span
-      ref={snackbar}
-      className={`hidden fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-md text-white animate-fade-in-up z-99 ${
-        sbie ? "bg-red-700" : "bg-green-700"
-      }`}
-    >
-      {sbmsg}
-    </span>
-  );
-});
-
-export default SnackBar;
+  function hideSnackbar() {
+    current.classList.remove(bg_color);
+    current.classList.replace("block", "hidden");
+    current.innerText = "";
+    clearInterval(interval)
+  }
+}

@@ -11,7 +11,7 @@ import { getCookie } from "cookies-next/client";
 
 //Prebuild ui imports
 import CreatorForm from "@/components/forms/creator-form";
-import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 
 //Icons imports
@@ -52,7 +52,7 @@ export default function TicketView() {
   //Confirmation enabled/disabled state
   const [ formDisabled, setFormDisabled ] = useState<boolean>(false);
 
-  const snackbar = useRef<SnackbarRef>(null);
+  const snackbar = useRef(null);
   const containerRef : RefObject<null> = useRef(null);
 
   const hideConfirmation = () => {
@@ -124,7 +124,8 @@ export default function TicketView() {
       return;
     }
 
-    snackbar.current?.showSnackBar(data.message, true);
+    
+    showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
     setIsLoading(false);
     return;
   };
@@ -154,7 +155,7 @@ export default function TicketView() {
       window.location.href = `/teams/${params.id}`;
     }
 
-    snackbar.current?.showSnackBar(data.message, true);
+    showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
     setFormDisabled(true);
   };
 

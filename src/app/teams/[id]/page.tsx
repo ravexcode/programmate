@@ -2,8 +2,7 @@
 "use client"
 
 //Next imports
-import { useParams } from "next/navigation"
-import Link from "next/link";
+import { useParams } from "next/navigation";
 
 //React imports
 import { useEffect, useState, useRef, RefObject } from "react";
@@ -12,9 +11,9 @@ import { useEffect, useState, useRef, RefObject } from "react";
 import { UserData } from "@/types/user.types";
 
 //Prebuild ui imports
-import SideBar, { IconProps } from "@/components/ui/sidebar";
+import SideBar, { Icon } from "@/components/ui/sidebar";
 import AIChat from "@/components/ui/ai-chat";
-import SnackBar, { type SnackbarRef } from "@/components/ui/snackbar";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 
 //Hooks imports
@@ -32,22 +31,10 @@ import {
   IconUsers
 } from "@tabler/icons-react";
 
-//Icon button component
-export function Icon(props : IconProps) {
-  return (
-    <Link
-    href={props.action}
-    className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-90 duration-400 " + (props.disabled && "grayscale brightness-50 pointer-events-none ") + (props.isDisplayed ? "w-46 md:w-60" : "w-full")}>
-      {props.children}
-      {props.isDisplayed && <span className="text-sm animate-fade-in-right"> {props.name} </span>}
-    </Link>
-  )
-}
-
 //Functions for export
 //Function for search team data
 export async function searchTeamData (
-  snackbar : RefObject<SnackbarRef | null>,
+  snackbar : RefObject<null>,
   params: any,
   setTeam: any
 ) {
@@ -81,7 +68,7 @@ export async function searchTeamData (
   }
   
   //If there's an error shows it
-  snackbar.current?.showSnackBar(data.message, true);
+  showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
   return;
 }
 
@@ -98,7 +85,7 @@ export default function TeamPage(){
   const [ team, setTeam ] = useState<any>(null);
 
   //Snackbar container
-  const snackbar = useRef<SnackbarRef>(null);
+  const snackbar = useRef(null);
 
   //Sets the data
   useEffect(() => {
@@ -123,7 +110,8 @@ export default function TeamPage(){
         <div
         className="bg-background grid grid-cols-[auto_1fr] text-text">
           <AIChat />
-          <SnackBar />
+          <SnackBar
+          ref={snackbar} />
 
           <SideBar
           email={user?.email!}

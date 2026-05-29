@@ -31,6 +31,7 @@ export default function SuccessPayment() {
           </p>
 
           <button
+          type="button"
             onClick={
               () => window.close()
             }

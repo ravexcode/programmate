@@ -4,7 +4,7 @@
 //Prebuilt ui imports
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
-import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 
 //Next imports
 import Link from "next/link";
@@ -25,7 +25,7 @@ export default function AcceptRequestPage(){
   const [ user, setUser ] = useState<UserData>();
   const [ authToken, setAuthToken ] = useState<string>("");
 
-  const snackbar = useRef<SnackbarRef>(null);
+  const snackbar = useRef(null);
 
   useEffect(() => {
     async function getData(){
@@ -74,7 +74,7 @@ export default function AcceptRequestPage(){
       return;
     }
 
-    snackbar.current?.showSnackBar(data.message, true);
+    showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
     return;
   }
 

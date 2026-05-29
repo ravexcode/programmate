@@ -5,7 +5,6 @@ import { useRef, useEffect , useState} from "react";
 
 //Next imports
 import { useParams } from "next/navigation";
-import { getCookie } from "cookies-next";
 import Link from "next/link";
 
 //Hooks imports
@@ -21,7 +20,7 @@ import supabase_client from "@/lib/client/db";
 import { ClientEncrypt, ClientDecrypt } from "@/lib/client/crypto";
 
 //Prebuild UI Imports
-import SnackBar, { SnackbarRef } from "@/components/ui/snackbar";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 
 //Icons imports
@@ -56,7 +55,7 @@ export default function ChatPage() {
   //Messages container
   const containerRef = useRef(null);
   //Snackbar
-  const snackbar = useRef<SnackbarRef>(null);
+  const snackbar = useRef(null);
 
   //Sets the message container to bottom
   useEffect(() => {
