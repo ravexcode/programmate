@@ -76,13 +76,12 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     //Gets the new list data
-    const { list_index, content, tasks } = await req.json();
+    const { list_index, tasks, content } = await req.json();
     //Gets the auth token
     const token = (await headers()).get("Authorization");
 
     //Verifies if data is inserted
     if(
-      (!content && (!tasks || tasks.length < 1)) ||
       list_index === undefined ||
       list_index === null
     ) return Handlers.badRequestErrorHandler();

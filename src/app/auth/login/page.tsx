@@ -39,7 +39,7 @@ export default function LogInPage() {
 
   //Verifies session status
   useEffect(() => {
-    if(!verify()) return router.push("/dashboard");
+    if(verify()) return router.push("/dashboard");
   }, []);
 
   //Form submit handler

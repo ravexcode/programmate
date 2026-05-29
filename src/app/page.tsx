@@ -1,9 +1,13 @@
 //view in client
 "use client";
 
+//React imports
+import { useRef } from "react";
+
 //Next imports
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 //Prebuilt components
 import Header from "@/components/ui/header";
@@ -12,79 +16,52 @@ import IconCarousel from "@/components/icon-carrousel";
 
 //Custom components
 import SmoothProvider from "@/lib/components/lennis";
-import { IconCheck } from "@tabler/icons-react";
+import Card from "@/components/ui/card";
+import PricingCard from "@/components/ui/pricing-card";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 
-function Card(props: {
-  icon: string,
-  title: string,
-  children: React.ReactNode
-}) {
-  return (
-    <section 
-    className="rounded-xl border border-neutral-800 px-6 py-3 bg-neutral-950 flex flex-col justify-center items-start gap-1 w-75 text-start shadow-lg shadow-ultramarine-700/20 duration-400 hover:shadow-ultramarine-700/50 hover:-translate-y-2 hover:scale-105 cursor-default timeline-view-y animate-fade-in animate-range-[entry_0%_cover_30%]">
-      <img src={"/icons/" + props.icon} alt={props.icon} />
-      <h2 
-      className="text-xl text-main w-full">
-        {props.title}
-      </h2>
-      <p
-      className="w-full font-light">
-        {props.children}
-      </p>
-    </section>
-  )
-}
-
-function PricingCard(props: {
-  isRecomended?: boolean,
-  plan: string,
-  cost: string,
-  benefits: Array<string>
-}){
-  const pricingCardClassess : string = "flex flex-col px-6 py-4 rounded-xl h-100 shadow-lg shadow-ultramarine-950/50 mb-10 w-60 timeline-view-y animate-fade-in animate-range-[entry_0%_cover_30%] relative border cursor-default " + (props.isRecomended ? "scale-110 border-blue-600 bg-blue-800/20 backdrop-brightness-40 backdrop-blur-2xl" : "border-neutral-600 bg-neutral-950");
-
-  return (
-    <div
-    className={pricingCardClassess}>
-      {props.isRecomended ? (
-        <div>
-          <span
-          className="absolute -translate-y-6 -translate-x-8 px-3 py-1 rounded-md bg-main text-sm">
-            Recomended
-          </span>
-
-          <span className="h-5 md:h-3 block"></span>
-        </div>
-      ) : null}
-      <p className="text-sm font-semibold text-center">{props.plan}</p>
-      <h3 className="text-2xl font-bold mb-3 text-sky-600 tracking-wide text-center">
-        {props.cost}
-        <span
-        className="text-sm text-text/50 font-light ml-1 tracking-widest">
-          /month
-        </span>
-      </h3>
-
-      {props.benefits.map((value : string, index : number) => (
-        <div
-        key={index}
-        className="text-text justify-start items-center flex gap-1 font-light tracking-wide">
-          <IconCheck size={15} stroke={2.3} /> {value}
-        </div>
-      ))}
-
-      <button
-      className="w-full text-text bg-main mt-auto tracking-wider py-2 rounded-full duration-300 hover:brightness-130 cursor-pointer hover:-translate-y-0.5 relative">
-        Get started
-      </button>
-    </div>
-  )
-}
+//Hooks imports
+import { useGetToken } from "@/hooks/useCookies";
 
 //Landing page
 export default function HomePage(){
+  //NextJS Setup
+  const router = useRouter();
+
+  //Snackbar container
+  const snackbar = useRef(null);
+
+  //Payment action
+  const handlePayment = async(plan: string) => {
+    const token = useGetToken();
+
+    if(!token) return router.push("/auth/login");
+
+    const res = await fetch(
+      '/api/payments/capture-payment',
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+          "Authorization": token
+        },
+        body: JSON.stringify({
+          plan
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if(res.status === 200) return router.push(data.checkout_link);
+
+    showSnackbar(data.message, (res.status >= 500 ? "critic": "warn"), snackbar);
+  }  
   return (
     <div className="bg-background min-h-dvh">
+      <SnackBar ref={snackbar} />
+
       <Header />
 
       <main
@@ -188,7 +165,10 @@ export default function HomePage(){
               "ERD Tool",
               "JSON viewer tool",
               "Prismaflow AI +"
-            ]}/>
+            ]}
+            action={async() => {
+              await handlePayment("pro");
+            }}/>
 
             <PricingCard
             plan="Enterprise"
@@ -201,7 +181,10 @@ export default function HomePage(){
               "Unlimited integrants",
               "Team roles",
               "Callendar",
-            ]}/>
+            ]}
+            action={async() => {
+              await handlePayment("team");
+            }}/>
 
           </div>
 

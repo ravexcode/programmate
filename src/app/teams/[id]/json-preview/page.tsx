@@ -15,7 +15,7 @@ import SideBar, { Icon } from "@/components/ui/sidebar";
 import AIChat from "@/components/ui/ai-chat";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
-import JsonNode from "@/components/ui/json-node";
+import { JsonNode } from "@/components/ui/json-node";
 
 //Hooks imports
 import { searchTeamData } from "@/app/teams/[id]/page";
@@ -41,7 +41,7 @@ import {
 import "@xyflow/react/dist/style.css";
 
 const nodeTypes: NodeTypes = {
-  tableContainer: JsonNode,
+  container: JsonNode,
 }
 
 export default function Page(){
@@ -83,9 +83,10 @@ export default function Page(){
       id: "main-parent",
       position: { x: 0, y: 0 },
       data: {
-        content: "Hello world "
+        content: "Hello world"
       },
-      type: "input"
+      type: "container",
+      draggable: true
     }
   ]
   return (
@@ -190,9 +191,8 @@ export default function Page(){
           </SideBar>
         
           <ReactFlow
-          nodes={[]}
+          nodes={initialNodes}
           edges={[]}
-          defaultNodes={initialNodes}
           fitView
           colorMode="dark"
           nodeTypes={nodeTypes}>

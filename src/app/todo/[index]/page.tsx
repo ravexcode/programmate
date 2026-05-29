@@ -94,7 +94,8 @@ export default function ToDoListPage() {
         },
         body: JSON.stringify({
           tasks,
-          list_index: params.index
+          list_index: params.index,
+          content: toDoList
         })
       }
     );
@@ -104,6 +105,7 @@ export default function ToDoListPage() {
     if(res.status === 200) {
       showSnackbar(data.message, "valid", snackbar);
       setInitialTasks(tasks);
+      return;
     }
 
     showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);

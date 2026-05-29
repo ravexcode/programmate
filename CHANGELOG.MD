@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v36.0:**
+> Refactor
+  1. Ahora los pagos son completamente funcionales y se te envía un correo al momento de realizarlo!
+
 - **Indev v35.0:**
 > Estable, Refactor, Settings update
   1. Refactor completo de snackbar debido a que no se solía mostrar cuando debía, ahora sí lo hace. 🛠️

@@ -5,9 +5,14 @@ import { type NextRequest, NextResponse } from "next/server";
 
 //Middleware
 export function proxy(req: NextRequest) {
+  //Ignore webhooks api
+  const path = req.nextUrl.pathname;
+
+  //Ignore webhooks api path
+  if(path.startsWith('/api/webhooks')) return NextResponse.next();
+
   //Gets the API Key
   const api_key = req.headers.get("x-api-key");
-
 
   //Verifies if the API Key in server exists
   const valid_api_key = process.env.API_KEY;

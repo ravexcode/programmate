@@ -1,6 +1,6 @@
 {
   "name": "programmate",
-  "version": "Indev v29.4",
+  "version": "no-version",
   "private": true,
   "scripts": {
     "dev": "next dev -p 7000",

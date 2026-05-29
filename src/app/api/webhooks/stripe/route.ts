@@ -2,10 +2,14 @@
 import { stripe } from "@/lib/stripe";
 import supabase from "@/lib/db";
 import { resend } from "@/lib/resend";
+import { PaymentTemplate } from "@/resend/templates";
 
 //Next imports
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
+
+//Handlers imports
+import * as Handler from "@/app/api/handlers";
 
 //DotEnv constants
 const stripewh : string | undefined = process.env.WH_STRIPE;
@@ -16,12 +20,7 @@ export async function POST(req: NextRequest) {
     const stripeSignature : string | null = (await headers()).get("stripe-signature");
 
     //Verifies if the data inserted is OK
-    if(!body || !stripeSignature) return NextResponse.json({
-      message: "Error sending the post",
-      error: "Bad request"
-    }, {
-      status: 403
-    });
+    if(!body || !stripeSignature) return Handler.badRequestErrorHandler();
 
     //Verifies if the stripe webhook key is declared
     if(!stripewh) throw new Error("Stripe webhook is not declared");
@@ -50,22 +49,26 @@ export async function POST(req: NextRequest) {
         ]);
 
         //Detects the error
-        if(savePaymentError) return NextResponse.json({
-          message: "An error has happened while we tried to save the payment",
-          error: savePaymentError.message
-        }, {
-          status: 500
+        if(savePaymentError) return Handler.supabaseErrorHandler(savePaymentError);
+
+        const { error: resendError } = await resend
+        .emails
+        .send({
+          from: 'Prismaflow <noreply@ravexcode.com>',
+          to: event.data.object.metadata?.email!,
+          subject: "Request recivied",
+          react: PaymentTemplate({
+            amount: Number(event.data.object.metadata!.payment),
+            recipt_link: event.data.object.invoice!.toString(),
+            orderId: event.data.object.id
+          })
         });
 
-        //Content for email
-        const content: string = "Thank you so much for helping us!, if you have a question or wanna report a bug tell us sending an email to help@prismaflow.dev"
-
-        //Send a email to the user
-        //TODO: Add logic
+        if(resendError){
+          return Handler.resendErrorHandler(resendError)
+        };
 
         break;
-
-        
 
       default:
         return NextResponse.json({
@@ -76,13 +79,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ message: "Success" });
-  } catch(e: any) {
-    //Server errors
-    return NextResponse.json({
-      message: "An error has happened in the server",
-      error: e.message
-    }, {
-      status: 500
-    });
+  } catch(e: unknown) {
+    console.error(e);
+    return Handler.serverErrorHandler(e);
   }
 }

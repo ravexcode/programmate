@@ -9,22 +9,25 @@ import supabase from "@/lib/db";
 //Types
 import type Plan from "@/modules/plan.types";
 
+//Handlers imports
+import * as Handler from "@/app/api/handlers";
+
 //DotEnv declarations
-const proyectURL = process.env.NEXT_PUBLIC_NEXT_URL || "http://localhost:3000";
+const proyectURL = process.env.API_URL || "http://localhost:3000";
 
 //Plans
 const pro : Plan = {
   name: "Prismaflow pro plan",
   currency: "usd",
   cost: 400, //Dollar cents
-  url_image: ""
+  url_image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDl2gg4N0WhybinSClgsZD6KePMVZ0B39thQ&s"
 };
 
 const team : Plan = {
   name: "Prismaflow team plan",
   currency: "usd",
   cost: 1000, //Dollar cents
-  url_image: ""
+  url_image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDl2gg4N0WhybinSClgsZD6KePMVZ0B39thQ&s"
 }
 
 export async function POST(req: NextRequest) {
@@ -34,31 +37,18 @@ export async function POST(req: NextRequest) {
     const token : string | undefined = (await headers()).get("Authorization")?.replace("Bearer ", "");
 
     //If isn't sent we return an error
-    if(!plan || !token) return NextResponse.json({
-      message: "Data not sent correctly",
-      error: "Bad request"
-    }, {
-      status: 403
-    });
+    if(!plan) return Handler.badRequestErrorHandler();
+
+    if(!token) return Handler.unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user data from the token
     const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //If doesn't exist returns error
-    if(!user) return NextResponse.json({
-      message: "User don't found",
-      error: "Not found"
-    }, {
-      status: 400
-    });
+    if(!user) return Handler.notFoundErrorHandler("User not found");
 
     //Gets the error
-    if(getUserError) return NextResponse.json({
-      message: getUserError.message,
-      error: getUserError
-    }, {
-      status: 500
-    });
+    if(getUserError) return Handler.unauthorizedErrorHandler(getUserError.message);
 
     //Looks the plan type
     let paymentPlan;
@@ -91,6 +81,10 @@ export async function POST(req: NextRequest) {
 
     //Makes the checkout
     const session = await stripe.checkout.sessions.create({
+      //Invoice enabled
+      invoice_creation: {
+        enabled: true,
+      },
       //URL if the user did the payment
       success_url: `${proyectURL}/payments/success/`,
       //Product data (can be many, but in this case is only one)
@@ -128,13 +122,8 @@ export async function POST(req: NextRequest) {
       message: "Checkout got successfully!",
       checkout_link: session.url
     });
-  } catch(e: any) {
-    //Server errors
-    return NextResponse.json({
-      message: "An error has happened in the server",
-      error: e.message
-    }, {
-      status: 500
-    });
+  } catch(e: unknown) {
+    console.error(e);
+    return Handler.serverErrorHandler(e);
   }
 }
