@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v37.0:**
+> Page finished, Page update
+  1. La página de to do list está completa. 🚀
+  2. La página de json viewer ahora tiene nodos y conexiones funcionales. 🛠️
+
 - **Indev v36.0:**
 > Refactor
   1. Ahora los pagos son completamente funcionales y se te envía un correo al momento de realizarlo!

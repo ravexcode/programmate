@@ -64,8 +64,6 @@ export default function ToDoListPage() {
       //Sets the value of state
       setUser(user_data);
 
-      console.log(user_data)
-
       setToDoList(user_data.to_do_list![Number(params.index)]);
       setTasks(user_data.to_do_list![Number(params.index)].tasks || []);
       setInitialTasks(user_data.to_do_list![Number(params.index)].tasks || []);
@@ -95,7 +93,6 @@ export default function ToDoListPage() {
         body: JSON.stringify({
           tasks,
           list_index: params.index,
-          content: toDoList
         })
       }
     );
@@ -104,6 +101,7 @@ export default function ToDoListPage() {
 
     if(res.status === 200) {
       showSnackbar(data.message, "valid", snackbar);
+      setIsLoading(false);
       setInitialTasks(tasks);
       return;
     }

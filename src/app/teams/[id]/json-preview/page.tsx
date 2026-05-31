@@ -5,7 +5,7 @@
 import { useParams } from "next/navigation";
 
 //React imports
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 
 //Types imports
 import { UserData } from "@/types/user.types";
@@ -36,13 +36,24 @@ import {
   ReactFlow,
   Background,
   type Node,
-  type NodeTypes
+  type NodeTypes,
+  useNodesState,
+  useEdgesState,
+  Edge,
+  Connection,
+  addEdge
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
 const nodeTypes: NodeTypes = {
   container: JsonNode,
 }
+//Edges settings
+const defaultEdgeOptions = {
+  type: 'default',
+  animated: true,
+  className: 'stroke-amber-500 stroke-2',
+};
 
 export default function Page(){
   //URL id
@@ -55,6 +66,23 @@ export default function Page(){
   const [ expanded, setExpanded ] = useState<boolean>(false);
   //Team data
   const [ team, setTeam ] = useState<any>(null);
+  
+  //Default nodes (initial)
+  const initialNodes: Node[] = [
+    {
+      id: "main-parent",
+      position: { x: 0, y: 0 },
+      data: {
+        content: "Hello world"
+      },
+      type: "container",
+      draggable: true
+    }
+  ];
+
+  //Reactflow
+  const [ nodes, setNodes, onNodesChange ] = useNodesState<Node>(initialNodes);
+  const [ edges, setEdges, onEdgesChange ] = useEdgesState<Edge>([]);
 
   //Snackbar container
   const snackbar = useRef(null);
@@ -77,18 +105,13 @@ export default function Page(){
     );
   }, []);
 
-  //Default nodes (initial)
-  const initialNodes: Node[] = [
-    {
-      id: "main-parent",
-      position: { x: 0, y: 0 },
-      data: {
-        content: "Hello world"
-      },
-      type: "container",
-      draggable: true
-    }
-  ]
+  //Connection handler
+  const onConnect = useCallback((connection: Connection) => {
+    setEdges((prevEdges) => 
+      addEdge(connection, prevEdges)
+    );
+  }, [setEdges]);
+
   return (
     team ? (
       <div
@@ -191,11 +214,15 @@ export default function Page(){
           </SideBar>
         
           <ReactFlow
-          nodes={initialNodes}
-          edges={[]}
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
           fitView
           colorMode="dark"
-          nodeTypes={nodeTypes}>
+          nodeTypes={nodeTypes}
+          onConnect={onConnect}
+          defaultEdgeOptions={defaultEdgeOptions} >
             <Background className="brightness-80" />
           </ReactFlow>
       </div>

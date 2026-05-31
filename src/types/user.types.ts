@@ -10,7 +10,8 @@ export interface Task {
 export interface ToDoList {
   title: string,
   description: string,
-  tasks?: Array<Task>
+  tasks?: Task [],
+  tags?: string [],
 }
 
 //User data type

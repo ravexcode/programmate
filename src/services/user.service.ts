@@ -42,6 +42,8 @@ export default async function UpdateUserData(token: string) {
     const lastPayment = data.payments[data.payments.length - 1]; //Minus 1 because the array is 1 spot before the data
     //Expiration date
     const expires = new Date(lastPayment.paid_at);
+    //Plus 30 days (subscription time)
+    expires.setDate(expires.getDate() + 30);
     //Now
     const now = new Date();
 

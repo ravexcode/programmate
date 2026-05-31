@@ -7,7 +7,7 @@ type JNProps = NodeProps<Node<any>>;
 export function JsonNode({ data }: JNProps) {
   return (
     <div
-    className="text-text p-3 w-50 h-20 rounded-lg border border-neutral-700 bg-neutral-900">
+    className="text-text p-2 w-50 h-15 rounded-lg border border-neutral-700 bg-neutral-900 flex justify-center items-center">
       <Handle
         type="target"
         position={Position.Left}
@@ -17,7 +17,7 @@ export function JsonNode({ data }: JNProps) {
       {data.content}
 
       <Handle
-        type="target"
+        type="source"
         position={Position.Right}
         className="bg-neutral-700! w-2! h-2! border-neutral-700! pointer-events-auto"
       />

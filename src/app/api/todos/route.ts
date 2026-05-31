@@ -115,6 +115,7 @@ export async function PUT(req: NextRequest) {
       //List data
       updated_lists[list_index].title = content.title;
       updated_lists[list_index].description = content.description;
+      updated_lists[list_index].tags = content.tags;
     } else if(tasks) {
       //List tasks
       updated_lists[list_index].tasks = tasks;

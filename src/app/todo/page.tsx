@@ -19,8 +19,8 @@ import AIChat from "@/components/ui/ai-chat";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 
 //Types imports
-import { UserData } from "@/types/user.types";
-import Team from "@/types/team.types";
+import type { UserData, ToDoList } from "@/types/user.types";
+import type Team from "@/types/team.types";
 
 //Services imports
 import UpdateUserData from "@/services/user.service";
@@ -45,16 +45,30 @@ export default function ToDoListPage() {
   //Is reloading button
   const [ isReloading, setIsReloading ] = useState<boolean>(false);
   //Creator form states
-  const [projectName, setProjectName] = useState<string>("");
-  const [projectDescription, setProjectDescription] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [ newListName, setNewListName ] = useState<string>("");
+  const [ newListDescription, setNewListDescription ] = useState<string>("");
+  const [ isLoading, setIsLoading ] = useState<boolean>(false);
   //List options state
   const [ openMenuIndex, setOpenMenuIndex ] = useState<number | null>(null);
   //Sidebar expanded
   const [ expanded, setExpanded ] = useState<boolean>(false);
 
+  //Tags
+  const [ currentTag, setCurrentTag ] = useState<string>("");
+  const [ tags, setTags ] = useState<string []>([]);
+
+  //List editor content
+  const [ previousList, setPreviousList ] = useState<ToDoList | null>(null);
+  const [ listName, setListName ] = useState<string>("");
+  const [ listDescription, setlistDescription ] = useState<string>("");
+  const [ listCurrentTag, setListCurrentTag ] = useState<string>("");
+  const [ listTags, setListTags ] = useState<string []>([]);
+  const [ listIndex, setListIndex ] = useState<number>();
+  const [ editorIsLoading, setEditorIsLoading ] = useState<boolean>(false);
+
   //Components refs
-  const project_container = useRef<HTMLDivElement>(null);
+  const form_creator = useRef<HTMLDivElement>(null);
+  const form_editor = useRef<HTMLDivElement>(null);
   //Snackbar
   const snackbar = useRef(null);
 
@@ -86,7 +100,7 @@ export default function ToDoListPage() {
   }, []);
 
   //Function to handle project creation
-  const handleCreateToDoList = async(e: any) => {
+  const handleCreateToDoList = async(e: React.SubmitEvent) => {
     //Prevents default
     e.preventDefault();
     //Set button to loading
@@ -94,8 +108,8 @@ export default function ToDoListPage() {
     
     //Sets the list data
     const new_list = {
-      list_title: projectName,
-      list_description: projectDescription
+      list_title: newListName,
+      list_description: newListDescription
     };
 
     //Gets the token
@@ -131,13 +145,14 @@ export default function ToDoListPage() {
       } : prev);
 
       //Hides the form
-      hideProjectContainer();
+      toggleListCreator();
       //Change loading state
       setIsLoading(false);
       //Clear all the inputs
-      setProjectName("");
-      setProjectDescription("");
-
+      setNewListName("");
+      setNewListDescription("");
+      setCurrentTag("");
+      setTags([]);
       //Returns success
       return;
     }
@@ -149,24 +164,151 @@ export default function ToDoListPage() {
     //Cancels loading status
     setIsLoading(false);
   };
+  
+  const toggleListCreator = () => {
+    if(!form_creator.current) return;
 
-  //Function to hide project creator form
-  const hideProjectContainer = () => {
-    if(!project_container.current) return;
-    project_container.current.classList.add("hidden");
-    project_container.current.classList.remove("flex");
-  };
+    const current: HTMLElement = form_creator.current;
 
-  //Function to show project creator form
-  const showProjectContainer = () => {
-    if(!project_container.current) return;
-    project_container.current.classList.remove("hidden");
-    project_container.current.classList.add("flex");
-  };
+    //Show
+    if(current.classList.contains("hidden")){
+      form_creator.current.classList.remove("hidden");
+      form_creator.current.classList.add("flex");
+    } else {
+      //Hide
+      form_creator.current.classList.add("hidden");
+      form_creator.current.classList.remove("flex");
+    }
+  }
+  
+  const toggleListEditor = () => {
+    if(!form_editor.current) return;
+
+    const current: HTMLElement = form_editor.current;
+
+    //Show
+    if(current.classList.contains("hidden")){
+      form_editor.current.classList.remove("hidden");
+      form_editor.current.classList.add("flex");
+    } else {
+      //Hide
+      form_editor.current.classList.add("hidden");
+      form_editor.current.classList.remove("flex");
+    }
+  }
+
+  const setListEditorData = (index: number) => {
+    if(!user || !user.to_do_list || index > user.to_do_list.length - 1 || index < 0) return;
+
+    const current_list = user.to_do_list[index];
+
+    setPreviousList(current_list);
+    setListIndex(index);
+
+    setListName(current_list.title);
+    setlistDescription(current_list.description);
+    setListTags(current_list.tags || []);
+
+    toggleListEditor();
+
+    return;
+  }
+
+  const handleEditToDoList = async(e: React.SubmitEvent) => {
+    //Prevents default
+    e.preventDefault();
+    //Set button to loading
+    setEditorIsLoading(true);
+
+
+    //Gets the token
+    const token = useGetToken();
+
+    if(!token) return window.location.href = "/auth/login";
+
+    const content = {
+      title: listName,
+      description: listDescription,
+      tags: listTags
+    }
+
+    //Creates the new list
+    const res = await fetch("/api/todos", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
+        "Authorization": token,
+      },
+      body: JSON.stringify({
+        list_index: listIndex,
+        content: content
+      })
+    });
+
+    //Gets data from response
+    const data = await res.json();
+
+    if(res.status === 200) {
+      //Updates the user data
+      setUser(prev => prev ? {
+      ...prev,
+      to_do_list: prev.to_do_list?.map((list, i) => {
+        if (i !== listIndex) return list;
+
+        return {
+          title: listName,
+          description: listDescription,
+          tags: listTags
+        };
+      }) ?? []
+    } : prev);
+
+      //Hides the form
+      toggleListEditor();
+      //Change loading state
+      setEditorIsLoading(false);
+      //Clear all the inputs
+      setListName("");
+      setlistDescription("");
+      setListCurrentTag("");
+      setListTags([]);
+      setListIndex(-1);
+      //Returns success
+      return;
+    }
+    
+    //Verifies if there's an error
+    if(data.error) {
+      showSnackbar(data.message, "critic", snackbar);
+    }
+    //Cancels loading status
+    setIsLoading(false);
+  }
 
   return (
     <div
-    className="min-h-screen bg-background grid grid-cols-[auto_1fr] overflow-hidden text-text">
+    className="min-h-screen bg-background grid grid-cols-[auto_1fr] overflow-hidden text-text"
+    onKeyDown={(e) => {
+      if(!form_creator.current || !form_editor.current) return;
+
+      const current_creator : HTMLElement = form_creator.current;
+      const current_editor : HTMLElement = form_editor.current;
+      
+      if(current_creator.classList.contains("flex")) {
+        if(e.key === "Escape") return toggleListCreator();
+
+        return;
+      }
+
+      if(current_editor.classList.contains("flex")) {
+        if(e.key === "Escape") return toggleListEditor();
+        
+        return;
+      }
+
+      return;
+    }}>
       { user ? (
         <>
           <SideBar
@@ -203,25 +345,141 @@ export default function ToDoListPage() {
 
           {/* Creator form */}
           <div
-          ref={project_container}
-          className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col justify-center items-center z-200 animate-fade-in hidden">
+          ref={form_creator}
+          className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col justify-center items-center z-50 animate-fade-in hidden"
+          onClick={toggleListCreator}>
             <CreatorForm
             title="Create a new to do list"
             action={handleCreateToDoList}
-            hideAction={hideProjectContainer}
-            actionIsDisabled={ isLoading || !projectName || projectName.length < 3 || !projectDescription}>
+            hideAction={toggleListCreator}
+            actionIsDisabled={ isLoading || !newListName || newListName.length < 3 || !newListDescription}>
 
               <CreatorInput
               label="To do list name"
               placeholder="My to do list"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}/>
+              value={newListName}
+              onChange={(e) => setNewListName(e.target.value)}/>
 
               <CreatorInput
               label="To do list description"
               placeholder="Describe your to do list"
-              value={projectDescription}
-              onChange={(e) => setProjectDescription(e.target.value)}/>
+              type="textarea"
+              value={newListDescription}
+              onChange={(e) => setNewListDescription(e.target.value)}/>
+
+              {/* Tags section */}
+              <label
+              className="font-light w-full text-start">
+                List tags
+              </label>
+              <input
+              type="text"
+              className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400"
+              value={currentTag || ""}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setCurrentTag(e.target.value)
+              }}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  if (currentTag && currentTag.trim().length > 0 && !tags.includes(currentTag)) {
+                    setTags(prev => prev ? [
+                      ...prev,
+                      currentTag
+                    ] : [ currentTag ]);
+                    setCurrentTag("");
+                  };
+                  
+                  if(tags.includes(currentTag!)) {
+                    setCurrentTag("");
+                  }
+                }
+              }}
+              placeholder="API, Database, Code..."/>
+
+              { /* Current tags */ }
+              <div
+              className="flex gap-1 flex-wrap justify-start items-center mb-10 w-full">
+                { tags && tags.length > 0 && tags.map((tag, index) => (
+                  <div
+                  key={index}
+                  className="w-max px-2 py-1 rounded-md bg-neutral-800 text-sm font-light cursor-default hover:bg-red-700 duration-400"
+                  onClick={() => { setTags(tags.toSpliced(index, 1)); }}>
+                    {tag}
+                  </div>
+                )) }
+              </div>
+
+            </CreatorForm>
+          </div>
+
+          {/* Editor form */}
+          <div
+          ref={form_editor}
+          className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col justify-center items-center z-50 animate-fade-in hidden"
+          onClick={toggleListEditor}>
+            <CreatorForm
+            title="Edit your to do list"
+            action={handleEditToDoList}
+            hideAction={toggleListEditor}
+            actionIsDisabled={ editorIsLoading || !listName || listName.length < 3 || (listName === previousList?.title && listDescription === previousList?.description && listTags === previousList?.tags) }>
+
+              <CreatorInput
+              label="To do list name"
+              placeholder="My to do list"
+              value={listName}
+              onChange={(e) => setListName(e.target.value)}
+              required/>
+
+              <CreatorInput
+              label="To do list description"
+              placeholder="Describe your to do list"
+              type="textarea"
+              value={listDescription}
+              onChange={(e) => setlistDescription(e.target.value)}/>
+
+              {/* Tags section */}
+              <label
+              className="font-light w-full text-start">
+                List tags
+              </label>
+              <input
+              type="text"
+              className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400"
+              value={listCurrentTag || ""}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setListCurrentTag(e.target.value)
+              }}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  if (listCurrentTag && listCurrentTag.trim().length > 0 && !tags.includes(listCurrentTag)) {
+                    setListTags(prev => prev ? [
+                      ...prev,
+                      listCurrentTag
+                    ] : [ listCurrentTag ]);
+                    setListCurrentTag("");
+                  };
+                  
+                  if(tags.includes(listCurrentTag!)) {
+                    setListCurrentTag("");
+                  }
+                }
+              }}
+              placeholder="API, Database, Code..."/>
+
+              { /* Current tags */ }
+              <div
+              className="flex gap-1 flex-wrap justify-start items-center mb-10 w-full">
+                { listTags && listTags.length > 0 && listTags.map((tag, index) => (
+                  <div
+                  key={index}
+                  className="w-max px-2 py-1 rounded-md bg-neutral-800 text-sm font-light cursor-default hover:bg-red-700 duration-400"
+                  onClick={() => { setListTags(listTags.toSpliced(index, 1)); }}>
+                    {tag}
+                  </div>
+                )) }
+              </div>
 
             </CreatorForm>
           </div>
@@ -285,7 +543,7 @@ export default function ToDoListPage() {
                   <button
                   className="flex items-center gap-2 bg-main px-6 py-2 text-sm font-medium text-white rounded-full transition-all duration-300 hover:bg-main/80 focus:outline-none active:scale-95 cursor-pointer"
                   onClick={() => {
-                    showProjectContainer();
+                    toggleListCreator();
                   }}>
                     <IconPlus
                     color="white"
@@ -320,7 +578,7 @@ export default function ToDoListPage() {
                           </h3>
                           
                           <button 
-                            className="flex h-8 w-8 -mr-2 -mt-2 items-center justify-center rounded-full text-text hover:bg-ultramarine-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine-400"
+                            className="flex h-8 w-8 -mr-2 -mt-2 items-center justify-center rounded-full text-text hover:bg-ultramarine-50/10 outline-none"
                             onClick={(e) => {
                               e.nativeEvent.stopImmediatePropagation(); 
                               e.stopPropagation();
@@ -338,6 +596,7 @@ export default function ToDoListPage() {
                               onClick={(e) => {
                                 e.nativeEvent.stopImmediatePropagation(); 
                                 e.stopPropagation();
+                                setListEditorData(index);
                                 setOpenMenuIndex(null);
                               }}
                               className="flex w-full items-center px-4 py-2.5 text-sm text-text transition-colors hover:bg-ultramarine-800">
