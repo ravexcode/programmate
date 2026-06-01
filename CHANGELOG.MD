@@ -1,5 +1,12 @@
 # Indev
 
+- **Indev v39.0:**
+> Dev update, Dev settings, New page, New route
+  1. Integración de Agentes con los folders de /agents y AGENTS.md. 🤖
+  2. Nuevos alias de imports. ⚙️
+  3. Nueva página hecha por IA, aún por modificar. 🛠️
+  4. Nueva ruta hecha por IA, actualmente estable. ✅
+
 - **Indev v38.0:**
 > Design fix, Optimization
   1. Se eliminaron iconos e iconos de botones innecesarios, ahora se usan directamente iconos de tabler icons. 🗑️

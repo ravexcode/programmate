@@ -4,7 +4,7 @@ interface CreatorInputProps {
   label: string,
   placeholder?: string,
   required?: boolean,
-  type?: "text" | "textarea",
+  type?: "text" | "textarea" | "email" | "url",
 }
 
 export default function CreatorInput(props: CreatorInputProps) {

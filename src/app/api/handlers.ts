@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import { type PostgrestError } from "@supabase/supabase-js";
 import { type ErrorResponse } from "resend";
 
-function errorTemplate(
+export function errorTemplate(
   content: string,
   error: string | Error | unknown | PostgrestError,
   status: number
