@@ -4,21 +4,19 @@
 @import 'tailwind-animations';
 
 @theme {
-  /* Color variation */
-  --color-ultramarine-50:  #eef6ff;
-  --color-ultramarine-100: #c0beff;
-  --color-ultramarine-200: #9a97e6;
-  --color-ultramarine-300: #6f6bd1;
-  --color-ultramarine-400: #4845bc;
-  --color-ultramarine-500: #2e2b9e;
-  --color-ultramarine-600: #232169;
-  --color-ultramarine-700: #15134d;
-  --color-ultramarine-800: #0d0c3a;
-  --color-ultramarine-900: #05051e;
-  --color-ultramarine-950: #020210;
-
   /* Pre-built colors */
   --color-background: #060606;
   --color-text: #EEF5DB;
   --color-main: #1A43BF;
+  
+  --animate-carousel: carousel 25s linear infinite;
+
+  @keyframes carousel {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+}
+
+.hover\:pause:hover {
+  animation-play-state: paused;
 }

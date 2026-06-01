@@ -18,3 +18,4 @@ A continuación verás los tipos de versiones de la app
   11. Page finished: Página terminada al 100%
   12. Page update: Actualización de páginas
   13. Page improvement: Mejora de páginas
+  14. Optimization: Mejoras de optimización en la página

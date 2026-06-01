@@ -9,9 +9,14 @@ import Footer from "@/components/ui/footer";
 import { useEffect } from "react";
 import { useSaveToken } from "@/hooks/useCookies";
 
-//Hooks imports
+//Next imports
+import { useRouter } from "next/navigation";
+import { IconSparkleHighlight } from "@tabler/icons-react";
 
 export default function OAuthCallback(){
+  //Next router setup
+  const router = useRouter();
+
   //Starts the app
   useEffect(() => {
     //Gets the params deleting the hash separator
@@ -24,16 +29,16 @@ export default function OAuthCallback(){
 
     //If there's no params data returns to home
     if(!access_token) {
-      window.location.href = "/"
+      return router.push("/");
     }
 
     //Cleans the URL for preventing errors
     window.history.replaceState({}, document.title, window.location.pathname);
-    //Waits 3 seconds before redirecting to dashboard
+    //Waits 2 seconds before redirecting to dashboard
     setTimeout(() => {
       //Saves cookie and redirects to dashboard
       useSaveToken(access_token!);
-      window.location.href = "/dashboard";
+      return router.push("/dashboard");
     }, 2000);
   }, []);
 
@@ -41,18 +46,17 @@ export default function OAuthCallback(){
     <div className="bg-background min-h-screen grid grid-rows-[auto_1fr_auto]">
       <Header />
       <main
-      className="flex flex-col justify-center items-center px-4 py-6 min-h-130 animate-fade-in relative w-full overflow-hidden">
+      className="flex flex-col justify-center items-center min-h-130 animate-fade-in relative w-full overflow-hidden">
 
         <section
-        className="px-4 py-10 bg-ultramarine-950 shadow-xl shadow-ultramarine-700/20 min-w-90 rounded-md flex flex-col justify-center items-center gap-2 border border-ultramarine-600/50 text-center show-element text-text z-2">
+        className="px-6 py-10 bg-neutral-950 shadow-xl shadow-blue-900/20 min-w-90 rounded-md flex flex-col justify-center items-center gap-2 border border-neutral-800 text-center show-element text-zinc-50 z-2">
 
           <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-ultramarine-900/20">
             <div className="absolute inset-0 rounded-full bg-ultramarine-300/50 blur-xl animate-pulse" />
-            <img 
-              src="/icons/party.svg" 
-              alt="Icon made by Ravex Code"
-              className="relative z-2 aspect-square w-12 drop-shadow-md"
-            />
+            <IconSparkleHighlight
+            size={50}
+            color="blue"
+            className="animate-zoom-in animate-duration-250" />
           </div>
 
           <h1
@@ -65,7 +69,7 @@ export default function OAuthCallback(){
           </p>
           <p
           className="mt-5 w-80">
-            You will be redirected to the app, if there's an error report it!
+            You will be redirected to the app, if there's an error report us it!
           </p>
 
         </section>

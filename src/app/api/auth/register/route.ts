@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
         data: {
           username: name
         },
-        emailRedirectTo: `${process.env.API_URL || "http://localhost:3000"}/oauth/callback`
+        emailRedirectTo: `${process.env.API_URL || "http://localhost:7000"}/oauth/callback`
       }
     });
 

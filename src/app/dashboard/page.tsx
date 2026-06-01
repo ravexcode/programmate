@@ -9,8 +9,8 @@ import {
   IconPencil,
   IconDotsVertical,
   IconReload, 
-  IconAssembly,
-  IconFolder} from "@tabler/icons-react";
+  IconAssembly
+} from "@tabler/icons-react";
 
 //React imports
 import { useEffect, useState, useRef, RefObject } from "react";
@@ -71,7 +71,7 @@ function ProjectCard(props : ProjectCardProps) {
       e.stopPropagation();
       props.showMenu();
     }}
-    className="group relative w-full flex flex-col rounded-xl border border-ultramarine-50/10 bg-neutral-950 p-5">
+    className="group relative w-full flex flex-col rounded-xl border border-neutral-800 bg-neutral-950 cursor-pointer duration-400 hover:-translate-y-1 hover:border-main p-5">
 
       <header
       className="flex items-start justify-between mb-3">
@@ -1059,7 +1059,7 @@ export default function Dashboard(){
                   </div>
 
                   <button
-                  className="text-sm py-2 px-6 border-2 border-ultramarine-50/30 rounded-full cursor-pointer duration-300 hover:border-ultramarine-50/60 h-max w-max flex gap-2 my-auto disabled:hover:brightness-80 disabled:hover:bg-transparent disabled:hover:scale-100 disabled:brightness-80 disabled:cursor-wait"
+                  className="text-sm py-2 px-6 border border-neutral-800 rounded-full cursor-pointer duration-300 hover:border-neutral-700 h-max w-max flex gap-2 my-auto disabled:hover:brightness-80 disabled:hover:bg-transparent disabled:hover:scale-100 disabled:brightness-80 disabled:cursor-wait"
                   disabled={isReloading}
                   onClick={ async(e) => {
                     setIsReloading(true);

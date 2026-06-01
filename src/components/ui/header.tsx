@@ -1,11 +1,16 @@
 //Next imports
-import { getCookie } from "cookies-next/client";
 import Link from "next/link";
+
+//Hooks imports
+import { useGetToken } from "@/hooks/useCookies";
 
 //React imports
 import { useState, useEffect } from "react";
 
-function OptionsButton(props: any){
+function OptionsButton(props: {
+  link: string,
+  children: React.ReactNode
+}){
   return (
     <li>
       <Link
@@ -17,11 +22,11 @@ function OptionsButton(props: any){
   )
 }
 
-export default function Header(props: any){
+export default function Header(){
   const [ isSignedIn, setIsSignedIn ] = useState(false);
 
   useEffect(() => {
-    const token = getCookie("token");
+    const token = useGetToken();
 
     if(token) {
       setIsSignedIn(true);
@@ -33,7 +38,7 @@ export default function Header(props: any){
 
   return (
     <header
-    className="text-text flex justify-between items-center p-4 border-b border-ultramarine-50/30 text-sm sticky top-0 animate-slide-in-top z-10 backdrop-blur-xl bg-black/40 h-max">
+    className="text-zinc-50 flex justify-between items-center p-4 border-b border-neutral-800 text-sm sticky top-0 animate-slide-in-top z-10 backdrop-blur-xl bg-black/40 h-max">
       <Link href="/"
       className="duration-400 hover:brightness-150 relative">
         <img src="/logos/large.svg" alt="Logo large made by RavexCode"

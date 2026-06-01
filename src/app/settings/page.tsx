@@ -13,7 +13,7 @@ import { deleteCookie } from "cookies-next";
 import AIChat from "@/components/ui/ai-chat";
 import { getCookie } from "cookies-next/client";
 import { UserData } from "@/types/user.types";
-import { IconBug, IconLogout, IconMail, IconSparkles, IconTrash } from "@tabler/icons-react";
+import { IconBug, IconLogout, IconMail, IconSparkles, IconTrash, IconZoomMoney } from "@tabler/icons-react";
 import LoadingDashboard from "@/components/screens/loading-screen";
 
 //Config button
@@ -190,6 +190,8 @@ export default function ConfigurationPage(){
                     width={500}
                     height={500}
                     className="w-full h-full object-cover rounded-full" 
+                    preload
+                    loading="eager"
                   />
                 </div>
 
@@ -256,6 +258,13 @@ export default function ConfigurationPage(){
               title="Contact us"
               action={() => {  }}>
                 <IconMail
+                stroke={1.5} />
+              </ActionButton>
+
+              <ActionButton
+              title="View my subscription payments"
+              action={() => {  }}>
+                <IconZoomMoney
                 stroke={1.5} />
               </ActionButton>
 

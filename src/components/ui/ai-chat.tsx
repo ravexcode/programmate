@@ -14,7 +14,7 @@ import { getCached } from "@/hooks/cache.hook";
 import { UserData } from "@/types/user.types";
 
 //Icons imports
-import { IconX } from "@tabler/icons-react";
+import { IconSend, IconSparkles2, IconX } from "@tabler/icons-react";
 
 export default function AIChat(){
   //States updater
@@ -149,14 +149,13 @@ export default function AIChat(){
       {/* Button */}
       <button
       ref={AIbutton}
-      className="fixed p-3 rounded-full bottom-4 right-4 border-x border-main shadow-lg shadow-main/20 cursor-pointer bg-neutral-950 z-10 duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-main/40 focus:outline-none animate-pulse"
+      className="fixed p-3 rounded-full bottom-4 right-4 border-x border-main shadow-lg shadow-main/20 cursor-pointer bg-neutral-950 z-10 duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-main/40 focus:outline-none animate-fade-in-left"
       onClick={() => {
         toggleAiForm();
       }}>
-        <img
-        src="/icons/buttons/ai.svg"
-        alt="Icon made by RavexCode"
-        className="aspect-square w-5 block"/>
+        <IconSparkles2
+        color="#345feb"
+        stroke={1.5} />
       </button>
 
       {/* AI section container */}
@@ -242,11 +241,7 @@ export default function AIChat(){
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             ) : (
-              <img
-                src="/icons/buttons/send.svg"
-                alt="Icon made by RavexCode"
-                className="w-5 aspect-square block relative -translate-x-px translate-y-px duration-300 hover:scale-110"
-              />
+              <IconSend />
             )}
           </button>
         </form>

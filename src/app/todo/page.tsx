@@ -515,7 +515,7 @@ export default function ToDoListPage() {
                 </div>
 
                 <button
-                className="text-sm py-2 px-6 border-2 border-ultramarine-50/30 rounded-full cursor-pointer duration-300 hover:border-ultramarine-50/60 h-max w-max flex gap-2 my-auto disabled:hover:brightness-80 disabled:hover:bg-transparent disabled:hover:scale-100 disabled:brightness-80 disabled:cursor-wait"
+                className="text-sm py-2 px-6 border border-neutral-900 rounded-full cursor-pointer duration-300 hover:border-neutral-800 h-max w-max flex gap-2 my-auto disabled:hover:brightness-80 disabled:hover:bg-transparent disabled:hover:scale-100 disabled:brightness-80 disabled:cursor-wait"
                 disabled={isReloading}
                 onClick={ async(e) => {
                   setIsReloading(true);
@@ -560,7 +560,7 @@ export default function ToDoListPage() {
                     user.to_do_list.map((list, index) => (
                       <section
                       key={index}
-                      className="group relative w-full flex flex-col rounded-xl border border-ultramarine-50/10 bg-neutral-950 p-5"
+                      className="group relative w-full flex flex-col rounded-xl border border-neutral-800 cursor-pointer duration-500 hover:border-main hover:-translate-y-1 bg-neutral-950 p-5"
                       onContextMenu={(e) => {
                         e.preventDefault();
                         e.nativeEvent.stopImmediatePropagation();
@@ -578,7 +578,7 @@ export default function ToDoListPage() {
                           </h3>
                           
                           <button 
-                            className="flex h-8 w-8 -mr-2 -mt-2 items-center justify-center rounded-full text-text hover:bg-ultramarine-50/10 outline-none"
+                            className="flex h-8 w-8 -mr-2 -mt-2 items-center justify-center rounded-full text-text hover:bg-neutral-800 outline-none"
                             onClick={(e) => {
                               e.nativeEvent.stopImmediatePropagation(); 
                               e.stopPropagation();
@@ -591,7 +591,7 @@ export default function ToDoListPage() {
                           </button>
 
                           { openMenuIndex === index && (
-                            <div className="absolute right-2 top-10 z-20 w-36 overflow-hidden rounded-lg border border-ultramarine-50/10 bg-neutral-900 shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
+                            <div className="absolute right-2 top-10 z-20 w-36 overflow-hidden rounded-lg border border-neutral-700 bg-neutral-900 shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
                               <button
                               onClick={(e) => {
                                 e.nativeEvent.stopImmediatePropagation(); 
@@ -599,7 +599,7 @@ export default function ToDoListPage() {
                                 setListEditorData(index);
                                 setOpenMenuIndex(null);
                               }}
-                              className="flex w-full items-center px-4 py-2.5 text-sm text-text transition-colors hover:bg-ultramarine-800">
+                              className="flex w-full items-center px-4 py-2.5 text-sm text-text transition-colors hover:bg-neutral-700">
 
                               <IconPencil
                               size={20}

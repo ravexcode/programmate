@@ -30,7 +30,7 @@ export function Icon(props : IconProps) {
   return (
     <Link
     href={props.action}
-    className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-90 duration-400 " + (props.disabled && "grayscale brightness-50 pointer-events-none ") + (props.isDisplayed ? "w-46 md:w-60" : "w-full")}>
+    className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-400 " + (props.disabled && "grayscale brightness-50 pointer-events-none ") + (props.isDisplayed ? "w-46 md:w-60" : "w-full")}>
       {props.children}
       {props.isDisplayed && <span className="text-sm animate-fade-in-right"> {props.name} </span>}
     </Link>
@@ -81,7 +81,7 @@ export default function SideBar(props: SideBarProps) {
             setExpanded(prev => !prev)
             props.setExpanded && props.setExpanded(expanded);
           }}
-          className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-90 duration-800 " + (expanded ? "w-46 md:w-60" : "w-full")}>
+          className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-800 " + (expanded ? "w-46 md:w-60" : "w-full")}>
           <IconLayoutSidebar
           size={23}
           stroke={2}

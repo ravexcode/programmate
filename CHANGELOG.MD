@@ -1,5 +1,12 @@
 # Indev
 
+- **Indev v38.0:**
+> Design fix, Optimization
+  1. Se eliminaron iconos e iconos de botones innecesarios, ahora se usan directamente iconos de tabler icons. 🗑️
+  2. Mejora en el carrousel de iconos. 🛠️
+  3. Arreglo de rutas en auth. 🛠️
+  4. Eliminación de colores extra innecesarios y obsoletos. 🗑️
+
 - **Indev v37.1:**
 > Dev update
   1. Actualización de documentación para desarolladores. 🚀

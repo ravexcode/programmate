@@ -111,27 +111,32 @@ export default function HomePage(){
         <span className="h-10"></span>
 
         <section 
-        className="text-text bg-background flex flex-col justify-center items-center gap-5 px-4 z-2 w-full timeline-view-y animate-zoom-in animate-range-[entry_0%_cover_30%]">
+        className="text-text bg-background flex flex-col justify-center items-center gap-5 px-4 z-2 w-full timeline-view-y animate-zoom-in animate-range-[entry_0%_cover_10%]">
           <p
           className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30">
             Why Prismaflow?
           </p>
 
-          <div className="flex flex-col lg:flex-row gap-10">
+          <div className="flex flex-col gap-10">
             <Card
-            title="Easy to use"
-            icon="easy-to-use.svg">
-              Our app is easy to use if you aren't experimented with dev apps
+            title="Easy to use">
+              Get started in minutes with a clean and intuitive interface designed for both
+              beginners and professionals. Focus on building your projects instead of
+              learning complicated software.
             </Card>
+
             <Card
-            title="Better workflow"
-            icon="flow.svg">
-              Prismaflow goal is making that your proyects have more workflow
+            title="Better workflow">
+              Replace scattered tools with a unified platform that connects planning,
+              documentation, databases, and collaboration. Spend less time managing tools
+              and more time delivering results.
             </Card>
+
             <Card
-            title="Accessible prices"
-            icon="price.svg">
-              The prices are accessible from students to big company teams
+            title="Accessible pricing">
+              Affordable plans for students, freelancers, startups, and enterprise teams.
+              Scale your workspace as your projects grow without paying for unnecessary
+              features.
             </Card>
           </div>
         </section>
