@@ -41,7 +41,9 @@ export default function Footer() {
                 alt="Prismaflow logo"
                 width={40}
                 height={40}
-                className="mb-4"
+                className="mb-4 aspect-square w-10"
+                preload
+                loading="eager"
               />
             </Link>
             <p className="max-w-xs text-gray-400 tracking-wider">

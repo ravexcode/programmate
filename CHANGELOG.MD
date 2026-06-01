@@ -1,5 +1,12 @@
 # Indev
 
+- **Indev v37.1:**
+> Dev update
+  1. Actualización de documentación para desarolladores. 🚀
+  2. /example_schemas retirado completamente. 🗑️
+  3. .gitignore reconfigurado. ⚙️
+  4. Se eliminó la carpeta /src/modules por falta de funcionalidad
+
 - **Indev v37.0:**
 > Page finished, Page update
   1. La página de to do list está completa. 🚀
