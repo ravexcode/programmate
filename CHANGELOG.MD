@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v40.1:**"
+> Bugfix leve
+  1. Cambios leves en el diseño y eliminación de documentos innecesarios. 🛠️
+
 - **Indev v40.0:**
 > Dev update, page finished, route finished
   1. Agentes con más información para que puedan entender la estructura del desarollo. 🤖

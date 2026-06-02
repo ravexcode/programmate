@@ -129,7 +129,6 @@ const res = await fetch('/api/', {
 When you make a new component (it don't need to be used in many pages) you need to know this:
 
 - `src/app/lib/components`: Only for components imported from node modules that gives the components and only needs configuration.
-- `src/components/containers`: Deprecated
 - `src/components/forms`: Only for forms and their components.
 - `src/components/layouts`: Prebuilt layouts (like main pages layout)
 - `src/components/screens`: Only for objects that appears in all the screen.

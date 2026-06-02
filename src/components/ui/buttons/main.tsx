@@ -2,7 +2,7 @@ interface Props {
   children: React.ReactNode,
   size: string,
   type?: "submit" | "reset",
-  action?: () => {},
+  action?: () => void,
   className?: string,
   isLoading?: boolean
 }

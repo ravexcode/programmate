@@ -1,29 +1,32 @@
 //Client page
 "use client";
 
-//UI Components
+//Next router
+import { useRouter } from "next/navigation";
+
+//Prebuilt ui imports
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
+import MainButton from "@/components/ui/buttons/main";
+
+//Icons imports
+import { IconMail } from "@tabler/icons-react";
 
 export default function AuthSuccess(){
-  return (
-    <div className="bg-background min-h-dvh grid grid-rows-[auto_1fr_auto]">
-      <Header
-      isAuthForm={true}/>
+  const router = useRouter();
 
-      <main className="flex flex-col justify-center items-center w-full h-full py-20 relative">
+  return (
+    <div className="bg-background min-h-screen grid grid-rows-[auto_1fr_auto] text-zinc-50">
+      <Header />
+
+      <main className="flex flex-col justify-center items-center h-full py-20 relative">
 
         <section
-        className="px-4 py-10 bg-ultramarine-950 shadow-xl shadow-ultramarine-700/20 min-w-90 rounded-md flex flex-col justify-center items-center gap-2 border border-ultramarine-600/50 text-center show-element text-text z-2">
-
-          <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-ultramarine-900/20">
-            <div className="absolute inset-0 rounded-full bg-ultramarine-300/50 blur-xl animate-pulse" />
-            <img 
-              src="/icons/party.svg" 
-              alt="Icon made by StreamlineHQ"
-              className="relative z-2 aspect-square w-12 drop-shadow-md"
-            />
-          </div>
+        className="flex flex-col items-center justify-center w-100 max-w-9/10 rounded-xl bg-neutral-950 border border-neutral-800 z-2 py-8 text-center gap-3 animate-fade-in-up">
+          <IconMail
+          size={40}
+          stroke={2}
+          color="blue" />
 
           <h1
           className="text-3xl font-bold">
@@ -34,11 +37,14 @@ export default function AuthSuccess(){
             We sent you an email
           </p>
           
-          <a
-          href="https://mail.google.com"
-          className="mt-5 w-full bg-main/50 py-2 rounded-md shadow-lg shadow-ultramarine-400/50 duration-200 hover:bg-main/70 hover:shadow-ultramarine-400">
-            Go to GMail
-          </a>
+          <MainButton
+          size="w-50 mt-4"
+          action={() => {
+            window.location.href = "https://mail.google.com";
+            return;
+          }}>
+            Go to Gmail
+          </MainButton>
 
         </section>
 

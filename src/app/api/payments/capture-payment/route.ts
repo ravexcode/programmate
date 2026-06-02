@@ -6,9 +6,6 @@ import { headers } from "next/headers";
 import { stripe } from "@/lib/stripe";
 import supabase from "@/lib/db";
 
-//Types
-import type Plan from "@/modules/plan.types";
-
 //Handlers imports
 import * as Handler from "@/app/api/handlers";
 
@@ -16,14 +13,14 @@ import * as Handler from "@/app/api/handlers";
 const proyectURL = process.env.API_URL || "http://localhost:3000";
 
 //Plans
-const pro : Plan = {
+const pro = {
   name: "Prismaflow pro plan",
   currency: "usd",
   cost: 400, //Dollar cents
   url_image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDl2gg4N0WhybinSClgsZD6KePMVZ0B39thQ&s"
 };
 
-const team : Plan = {
+const team = {
   name: "Prismaflow team plan",
   currency: "usd",
   cost: 1000, //Dollar cents
