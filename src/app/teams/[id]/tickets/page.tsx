@@ -7,12 +7,11 @@ import { useEffect, useRef, useState } from "react";
 //Next imports
 import { useParams } from "next/navigation";
 import { getCookie } from "cookies-next/client";
-import Link from "next/link";
 
 //Prebuild UI imports
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
-import SideBar, { IconProps } from "@/components/ui/sidebar";
+import SideBar, { Icon } from "@/components/ui/sidebar";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
 
@@ -37,18 +36,6 @@ import {
   IconTicket,
   IconUsers
 } from "@tabler/icons-react";
-
-//Icon button component
-function Icon(props : IconProps) {
-  return (
-    <Link
-    href={props.action}
-    className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-90 duration-400 " + (props.disabled && "grayscale brightness-50 pointer-events-none ") + (props.isDisplayed ? "w-46 md:w-60" : "w-full")}>
-      {props.children}
-      {props.isDisplayed && <span className="text-sm animate-fade-in-right"> {props.name} </span>}
-    </Link>
-  )
-}
 
 export default function TicketsTeamPage(){
   //Params data
@@ -77,6 +64,15 @@ export default function TicketsTeamPage(){
   const snackbar = useRef(null);
   //Ticket creator
   const creatorContainer: React.RefObject<null> = useRef(null);
+
+  //Set expanded based in localstorage
+  useEffect(() => {
+    const expanded = window.localStorage.getItem("expanded");
+
+    if(expanded) return setExpanded(true);
+
+    return;
+  }, []);
 
   useEffect(() => {
     //Gets user from cache

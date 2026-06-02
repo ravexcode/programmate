@@ -87,6 +87,15 @@ export default function TeamPage(){
   //Snackbar container
   const snackbar = useRef(null);
 
+  //Sidebar status
+  useEffect(() => {
+    const expanded = window.localStorage.getItem("expanded");
+
+    if(expanded) return setExpanded(true);
+
+    return;
+  }, []);
+
   //Sets the data
   useEffect(() => {
     //Gets user from cache

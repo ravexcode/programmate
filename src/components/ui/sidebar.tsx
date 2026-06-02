@@ -1,5 +1,5 @@
 //React imports
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 
 //Next imports
 import Link from "next/link";
@@ -11,7 +11,6 @@ import {
   IconChecklist,
   IconLayoutDashboard,
   IconLayoutSidebar,
-  IconSettings,
   IconUserCircle
 } from "@tabler/icons-react";
 
@@ -50,6 +49,14 @@ interface SideBarProps {
 export default function SideBar(props: SideBarProps) {
   const [expanded, setExpanded] = useState(false);
   
+  useEffect(() => {
+    const expanded = window.localStorage.getItem("expanded");
+
+    if(expanded) return setExpanded(true);
+
+    return;
+  }, []);
+  
   return (
     <aside
       className={`text-xs md:text-sm scrollbar-hide h-screen bg-neutral-950 text-text transition-all duration-400 flex flex-col animate-fade-in overflow-y-auto overflow-x-hidden 
@@ -80,6 +87,8 @@ export default function SideBar(props: SideBarProps) {
           onClick={() => {
             setExpanded(prev => !prev)
             props.setExpanded && props.setExpanded(expanded);
+            if(!expanded) return window.localStorage.setItem("expanded", "expanded");
+            return window.localStorage.removeItem("expanded");
           }}
           className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-800 " + (expanded ? "w-46 md:w-60" : "w-full")}>
           <IconLayoutSidebar

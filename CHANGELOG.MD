@@ -1,6 +1,11 @@
 # Indev
 
-- **Indev v40.1:**"
+- **Indev v40.2:**
+> Bugfix leve, design fix
+  1. Arreglo de diseño en el header. 🛠️
+  2. Sidebar mejorado. 🚀
+
+- **Indev v40.1:**
 > Bugfix leve
   1. Cambios leves en el diseño y eliminación de documentos innecesarios. 🛠️
 

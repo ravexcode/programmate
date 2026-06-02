@@ -629,6 +629,19 @@ export default function ToDoListPage() {
                       <p className="text-sm text-text/60 line-clamp-3 leading-relaxed">
                         {list.description}
                       </p>
+
+                      <section
+                      className="flex gap-2 mt-2">
+                        {
+                          list.tags && list.tags.map((tag, index) => 
+                            <span
+                            className="py-0.5 px-3 rounded-md text-sm bg-main/40 border border-main"
+                            key={tag + index.toString()}>
+                              { tag }
+                            </span>
+                          )
+                        }
+                      </section>
                     </section>
                     )) : (
                     <span

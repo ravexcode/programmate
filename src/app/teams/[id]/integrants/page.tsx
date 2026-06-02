@@ -16,7 +16,7 @@ import { searchTeamData } from "../page";
 import { getCached } from "@/hooks/cache.hook";
 
 //Prebuilt ui imports
-import SideBar, { IconProps } from "@/components/ui/sidebar";
+import SideBar, { Icon } from "@/components/ui/sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import CreatorForm from "@/components/forms/creator-form";
@@ -41,18 +41,6 @@ import {
 import type Team from "@/types/team.types";
 import { UserData } from "@/types/user.types";
 import { IntegrantData } from "@/types/team.types";
-
-//Icon button component
-export function Icon(props : IconProps) {
-  return (
-    <Link
-    href={props.action}
-    className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-ultramarine-600 cursor-pointer transition focus:outline-none opacity-90 duration-400 " + (props.disabled && "grayscale brightness-50 pointer-events-none ") + (props.isDisplayed ? "w-46 md:w-60" : "w-full")}>
-      {props.children}
-      {props.isDisplayed && <span className="text-sm animate-fade-in-right"> {props.name} </span>}
-    </Link>
-  )
-}
 
 export default function Page(){
   //Params value
@@ -86,6 +74,15 @@ export default function Page(){
   const snackbar = useRef(null);
   //Form component
   const addIntgForm = useRef(null);
+
+  //Set expanded based in localstorage
+  useEffect(() => {
+    const expanded = window.localStorage.getItem("expanded");
+
+    if(expanded) return setExpanded(true);
+
+    return;
+  }, []);
 
   useEffect(() => {
     async function getData() {

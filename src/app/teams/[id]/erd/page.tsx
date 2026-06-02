@@ -133,6 +133,15 @@ export default function Page(){
   //Table exporter
   const exporter = useRef(null);
 
+  //Set expanded based in localstorage
+  useEffect(() => {
+    const expanded = window.localStorage.getItem("expanded");
+
+    if(expanded) return setExpanded(true);
+
+    return;
+  }, []);
+
   //Data fetching
   useEffect(() => {
     async function fetchData(){

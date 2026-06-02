@@ -15,7 +15,7 @@ function OptionsButton(props: {
     <li>
       <Link
       href={props.link}
-      className="px-8 py-2 cursor-pointer opacity-80 rounded-full duration-200 hover:bg-ultramarine-50/10 hover:opacity-100">
+      className="px-8 py-2 cursor-pointer opacity-80 rounded-full duration-200 hover:bg-neutral-800 hover:opacity-100">
         {props.children}
       </Link>
     </li>
