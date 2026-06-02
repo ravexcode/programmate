@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
     //Inserts the bug report into the database
     const { error: insertError } = await supabase
-    .from("bug_reports")
+    .from("reports")
     .insert([
       {
         title,
@@ -29,7 +29,6 @@ export async function POST(req: NextRequest) {
         error_date,
         email: email || null,
         screenshot_url: screenshot_url || null,
-        created_at: new Date().toISOString(),
         status: "New", //Default status
       },
     ]);
@@ -39,7 +38,7 @@ export async function POST(req: NextRequest) {
 
     //Returns success response
     return NextResponse.json({
-      message: "Bug reportado exitosamente",
+      message: "Bug reported successfully",
     }, {
       status: 201,
     });

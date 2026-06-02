@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v40.0:**
+> Dev update, page finished, route finished
+  1. Agentes con más información para que puedan entender la estructura del desarollo. 🤖
+  2. Página y ruta para reportar bugs terminadas. 🐛
+
 - **Indev v39.0:**
 > Dev update, Dev settings, New page, New route
   1. Integración de Agentes con los folders de /agents y AGENTS.md. 🤖

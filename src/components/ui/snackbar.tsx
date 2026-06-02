@@ -1,7 +1,7 @@
 export default function SnackBar({ ref } : { ref :React.RefObject<null> }) {
   return (
     <div
-    className="fixed bottom-4 left-1/2 -translate-x-1/2 animate-fade-in-up z-100 text-white p-2 px-4 rounded-md font-medium w-max max-w-60 text-center hidden"
+    className="fixed bottom-4 left-1/2 -translate-x-1/2 animate-fade-in-up z-100 text-white p-2 px-4 rounded-md font-medium w-max max-w-120 text-center hidden"
     ref={ref}>
       {/* There will be the snackbar content */}
     </div>
