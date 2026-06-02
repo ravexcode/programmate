@@ -34,6 +34,7 @@ import {
 //Types imports
 import { UserBasic, UserData } from "@/types/user.types";
 import Team, { ChatMessage } from "@/types/team.types";
+import Image from "next/image";
 
 export default function ChatPage() {
   //Params
@@ -222,151 +223,137 @@ export default function ChatPage() {
 
   return (
     team ? (
-      <div
-      className="bg-background w-screen h-screen overflow-hidden text-text flex justify-center items-center lg:grid lg:grid-cols-[auto_1fr]">
+      <div className="bg-background w-screen h-screen overflow-hidden text-text flex">
         <SnackBar ref={snackbar} />
 
-        <aside
-        className="bg-neutral-900 w-90 h-full px-6 py-3 hidden lg:flex flex-col justify-start items-start z-2">
-          <h2 className="text-xl font-medium tracking-wider w-full text-center"> Teammates </h2>
+        <div className="hidden md:flex flex-col bg-neutral-900 border-r border-neutral-800 px-4 py-3 w-80">
+          <h3 className="text-sm font-semibold tracking-wide text-text/70 mb-2">Team Members</h3>
+          <div className="flex gap-2 overflow-x-auto py-2">
+            {integrants && integrants.length > 0 && integrants.map((integrant, idx) => 
+              <Link
+              href={`/profiles/${integrant.id}`}
+              className="w-full rounded-md bg-neutral-950/50 border border-neutral-700 px-4 py-2 text-sm flex justify-center items-center gap-3 duration-400 cursor-pointer hover:-translate-y-0.5 hover:border-main"
+              key={idx}>
+                <Image
+                height={50}
+                width={50}
+                src={integrant?.avatar_url!}
+                alt="Profile icon"
+                className="rounded-full w-7 h-7" />
 
-          {
-            integrants && integrants.length <= 0 && (
-              <h2 className="text-lg mt-3 font-thin opacity-80 tracking-wider w-full text-center"> Not teamates-found </h2>
-            )
-          }
-
-          <section
-          className="flex flex-col h-full gap-2 py-3">
-            {
-              integrants && integrants.length > 0 && integrants.map((integrant, integrant_index) => 
                 <div
-                key={integrant_index}
-                className="flex gap-2 items-center w-full cursor-default">
-                  <span
-                  className="p-2 w-9 text-center text-sm rounded-full bg-radial-[at_25%_25%] from-sky-600 to-blue-900">
-                    {
-                      integrant.username.slice(0, 1) +
-                      (integrant.username.split(' ').slice(1).join(' ').slice(0, 1) || "")
-                    }
-                  </span>
-
+                className="w-full">
+                  <p> {integrant.username} </p>
                   <p
-                  className="tracking-wide text-md">
-                    {
-                      integrant.username
-                    }
-                  </p>
+                  className="text-xs font-light opacity-70"> {integrant.email} </p>
                 </div>
-              )
-            }
+              </Link>
+            )}
+          </div>
+
+          <Link
+          href="/settings"
+          className="w-full rounded-md bg-neutral-950/50 border border-neutral-700 px-4 py-2 text-sm flex justify-center items-center gap-3 duration-400 cursor-pointer hover:-translate-y-0.5 hover:border-main mt-auto">
+            <Image
+            height={50}
+            width={50}
+            src={user?.avatar_url!}
+            alt="Profile icon"
+            className="rounded-full w-7 h-7" />
 
             <div
-            className="flex gap-2 items-center w-full cursor-default mt-auto pt-10">
-              <span
-              className="p-2 w-9 text-center text-sm rounded-full bg-radial-[at_25%_25%] from-sky-600 to-blue-900">
-                {
-                  user?.name.slice(0, 1) +
-                  (user?.name.split(' ').slice(1).join(' ').slice(0, 1) || "")
-                }
-              </span>
-
+            className="w-full">
+              <p> {user?.name} </p>
               <p
-              className="tracking-wide text-md">
-                {
-                  user?.name
-                }
-                <span
-                className="pl-2 opacity-60">
-                  (You)
-                </span>
-              </p>
+              className="text-xs font-light opacity-70"> (You) </p>
             </div>
-          </section>
-        </aside>
+          </Link>
+        </div>
 
         <main
-        className="flex flex-col justify-start items-center w-screen lg:w-full h-screen">
+        className="flex flex-col justify-start items-center w-full h-screen lg:h-full flex-1">
 
           <header
-          className="px-6 py-3 flex gap-3 justify-start items-center w-full h-max bg-neutral-900 z-2">
+          className="px-6 py-4 flex gap-3 justify-start items-center w-full h-max bg-neutral-900 border-b border-neutral-800 z-20">
             <Link
             href={`/teams/${params.id}`}
-            className="p-2 rounded-full duration-200 hover:bg-white/20">
-              <IconArrowLeft
-              size={20} />
+            className="p-2 rounded-lg duration-200 hover:bg-neutral-800 transition-colors">
+              <IconArrowLeft size={20} stroke={2} />
             </Link>
 
-            <h2
-            className="text-xl font-medium tracking-wider">
-              { team.name.slice(0, 1).toUpperCase() + team.name.slice(1) } chat
-            </h2>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold tracking-tight text-text">
+                {team.name.slice(0, 1).toUpperCase() + team.name.slice(1)}
+              </h2>
+              <p className="text-xs text-text/50">Team Chat</p>
+            </div>
           </header>
 
           <section
           ref={containerRef}
-          className="h-full relative z-1 w-full overflow-y-auto overflow-x-hidden">
-            <div
-            className="overflow-hidden fixed -top-1/2 -translate-y-1/5 p-5 left-1/2 -translate-x-1/2 -z-1 w-5xl aspect-square block blur-3xl bg-main/20 animate-pulse rounded-full">
+          className="flex-1 w-full overflow-y-auto relative z-10">
+            {/* Background blur effect */}
+            <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden hidden lg:block">
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 aspect-square block w-200 rounded-full bg-main/10 blur-3xl animate-pulse" />
             </div>
 
-            <div
-            className="h-full py-5 px-8 flex flex-col justify-start w-full gap-4 z-10">
-              {
-                messages && messages.length > 0 && messages.map((message : ChatMessage, index: number) =>
-                  <section
-                  key={index}
-                  className={"flex items-end w-full gap-2 " + ( message.sender_id === user?.id ? "justify-end" : "justify-start" )}>
-                    <span
-                    className={"p-2 w-9 text-center text-xs rounded-full bg-radial-[at_25%_25%] from-sky-600 to-blue-900 " + ( message.sender_id === user?.id && "hidden" ) }>
-                      {
-                        user?.name.slice(0, 1) +
-                        (user?.name.split(' ').slice(1).join(' ').slice(0, 1) || "")
-                      }
+            <div className="py-6 px-4 md:px-8 flex flex-col justify-start w-full gap-4 relative z-10">
+              {messages && messages.length === 0 && (
+                <div className="flex flex-col items-center justify-center h-96 text-center">
+                  <p className="text-text/50 mb-2">No messages yet</p>
+                  <p className="text-sm text-text/30">Start a conversation with your team</p>
+                </div>
+              )}
+
+              {messages && messages.length > 0 && messages.map((message : ChatMessage, index: number) =>
+                <section
+                key={index}
+                className={"flex items-end w-full gap-3 animate-fade-in " + (message.sender_id === user?.id ? "justify-end" : "justify-start")}>
+                  {message.sender_id !== user?.id && (
+                    <span className="p-2 w-8 h-8 text-center text-xs rounded-full bg-linear-to-br from-sky-600 to-blue-900 flex items-center justify-center shrink-0 font-medium">
+                      {message.sender_name.slice(0, 1)}
                     </span>
+                  )}
 
-                    <p
-                    className={"w-max max-w-3/4 rounded-xl px-6 py-2 flex flex-col "  + ( message.sender_id === user?.id ? "rounded-br-none bg-main" : "bg-neutral-900 rounded-bl-none" ) }>
-                      {
-                        message.sender_id !== user?.id ? (
-                          <span
-                          className="text-sm font-thin tracking-wider opacity-80">
-                            { message.sender_name } <span className="text-xs opacity-80"> ({ message.sender_email }) </span>
-                          </span>
-                        ) : (
-                          <span
-                          className="text-sm text-end font-thin tracking-wider opacity-80">
-                            You
-                          </span>
-                        )
-                      }
-
-                      { ClientDecrypt(message.content) } <br />
-
-                      <span
-                      className="w-full text-end text-xs font-light opacity-80 uppercase mt-1">
-                        { new Date(message.sent_at!).toLocaleTimeString() }
+                  <div className={"flex flex-col gap-1 " + (message.sender_id === user?.id ? "items-end" : "items-start")}>
+                    {message.sender_id !== user?.id && (
+                      <span className="text-xs font-medium text-text/70 px-3">
+                        {message.sender_name}
                       </span>
-                    </p>
+                    )}
+                    
+                    <div className={"flex items-end gap-2 " + (message.sender_id === user?.id ? "flex-row-reverse" : "flex-row")}>
+                      <p
+                      className={"max-w-xs lg:max-w-md rounded-2xl px-4 py-3 text-sm font-medium " + (message.sender_id === user?.id 
+                        ? "rounded-br-none bg-main text-white shadow-lg shadow-main/20" 
+                        : "rounded-bl-none bg-neutral-800 border border-neutral-700 text-text")}>
+                        {ClientDecrypt(message.content)}
+                      </p>
 
-                    {
-                      message.status === "sending" ? (
-                        <IconClock />
-                      ) : message.status === "error" && (
-                        <IconCancel />
-                      )
-                    }
-                  </section>
-                )
-              }
+                      <div className="flex items-center gap-1">
+                        {message.status === "sending" && (
+                          <IconClock size={16} className="animate-spin text-text/50" />
+                        )}
+                        {message.status === "error" && (
+                          <IconCancel size={16} className="text-red-400" />
+                        )}
+                      </div>
+                    </div>
+
+                    <span className="text-xs text-text/40 px-3 mt-1">
+                      {new Date(message.sent_at!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                </section>
+              )}
             </div>
           </section>
 
           <footer
-          className="h-25 px-7 py-5 flex gap-2 justify-center items-center w-full z-2">
+          className="px-4 md:px-8 py-4 flex gap-3 justify-center items-center w-full bg-neutral-900 border-t border-neutral-800 z-20">
             <input
             type="text"
-            placeholder="Write a new message..."
+            placeholder="Type a message..."
             onChange={(e) => {
               setMessageToSend(e.target.value);
             }}
@@ -377,7 +364,7 @@ export default function ChatPage() {
                 await saveMsgHandler();
               }
             }}
-            className="bg-neutral-900 h-full py-2 px-5 rounded-lg outline-none border-2 border-transparent duration-300 focus:border-main w-full" />
+            className="flex-1 bg-neutral-800 h-full py-3 px-4 rounded-lg outline-none border border-neutral-700 duration-300 focus:border-main text-sm text-text placeholder-text/40 transition-colors" />
 
             <button
             onClick={async() => {
@@ -386,9 +373,9 @@ export default function ChatPage() {
                 await saveMsgHandler();
               }
             }}
-            className="p-4 rounded-full bg-neutral-900 cursor-pointer duration-400 hover:bg-neutral-900/60">
-              <IconSend
-              size={20} />
+            disabled={!messageToSend || messageToSend.length === 0}
+            className="p-3 rounded-lg bg-main text-white cursor-pointer duration-200 hover:bg-main/90 transition-all shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
+              <IconSend size={20} stroke={2} />
             </button>
           </footer>
 

@@ -59,7 +59,7 @@ export default function HomePage(){
     showSnackbar(data.message, (res.status >= 500 ? "critic": "warn"), snackbar);
   }  
   return (
-    <div className="bg-background min-h-dvh">
+    <div className="bg-background min-h-dvh animate-fade-in">
       <SnackBar ref={snackbar} />
 
       <Header />

@@ -62,7 +62,8 @@ export default function AcceptRequestPage(){
           id: user?.id,
           email: user?.email,
           username: user?.name,
-          type: "member"
+          type: "member",
+          avatar_url: user?.avatar_url
         })
       }
     );

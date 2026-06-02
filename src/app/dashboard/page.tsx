@@ -371,6 +371,7 @@ export default function Dashboard(){
         email: user?.email,
         username: user?.name,
         type: "admin",
+        avatar_url: user?.avatar_url
       }
     ];
 

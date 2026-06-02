@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v40.3:**
+> Bugfix leve, design fix
+  1. Arreglo de diseño en la página de chats. 🛠️
+  2. Ahora los integrantes tienen foto de perfil. 🖼️
+
 - **Indev v40.2:**
 > Bugfix leve, design fix
   1. Arreglo de diseño en el header. 🛠️

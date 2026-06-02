@@ -35,5 +35,6 @@ export interface UserData {
 export interface UserBasic {
   id: string,
   email: string,
-  username: string
+  username: string,
+  avatar_url?: string,
 }

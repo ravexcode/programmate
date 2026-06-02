@@ -635,7 +635,7 @@ export default function ToDoListPage() {
                         {
                           list.tags && list.tags.map((tag, index) => 
                             <span
-                            className="py-0.5 px-3 rounded-md text-sm bg-main/40 border border-main"
+                            className="px-3 py-1 rounded-full text-sm font-light border border-main/50 bg-main/20 text-text/80 w-max cursor-default"
                             key={tag + index.toString()}>
                               { tag }
                             </span>

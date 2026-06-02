@@ -23,12 +23,12 @@ export async function POST(
 ){
   try {
     //Gets the data
-    const { id, email, username, type } = await req.json();
+    const { id, email, username, type, avatar_url } = await req.json();
     const { teamId } = await params;
     const token = (await headers()).get("Authorization");
 
     //Verifies if the data is OK
-    if(!teamId) return badRequestErrorHandler();
+    if(!teamId || !id || !email || !username || !type || !avatar_url) return badRequestErrorHandler();
 
     if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
@@ -60,6 +60,7 @@ export async function POST(
       email,
       username,
       type: type || "Member",
+      avatar_url: avatar_url
     }
 
     //Save in the team
@@ -104,7 +105,7 @@ export async function DELETE(
     const token = (await headers()).get("Authorization");
 
     //Verifies if the data is OK
-    if(!teamId) return badRequestErrorHandler();
+    if(!teamId || !id) return badRequestErrorHandler();
 
     if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 

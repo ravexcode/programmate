@@ -75,7 +75,7 @@ export default function Footer() {
 
             <FooterColumn title="Support">
               <CustomLi link="/support/bugs"> Report a bug </CustomLi>
-              <CustomLi link="/support/sugestions"> Make a sugestion </CustomLi>
+              <CustomLi link="/support/suggestions"> Make a sugestion </CustomLi>
               <CustomLi link="/suppor/tickets"> Request a ticket </CustomLi>
             </FooterColumn>
 
