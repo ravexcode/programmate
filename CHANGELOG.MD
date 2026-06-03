@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v41.0:**
+> Bugfix moderada
+  1. Arreglo al eliminar el usuario, ahora este mismo es expulsado del equipo. ✅
+
 - **Indev v40.3:**
 > Bugfix leve, design fix
   1. Arreglo de diseño en la página de chats. 🛠️

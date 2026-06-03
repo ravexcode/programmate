@@ -53,11 +53,12 @@ export interface JSON_views {
   id: string;
   name: string;
   rootNodeId: string;
-  nodes: Array<JSONNode>;
-  connections?: Array<{
-    parent: string;
-    child: string;
-  }>;
+  nodes: JSONNode [];
+}
+
+export interface JSON_connections {
+  parent: string;
+  child: string;
 }
 
 export default interface Team {
@@ -75,5 +76,6 @@ export default interface Team {
   created_at: string;
   ERD?: Node[];
   ERD_connections?: Edge[];
-  json_views: Array<JSON_views>;
+  json_views: any;
+  json_connections: any;
 }
