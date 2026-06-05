@@ -19,8 +19,6 @@ export function showSnackbar(
 
   const bg_color = type === "valid" ? "bg-green-600" : type === "warn" ? "bg-orange-600" : "bg-red-600";
 
-  console.log(bg_color);
-
   current.innerText = message;
 
   current.classList.add(bg_color);

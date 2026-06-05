@@ -3,9 +3,8 @@
 
 //Next imports
 import Link from "next/link";
-import { getCookie } from "cookies-next";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 //React imports
 import { useEffect, useState, useRef } from "react";
@@ -14,11 +13,16 @@ import { useEffect, useState, useRef } from "react";
 import UpdateUserData from "@/services/user.service";
 import { searchTeamData } from "../page";
 import { getCached } from "@/hooks/cache.hook";
+import { useGetToken } from "@/hooks/useCookies";
+
+//Functions imports
+import { isUserAdmin, getMemberById } from "@/functions/admin";
 
 //Prebuilt ui imports
 import SideBar, { Icon } from "@/components/ui/sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import ConfirmationCard from "@/components/ui/confirmation-card";
 import CreatorForm from "@/components/forms/creator-form";
 
 //Icons imports
@@ -43,8 +47,9 @@ import { UserData } from "@/types/user.types";
 import { IntegrantData } from "@/types/team.types";
 
 export default function Page(){
-  //Params value
+  //NextJS Setup
   const params = useParams();
+  const router = useRouter();
 
   //States handler
   //User data
@@ -70,6 +75,13 @@ export default function Page(){
   //Searcher status
   const [ searchStatus, setSearchStatus ] = useState<"not-searched" | "not-found" | "searching">("not-searched");
 
+  //Confirmation dialog states
+  const [ confirmationOpen, setConfirmationOpen ] = useState<boolean>(false);
+  const [ confirmationAction, setConfirmationAction ] = useState<"delete" | "role-change">("delete");
+  const [ confirmationMemberId, setConfirmationMemberId ] = useState<string>("");
+  const [ confirmationNewRole, setConfirmationNewRole ] = useState<string>("");
+  const [ isProcessing, setIsProcessing ] = useState<boolean>(false);
+
   //Snackbar component
   const snackbar = useRef(null);
   //Form component
@@ -87,9 +99,9 @@ export default function Page(){
   useEffect(() => {
     async function getData() {
       let user_value : UserData | undefined;
-      const token = await getCookie("token");
+      const token = useGetToken();
 
-      if(!token) return window.location.href = "/auth/login";
+      if(!token) return router.push("/auth/login");
 
       const cached = getCached();
 
@@ -103,14 +115,13 @@ export default function Page(){
 
       setUser(user_value);
 
-      const team = await searchTeamData(snackbar, params, setTeam);
-      console.log(team);
+      await searchTeamData(snackbar, params, setTeam);
     }
 
     getData();
   }, []);
 
-  const save_integrant = async(e: SubmitEvent) => {
+  const save_integrant = async(e: React.SubmitEvent) => {
     if(!added) return;
 
     setFormDisabled(true);
@@ -118,9 +129,9 @@ export default function Page(){
     added.forEach(async (added) => {
       e.preventDefault();
 
-      const token = await getCookie("token");
+      const token = useGetToken();
 
-      if(!token) return window.location.href = "/auth/login";
+      if(!token) return router.push("/auth/login");
 
       const res = await fetch(`/api/teams/${params.id}/integrants/request`, {
         method: "POST",
@@ -164,6 +175,130 @@ export default function Page(){
     }
   }
 
+  //Change member role
+  const changeMemberRole = async(memberId: string, currentRole: string) => {
+    const token = useGetToken();
+    if(!team) return;
+    if(!token) return router.push("/auth/login");
+
+    // Constants
+    const integrants = team.integrants;
+    // Variables
+    const user_index = integrants.findIndex(
+      integrant => integrant.id === user?.id
+    );
+
+    if(user_index === undefined) return router.push("/dashboard");
+
+    if(integrants[user_index].type !== "admin") return showSnackbar("You can't do this", "warn", snackbar);
+
+    const newRole = currentRole === "admin" ? "member" : "admin";
+
+    // Open confirmation dialog
+    setConfirmationMemberId(memberId);
+    setConfirmationAction("role-change");
+    setConfirmationNewRole(newRole);
+    setConfirmationOpen(true);
+  }
+
+  //Confirm role change
+  const confirmRoleChange = async() => {
+    const token = useGetToken();
+    if(!token) return router.push("/auth/login");
+
+    setIsProcessing(true);
+
+    const res = await fetch(`/api/teams/${params.id}/integrants/change-role`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "Authorization": token
+      },
+      body: JSON.stringify({
+        member_id: confirmationMemberId,
+        new_role: confirmationNewRole
+      })
+    });
+
+    const data = await res.json();
+
+    if(res.status !== 200) {
+      showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
+      setIsProcessing(false);
+      return;
+    }
+
+    showSnackbar(data.message, "valid", snackbar);
+    
+    // Update local state
+    if(team && team.integrants) {
+      setTeam({
+        ...team,
+        integrants: team.integrants.map((member: IntegrantData) =>
+          member.id === confirmationMemberId ? { ...member, type: confirmationNewRole } : member
+        )
+      });
+    }
+
+    setConfirmationOpen(false);
+    setIsProcessing(false);
+  }
+
+  //Delete member from team
+  const deleteMember = async(memberId: string) => {
+    if(!team) return;
+    if(!isUserAdmin(team, user?.id)) {
+      return showSnackbar("You don't have permission to do this", "warn", snackbar);
+    }
+
+    // Open confirmation dialog
+    setConfirmationMemberId(memberId);
+    setConfirmationAction("delete");
+    setConfirmationOpen(true);
+  }
+
+  //Confirm member deletion
+  const confirmMemberDeletion = async() => {
+    const token = useGetToken();
+    if(!token) return router.push("/auth/login");
+
+    setIsProcessing(true);
+
+    const res = await fetch(`/api/teams/${params.id}/integrants/remove-member`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "Authorization": token
+      },
+      body: JSON.stringify({
+        member_id: confirmationMemberId
+      })
+    });
+
+    const data = await res.json();
+
+    if(res.status !== 200) {
+      showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
+      setIsProcessing(false);
+      return;
+    }
+
+    showSnackbar(data.message, "valid", snackbar);
+    
+    // Update local state
+    if(team && team.integrants) {
+      setTeam({
+        ...team,
+        integrants: team.integrants.filter((member: IntegrantData) => member.id !== confirmationMemberId)
+      });
+    }
+
+    setConfirmationOpen(false);
+    setIsProcessing(false);
+  }
+
   //User searcher
   const searchUsers = async() => {
     setSearchStatus("searching");
@@ -200,6 +335,21 @@ export default function Page(){
       className="grid grid-cols-[auto_1fr] w-screen h-screen overflow-hidden bg-background text-text">
         <SnackBar
         ref={snackbar} />
+
+        <ConfirmationCard
+        isOpen={confirmationOpen}
+        title={confirmationAction === "delete" ? "Remove Member" : "Change Member Role"}
+        message={
+          confirmationAction === "delete"
+            ? "Are you sure you want to remove this member from the team?"
+            : `Are you sure you want to change this member's role to ${confirmationNewRole}?`
+        }
+        actionType={confirmationAction}
+        memberName={getMemberById(team, confirmationMemberId)?.username || "Unknown"}
+        newRole={confirmationAction === "role-change" ? confirmationNewRole : undefined}
+        onConfirm={confirmationAction === "delete" ? confirmMemberDeletion : confirmRoleChange}
+        onCancel={() => setConfirmationOpen(false)}
+        isLoading={isProcessing} />
 
         {/* Form component */}
         <section
@@ -479,7 +629,9 @@ export default function Page(){
                           alt={user?.email + " profile picture"}
                           width={50}
                           height={50}
-                          className="w-9 rounded-full" />
+                          className="w-9 rounded-full"
+                          preload
+                          loading="eager" />
                           <span className="font-medium text-neutral-200 group-hover:text-blue-500 transition-colors">
                             {member.username}
                           </span>
@@ -509,24 +661,38 @@ export default function Page(){
                           )}
                         </div>
 
-                        <div className="flex justify-end gap-2">
-                          <button
-                          type="button"
-                          className="p-1 rounded-md bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors duration-200"
-                          title="Edit member">
-                            <IconUsers
-                            size={16}
-                            stroke={2} />
-                          </button>
+                        {
+                          member.id !== user.id ? (
+                            <div className="flex justify-end gap-2">
+                              <button
+                              type="button"
+                              onClick={() => changeMemberRole(member.id, member.type || "member")}
+                              disabled={!isUserAdmin(team, user?.id)}
+                              className="p-1 rounded-md bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                              title={isUserAdmin(team, user?.id) ? `Change role to ${member.type === "admin" ? "member" : "admin"}` : "Only admins can change roles"}>
+                                <IconUsers
+                                size={16}
+                                stroke={2} />
+                              </button>
 
-                          <button
-                          className="p-1 rounded-md bg-neutral-800 hover:bg-red-900 text-neutral-300 hover:text-red-400 transition-colors duration-200"
-                          title="Remove member">
-                            <IconTrash
-                            size={16}
-                            stroke={2} />
-                          </button>
-                        </div>
+                              <button
+                              type="button"
+                              onClick={() => deleteMember(member.id)}
+                              disabled={!isUserAdmin(team, user?.id)}
+                              className="p-1 rounded-md bg-neutral-800 hover:bg-red-900 text-neutral-300 hover:text-red-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                              title={isUserAdmin(team, user?.id) ? "Remove member" : "Only admins can remove members"}>
+                                <IconTrash
+                                size={16}
+                                stroke={2} />
+                              </button>
+                            </div>
+                          ) : (
+                            <span
+                            className="text-neutral-500 w-full text-end pr-2">
+                              You
+                            </span>
+                          )
+                        }
                       </li>
                     ))}
                   </ul>
@@ -552,80 +718,6 @@ export default function Page(){
                   </Link>
                 </div>
               )}
-            </div>
-          </section>
-
-          {/* Team roles info section */}
-          <section
-          className="w-full mt-8 border border-neutral-800 bg-neutral-950 backdrop-blur-sm rounded-md overflow-hidden shadow-xl relative z-10">
-            <header
-            className="px-6 py-4 border-b border-neutral-800 bg-neutral-950">
-              <h3
-              className="text-xl font-semibold text-white">
-                Role Permissions
-              </h3>
-            </header>
-
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Admin role */}
-                <div className="border border-green-900/30 bg-green-900/10 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <IconShieldCheck
-                    size={20}
-                    stroke={2}
-                    className="text-green-500" />
-                    <h4 className="text-green-500 font-semibold">Administrator</h4>
-                  </div>
-                  <ul className="text-sm text-neutral-400 space-y-2">
-                    <li className="flex gap-2">
-                      <span className="text-green-500">✓</span>
-                      <span>Full access to all features</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-green-500">✓</span>
-                      <span>Manage team members</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-green-500">✓</span>
-                      <span>Delete team</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-green-500">✓</span>
-                      <span>Modify team settings</span>
-                    </li>
-                  </ul>
-                </div>
-
-                {/* Member role */}
-                <div className="border border-blue-900/30 bg-blue-900/10 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <IconShield
-                    size={20}
-                    stroke={2}
-                    className="text-blue-400" />
-                    <h4 className="text-blue-400 font-semibold">Member</h4>
-                  </div>
-                  <ul className="text-sm text-neutral-400 space-y-2">
-                    <li className="flex gap-2">
-                      <span className="text-blue-400">✓</span>
-                      <span>Access assigned features</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-blue-400">✓</span>
-                      <span>Create and edit tickets</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-blue-400">✓</span>
-                      <span>Collaborate on tasks</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-neutral-600">✗</span>
-                      <span className="text-neutral-500">Cannot manage members</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
             </div>
           </section>
         </main>

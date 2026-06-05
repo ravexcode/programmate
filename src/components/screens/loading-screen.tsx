@@ -12,6 +12,7 @@ export default function LoadingScreen() {
       width={50}
       height={50}
       preload
+      loading="eager"
       />
     </div>
   )

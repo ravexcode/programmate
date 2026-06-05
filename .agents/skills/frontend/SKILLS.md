@@ -6,7 +6,8 @@ Lib components: src/lib/client/*
 ---
 
 # Index
-[Do-Don't](#do---dont)
+1. [Do-Don't](#do---dont)
+2. [Making components](#making-components)
 
 # Do - Dont
 - **Do** a good error control usign snackbar component, set in src/components/ui/snackbar.ts. For example
@@ -123,6 +124,42 @@ const res = await fetch('/api/', {
     // Body content
   })
 });
+```
+
+- Making a page
+``` tsx
+// Do
+export default function DoThis(){
+  return (
+    <section
+    className="special-classes" >
+      <article
+      className="special-classes" >
+        <div
+        className="special-classes" >
+        </div>
+      </article>
+      
+      <div
+      className="special-classes" >
+      </div>
+    </section>
+  )
+}
+
+// Don't
+export default function InsteadOfThis(){
+  return (
+    {/* This is can't be read */}
+
+    <div className="special-classes">
+      <div className="special-classes">
+        <div className="special-classes"></div>
+      </div>
+      <div className="special-classes"> </div>
+    </div>
+  )
+}
 ```
 
 # Making components

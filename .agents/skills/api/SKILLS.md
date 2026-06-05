@@ -11,6 +11,8 @@ teams CRUD: /teams/[teamId]
 erd: /teams/[teamId]/erd
 tickets: /teams/[teamId]/tickets
 integrants: /teams/[teamId]/integrants
+integrants change role: /teams/[teamId]/integrants/change-role (PATCH)
+integrants remove member: /teams/[teamId]/integrants/remove-member (DELETE)
 to do CRUD: /todos
 delete account: /users/delete
 get account data: /users/me

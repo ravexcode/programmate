@@ -1,5 +1,12 @@
 # Indev
 
+- **Indev v41.2:**
+> Bugfix, page finished
+  1. Nuevos componentes de botones. 🛠️
+  2. La página de members ahora es funcional. ✅
+  3. Nuevas rutas para modificar los miembros. ⚙️
+  4. Cambios en SKILLS.md (api y frontend). 🤖
+
 - **Indev v41.0:**
 > Bugfix moderada
   1. Arreglo al eliminar el usuario, ahora este mismo es expulsado del equipo. ✅
