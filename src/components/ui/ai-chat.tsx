@@ -14,7 +14,7 @@ import { getCached } from "@/hooks/cache.hook";
 import { UserData } from "@/types/user.types";
 
 //Icons imports
-import { IconSend, IconSparkles2, IconX } from "@tabler/icons-react";
+import { IconLoader2, IconSend, IconSparkles2, IconX } from "@tabler/icons-react";
 
 export default function AIChat(){
   //States updater
@@ -146,10 +146,9 @@ export default function AIChat(){
 
   return (
     <>
-      {/* Button */}
       <button
       ref={AIbutton}
-      className="fixed p-3 rounded-full bottom-4 right-4 border-x border-main shadow-lg shadow-main/20 cursor-pointer bg-neutral-950 z-10 duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-main/40 focus:outline-none animate-fade-in-left"
+      className="fixed p-3 rounded-full bottom-4 right-4 border-x border-main shadow-lg shadow-main/20 cursor-pointer bg-neutral-950 z-20 duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-main/40 focus:outline-none animate-fade-in-left"
       onClick={() => {
         toggleAiForm();
       }}>
@@ -158,7 +157,6 @@ export default function AIChat(){
         stroke={1.5} />
       </button>
 
-      {/* AI section container */}
       <section
       ref={AIcontainer}
       className="hidden animate-fade-in-left fixed h-screen w-screen md:w-md z-10 top-0 right-0 md:px-4 md:py-3">
@@ -183,7 +181,6 @@ export default function AIChat(){
 
           <div
           className="flex flex-col justify-start items-center gap-4 overflow-x-hidden overflow-y-auto pb-5 px-4">
-            {/* Messages */}
             { user && user.ai_chat && user.ai_chat.length >= 1 ? user.ai_chat.map((value, index) => (
               <span
               key={index}
@@ -212,8 +209,7 @@ export default function AIChat(){
               setIsLoading(false);
               setCurrentMessage("");
             }
-          }}
-        >
+          }}>
           <input
             type="text"
             placeholder="Ask me anything"
@@ -222,24 +218,16 @@ export default function AIChat(){
             onChange={(e: any) => {
               setCurrentMessage(e.target.value);
             }}
-            className="w-full rounded-md bg-neutral-950 px-2 py-3 text-sm duration-300 outline-2 outline-transparent focus:outline-main disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          />
+            className="w-full rounded-md bg-neutral-950 px-2 py-3 text-sm duration-300 outline-2 outline-transparent focus:outline-main disabled:opacity-50 disabled:cursor-not-allowed transition-all"/>
 
           <button 
             type="submit"
             disabled={isLoading || !currentMessage?.trim()}
-            className="bg-neutral-950 rounded-full aspect-square w-10 h-10 flex justify-center items-center cursor-pointer outline-2 outline-transparent duration-500 hover:outline-main disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          >
+            className="bg-neutral-950 rounded-full aspect-square w-10 h-10 flex justify-center items-center cursor-pointer outline-2 outline-transparent duration-500 hover:outline-main disabled:opacity-50 disabled:cursor-not-allowed transition-all">
             {isLoading ? (
-              <svg 
-                className="animate-spin w-5 h-5 text-white/70" 
-                xmlns="http://www.w3.org/2000/svg" 
-                fill="none" 
-                viewBox="0 0 24 24"
-              >
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
+              <IconLoader2
+              size={20}
+              className="text-neutral-300 animate-spin" />
             ) : (
               <IconSend />
             )}

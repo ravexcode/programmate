@@ -1,6 +1,12 @@
 # Indev
 
-- **Indev v41.2:**
+- **Indev v42.0:**
+> Bugfix, design fix
+  1. Arreglo de error en el sign up. 🛠️
+  2. Mejora en las animaciones de abrir y cerrar formulatios. 🚀
+  3. Agregación de la hook useAnimationClose. ✅
+
+- **Indev v41.1:**
 > Bugfix, page finished
   1. Nuevos componentes de botones. 🛠️
   2. La página de members ahora es funcional. ✅

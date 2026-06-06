@@ -5,16 +5,12 @@
 import {
   IconPlus,
   IconSearch,
-  IconTrash,
-  IconPencil,
-  IconDotsVertical,
   IconReload, 
   IconAssembly
 } from "@tabler/icons-react";
 
 //React imports
 import { useEffect, useState, useRef, RefObject } from "react";
-import { useRouter } from "next/navigation";
 
 //Components imports
 import SideBar,  { Icon } from "@/components/ui/sidebar";
@@ -23,6 +19,7 @@ import AIChat from "@/components/ui/ai-chat";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import ProjectCard from "@/components/ui/project-card";
 
 //Hooks imports
 import { useDeleteCookie, useGetToken } from "@/hooks/useCookies";
@@ -31,144 +28,21 @@ import { useDeleteCookie, useGetToken } from "@/hooks/useCookies";
 import UpdateUserData from "@/services/user.service";
 import { sendRequest } from "@/services/resend.service";
 
-//Types
-//Project card
-interface ProjectCardProps {
-  title: string;
-  description: string;
-  id: number;
-  menuIndex: number | null;
-  hideMenu: () => void;
-  showMenu: () => void;
-  index: number;
-  status: string;
-  tags: Array<string>;
-  key: number;
-  deleteProjectHandler: () => void;
-  editProjectHandler: () => void;
-}
-
 //Types imports
 import { UserData, UserBasic } from "@/types/user.types";
 import Team, { IntegrantData } from "@/types/team.types";
 
 //Hooks imports
 import { getCached } from "@/hooks/cache.hook";
+import useAnimationClose from "@/hooks/useAnimationClose";
 
-function ProjectCard(props : ProjectCardProps) {
-  //Delete enabled/disabled state
-  const [ isDeleteDisabled, setIsDeleteDisabled ] = useState<boolean>(false);
-  const router = useRouter();
-
-  return (
-    <section
-    onClick={() => {
-      router.push(`/teams/${props.id}`);
-    }}
-    onContextMenu={(e) => {
-      e.preventDefault();
-      e.nativeEvent.stopImmediatePropagation();
-      e.stopPropagation();
-      props.showMenu();
-    }}
-    className="group relative w-full flex flex-col rounded-xl border border-neutral-800 bg-neutral-950 cursor-pointer duration-400 hover:-translate-y-1 hover:border-main p-5">
-
-      <header
-      className="flex items-start justify-between mb-3">
-
-        <div
-        className="w-full flex flex-col gap-1">
-          <h3
-          className="text-lg font-semibold text-text">
-            {props.title}
-          </h3>
-
-          <p
-          className="text-sm font-extralight flex justify-start items-center gap-2">
-            <span
-            className={"h-2 w-2 rounded-full block " + ( props.status === "Backlog" ? "bg-zinc-500" : props.status === "Planning" ? "bg-blue-400" : props.status === "In Progress" ? "bg-orange-400" : props.status === "On Hold" ? "bg-red-400" : "bg-purple-500" )}></span>
-            {props.status}
-          </p>
-        </div>
-        
-        <button
-        className="flex h-8 w-8 -mr-2 -mt-2 items-center justify-center rounded-full text-text hover:bg-ultramarine-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine-400 cursor-pointer"
-        onClick={(e) => {
-          e.nativeEvent.stopImmediatePropagation();
-          e.stopPropagation();
-          props.showMenu();
-        }}>
-        <IconDotsVertical
-        size={16}
-        color="white"
-        stroke={3}/>
-        </button>
-
-        { props.menuIndex === props.index && (
-          <div
-          className="absolute right-2 top-10 z-20 w-36 overflow-hidden rounded-lg border border-ultramarine-50/10 bg-neutral-900 shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
-
-            <button
-            onClick={(e) => {
-              e.nativeEvent.stopImmediatePropagation(); 
-              e.stopPropagation();
-              props.editProjectHandler();
-              props.hideMenu();
-            }}
-            className="flex w-full items-center px-4 py-2.5 text-sm text-text transition-colors hover:bg-ultramarine-800 gap-2">
-
-            <IconPencil
-            size={20}
-            color="white" />
-
-            Edit
-          </button>
-          
-          <button
-          onClick={async (e) => {
-            e.nativeEvent.stopImmediatePropagation(); 
-            e.stopPropagation();
-            setIsDeleteDisabled(true);
-            await props.deleteProjectHandler();
-            setIsDeleteDisabled(false);
-            props.hideMenu();
-          }}
-          className="flex w-full items-center px-4 py-2.5 text-sm text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-200 gap-2 disabled:brightness-80 disabled:cursor-wait"
-          disabled={isDeleteDisabled}>
-
-            <IconTrash
-            size={20}
-            stroke={1} />
-
-            Delete
-          </button>
-          </div>
-      )}
-
-      </header>
-
-      <p
-      className="text-sm text-text/60 line-clamp-3 leading-relaxed">
-        {props.description}
-      </p>
-      
-      <div
-      className="flex gap-2 mt-2 flex-wrap">
-        {
-          props.tags && props.tags.map((tag: string, index) => (
-            <div
-            className="px-3 py-1 rounded-full text-sm font-light border border-main/50 bg-main/20 text-text/80 w-max cursor-default"
-            key={ index }>
-              {tag}
-            </div>
-          ))
-        }
-      </div>
-    </section>
-  )
-}
+//Next imports
+import { useRouter } from "next/navigation";
 
 export default function Dashboard(){
+  //Next setup
+  const router = useRouter();
+
   //State values
   //User data
   const [ user, setUser ] = useState<UserData>();
@@ -219,7 +93,7 @@ export default function Dashboard(){
 
   //Containers
   //Project creator
-  const project_container : RefObject<null> = useRef(null);
+  const project_creator_container : RefObject<null> = useRef(null);
 
   //Snackbar container
   const snackbar = useRef(null);
@@ -260,7 +134,7 @@ export default function Dashboard(){
 
       if(!token) {
         //If hasn't token returns to log in form
-        window.location.href = "/auth/login";
+        router.push("/auth/login");
       };
 
       //Updates the user's data
@@ -271,7 +145,7 @@ export default function Dashboard(){
       const now = new Date();
 
       if(user_data && (created_at.getDay() === now.getDay() && user_data.teams?.length! <= 0)) {
-        window.location.href = "/get-started";
+        router.push("/get-started");
 
         return;
       } else if(user_data) {
@@ -283,7 +157,7 @@ export default function Dashboard(){
       useDeleteCookie("token");
       localStorage.clear();
       window.localStorage.clear();
-      return window.location.href = "/auth/login";
+      return router.push("/auth/login");
     }
 
     //Executes the function
@@ -292,40 +166,6 @@ export default function Dashboard(){
     //Returns success
     return;
   }, []);
-
-  //Function to show the proyect container
-  const showProjectContainer = () => {
-    //Verfies if exists
-    if(!project_container.current) return;
-    //Change loading state
-    setIsLoading(false);
-    //Clear all the inputs
-    setFound(undefined);
-    setSearched(undefined);
-    setIntegrants(undefined);
-    setProjectName(undefined);
-    setProjectDescription(undefined);
-
-    //Current container
-    const current : HTMLElement = project_container.current;
-
-    //Shows
-    current.classList.remove("hidden");
-    current.classList.add("flex");
-  };
-
-  //And function for hiding
-  const hideProjectContainer = () => {
-    //Returns if it doesb't exists
-    if(!project_container.current) return;
-
-    //Current
-    const current : HTMLElement = project_container.current;
-
-    //Hides
-    current.classList.add("hidden");
-    current.classList.remove("flex");
-  };
 
   //User searcher
   const searchUsers = async() => {
@@ -359,10 +199,7 @@ export default function Dashboard(){
     //Id isn't cached gets the data
     const token = useGetToken();
 
-    if(!token) {
-      //If hasn't token returns to log in form
-      window.location.href = "/auth/login";
-    };
+    if(!token) return router.push("/auth/login");
 
     //Insert user to integrants if not exists
     const integrants_created = [
@@ -416,7 +253,7 @@ export default function Dashboard(){
       }
 
       //Hides the form
-      hideProjectContainer();
+      toggleCreatorContainer();
       //Change loading state
       setIsLoading(false);
       //Clear all the inputs
@@ -495,33 +332,50 @@ export default function Dashboard(){
     }
   };
 
-  //Show / hide edit form
-  //Function to show the proyect container
-  const showEditProjectContainer = () => {
-    //Verfies if exists
+  const toggleCreatorContainer = () => {
+    if(!project_creator_container.current) return;
+
+    const current : HTMLElement = project_creator_container.current;
+    const classlist = current.classList;
+
+    if(classlist.contains("hidden")){
+      //Change loading state
+      setIsLoading(false);
+      //Clear all the inputs
+      setFound(undefined);
+      setSearched(undefined);
+      setIntegrants(undefined);
+      setProjectName(undefined);
+      setProjectDescription(undefined);
+
+      classlist.remove("animate-fade-out-down");
+      classlist.replace("hidden", "flex");
+
+      return;
+    };
+
+    classlist.add("animate-fade-out-down");
+    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    return;
+  }
+
+  const toggleEditContainer = () => {
     if(!project_edit_container.current) return;
-    //Change states
 
-    //Current container
     const current : HTMLElement = project_edit_container.current;
+    const classlist = current.classList;
 
-    //Shows
-    current.classList.remove("hidden");
-    current.classList.add("flex");
-  };
+    if(classlist.contains("hidden")){
+      classlist.remove("animate-fade-out-down");
+      classlist.replace("hidden", "flex");
 
-  //And function for hiding
-  const hideEditProjectContainer = () => {
-    //Returns if it doesb't exists
-    if(!project_edit_container.current) return;
+      return;
+    };
 
-    //Current
-    const current : HTMLElement = project_edit_container.current;
-
-    //Hides
-    current.classList.add("hidden");
-    current.classList.remove("flex");
-  };
+    classlist.add("animate-fade-out-down");
+    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    return;
+  }
 
   //Function for update team
   const updateTeam = async() => {
@@ -581,13 +435,13 @@ export default function Dashboard(){
       {/* Project editor form */}
       <div
       ref={project_edit_container}
-      className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col  items-center z-200 animate-fade-in overflow-y-auto py-10 hidden"
-      onClick={hideEditProjectContainer}
+      className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col items-center z-200 animate-fade-in animate-duration-200 overflow-y-auto py-10 hidden"
+      onClick={toggleEditContainer}
       onSubmit={async(e: React.SubmitEvent) => {
         e.preventDefault();
         setIsLoading(true);
         await updateTeam();
-        hideEditProjectContainer();
+        toggleEditContainer();
         setIsLoading(false);
       }}>
         <form
@@ -612,6 +466,7 @@ export default function Dashboard(){
           <input
           type="text"
           placeholder="Ex. UnityRoots"
+          name="newprojectname"
           value={newTeamName || ""}
           onChange={(e) => {
             setNewTeamName(e.target.value);
@@ -727,7 +582,7 @@ export default function Dashboard(){
 
           <div className="flex w-full justify-end items-center gap-4">
             <button type="button"
-            onClick={hideEditProjectContainer}
+            onClick={toggleEditContainer}
             className="px-4 py-1 rounded-md bg-neutral-800 duration-200 hover:brightness-80 cursor-pointer">
               Cancel
             </button>
@@ -756,13 +611,13 @@ export default function Dashboard(){
 
       {/* Project creator form */}
       <div
-      ref={project_container}
-      className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col  items-center z-200 animate-fade-in hidden overflow-y-auto py-10"
-      onClick={hideProjectContainer}>
+      ref={project_creator_container}
+      className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col  items-center z-200 animate-fade-in animate-duration-200 hidden overflow-y-auto py-10"
+      onClick={toggleCreatorContainer}>
         <CreatorForm
         title="Create a new project"
         action={handleCreateProject}
-        hideAction={hideProjectContainer}
+        hideAction={toggleCreatorContainer}
         actionIsDisabled={ isLoading || !projectName || projectName.length < 3 || !projectDescription}>
           <CreatorInput
           label="Project name"
@@ -1088,7 +943,7 @@ export default function Dashboard(){
                     <button
                     className="flex items-center gap-2 bg-main px-6 py-2 text-sm font-medium text-white rounded-full transition-all duration-300 hover:bg-main/80 focus:outline-none active:scale-95 cursor-pointer"
                     onClick={() => {
-                      showProjectContainer()
+                      toggleCreatorContainer()
                     }}>
                       <IconPlus
                       color="white"
@@ -1126,8 +981,9 @@ export default function Dashboard(){
                           setNewTeamTags(team.tags!);
                           setNewTeamStatus(team.status);
                           setSelectedTeamData(team)
-                          showEditProjectContainer();
-                        }}/>
+                          toggleEditContainer();
+                        }}
+                        goToTeam={() => { return router.push(`/teams/${team.team_id}`) }}/>
                       )) : (
                         <span
                         className="w-full text-center text-2xl font-light text-text py-4"> No projects found, try creating a new project!  </span>

@@ -10,6 +10,7 @@ import { useEffect, useState, useRef } from "react";
 //Hooks imports
 import { getCached } from "@/hooks/cache.hook";
 import { useGetToken } from "@/hooks/useCookies";
+import useAnimationClose from "@/hooks/useAnimationClose";
 
 //Components imports
 import SideBar, { Icon } from "@/components/ui/sidebar";
@@ -168,33 +169,43 @@ export default function ToDoListPage() {
   const toggleListCreator = () => {
     if(!form_creator.current) return;
 
-    const current: HTMLElement = form_creator.current;
+    const current : HTMLElement = form_creator.current;
+    const classlist = current.classList;
 
-    //Show
-    if(current.classList.contains("hidden")){
-      form_creator.current.classList.remove("hidden");
-      form_creator.current.classList.add("flex");
-    } else {
-      //Hide
-      form_creator.current.classList.add("hidden");
-      form_creator.current.classList.remove("flex");
-    }
+    if(classlist.contains("hidden")){
+      //Change loading state
+      setIsLoading(false);
+
+      classlist.remove("animate-fade-out-down");
+      classlist.replace("hidden", "flex");
+
+      return;
+    };
+
+    classlist.add("animate-fade-out-down");
+    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    return;
   }
   
   const toggleListEditor = () => {
     if(!form_editor.current) return;
 
-    const current: HTMLElement = form_editor.current;
+    const current : HTMLElement = form_editor.current;
+    const classlist = current.classList;
 
-    //Show
-    if(current.classList.contains("hidden")){
-      form_editor.current.classList.remove("hidden");
-      form_editor.current.classList.add("flex");
-    } else {
-      //Hide
-      form_editor.current.classList.add("hidden");
-      form_editor.current.classList.remove("flex");
-    }
+    if(classlist.contains("hidden")){
+      //Change loading state
+      setIsLoading(false);
+
+      classlist.remove("animate-fade-out-down");
+      classlist.replace("hidden", "flex");
+
+      return;
+    };
+
+    classlist.add("animate-fade-out-down");
+    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    return;
   }
 
   const setListEditorData = (index: number) => {
@@ -346,7 +357,7 @@ export default function ToDoListPage() {
           {/* Creator form */}
           <div
           ref={form_creator}
-          className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col justify-center items-center z-50 animate-fade-in hidden"
+          className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col justify-center items-center z-50 animate-fade-in-up hidden"
           onClick={toggleListCreator}>
             <CreatorForm
             title="Create a new to do list"
@@ -416,7 +427,7 @@ export default function ToDoListPage() {
           {/* Editor form */}
           <div
           ref={form_editor}
-          className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col justify-center items-center z-50 animate-fade-in hidden"
+          className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col justify-center items-center z-50 animate-fade-in-up hidden"
           onClick={toggleListEditor}>
             <CreatorForm
             title="Edit your to do list"

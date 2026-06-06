@@ -175,7 +175,9 @@ export default function SideBar(props: SideBarProps) {
                 alt={props.email + " avatar"}
                 width={23}
                 height={23}
-                className="rounded-full border border-neutral-800" />
+                className="rounded-full border border-neutral-800"
+                preload
+                loading="eager" />
               ) : (
                 <IconUserCircle
                 size={23}

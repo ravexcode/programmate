@@ -3,56 +3,51 @@
 
 //Next imports
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 //Prebuilt components
 import SideBar from "@/components/ui/sidebar";
+import ActionButton from "@/components/ui/action-button";
+import AIChat from "@/components/ui/ai-chat";
+import LoadingDashboard from "@/components/screens/loading-screen";
+import AltButton from "@/components/ui/buttons/alternate";
+import HazardButton from "@/components/ui/buttons/hazard";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+
+//Hooks imports
+import { useDeleteToken, useGetToken } from "@/hooks/useCookies";
+import useAnimationClose from "@/hooks/useAnimationClose";
 
 //React imports
-import { useEffect, useState } from "react";
-import { deleteCookie } from "cookies-next";
-import AIChat from "@/components/ui/ai-chat";
-import { getCookie } from "cookies-next/client";
-import { UserData } from "@/types/user.types";
-import { IconBug, IconLogout, IconMail, IconSparkles, IconTrash, IconZoomMoney } from "@tabler/icons-react";
-import LoadingDashboard from "@/components/screens/loading-screen";
+import { useEffect, useRef, useState } from "react";
 
-//Config button
-function ActionButton({
-  title,
-  action,
-  children,
-  isDangerous
-}: {
-  title: string;
-  action: () => void;
-  children?: React.ReactNode;
-  isDangerous?: boolean;
-}) {
-  return (
-    <button
-    className={"py-4 rounded-lg flex justify-between items-center px-8 gap-5 border  duration-200  hover:-translate-y-1 w-full outline-none bg-[#101010] cursor-pointer text-center " + (isDangerous ? "border-red-900/40 hover:border-red-700" : "border-neutral-900 hover:border-main")}
-    onClick={action}>
-      <p
-      className="text-lg tracking-wide">
-        { title }
-      </p>
-      { children }
-    </button>
-  )
-}
+//Types imports
+import { UserData } from "@/types/user.types";
+
+//Icons imports
+import {
+  IconBug,
+  IconLogout,
+  IconMail,
+  IconSparkles,
+  IconTrash,
+  IconZoomMoney
+} from "@tabler/icons-react";
 
 export default function ConfigurationPage(){
+  //Next setup
+  const router = useRouter();
+
   //State handlers
   //User data
   const [ user, setUserData ] = useState<UserData>();
-  //Is confirmation section visible
-  const [ isConfirmationVisible, setIsConfirmationVisible ] = useState<boolean>(false);
-  //Confirmation text
-  const [ confirmationText, setConfirmationText ] = useState<string>("");
-  //Confirmation action
-  const [ confirmationAction, setConfirmationAction ] = useState<() => void>();
   //Is loading state
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
+
+  //Confirmation card
+  const confirmationCard = useRef(null);
+  //Snackbar card
+  const snackbar = useRef(null);
 
   //Gets the user data from cache
   useEffect(() => {
@@ -73,7 +68,7 @@ export default function ConfigurationPage(){
   const handleUserDelete = async () => {
     setIsLoading(true);
     //User token
-    const token = getCookie("token");
+    const token = useGetToken();
 
     try {
       //Sends the delete request to the server
@@ -86,53 +81,64 @@ export default function ConfigurationPage(){
         }
       });
 
+      const data = await res.json();
+
       //Verifies the response
       if(res.status === 200) {
         //Deletes the user from cache
         window.localStorage.clear();
-        deleteCookie("token");
+        useDeleteToken();
         //Redirects to the login page
-        window.location.href = "/auth/login";
+        router.push("/auth/login");
         return;
       }
-      
-      const error = await res.json();
+
       setIsLoading(false);
-      throw new Error(error.message || "Error deleting the user");
+      showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
     } catch(e) {
       //Error handler
-      console.error(e);
+      if(e instanceof Error) {
+        setIsLoading(false);
+        return showSnackbar(e.message, "critic", snackbar);
+      }
+      
       setIsLoading(false);
+      return showSnackbar("Server not error", "critic", snackbar);
     }
   };
 
-  //Verify confirmation
-  const verifyConfirmation = () => {
-    //Show the confirmation section
-    setIsConfirmationVisible(true);
-    //Sets the confirmation text
-    setConfirmationText("Are you sure you want to delete your account? This action can't be undone.");
-    //Sets the function
-    setConfirmationAction(() => handleUserDelete);
+  const toggleConfirmation = () => {
+    if(!confirmationCard.current) return;
+
+    const current : HTMLElement = confirmationCard.current;
+    const classlist = current.classList;
+
+    if(classlist.contains("hidden")){
+      classlist.remove("animate-fade-out-down");
+      classlist.replace("hidden", "flex");
+
+      return;
+    };
+
+    classlist.add("animate-fade-out-down");
+    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    return;
   }
 
-  //Confirmation section handler
-  const cancelConfirmation = () => {
-    //Hides the confirmation section
-    setIsConfirmationVisible(false);
-    //Clears the confirmation text
-    setConfirmationText("");
-    //Clears the confirmation action
-    setConfirmationAction(undefined);
-  }
   return (
     <div
     className="grid grid-cols-[auto_1fr] bg-background relative animate-fade-in h-screen text-text overflow-hidden">
       {/* Confirmation container */}
       <section
-      className={`fixed inset-0 z-10 flex justify-center items-center bg-black/50 backdrop-blur-sm transition-opacity duration-300 animate-fade-in-up ${isConfirmationVisible ? "flex" : "hidden"}`}>
+      className="fixed inset-0 z-10 hidden justify-center items-center bg-black/50 backdrop-blur-sm transition-opacity duration-300 animate-fade-in-up"
+      ref={confirmationCard}
+      onClick={toggleConfirmation}>
         <div
-        className="w-md bg-neutral-900 border border-red-950 p-5 rounded-md flex flex-col justify-center items-center">
+        className="w-md bg-neutral-900 border border-red-950 p-5 rounded-md flex flex-col justify-center items-center"
+        onClick={(e) => {
+          e.stopPropagation();
+          e.nativeEvent.stopPropagation();
+        }}>
           <span
           className="font-xl text-red-500 mb-1">
             Alert
@@ -140,26 +146,28 @@ export default function ConfigurationPage(){
 
           <h2
           className="text-lg mb-4 text-center px-2">
-            {confirmationText}
+            Are you shure to delete your account?
+            <p
+            className="text-red-500 text-sm mt-2 w-full rounded-sm">
+              This action can't be undone.
+            </p>
           </h2>
 
           <div
-          className="grid grid-cols-[47%_47%] gap-1 w-full px-2 py-1">
-            <button
-            onClick={() => {
-              cancelConfirmation();
-            }}
-            className="px-4 py-1 rounded-md hover:bg-neutral-700 duration-200 cursor-pointer">
+          className="grid grid-cols-2 gap-3 w-full px-2 py-1">
+            <AltButton
+            size="w-auto"
+            action={toggleConfirmation}>
               Cancel
-            </button>
-            <button
-            onClick={() => {
-              if(confirmationAction) confirmationAction();
-            }}
-            className="px-4 py-1 bg-red-600 text-white rounded-md hover:bg-red-900 duration-200 cursor-pointer disabled:brightness-80 disabled:cursor-wait  disabled:hover:brightness-80 disabled:grayscale"
-            disabled={isLoading}>
+            </AltButton>
+            <HazardButton
+            size="w-auto"
+            isLoading={isLoading}
+            action={async() => {
+              await handleUserDelete();
+            }}>
               Confirm
-            </button>
+            </HazardButton>
           </div>
         </div>
       </section>
@@ -219,9 +227,9 @@ export default function ConfigurationPage(){
               <ActionButton
               title="Log out"
               action={() => {
-                deleteCookie("token");
+                useDeleteToken();
                 window.localStorage.clear();
-                window.location.href = "/auth/login";
+                router.push("/auth/login");
               }}>
                 <IconLogout
                 stroke={1.5} />
@@ -280,9 +288,7 @@ export default function ConfigurationPage(){
 
               <ActionButton
               title="Delete account"
-              action={() => {
-                verifyConfirmation();
-              }}
+              action={toggleConfirmation}
               isDangerous>
                 <IconTrash
                 stroke={1.5} />

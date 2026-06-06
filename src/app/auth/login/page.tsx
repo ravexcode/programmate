@@ -174,7 +174,9 @@ export default function LogInPage() {
               alt="Logo made by ravexcode"
               height={1}
               width={300}
-              className="z-3" />
+              className="z-3"
+              preload
+              loading="eager" />
 
               <p
               className="text-lg font-medium tracking-wide mt-2">
