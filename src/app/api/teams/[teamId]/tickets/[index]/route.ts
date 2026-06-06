@@ -5,6 +5,72 @@ import { headers } from "next/headers";
 //Lib imports
 import supabase from "@/lib/db";
 
+//Functions imports
+import { Decrypt } from "@/functions/crypto";
+
+//Handlers imports
+import {
+  badRequestErrorHandler,
+  notFoundErrorHandler,
+  serverErrorHandler,
+  supabaseErrorHandler,
+  unauthorizedErrorHandler
+} from "@api/handlers";
+
+//Get ticket by index
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ teamId: string | undefined, index: number | string | undefined }>}
+) {
+  try {
+    //Gets the data
+    const { teamId, index } = await params;
+    const token = (await headers()).get("Authorization");
+    
+    //Verifies if the data is OK
+    if(!teamId || !index) return badRequestErrorHandler();
+    if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
+
+    //Gets the user from Supabase Auth
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
+
+    //Verifies if the user has been returned
+    if(!user) return notFoundErrorHandler("User not found");
+
+    //Verifies if there's an error
+    if(getUserError) return unauthorizedErrorHandler(getUserError.message);
+
+    //Gets the team data
+    const { data: team, error: getTeamError } = await supabase
+    .from("teams")
+    .select("*")
+    .eq("team_id", teamId)
+    .maybeSingle();
+
+    //Verifies if the team data has been gotten
+    if(!team) return notFoundErrorHandler("Team not found")
+
+    //Verifies if there's no error
+    if(getTeamError) return supabaseErrorHandler(getTeamError)
+
+    //Verifies if the user is in the team
+    if(!team?.integrants_id.includes(user.id)) return unauthorizedErrorHandler("Oops... You aren't in the team");
+
+    const ticket = team.tickets[index];
+
+    if(!ticket) return notFoundErrorHandler("Ticket not found");
+
+    ticket.message = Decrypt(ticket.message);
+
+    return NextResponse.json({
+      message: "Ticket got",
+      ticket: team.tickets[index],
+    })
+  } catch(e: unknown) {
+    serverErrorHandler(e);
+  }
+}
+
 //Delete a ticket by index
 export async function DELETE(
   req: NextRequest,
@@ -15,31 +81,17 @@ export async function DELETE(
     const token = (await headers()).get("Authorization");
     
     //Verifies if the data is OK
-    if(!teamId || !token || !index) return NextResponse.json({
-      message: "Data sent error",
-      error: "Bad request"
-    }, {
-      status: 403
-    });
+    if(!teamId || !index) return badRequestErrorHandler();
+    if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user from Supabase Auth
     const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
-    if(!user) return NextResponse.json({
-      message: "User not found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!user) return notFoundErrorHandler("User not found");
 
     //Verifies if there's an error
-    if(getUserError) return NextResponse.json({
-      message: getUserError.message,
-      error: getUserError
-    }, {
-      status: 500
-    });
+    if(getUserError) return unauthorizedErrorHandler(getUserError.message);
 
     //Gets the team data
     const { data: team, error: getTeamError } = await supabase
@@ -49,41 +101,19 @@ export async function DELETE(
     .maybeSingle();
 
     //Verifies if the team data has been gotten
-    if(!team) return NextResponse.json({
-      message: "The team doesn't exists",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(!team) return notFoundErrorHandler("Team not found")
 
     //Verifies if there's no error
-    if(getTeamError) return NextResponse.json({
-      message: "Trying to get team error",
-      error: getTeamError.message
-    }, {
-      status: 500
-    });
+    if(getTeamError) return supabaseErrorHandler(getTeamError)
 
     //Verifies if the user is in the team
-    if(!team?.integrants_id.includes(user.id)) return NextResponse.json({
-      message: "Oops... You aren't in the team",
-      error: "Unauthorized"
-    }, {
-      status: 401
-    });
+    if(!team?.integrants_id.includes(user.id)) return unauthorizedErrorHandler("Oops... You aren't in the team");
 
     //Find and remove ticket
     const tickets = team.tickets || [];
     const filteredTickets = tickets.splice(index, 1);
 
-    console.log(filteredTickets);
-
-    if(filteredTickets.length > tickets.length) return NextResponse.json({
-      message: "Ticket not found",
-      error: "Not found"
-    }, {
-      status: 404
-    });
+    if(filteredTickets.length > tickets.length) return notFoundErrorHandler("Ticket not found");
 
     //Update team with filtered tickets
     const { error: updateTeamError } = await supabase
@@ -94,25 +124,13 @@ export async function DELETE(
     .eq("team_id", teamId);
 
     //Verifies if there's no error
-    if(updateTeamError) return NextResponse.json({
-      message: "Trying to update team error",
-      error: updateTeamError.message
-    }, {
-      status: 500
-    });
+    if(updateTeamError) return supabaseErrorHandler(updateTeamError);
 
     //If all is ok, returns success message
     return NextResponse.json({
       message: "Ticket deleted successfully"
     });
-  } catch(e: any) {
-    console.error(e);
-    //Server errors
-    return NextResponse.json({
-      message: "An error has happened in the server",
-      error: e.message
-    }, {
-      status: 500
-    });
+  } catch(e: unknown) {
+    serverErrorHandler(e);
   }
 }

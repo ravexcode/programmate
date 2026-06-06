@@ -67,7 +67,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ team
 
     //If all is ok, returns the team data
     return NextResponse.json({
-      message: "Team retrieved successfully",
+      message: "Team got successfully",
       team: team
     });
   } catch(e: unknown) {

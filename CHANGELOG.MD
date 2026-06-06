@@ -1,5 +1,15 @@
 # Indev
 
+- **Indev v43.0:**
+> Refactor, dev update, design fix, page improvement
+  1. Página de tickets completamente refactorizada. 🛠️
+  2. Mejora enorme de diseño en la sección de tickets. 🖼️
+  3. Arreglo de APIs de Tickets. 🛠️
+  4. Agregación de nuevos servicios (team y ticket). 🚀
+  5. Nuevo componente markdown de lib. 🚀
+  6. Eliminación de librerias sin uso y obsoletas. 🗑️
+  7. Nuevos componentes (bg gradient, ticket card). ⚙️
+
 - **Indev v42.0:**
 > Bugfix, design fix
   1. Arreglo de error en el sign up. 🛠️

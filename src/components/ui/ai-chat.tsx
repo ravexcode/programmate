@@ -2,7 +2,7 @@
 import { useState, useRef, RefObject, useEffect } from "react";
 
 //Next imports
-import { getCookie, deleteCookie } from "cookies-next/client";
+import { useGetToken, useDeleteToken } from "@/hooks/useCookies";
 
 //Node modules imports
 import ReactMarkdown from "react-markdown";
@@ -80,12 +80,10 @@ export default function AIChat(){
     //Verifies if message is inserted
     if(!currentMessage || currentMessage.length < 1) return;
     //Gets the users token
-    const token = await getCookie("token");
+    const token = await useGetToken();
     //Verifies if exists
     if(!token) {
-      //If isn't logged close sessions data (Error prevention)
-      deleteCookie("token");
-      localStorage.clear();
+      window.localStorage.clear();
       //Returns to login
       window.location.href = "/auth/login";
     }

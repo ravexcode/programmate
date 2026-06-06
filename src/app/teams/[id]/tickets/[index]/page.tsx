@@ -1,268 +1,267 @@
 //Client side
 "use client";
 
-//React imports
-import { useState, useEffect, useRef, RefObject } from "react";
-import ReactMarkdown from "react-markdown";
-
 //Next imports
-import { useParams } from "next/navigation";
-import { getCookie } from "cookies-next/client";
+import Link from "next/link";
+import { useRouter, useParams } from "next/navigation";
 
-//Prebuild ui imports
-import CreatorForm from "@/components/forms/creator-form";
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
-import LoadingDashboard from "@/components/screens/loading-screen";
+//React imports
+import { useState, useRef, useEffect } from "react";
 
-//Icons imports
-import { 
-  IconArrowLeft, 
-  IconEdit, 
-  IconTrash, 
-  IconDeviceFloppy, 
-  IconX, 
-  IconTicket 
-} from "@tabler/icons-react";
+//Prebuilt ui imports
+import SideBar, { Icon } from "@/components/ui/sidebar";
+import SnackBar from "@/components/ui/snackbar";
+import BgGradient from "@/components/ui/bg-gradient";
+import LoadingScreen from "@/components/screens/loading-screen";
+import ReactMarkdown from "@lib/components/react-markdown";
+
+//Hooks imports
+import { useGetToken, useDeleteToken } from "@/hooks/useCookies";
+import { getCached } from "@/hooks/cache.hook";
 
 //Services imports
-import { searchTeamData } from "@/app/teams/[id]/page";
-import Team, { Ticket } from "@/types/team.types";
+import UpdateUserData from "@/services/user.service";
+import getTicket from "@/services/ticket.service";
 
-export default function TicketView() {
-  //Params data
+//Icons imports
+
+//Icons imports
+import {
+  IconAppWindow,
+  IconArrowLeft,
+  IconCalendar,
+  IconCircleFilled,
+  IconDatabase,
+  IconEye,
+  IconFolder,
+  IconLayoutKanban,
+  IconMessage,
+  IconUsers
+} from "@tabler/icons-react";
+
+//Types setup
+//Imports
+import { UserData } from "@/types/user.types";
+import { Ticket } from "@/types/team.types";
+
+export default function TicketPage(){
+  //Next setup
+  const router = useRouter();
   const params = useParams();
-  const ticketIndex = parseInt(params.index as string);
 
-  //States handlers
-  //Team data
-  const [team, setTeam] = useState<Team>();
-  //Ticket data
-  const [ ticket, setTicket ] = useState<Ticket | null>();
-  //Editing values
-  //Editing loading state
-  const [ isLoading, setIsLoading ] = useState(false);
-  //Editing or not state
-  const [isEditing, setIsEditing] = useState(false);
-  //Ticket made for
-  const [ ticketTo, setTicketTo ] = useState<string>("");
-  //Ticket message
-  const [ ticketMessage, setTicketMessage ] = useState<string>("");
-  //Ticket importance
-  const [importance, setImportance] = useState<"Low" | "Medium" | "High">("Low");
-  //Confirmation enabled/disabled state
-  const [ formDisabled, setFormDisabled ] = useState<boolean>(false);
+  //Data states
+  const [ user, setUser ] = useState<UserData>();
+  const [ ticket, setTicket ] = useState<Ticket>();
+  
+  //Sidebar states
+  const [ expanded, setExpanded ] = useState(false);
 
+  //Components ref
   const snackbar = useRef(null);
-  const containerRef : RefObject<null> = useRef(null);
 
-  const hideConfirmation = () => {
-    if(!containerRef.current) return;
-
-    const current : HTMLElement = containerRef.current;
-
-    current.classList.add("hidden")
-    current.classList.remove("flex")
-  };
-
-  const showConfirmation = () => {
-    if(!containerRef.current) return;
-
-    const current : HTMLElement = containerRef.current;
-
-    current.classList.remove("hidden");
-    current.classList.add("flex");
-  };
-
+  //Set expanded based in localstorage
   useEffect(() => {
-    const getTeamData = async() => {
-      const team = await searchTeamData(
-        snackbar,
-        params,
-        setTeam
-      );
+    const expanded = window.localStorage.getItem("expanded");
 
-      setTicket(team?.tickets[ticketIndex]);
-      setTicketTo(team?.tickets[ticketIndex].to);
-      setTicketMessage(team?.tickets[ticketIndex].message);
-    }
+    if(expanded) return setExpanded(true);
 
-    getTeamData()
+    return;
   }, []);
 
-  const handleUpdate = async () => {
-    setIsLoading(true);
-    const token = await getCookie("token");
+  //Data fetching
+  useEffect(() => {
+    async function get() {
+      const token = useGetToken();
 
-    if(!token) window.location.href = "/auth/login";
+      if(!token) return router.push("/auth/login");
 
-    const updatedTicket = {
-      to: ticketTo,
-      message: ticketMessage,
-      importance: importance,
-      ticketIndex: params.index,
-    }
+      let user_data: UserData;
 
-    const res = await fetch(`/api/teams/${params.id}/tickets`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": token!,
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-      },
-      body: JSON.stringify(updatedTicket)
-    });
+      const cached = getCached();
 
-    const data = await res.json();
+      if(cached) {
+        user_data = cached
+      } else {
+        const user_fetched = await UpdateUserData(token);
 
-    if(res.status === 200) {
-      setTicket(data.ticket);
-      setTicketMessage(data.ticket.message);
-      setTicketTo(data.ticket.to);
-      setImportance(data.ticket.importance);
-      setIsLoading(false);
-      setIsEditing(false);
-      return;
-    }
+        if(!user_fetched) {
+          useDeleteToken();
+          window.localStorage.clear();
+          return;
+        }
 
-    
-    showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
-    setIsLoading(false);
-    return;
-  };
-
-  const handleDelete = async (e: React.SubmitEvent) => {
-    setFormDisabled(true);
-
-    e.preventDefault();
-
-    const token = await getCookie("token")
-
-    const res = await fetch(`/api/teams/${params.id}/tickets/${params.index}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": token!,
-          "x-api-key": process.env.NEXT_PUBLIC_API_KEY!
-        },
-        body: JSON.stringify({ index: ticketIndex })
+        user_data = user_fetched
       }
-    );
 
-    const data = await res.json();
+      setUser(user_data);
 
-    if(res.status === 200) {
-      window.location.href = `/teams/${params.id}`;
+      const ticket_got = await getTicket(
+        Number(params.id),
+        Number(params.index),
+        token,
+        snackbar
+      );
+
+      setTicket(ticket_got)
     }
 
-    showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
-    setFormDisabled(true);
-  };
+    get();
+  }, [])
 
   return (
-    team ? ( <div className="max-w-3xl mx-auto p-6 space-y-6">
-        <SnackBar ref={snackbar} />
+    user && ticket ? (
+      <div
+      className="h-screen grid grid-cols-[auto_1fr] text-zinc-50">
+        <SnackBar
+        ref={snackbar} />
+        
+        <SideBar
+        email={user?.email!}
+        plan={user?.plan!}
+        avatar={user?.avatar_url}
+        username={user?.name!}
+        setExpanded={(isExpanded : boolean) => {
+          setExpanded(isExpanded === true ? false : true);
+        }}>
+          {
+            expanded && (
+              <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
+                Project 
+              </span>
+            )
+          }
 
-        <div
-        ref={containerRef}
-        className="fixed w-screen h-screen justify-center items-center z-10 backdrop-blur backdrop-brightness-70 top-0 left-0 animate-fade-in hidden">
-          <CreatorForm
-          title="Are you sure to delete this ticket?"
-          action={(e) => { handleDelete(e) }}
-          hideAction={hideConfirmation}
-          confirmMessage="Delete"
-          isDangerous
-          actionIsDisabled={formDisabled}/>
-        </div>
+          <Icon
+          action={`/teams/${params.id}`}
+          name="Team dashboard"
+          isDisplayed={expanded}>
+            <IconAppWindow
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
 
-        {/* Header con botón de regreso y acciones */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => window.location.href = `/teams/${params.id}/tickets`}
-              className="p-2 hover:bg-neutral-800 rounded-full transition-colors text-neutral-400 hover:text-white cursor-pointer">
-              <IconArrowLeft size={24} />
-            </button>
-            <div className="flex items-center gap-3">
-              <div className="bg-main/10 p-2 rounded-lg">
-                <IconTicket size={24} color="blue" />
-              </div>
-              <h1 className="text-xl font-bold text-neutral-200 uppercase tracking-wider">
-                Ticket #{ticketIndex + 1}
-              </h1>
+          <Icon
+          action={`/teams/${params.id}/integrants`}
+          name="Integrants"
+          isDisplayed={expanded}>
+            <IconUsers
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
+
+          <Icon
+          action={`/teams/${params.id}/tickets`}
+          name="Tickets"
+          isDisplayed={expanded}>
+            <IconFolder
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
+
+          <Icon
+          action={`/teams/${params.id}/erd`}
+          name="ERD Creator"
+          isDisplayed={expanded}
+          disabled={ user?.plan === "Free" }>
+            <IconDatabase
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
+
+          <Icon
+          action={`/teams/${params.id}/chat`}
+          name="Chat"
+          isDisplayed={expanded}
+          disabled={ user?.plan === "Free" }>
+            <IconMessage
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
+
+          <Icon
+          action={`/teams/${params.id}/json-preview`}
+          name="JSON Preview"
+          isDisplayed={expanded}
+          disabled={ user?.plan === "Free" }>
+            <IconEye
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
+
+          <Icon
+          action={`/teams/${params.id}/kanban-board`}
+          name="Kanban board"
+          isDisplayed={expanded}
+          disabled={ user?.plan === "Free" }>
+            <IconLayoutKanban
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
+
+          <Icon
+          action={`/teams/${params.id}/calendar`}
+          name="Calendar"
+          isDisplayed={expanded}
+          disabled={ user?.plan === "Free" }>
+            <IconCalendar
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
+        </SideBar>
+
+        <main
+        className="w-full h-max min-h-screen bg-background relative p-10 flex flex-col gap-5 animate-fade-in">
+          <BgGradient />
+
+          <header
+          className="w-full z-2 flex flex-col">
+            <div
+            className="flex gap-3 items-center">
+              <Link
+              href={`/teams/${params.id}/tickets`}
+              className="p-2 rounded-full hover:bg-neutral-800">
+                <IconArrowLeft
+                size={25}
+                stroke={3}
+                color="white" />
+              </Link>
+              <p
+              className="text-3xl font-medium tracking-wide">
+                {ticket.title}
+              </p>
             </div>
-          </div>
-
-          {/* Botones de Acción */}
-          <div className="flex items-center gap-2">
-            {!isEditing ? (
-              <>
-                <button onClick={() => setIsEditing(true)} className="p-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg transition-colors">
-                  <IconEdit size={20} />
-                </button>
-                <button onClick={showConfirmation} className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors cursor-pointer">
-                  <IconTrash size={20} />
-                </button>
-              </>
-            ) : (
-              <>
-                <button onClick={() => setIsEditing(false)} className="p-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg transition-colors">
-                  <IconX size={20} />
-                </button>
-                <button
-                onClick={handleUpdate}
-                className="p-2 bg-green-500/10 hover:bg-green-500/20 cursor-pointer text-green-500 rounded-lg transition-colors disabled:hover:bg-green-500-10 disabled:grayscale disabled:cursor-wait"
-                disabled={isLoading}>
-                  <IconDeviceFloppy size={20} />
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6 shadow-sm">
-          <div className="grid grid-cols-2 gap-6 mb-8 border-b border-neutral-800 pb-6">
-            <div className="flex flex-col gap-1">
-              <span className="text-xs text-neutral-500 uppercase tracking-wider">Made by</span>
-              <span className="text-base font-semibold text-neutral-200">{ticket?.creator}</span>
+            <div
+            className="flex gap-2 items-center py-1">
+              <IconCircleFilled
+              size={10}
+              color={
+                ticket.importance === "Low" ? "blue" :
+                ticket.importance === "Medium" ? "orange" : "red"
+              } />
+              <p>
+                Importance: {ticket.importance.toLowerCase()}
+              </p>
             </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-xs text-neutral-500 uppercase tracking-wider">Asigned to</span>
-              {!isEditing ? (
-                <span className="text-base font-medium text-neutral-300 italic">{ticket?.to}</span>
-              ) : (
-                <input
-                  type="text"
-                  value={ticketTo}
-                  onChange={(e) => setTicketTo(e.target.value)}
-                  className="bg-neutral-950 border border-neutral-700 text-neutral-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 outline-none"
-                />
-              )}
-            </div>
-          </div>
+          </header>
 
-          <div className="flex flex-col gap-2">
-            <span className="text-xs text-neutral-500 uppercase tracking-wider"> Problem description </span>
-            {!isEditing ? (
-              <div className="prose prose-invert max-w-none text-neutral-300 bg-neutral-950/30 p-4 rounded-lg border border-neutral-800/50">
-                <ReactMarkdown>
-                  {ticket?.message || "*There's no content in your ticket*"}
-                </ReactMarkdown>
-              </div>
-            ) : (
-              <textarea
-                rows={8}
-                value={ticketMessage}
-                onChange={(e) => setTicketMessage(e.target.value)}
-                className="bg-neutral-950 border border-neutral-700 text-neutral-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3 outline-none resize-y"
-                placeholder="Escribe la descripción usando Markdown..."
-              />
-            )}
-          </div>
-        </div>
+          <section
+          className="w-full p-4 rounded-md bg-neutral-900 z-2">
+            <ReactMarkdown
+            content={ticket.message} />
+          </section>
+        </main>
+        
       </div>
     ) : (
-      <LoadingDashboard />
+      <LoadingScreen />
     )
-  );
+  )
 }

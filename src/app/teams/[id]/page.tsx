@@ -326,11 +326,11 @@ export default function TeamPage(){
                         className="grid grid-cols-2 items-center gap-4 px-4 py-3 rounded-xl border border-white/5 bg-white/2 text-sm text-neutral-200 transition-all duration-200 hover:bg-white/5 hover:border-white/10 hover:shadow-md group cursor-pointer overflow-hidden mb-2"
                         onClick={() => { window.location.href = `/teams/${params.id}/tickets/${index}` }}>
                         <span className="truncate font-medium text-white">
-                          {ticket.creator}
+                          {ticket.title}
                         </span>
 
                         <span className="truncate text-right text-neutral-400 group-hover:text-neutral-200 transition-colors">
-                          → {ticket.to}
+                          for <span className="text-sky-600">{ticket.to}</span>
                         </span>
                       </li>
                       ))

@@ -4,10 +4,11 @@ import {
 } from "@xyflow/react"
 
 export interface Ticket {
-  creator: string | null; //Username
-  to: string; //Email
+  creator: string | null;
+  to: string;
+  title: string;
   message: string;
-  importance: "High" | "Medium" | "Low"; //Valid values
+  importance: "High" | "Medium" | "Low";
   created_at?: string;
 }
 

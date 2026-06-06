@@ -62,7 +62,8 @@ export default function ProjectCard(props : ProjectCardProps) {
         </div>
         
         <button
-        className="flex h-8 w-8 -mr-2 -mt-2 items-center justify-center rounded-full text-text hover:bg-ultramarine-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine-400 cursor-pointer"
+        type="button"
+        className="flex h-8 w-8 -mr-2 -mt-2 items-center justify-center rounded-full text-text hover:bg-neutral-700 outline-none cursor-pointer"
         onClick={(e) => {
           e.nativeEvent.stopImmediatePropagation();
           e.stopPropagation();
@@ -87,31 +88,31 @@ export default function ProjectCard(props : ProjectCardProps) {
             }}
             className="flex w-full items-center px-4 py-2.5 text-sm text-text hover:bg-neutral-800 gap-2">
 
-            <IconPencil
-            size={20}
-            color="white" />
+              <IconPencil
+              size={20}
+              color="white" />
 
-            Edit
-          </button>
-          
-          <button
-          onClick={async (e) => {
-            e.nativeEvent.stopImmediatePropagation(); 
-            e.stopPropagation();
-            setIsDeleteDisabled(true);
-            await props.deleteProjectHandler();
-            setIsDeleteDisabled(false);
-            props.hideMenu();
-          }}
-          className="flex w-full items-center px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-200 gap-2 disabled:brightness-80 disabled:cursor-wait"
-          disabled={isDeleteDisabled}>
+              Edit
+            </button>
+            
+            <button
+            onClick={async (e) => {
+              e.nativeEvent.stopImmediatePropagation(); 
+              e.stopPropagation();
+              setIsDeleteDisabled(true);
+              await props.deleteProjectHandler();
+              setIsDeleteDisabled(false);
+              props.hideMenu();
+            }}
+            className="flex w-full items-center px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-200 gap-2 disabled:brightness-80 disabled:cursor-wait"
+            disabled={isDeleteDisabled}>
 
-            <IconTrash
-            size={20}
-            stroke={1} />
+              <IconTrash
+              size={20}
+              stroke={1} />
 
-            Delete
-          </button>
+              Delete
+            </button>
           </div>
       )}
 
