@@ -17,3 +17,6 @@
 
 1. If you can't solve the problem, stop of thinking and add a new markdown document explaining the problem in .agents/problems/
 2. When you need to add a new .env variable add it in example.env
+
+# Skills
+./.agents/skills/*

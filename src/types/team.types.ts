@@ -68,7 +68,7 @@ export default interface Team {
   status: "Backlog" | "Planning" | "In Progress" | "On Hold" | "Done"; //Valid values
   description: string;
   integrants: Array<IntegrantData>;
-  integrants_id?: Array<string>;
+  integrants_id: Array<string>;
   chat?: Array<any>; //Undefined
   kanban_board?: Array<any>; //Undefined
   tags?: Array<string>;
