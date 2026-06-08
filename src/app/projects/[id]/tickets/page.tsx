@@ -19,9 +19,8 @@ import BgGradient from "@/components/ui/bg-gradient";
 import TicketCard from "@/components/ui/ticket-card";
 
 //Hooks imports
-import { searchTeamData } from "../page";
 import useAnimationClose from "@/hooks/useAnimationClose";
-import { useDeleteCookie, useDeleteToken, useGetToken } from "@/hooks/useCookies";
+import { useDeleteToken, useGetToken } from "@/hooks/useCookies";
 import { getCached } from "@/hooks/cache.hook";
 
 //Types imports
@@ -40,11 +39,13 @@ import {
   IconFolderCancel,
   IconLayoutKanban,
   IconMessage,
+  IconSettings,
   IconUsers
 } from "@tabler/icons-react";
 
 //Services imports
-import UpdateUserData from "@/services/user.service";
+import getUser from "@/services/user.service";
+import getTeam from "@/services/team.service";
 
 export default function TicketsTeamPage(){
   //NextJS Setup
@@ -118,7 +119,7 @@ export default function TicketsTeamPage(){
       const cached = getCached();
 
       if(!cached) {
-        const user_fetched = await UpdateUserData(token);
+        const user_fetched = await getUser(token);
 
         if(!user_fetched) {
           useDeleteToken();
@@ -133,12 +134,13 @@ export default function TicketsTeamPage(){
 
       setUser(user_data);
 
-      const team = await searchTeamData(
-        snackbar,
-        params,
-        setTeam
+      const team = await getTeam(
+        Number(params.id),
+        token,
+        snackbar
       );
 
+      setTeam(team);
       setTickets(team.tickets);
     }
 
@@ -259,10 +261,7 @@ export default function TicketsTeamPage(){
   };
 
   //Handle ticket edit
-  const handleEdit = async (
-    e: React.SubmitEvent,
-    current_index: number
-  ) => {
+  const handleEdit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     if(currentIndex === undefined) return showSnackbar("Index not found", "warn", snackbar);
     setEditLoading(true);
@@ -270,6 +269,7 @@ export default function TicketsTeamPage(){
     const token = useGetToken();
 
     if(!token) return router.push("/auth/login");
+    toggleEditForm();
 
     const res = await fetch(
       `/api/teams/${params.id}/tickets`, {
@@ -290,7 +290,6 @@ export default function TicketsTeamPage(){
 
     if(res.status === 200) {
       showSnackbar(data.message, "valid", snackbar);
-      toggleEditForm();
       setEditLoading(false);
 
       return;
@@ -327,8 +326,8 @@ export default function TicketsTeamPage(){
           }
 
           <Icon
-          action={`/teams/${params.id}`}
-          name="Team dashboard"
+          action={`/projects/${params.id}`}
+          name="Dashboard"
           isDisplayed={expanded}>
             <IconAppWindow
             size={23}
@@ -337,7 +336,7 @@ export default function TicketsTeamPage(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/integrants`}
+          action={`/projects/${team.team_id}/integrants`}
           name="Integrants"
           isDisplayed={expanded}>
             <IconUsers
@@ -347,7 +346,7 @@ export default function TicketsTeamPage(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/tickets`}
+          action={`/projects/${team.team_id}/tickets`}
           name="Tickets"
           isDisplayed={expanded}>
             <IconFolder
@@ -357,7 +356,7 @@ export default function TicketsTeamPage(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/erd`}
+          action={`/projects/${team.team_id}/erd`}
           name="ERD Creator"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -368,7 +367,7 @@ export default function TicketsTeamPage(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/chat`}
+          action={`/projects/${team.team_id}/chat`}
           name="Chat"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -379,7 +378,7 @@ export default function TicketsTeamPage(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/json-preview`}
+          action={`/projects/${team.team_id}/json-preview`}
           name="JSON Preview"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -390,7 +389,7 @@ export default function TicketsTeamPage(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/kanban-board`}
+          action={`/projects/${team.team_id}/kanban-board`}
           name="Kanban board"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -401,11 +400,21 @@ export default function TicketsTeamPage(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/calendar`}
+          action={`/projects/${team.team_id}/calendar`}
           name="Calendar"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
             <IconCalendar
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
+
+          <Icon
+          action={`/projects/${team.team_id}/settings`}
+          name="Project settings"
+          isDisplayed={expanded}>
+            <IconSettings
             size={23}
             stroke={2}
             color="white"/>
@@ -517,7 +526,7 @@ export default function TicketsTeamPage(){
               <CreatorForm
               title="Edit your ticket"
               action={(e) => {
-                handleEdit(e, currentIndex);
+                handleEdit(e);
               }}
               hideAction={toggleEditForm}
               actionIsDisabled={editLoading}

@@ -62,6 +62,12 @@ export interface JSON_connections {
   child: string;
 }
 
+export interface Card {
+  id: string,
+  title: string;
+  created_by: string;
+}
+
 export default interface Team {
   team_id: number;
   name: string;
@@ -70,7 +76,12 @@ export default interface Team {
   integrants: Array<IntegrantData>;
   integrants_id: Array<string>;
   chat?: Array<any>; //Undefined
-  kanban_board?: Array<any>; //Undefined
+  kanban_board: {
+    todo: Card [],
+    inprogress: Card [],
+    done: Card [],
+    verified: Card [],
+  };
   tags?: Array<string>;
   tickets?: Array<Ticket>
   calendar?: string;

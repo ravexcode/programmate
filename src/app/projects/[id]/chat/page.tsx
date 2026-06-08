@@ -8,12 +8,12 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 
 //Hooks imports
-import { searchTeamData } from "../page";
 import { useGetToken } from "@/hooks/useCookies";
 import { getCached } from "@/hooks/cache.hook";
 
 //Services
-import UpdateUserData from "@/services/user.service";
+import getUser from "@/services/user.service";
+import getTeam from "@/services/team.service";
 
 //Lib imports
 import supabase_client from "@/lib/client/db";
@@ -71,18 +71,17 @@ export default function ChatPage() {
   useEffect(() => {
     async function setAllData(){
       //Sets user data
+      const token = useGetToken();
+      if(!token) return window.location.href = "/auth/login";
 
       //Sets cached
       const cached = getCached();
       let user_fetched;
+      
       if(cached) {
         setUser(cached);
       } else {
-        //Sets from db
-        const token = useGetToken();
-        if(!token) return window.location.href = "/auth/login";
-
-        user_fetched = await UpdateUserData(token);
+        user_fetched = await getUser(token);
         
         if(!user) return window.location.href = "/auth/login";
 
@@ -90,10 +89,10 @@ export default function ChatPage() {
       }
 
       //Gets team data
-      const team_fetched : Team | null = await searchTeamData(
-        snackbar,
-        params,
-        setTeam
+      const team_fetched : Team | null = await getTeam(
+        Number(params.id),
+        token,
+        snackbar
       );
 
       const { data: chat_fetched } = await supabase_client
@@ -276,7 +275,7 @@ export default function ChatPage() {
           <header
           className="px-6 py-4 flex gap-3 justify-start items-center w-full h-max bg-neutral-900 border-b border-neutral-800 z-20">
             <Link
-            href={`/teams/${params.id}`}
+            href={`/projects/${params.id}`}
             className="p-2 rounded-lg duration-200 hover:bg-neutral-800 transition-colors">
               <IconArrowLeft size={20} stroke={2} />
             </Link>

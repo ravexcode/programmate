@@ -2,10 +2,10 @@
 "use client"
 
 //Next imports
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 //React imports
-import { useEffect, useState, useRef, RefObject } from "react";
+import { useEffect, useState, useRef } from "react";
 
 //Types imports
 import { UserData } from "@/types/user.types";
@@ -13,11 +13,16 @@ import { UserData } from "@/types/user.types";
 //Prebuild ui imports
 import SideBar, { Icon } from "@/components/ui/sidebar";
 import AIChat from "@/components/ui/ai-chat";
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import SnackBar from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 
 //Hooks imports
-import { useGetToken } from "@/hooks/useCookies";
+import { useDeleteToken, useGetToken } from "@/hooks/useCookies";
+import { getCached } from "@/hooks/cache.hook";
+
+//Services imports
+import getTeam from "@/services/team.service";
+import getUser from "@/services/user.service";
 
 //Icons imports
 import {
@@ -28,53 +33,14 @@ import {
   IconFolderCancel,
   IconLayoutKanban,
   IconMessage,
+  IconSettings,
   IconUsers
 } from "@tabler/icons-react";
 
-//Functions for export
-//Function for search team data
-export async function searchTeamData (
-  snackbar : RefObject<null>,
-  params: any,
-  setTeam: any
-) {
-  //Sets main page values
-  
-
-  //Gets user's token
-  const token = useGetToken();
-
-  //If token isn't returned sends to login
-  if(!token) return window.location.href = "/auth/login";
-
-  //Gets the response from fetch
-  const res = await fetch(`/api/teams/${params.id}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": token,
-      "x-api-key": process.env.NEXT_PUBLIC_API_KEY!
-    }
-  });
-
-  //Process the data from response
-  const data = await res.json();
-
-  //Verifies status
-  if(res.status === 200) {
-    //Sets team data
-    setTeam(data.team);
-    return data.team;
-  }
-  
-  //If there's an error shows it
-  showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
-  return;
-}
-
 export default function TeamPage(){
-  //URL id
+  //NextJS Setup
   const params = useParams();
+  const router = useRouter();
 
   //States handler
   //User data
@@ -98,20 +64,44 @@ export default function TeamPage(){
 
   //Sets the data
   useEffect(() => {
-    //Gets user from cache
-    const cached = window.localStorage.getItem("user");
-    if(!cached) window.location.href = "/auth/login";
-    //Parses
-    const parsed = JSON.parse(cached!);
-    //Sets data
-    setUser(parsed);
+    async function get() {
+      let user_data : UserData;
 
-    //Gets team data
-    searchTeamData(
-      snackbar,
-      params,
-      setTeam
-    );
+      const token = useGetToken();
+
+      if(!token) return router.push("/auth/login");
+
+      const cached = getCached();
+
+      if(cached) {
+        user_data = cached
+      } else {
+        const fetched = await getUser(token);
+        
+        if(!fetched) {
+          useDeleteToken();
+          window.localStorage.clear();
+          return router.push("/auth/login");
+        };
+
+        user_data = fetched;
+      }
+
+      setUser(user_data);
+
+      //Gets team data
+      const team = await getTeam(
+        Number(params.id),
+        token,
+        snackbar
+      );
+
+      setTeam(team);
+      
+      return;
+    }
+
+    get();
   }, []);
   
   return (
@@ -139,7 +129,7 @@ export default function TeamPage(){
             }
 
             <Icon
-            action={`/teams/${team.team_id}/integrants`}
+            action={`/projects/${team.team_id}/integrants`}
             name="Integrants"
             isDisplayed={expanded}>
               <IconUsers
@@ -149,7 +139,7 @@ export default function TeamPage(){
             </Icon>
 
             <Icon
-            action={`/teams/${team.team_id}/tickets`}
+            action={`/projects/${team.team_id}/tickets`}
             name="Tickets"
             isDisplayed={expanded}>
               <IconFolder
@@ -159,7 +149,7 @@ export default function TeamPage(){
             </Icon>
 
             <Icon
-            action={`/teams/${team.team_id}/erd`}
+            action={`/projects/${team.team_id}/erd`}
             name="ERD Creator"
             isDisplayed={expanded}
             disabled={ user?.plan === "Free" }>
@@ -170,7 +160,7 @@ export default function TeamPage(){
             </Icon>
 
             <Icon
-            action={`/teams/${team.team_id}/chat`}
+            action={`/projects/${team.team_id}/chat`}
             name="Chat"
             isDisplayed={expanded}
             disabled={ user?.plan === "Free" }>
@@ -181,7 +171,7 @@ export default function TeamPage(){
             </Icon>
 
             <Icon
-            action={`/teams/${team.team_id}/json-preview`}
+            action={`/projects/${team.team_id}/json-preview`}
             name="JSON Preview"
             isDisplayed={expanded}
             disabled={ user?.plan === "Free" }>
@@ -192,7 +182,7 @@ export default function TeamPage(){
             </Icon>
 
             <Icon
-            action={`/teams/${team.team_id}/kanban-board`}
+            action={`/projects/${team.team_id}/kanban-board`}
             name="Kanban board"
             isDisplayed={expanded}
             disabled={ user?.plan === "Free" }>
@@ -203,11 +193,21 @@ export default function TeamPage(){
             </Icon>
 
             <Icon
-            action={`/teams/${team.team_id}/calendar`}
+            action={`/projects/${team.team_id}/calendar`}
             name="Calendar"
             isDisplayed={expanded}
             disabled={ user?.plan === "Free" }>
               <IconCalendar
+              size={23}
+              stroke={2}
+              color="white"/>
+            </Icon>
+
+            <Icon
+            action={`/projects/${team.team_id}/settings`}
+            name="Project settings"
+            isDisplayed={expanded}>
+              <IconSettings
               size={23}
               stroke={2}
               color="white"/>

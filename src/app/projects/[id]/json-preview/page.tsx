@@ -20,9 +20,11 @@ import { JsonNode } from "@/components/ui/json-node";
 import ButtonControl from "@/components/ui/button-control";
 
 //Hooks imports
-import { searchTeamData } from "@/app/teams/[id]/page";
 import { useGetToken } from "@/hooks/useCookies";
-import UpdateUserData from "@/services/user.service";
+
+//Services imports
+import getTeam from "@/services/team.service";
+import getUser from "@/services/user.service";
 
 //Icons imports
 import {
@@ -38,7 +40,9 @@ import {
   IconPlus,
   IconTrash,
   IconUsers,
-  IconHandStop
+  IconHandStop,
+  IconAppWindow,
+  IconSettings
 } from "@tabler/icons-react";
 
 //Reactflow imports
@@ -114,17 +118,18 @@ export default function Page(){
 
       if(!token) return router.push("/auth/login");
 
-      const user_data = await UpdateUserData(token);
+      const user_data = await getUser(token);
       setUser(user_data);
 
-      const team_data : Team = await searchTeamData(
-        snackbar,
-        params,
-        setTeam
-      )
+      const team_data : Team = await getTeam(
+        Number(params.id),
+        token,
+        snackbar
+      );
 
       if(!team_data) return router.push("/dashboard");
 
+      setTeam(team_data);
       setNodes(team_data.json_views || []);
       setEdges(team_data.json_connections || []);
     }
@@ -429,9 +434,18 @@ export default function Page(){
               </span>
             )
           }
+          <Icon
+          action={`/projects/${params.id}`}
+          name="Team dashboard"
+          isDisplayed={expanded}>
+            <IconAppWindow
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/integrants`}
+          action={`/projects/${team.team_id}/integrants`}
           name="Integrants"
           isDisplayed={expanded}>
             <IconUsers
@@ -441,7 +455,7 @@ export default function Page(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/tickets`}
+          action={`/projects/${team.team_id}/tickets`}
           name="Tickets"
           isDisplayed={expanded}>
             <IconFolder
@@ -451,7 +465,7 @@ export default function Page(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/erd`}
+          action={`/projects/${team.team_id}/erd`}
           name="ERD Creator"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -462,7 +476,7 @@ export default function Page(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/chat`}
+          action={`/projects/${team.team_id}/chat`}
           name="Chat"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -473,7 +487,7 @@ export default function Page(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/json-preview`}
+          action={`/projects/${team.team_id}/json-preview`}
           name="JSON Preview"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -484,7 +498,7 @@ export default function Page(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/kanban-board`}
+          action={`/projects/${team.team_id}/kanban-board`}
           name="Kanban board"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -495,11 +509,21 @@ export default function Page(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/calendar`}
+          action={`/projects/${team.team_id}/calendar`}
           name="Calendar"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
             <IconCalendar
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
+          
+          <Icon
+          action={`/projects/${team.team_id}/settings`}
+          name="Project settings"
+          isDisplayed={expanded}>
+            <IconSettings
             size={23}
             stroke={2}
             color="white"/>

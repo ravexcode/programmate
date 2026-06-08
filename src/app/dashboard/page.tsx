@@ -875,7 +875,7 @@ export default function Dashboard(){
               {
                 user.teams && user.teams.length > 0 && user.teams.map((team: Team, index) => 
                   <Icon
-                  action={`/teams/${team.team_id}`}
+                  action={`/projects/${team.team_id}`}
                   name={team.name}
                   isDisplayed={expanded}
                   key={index + "-proyect"}>
@@ -983,7 +983,7 @@ export default function Dashboard(){
                           setSelectedTeamData(team)
                           toggleEditContainer();
                         }}
-                        goToTeam={() => { return router.push(`/teams/${team.team_id}`) }}/>
+                        goToTeam={() => { return router.push(`/projects/${team.team_id}`) }}/>
                       )) : (
                         <span
                         className="w-full text-center text-2xl font-light text-text py-4"> No projects found, try creating a new project!  </span>

@@ -59,6 +59,12 @@ export async function POST(req: NextRequest) {
       integrants_id: integrants.map((integrant: any) => integrant.id),
       created_at: new Date(),
       tags,
+      kanban_board: {
+        "todo": [],
+        "inprogress": [],
+        "done": [],
+        "verified": []
+      },
       status
     };
 

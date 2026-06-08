@@ -9,6 +9,7 @@ import { useParams, useRouter } from "next/navigation";
 
 //Icons imports
 import {
+  IconAppWindow,
   IconCalendar,
   IconCheck,
   IconCopy,
@@ -23,6 +24,7 @@ import {
   IconLayoutKanban,
   IconMessage,
   IconMouse,
+  IconSettings,
   IconTrash,
   IconUsers
 } from "@tabler/icons-react";
@@ -38,8 +40,8 @@ import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
 
 //Services imports
-import UpdateUserData from "@/services/user.service";
-import { searchTeamData } from "../page";
+import getTeam from "@/services/team.service";
+import getUser from "@/services/user.service";
 
 //Hooks imports
 import { useGetToken } from "@/hooks/useCookies";
@@ -149,17 +151,18 @@ export default function Page(){
 
       if(!token) return router.push("/auth/login");
 
-      const user_data = await UpdateUserData(token);
+      const user_data = await getUser(token);
       setUser(user_data);
 
-      const team_data : Team = await searchTeamData(
-        snackbar,
-        params,
-        setTeam
-      )
+      const team_data : Team = await getTeam(
+        Number(params.id),
+        token,
+        snackbar
+      );
 
       if(!team_data) return router.push("/dashboard");
 
+      setTeam(team_data)
       setNodes(team_data.ERD || []);
       setEdges(team_data.ERD_connections || []);
     }
@@ -902,7 +905,17 @@ const sql = `CREATE TABLE ${json.tableName} (
           }
 
           <Icon
-          action={`/teams/${team.team_id}/integrants`}
+          action={`/projects/${params.id}`}
+          name="Dashboard"
+          isDisplayed={expanded}>
+            <IconAppWindow
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
+
+          <Icon
+          action={`/projects/${team.team_id}/integrants`}
           name="Integrants"
           isDisplayed={expanded}>
             <IconUsers
@@ -912,7 +925,7 @@ const sql = `CREATE TABLE ${json.tableName} (
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/tickets`}
+          action={`/projects/${team.team_id}/tickets`}
           name="Tickets"
           isDisplayed={expanded}>
             <IconFolder
@@ -922,7 +935,7 @@ const sql = `CREATE TABLE ${json.tableName} (
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/erd`}
+          action={`/projects/${team.team_id}/erd`}
           name="ERD Creator"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -933,7 +946,7 @@ const sql = `CREATE TABLE ${json.tableName} (
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/chat`}
+          action={`/projects/${team.team_id}/chat`}
           name="Chat"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -944,7 +957,7 @@ const sql = `CREATE TABLE ${json.tableName} (
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/json-preview`}
+          action={`/projects/${team.team_id}/json-preview`}
           name="JSON Preview"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -955,7 +968,7 @@ const sql = `CREATE TABLE ${json.tableName} (
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/kanban-board`}
+          action={`/projects/${team.team_id}/kanban-board`}
           name="Kanban board"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -966,11 +979,21 @@ const sql = `CREATE TABLE ${json.tableName} (
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/calendar`}
+          action={`/projects/${team.team_id}/calendar`}
           name="Calendar"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
             <IconCalendar
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
+          
+          <Icon
+          action={`/projects/${team.team_id}/settings`}
+          name="Project settings"
+          isDisplayed={expanded}>
+            <IconSettings
             size={23}
             stroke={2}
             color="white"/>

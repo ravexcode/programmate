@@ -37,7 +37,7 @@ export default function TicketCard(props: Props) {
     <section
     className="rounded-md h-max md:h-65 xl:h-60 bg-neutral-950 border border-neutral-800 duration-400 hover:border-main hover:-translate-y-1 p-4 relative cursor-pointer flex flex-col"
     onClick={() => {
-      props.router.push(`/teams/${props.teamId}/tickets/${props.index}`);
+      props.router.push(`/projects/${props.teamId}/tickets/${props.index}`);
       return;
     }}>
       {/* Edit / Delete menu */}

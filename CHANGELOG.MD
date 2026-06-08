@@ -1,5 +1,14 @@
 # Indev
 
+- **Indev v44.0:**
+> Dev update, new page, page improvement
+  1. Páginas dentro de /teams ahora están dentro de /projects. 🛠️
+  2. Actualización de users service. 🛠️
+  3. Página de kanban board inicializada. 🚀
+  4. Nuevos componentes de card y list para kanban board. ✅
+  5. Cambios menores en /tickets. 🛠️
+  6. Se agregó la página de configuración de proyectos. 🚀
+
 - **Indev v43.0:**
 > Refactor, dev update, design fix, page improvement
   1. Página de tickets completamente refactorizada. 🛠️

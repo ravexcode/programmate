@@ -4,7 +4,7 @@ import { useDeleteToken } from "@/hooks/useCookies";
 //Types imports
 import { UserData } from "@/types/user.types";
 
-export default async function UpdateUserData(token: string) {
+export default async function getUser(token: string) {
   //Fetch to user api
   const res = await fetch('/api/users/me', {
     method: "GET",

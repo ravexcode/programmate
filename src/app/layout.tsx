@@ -18,7 +18,7 @@ export default function RootLayout({
     lang="en"
     data-scroll-behavior="smooth">
       <link rel="shortcut icon" href="/logos/logo.svg" type="image/x-icon" />
-      <body className="bg-black">
+      <body className="bg-black text-zinc-50">
         {children}
       </body>
     </html>

@@ -10,10 +10,12 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
 //Hooks imports
-import UpdateUserData from "@/services/user.service";
-import { searchTeamData } from "../page";
 import { getCached } from "@/hooks/cache.hook";
 import { useGetToken } from "@/hooks/useCookies";
+
+//Services imports
+import getUser from "@/services/user.service";
+import getTeam from "@/services/team.service";
 
 //Functions imports
 import { isUserAdmin, getMemberById } from "@/functions/admin";
@@ -38,7 +40,8 @@ import {
   IconTrash,
   IconShieldCheck,
   IconShield,
-  IconAppWindow
+  IconAppWindow,
+  IconSettings
 } from "@tabler/icons-react";
 
 //Types imports
@@ -98,7 +101,7 @@ export default function Page(){
 
   useEffect(() => {
     async function getData() {
-      let user_value : UserData | undefined;
+      let user_data : UserData | undefined;
       const token = useGetToken();
 
       if(!token) return router.push("/auth/login");
@@ -106,16 +109,22 @@ export default function Page(){
       const cached = getCached();
 
       if(!cached) {
-        const user_fetched = await UpdateUserData(token);
+        const user_fetched = await getUser(token);
 
-        user_value = user_fetched;
+        user_data = user_fetched;
       } else {
-        user_value = cached;
+        user_data = cached;
       }
 
-      setUser(user_value);
+      setUser(user_data);
 
-      await searchTeamData(snackbar, params, setTeam);
+      const team = await getTeam(
+        Number(params.id),
+        token,
+        snackbar
+      );
+
+      setTeam(team);
     }
 
     getData();
@@ -479,8 +488,8 @@ export default function Page(){
           }
 
           <Icon
-          action={`/teams/${params.id}`}
-          name="Team dashboard"
+          action={`/projects/${params.id}`}
+          name="Dashboard"
           isDisplayed={expanded}>
             <IconAppWindow
             size={23}
@@ -489,7 +498,7 @@ export default function Page(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/integrants`}
+          action={`/projects/${team.team_id}/integrants`}
           name="Integrants"
           isDisplayed={expanded}>
             <IconUsers
@@ -499,7 +508,7 @@ export default function Page(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/tickets`}
+          action={`/projects/${team.team_id}/tickets`}
           name="Tickets"
           isDisplayed={expanded}>
             <IconFolder
@@ -509,7 +518,7 @@ export default function Page(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/erd`}
+          action={`/projects/${team.team_id}/erd`}
           name="ERD Creator"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -520,7 +529,7 @@ export default function Page(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/chat`}
+          action={`/projects/${team.team_id}/chat`}
           name="Chat"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -531,7 +540,7 @@ export default function Page(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/json-preview`}
+          action={`/projects/${team.team_id}/json-preview`}
           name="JSON Preview"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -542,7 +551,7 @@ export default function Page(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/kanban-board`}
+          action={`/projects/${team.team_id}/kanban-board`}
           name="Kanban board"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
@@ -553,11 +562,21 @@ export default function Page(){
           </Icon>
 
           <Icon
-          action={`/teams/${team.team_id}/calendar`}
+          action={`/projects/${team.team_id}/calendar`}
           name="Calendar"
           isDisplayed={expanded}
           disabled={ user?.plan === "Free" }>
             <IconCalendar
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
+
+          <Icon
+          action={`/projects/${team.team_id}/settings`}
+          name="Project settings"
+          isDisplayed={expanded}>
+            <IconSettings
             size={23}
             stroke={2}
             color="white"/>
@@ -709,7 +728,7 @@ export default function Page(){
                     Invite your first team member to start collaborating on this project
                   </p>
                   <Link
-                  href={`/teams/${team.team_id}/integrants/invite`}
+                  href={`/projects/${team.team_id}/integrants/invite`}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg text-text bg-main hover:bg-main/90 duration-400 transition cursor-pointer font-medium">
                     <IconUserPlus
                     size={18}
