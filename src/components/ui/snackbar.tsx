@@ -1,7 +1,10 @@
+//Hooks imports
+import useAnimationClose from "@/hooks/useAnimationClose";
+
 export default function SnackBar({ ref } : { ref :React.RefObject<null> }) {
   return (
     <div
-    className="fixed bottom-4 left-1/2 -translate-x-1/2 animate-fade-in-up z-100 text-white p-2 px-4 rounded-md font-medium w-max max-w-120 text-center hidden"
+    className="fixed bottom-4 left-1/2 -translate-x-1/2 animate-fade-in-up z-100 text-white p-2 px-4 rounded-md font-medium w-max max-w-120 text-center hidden pointer-events-none"
     ref={ref}>
       {/* There will be the snackbar content */}
     </div>
@@ -16,6 +19,7 @@ export function showSnackbar(
   if(!snackbar.current) return;
 
   const current : HTMLElement = snackbar.current;
+  if(current.classList.contains("animate-fade-out-down")) current.classList.remove("animate-fade-out-down");
 
   const bg_color = type === "valid" ? "bg-green-600" : type === "warn" ? "bg-orange-600" : "bg-red-600";
 
@@ -25,12 +29,17 @@ export function showSnackbar(
 
   current.classList.replace("hidden", "block");
 
-  const interval = setInterval(hideSnackbar, 2000);
+  const interval = setInterval(hideSnackbar, 2000); //2 Seconds
 
   function hideSnackbar() {
-    current.classList.remove(bg_color);
-    current.classList.replace("block", "hidden");
-    current.innerText = "";
-    clearInterval(interval)
+    current.classList.add("animate-fade-out-down");
+    useAnimationClose(
+      current,
+      "fade-out-down",
+      "block",
+      "hidden"
+    );
+    clearInterval(interval);
+    return;
   }
 }

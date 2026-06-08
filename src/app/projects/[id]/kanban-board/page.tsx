@@ -30,6 +30,7 @@ import getUser from "@/services/user.service";
 
 //Icons imports
 import {
+  IconAppWindow,
   IconCalendar,
   IconDatabase,
   IconEye,
@@ -159,6 +160,16 @@ export default function KanBanBoard() {
               </span>
             )
           }
+
+          <Icon
+          action={`/projects/${params.id}`}
+          name="Dashboard"
+          isDisplayed={expanded}>
+            <IconAppWindow
+            size={23}
+            stroke={2}
+            color="white"/>
+          </Icon>
 
           <Icon
           action={`/projects/${team.team_id}/integrants`}

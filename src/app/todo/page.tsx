@@ -194,9 +194,6 @@ export default function ToDoListPage() {
     const classlist = current.classList;
 
     if(classlist.contains("hidden")){
-      //Change loading state
-      setIsLoading(false);
-
       classlist.remove("animate-fade-out-down");
       classlist.replace("hidden", "flex");
 

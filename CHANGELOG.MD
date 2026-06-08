@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v44.2:**
+> Design update, bugfix leve
+  1. Mejora de mostrada y salida de snackbar. 🛠️
+  2. Bugfix de caché y obtención de datos de usuario en dashboard. 🛠️
+  3. Ahora el caché se guarda solo 1 día. 🚀
+
 - **Indev v44.1:**
 > Design update
   1. Mejoras en el sidebar

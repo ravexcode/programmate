@@ -77,8 +77,11 @@ export default async function getUser(token: string) {
     "avatar_url": data.profile.avatar_url
   }
 
+  const now = new Date();
+
   //Saves in cache
   window.localStorage.setItem("user", JSON.stringify(user));
+  window.localStorage.setItem("cached_at", now.toString());
   //Returns as user
   return user;
 }

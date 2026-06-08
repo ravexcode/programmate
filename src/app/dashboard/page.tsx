@@ -119,26 +119,29 @@ export default function Dashboard(){
 
   //Gets user data
   useEffect(() => {
-    //Gets the cached user
-    const user = getCached();
-
-    //If there is a cached user, sets the user data
-    if(user) {
-      setUser(user);
-    }
-
     //Function to update the user data
     async function updateFromToken(){
+      let user_data;
       //Id isn't cached gets the data
       const token = useGetToken();
 
       if(!token) {
         //If hasn't token returns to log in form
-        router.push("/auth/login");
+        return router.push("/auth/login");
       };
 
+      
+      //Gets the cached user
+      const cached = getCached();
+
+      //If there is a cached user, sets the user data
+      if(cached) {
+        setUser(cached);
+        user_data = cached;
+      }
+
       //Updates the user's data
-      const user_data = await UpdateUserData(token!);
+      if(!cached) user_data = await UpdateUserData(token);
       //Created at to Date
       const created_at = new Date(user_data!.created_at!);
       //Date now
