@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v44.1:**
+> Design update
+  1. Mejoras en el sidebar
+
 - **Indev v44.0:**
 > Dev update, new page, page improvement
   1. Páginas dentro de /teams ahora están dentro de /projects. 🛠️

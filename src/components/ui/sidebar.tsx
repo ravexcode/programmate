@@ -1,18 +1,25 @@
 //React imports
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState, useEffect, useRef } from "react";
 
 //Next imports
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 //Icons imports
 import {
+  IconArrowsMoveVertical,
   IconBolt,
   IconChecklist,
   IconLayoutDashboard,
   IconLayoutSidebar,
+  IconReceipt2,
+  IconSettings,
   IconUserCircle
 } from "@tabler/icons-react";
+
+//Hooks imports
+import useAnimationClose from "@/hooks/useAnimationClose";
 
 //Icon interface
 export interface IconProps {
@@ -47,7 +54,12 @@ interface SideBarProps {
 
 
 export default function SideBar(props: SideBarProps) {
+  const router = useRouter();
+
   const [expanded, setExpanded] = useState(false);
+  const [ settingsVisible, changeSettingsVisibility ] = useState(false);
+
+  const userSettings = useRef(null);
   
   useEffect(() => {
     const expanded = window.localStorage.getItem("expanded");
@@ -56,6 +68,27 @@ export default function SideBar(props: SideBarProps) {
 
     return;
   }, []);
+
+  const toggleSettings = () => {
+    if(!userSettings.current) return;
+    if(!expanded) return;
+
+    changeSettingsVisibility(prev => prev ? false : true);
+
+    const current : HTMLElement = userSettings.current;
+    const classlist = current.classList;
+
+    if(classlist.contains("hidden")){
+      classlist.remove("animate-fade-out-down");
+      classlist.replace("hidden", "flex");
+
+      return;
+    };
+
+    classlist.add("animate-fade-out-down");
+    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    return;
+  }
   
   return (
     <aside
@@ -164,18 +197,25 @@ export default function SideBar(props: SideBarProps) {
               </Link>
             )
           }
-          <Icon
-          action="/settings"
-          name=""
-          isDisplayed={expanded}>
+
+
+          <div
+          className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg cursor-pointer transition focus:outline-none duration-400 relative " + (expanded ? "w-46 md:w-60" : "w-full") + (settingsVisible ? "" : " hover:bg-blue-900")}
+          onClick={() => {
+            if(expanded) {
+              return toggleSettings();
+            } else {
+              return router.push("/users/me")
+            }
+          }}>
             {
               props.avatar ? (
                 <Image
                 src={props.avatar}
-                alt={props.email + " avatar"}
-                width={23}
-                height={23}
-                className="rounded-full border border-neutral-800"
+                alt={props.username + "avatar"}
+                width={50}
+                height={50}
+                className="rounded-full w-6 aspect-square"
                 preload
                 loading="eager" />
               ) : (
@@ -185,17 +225,49 @@ export default function SideBar(props: SideBarProps) {
                 color="white" />
               )
             }
-
-            {
-              expanded && (
+            {expanded && (
+              <div
+              className="w-full flex gap-2 h-full items-center justify-center">
                 <div
-                className="flex flex-col">
-                  <p className="animate-fade-in-right"> {props.username} </p>
-                  <p className="animate-fade-in-right text-xs font-light text-neutral-300"> {props.email} </p>
+                className="w-full flex flex-col items-start">
+                  <p className="text-sm animate-fade-in-right"> {props.username} </p>
+                  <p className="text-xs text-neutral-400 animate-fade-in-right"> {props.email} </p>
                 </div>
-              )
-            }
-          </Icon>
+
+                <IconArrowsMoveVertical
+                size={15}
+                stroke={2}
+                color="white"
+                className="w-6 aspect-square" />
+              </div>
+            )}
+
+            <section
+            className="absolute w-full py-2 bg-neutral-950 border border-neutral-800 rounded-md left-0 bottom-1/1 z-5 hidden flex-col animate-fade-in-up animate-duration-300"
+            ref={userSettings}>
+              <Link
+              href="/settings"
+              className="w-full flex gap-1 justify-start items-center hover:bg-neutral-700 px-2 py-1">
+                <IconSettings
+                size={18} />
+                Settings
+              </Link>
+              <Link
+              href="/user/billing"
+              className="w-full flex gap-1 justify-start items-center hover:bg-neutral-700 px-2 py-1">
+                <IconReceipt2
+                size={18} />
+                Billing
+              </Link>
+              <Link
+              href="/users/me"
+              className="w-full flex gap-1 justify-start items-center hover:bg-neutral-700 px-2 py-1">
+                <IconUserCircle
+                size={18} />
+                My profile
+              </Link>
+            </section>
+          </div>
         </div>
       </nav>
     </aside>
