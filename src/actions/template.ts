@@ -15,11 +15,27 @@ export async function fetchTemplate(
         headers: {
           ...headers,
           "Content-Type": "application/json",
-          "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!
+          "x-api-key": process.env.NEXT_PUBLIC_API_KEY!
         },
         body
       }
     )
+
+    const data = await res.json();
+
+    if(res.status === 200 || res.status === 201) {
+      return showSnackbar(
+        data.message,
+        "valid",
+        snackbar
+      );
+    }
+    
+    return showSnackbar(
+      data.message || "Server error",
+      (res.status >= 500 ? "critic" : "warn"),
+      snackbar
+    );
   } catch(e: unknown) {
     if(e instanceof Error) {
       return showSnackbar(

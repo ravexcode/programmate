@@ -429,7 +429,7 @@ export default function Dashboard(){
   }
 
   return (
-    <div className="min-h-screen bg-background grid grid-cols-[auto_1fr] overflow-hidden text-text">
+    <div className="min-h-screen bg-background grid grid-rows-[auto_1fr] sm:grid-cols-[auto_1fr] overflow-hidden text-text">
       {/* Layout sections */}
       <AIChat />
       <SnackBar

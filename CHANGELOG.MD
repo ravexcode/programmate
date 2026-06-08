@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v44.3:**
+> Design update, new endpoint
+  1. Intento de actualización de sidebar fallido (Intento 1). ❌
+  2. Nuevo endpoint para actualizar el Kanban board. 🚀
+  3. Snackbar arreglado. 🛠️
+
 - **Indev v44.2:**
 > Design update, bugfix leve
   1. Mejora de mostrada y salida de snackbar. 🛠️

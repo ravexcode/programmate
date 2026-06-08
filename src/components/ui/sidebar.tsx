@@ -33,10 +33,17 @@ export interface IconProps {
 
 //Icon button component
 export function Icon(props : IconProps) {
+  const [ , setIs ] = useState(false);
+
+  useEffect(() => {
+    const is = window.innerWidth <= 640;
+    setIs(is);
+  }, []);
+
   return (
     <Link
     href={props.action}
-    className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-400 " + (props.disabled && "grayscale brightness-50 pointer-events-none ") + (props.isDisplayed ? "w-46 md:w-60" : "w-full")}>
+    className={"flex justify-start items-center gap-2 p-2 rounded-lg hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-400 w-full " + (props.disabled && "grayscale brightness-50 pointer-events-none ")}>
       {props.children}
       {props.isDisplayed && <span className="text-sm animate-fade-in-right"> {props.name} </span>}
     </Link>
@@ -52,12 +59,17 @@ interface SideBarProps {
   avatar?: string;
 }
 
-
 export default function SideBar(props: SideBarProps) {
   const router = useRouter();
 
   const [expanded, setExpanded] = useState(false);
   const [ settingsVisible, changeSettingsVisibility ] = useState(false);
+  const [ , setIs ] = useState(false);
+
+  useEffect(() => {
+    const is = window.innerWidth <= 640;
+    setIs(is);
+  }, []);
 
   const userSettings = useRef(null);
   
@@ -92,12 +104,12 @@ export default function SideBar(props: SideBarProps) {
   
   return (
     <aside
-      className={`text-xs md:text-sm scrollbar-hide h-screen bg-neutral-950 text-text transition-all duration-400 flex flex-col animate-fade-in overflow-y-auto overflow-x-hidden 
-        ${expanded ? "w-50 md:w-64" : "w-12 md:w-16"}
+      className={`text-xs md:text-sm scrollbar-hide h-full items-center justify-center bg-neutral-950 text-text transition-all duration-400 flex flex-col animate-fade-in overflow-x-auto sm:overflow-y-auto overflow-hidden
+        ${expanded ? "w-64" : "w-16"}
       `}>
 
       <div
-      className="p-2 md:p-3 flex flex-col justify-center items-center mt-1 mb-3">
+      className="p-3 flex flex-col justify-center items-center sm:mt-1 sm:mb-3">
         <Link
         href="/"
         className="duration-300 hover:scale-105 hover:brightness-120">
@@ -107,13 +119,13 @@ export default function SideBar(props: SideBarProps) {
           width={200}
           height={200}
           preload
-          className={"animate-fade-in-right " + (expanded ? "h-5" : "aspect-square w-3 md:w-5")}/>
+          className={"animate-fade-in-right " + (expanded  ? "h-5" : "aspect-square w-5")}/>
         </Link>
       </div>
       
 
-      {/* Toggle */}
-      <div className="px-3">
+      {/* Toggler */}
+      <div className="px-3 hidden sm:flex w-full">
 
         <button
         type="button"
@@ -123,7 +135,7 @@ export default function SideBar(props: SideBarProps) {
             if(!expanded) return window.localStorage.setItem("expanded", "expanded");
             return window.localStorage.removeItem("expanded");
           }}
-          className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-800 " + (expanded ? "w-46 md:w-60" : "w-full")}>
+          className="flex justify-start items-center gap-2 p-2 rounded-lg hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-800 w-full">
           <IconLayoutSidebar
           size={23}
           stroke={2}
@@ -136,7 +148,7 @@ export default function SideBar(props: SideBarProps) {
       </div>
 
       {/* Items */}
-      <nav className="flex flex-col gap-1 px-3 h-full duration-400">
+      <nav className="flex flex-row sm:flex-col gap-1 sm:px-3 w-auto sm:w-full h-full duration-400 items-center justify-center">
 
         <Icon
         action="/dashboard"
@@ -165,13 +177,13 @@ export default function SideBar(props: SideBarProps) {
         }
 
         <div
-        className="mt-auto flex flex-col gap-1 pb-3">
+        className="ml-auto sm:ml-0 mt-auto flex flex-row sm:flex-col items-center justify-center sm:justify-end gap-1 sm:pb-3">
           {
             (props.plan === "Free" || props.plan === "Pro") && expanded ? (
               <Link
               href="/#pricing"
-              className="w-full rounded-xl border border-neutral-800 p-2 bg-neutral-900 animate-fade-in-right mt-10">
-                <div className="w-full flex items-center gap-1 pt-1">
+              className="w-full rounded-xl border border-neutral-800 p-2 bg-neutral-900 animate-fade-in-right sm:mt-10">
+                <div className="w-full flex items-center gap-1 sm:pt-1">
                   <IconBolt
                   size={23}
                   stroke={2}
@@ -200,7 +212,7 @@ export default function SideBar(props: SideBarProps) {
 
 
           <div
-          className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg cursor-pointer transition focus:outline-none duration-400 relative " + (expanded ? "w-46 md:w-60" : "w-full") + (settingsVisible ? "" : " hover:bg-blue-900")}
+          className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg cursor-pointer transition focus:outline-none duration-400 relative " + (expanded ? "w-46 md:w-60" : "w-full") + (settingsVisible  ? "" : " hover:bg-blue-900")}
           onClick={() => {
             if(expanded) {
               return toggleSettings();

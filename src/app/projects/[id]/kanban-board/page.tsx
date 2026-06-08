@@ -15,6 +15,7 @@ import SideBar, { Icon } from "@/components/ui/sidebar";
 import AIChat from "@/components/ui/ai-chat";
 import SnackBar from "@/components/ui/snackbar";
 import LoadingScreen from "@/components/screens/loading-screen";
+import MainButton from "@/components/ui/buttons/main";
 
 //Board components imports
 import Card from "@components/ui/kanban/card";
@@ -27,6 +28,9 @@ import { getCached } from "@/hooks/cache.hook";
 //Services imports
 import getTeam from "@/services/team.service";
 import getUser from "@/services/user.service";
+
+//Actions imports
+import { fetchTemplate } from "@/actions/template";
 
 //Icons imports
 import {
@@ -59,6 +63,8 @@ export default function KanBanBoard() {
   const [ expanded, setExpanded ] = useState<boolean>(false);
   //Team data
   const [ team, setTeam ] = useState<Team>();
+  //Saver button status
+  const [ isLoading, setIsLoading ] = useState(false);
 
   //Snackbar container
   const snackbar = useRef(null);
@@ -136,6 +142,28 @@ export default function KanBanBoard() {
 
     get();
   }, []);
+
+  const handleSave = async() => {
+    if(!team) return;
+
+    const token = useGetToken();
+
+    if(!token) return router.push("/auth/login");
+
+    setIsLoading(true);
+    await fetchTemplate(
+      `/api/teams/${team.team_id}/kanban`,
+      "POST",
+      snackbar,
+      {
+        "Authorization": token
+      },
+      JSON.stringify({
+        kanban_data: team.kanban_board
+      })
+    )
+    setIsLoading(false);
+  }
 
   return (
     team && user ? (
@@ -258,160 +286,179 @@ export default function KanBanBoard() {
         </SideBar>
 
         <main
-        className="min-h-screen flex 2xl:grid 2xl:grid-cols-4 overflow-auto">
-          <List type="todo"
-          onDrop={(sourceList, id) => handleCardDrop(sourceList, id, "todo")}>
+        className="min-h-screen">
+          <header
+          className="border-b border-neutral-700 p-4 flex justify-between items-center">
+            <p
+            className="text-3xl font-medium tracking-wide">
+              { team.name } Kanban board
+            </p>
+
             <button
             type="button"
-            onClick={() => {
-              const random_uuid = uuidv1();
-
-              setTeam(
-                prev => prev ? {
-                  ...prev,
-                  kanban_board: {
-                    ...prev.kanban_board,
-                    todo: [
-                      ...prev.kanban_board.todo || [],
-                      {
-                        id: random_uuid,
-                        title: "",
-                        created_by: user.name
-                      }
-                    ]
-                  }
-                } : team
-              )
-            }}
-            className="border border-dashed opacity-80 border-neutral-700 bg-neutral-900 rounded-md w-full p-2">
-              + Add a new task
+            className="p-1 w-30 bg-main duration-300 cursor-pointer hover:bg-main/60 flex items-center justify-center rounded-md h-max disabled:grayscale disabled:cursor-wait disabled:hover:bg-main"
+            disabled={isLoading}
+            onClick={handleSave}>
+              Update
             </button>
+          </header>
 
-            {
-              team.kanban_board && team.kanban_board.todo && [...team.kanban_board.todo].reverse().map((card, reversedIndex) => {
-                const index = team.kanban_board.todo.length - 1 - reversedIndex;
-                return (
-                  <Card
-                  content={card}
-                  sourceList="todo"
-                  onChange={(e) => {
-                    setTeam(
-                      prev => prev ? {
-                        ...prev,
-                        kanban_board: {
-                          ...prev.kanban_board,
-                          todo: prev.kanban_board.todo.filter((content, i) => {
-                            if(i !== index) return content;
+          <section
+          className="min-h-max h-full flex 2xl:grid 2xl:grid-cols-4 overflow-auto">
+            <List type="todo"
+            onDrop={(sourceList, id) => handleCardDrop(sourceList, id, "todo")}>
+              <button
+              type="button"
+              onClick={() => {
+                const random_uuid = uuidv1();
 
-                            content.title = e.target.value
-
-                            return content;
-                          })
+                setTeam(
+                  prev => prev ? {
+                    ...prev,
+                    kanban_board: {
+                      ...prev.kanban_board,
+                      todo: [
+                        ...prev.kanban_board.todo || [],
+                        {
+                          id: random_uuid,
+                          title: "",
+                          created_by: user.name
                         }
-                      } : team
-                    )
-                  }}
-                  key={card.id} />
+                      ]
+                    }
+                  } : team
                 )
-              })
-            }
-          </List>
+              }}
+              className="border border-dashed opacity-80 border-neutral-700 bg-neutral-900 rounded-md w-full p-2">
+                + Add a new task
+              </button>
 
-          <List type="inprogress"
-          onDrop={(sourceList, id) => handleCardDrop(sourceList, id, "inprogress")}>
-            {
-              team.kanban_board && team.kanban_board.inprogress && [...team.kanban_board.inprogress].reverse().map((card, reversedIndex) => {
-                const index = team.kanban_board.inprogress.length - 1 - reversedIndex;
-                return (
-                  <Card
-                  content={card}
-                  sourceList="inprogress"
-                  onChange={(e) => {
-                    setTeam(
-                      prev => prev ? {
-                        ...prev,
-                        kanban_board: {
-                          ...prev.kanban_board,
-                          inprogress: prev.kanban_board.inprogress.filter((content, i) => {
-                            if(i !== index) return content;
+              {
+                team.kanban_board && team.kanban_board.todo && [...team.kanban_board.todo].reverse().map((card, reversedIndex) => {
+                  const index = team.kanban_board.todo.length - 1 - reversedIndex;
+                  return (
+                    <Card
+                    content={card}
+                    sourceList="todo"
+                    onChange={(e) => {
+                      setTeam(
+                        prev => prev ? {
+                          ...prev,
+                          kanban_board: {
+                            ...prev.kanban_board,
+                            todo: prev.kanban_board.todo.filter((content, i) => {
+                              if(i !== index) return content;
 
-                            content.title = e.target.value
+                              content.title = e.target.value
 
-                            return content;
-                          })
-                        }
-                      } : team
-                    )
-                  }}
-                  key={card.id} />
-                )
-              })
-            }
-          </List>
+                              return content;
+                            })
+                          }
+                        } : team
+                      )
+                    }}
+                    key={card.id} />
+                  )
+                })
+              }
+            </List>
 
-          <List type="done"
-          onDrop={(sourceList, id) => handleCardDrop(sourceList, id, "done")}>
-            {
-              team.kanban_board && team.kanban_board.done && [...team.kanban_board.done].reverse().map((card, reversedIndex) => {
-                const index = team.kanban_board.done.length - 1 - reversedIndex;
-                return (
-                  <Card
-                  content={card}
-                  sourceList="done"
-                  onChange={(e) => {
-                    setTeam(
-                      prev => prev ? {
-                        ...prev,
-                        kanban_board: {
-                          ...prev.kanban_board,
-                          done: prev.kanban_board.done.filter((content, i) => {
-                            if(i !== index) return content;
+            <List type="inprogress"
+            onDrop={(sourceList, id) => handleCardDrop(sourceList, id, "inprogress")}>
+              {
+                team.kanban_board && team.kanban_board.inprogress && [...team.kanban_board.inprogress].reverse().map((card, reversedIndex) => {
+                  const index = team.kanban_board.inprogress.length - 1 - reversedIndex;
+                  return (
+                    <Card
+                    content={card}
+                    sourceList="inprogress"
+                    onChange={(e) => {
+                      setTeam(
+                        prev => prev ? {
+                          ...prev,
+                          kanban_board: {
+                            ...prev.kanban_board,
+                            inprogress: prev.kanban_board.inprogress.filter((content, i) => {
+                              if(i !== index) return content;
 
-                            content.title = e.target.value
+                              content.title = e.target.value
 
-                            return content;
-                          })
-                        }
-                      } : team
-                    )
-                  }}
-                  key={card.id} />
-                )
-              })
-            }
-          </List>
+                              return content;
+                            })
+                          }
+                        } : team
+                      )
+                    }}
+                    key={card.id} />
+                  )
+                })
+              }
+            </List>
 
-          <List type="verified"
-          onDrop={(sourceList, cardIndex) => handleCardDrop(sourceList, cardIndex, "verified")}>
-            {
-              team.kanban_board && team.kanban_board.verified && [...team.kanban_board.verified].reverse().map((card, reversedIndex) => {
-                const index = team.kanban_board.verified.length - 1 - reversedIndex;
-                return (
-                  <Card
-                  content={card}
-                  sourceList="verified"
-                  onChange={(e) => {
-                    setTeam(
-                      prev => prev ? {
-                        ...prev,
-                        kanban_board: {
-                          ...prev.kanban_board,
-                          verified: prev.kanban_board.verified.filter((content, i) => {
-                            if(i !== index) return content;
+            <List type="done"
+            onDrop={(sourceList, id) => handleCardDrop(sourceList, id, "done")}>
+              {
+                team.kanban_board && team.kanban_board.done && [...team.kanban_board.done].reverse().map((card, reversedIndex) => {
+                  const index = team.kanban_board.done.length - 1 - reversedIndex;
+                  return (
+                    <Card
+                    content={card}
+                    sourceList="done"
+                    onChange={(e) => {
+                      setTeam(
+                        prev => prev ? {
+                          ...prev,
+                          kanban_board: {
+                            ...prev.kanban_board,
+                            done: prev.kanban_board.done.filter((content, i) => {
+                              if(i !== index) return content;
 
-                            content.title = e.target.value
+                              content.title = e.target.value
 
-                            return content;
-                          })
-                        }
-                      } : team
-                    )
-                  }}
-                  key={card.id} />
-                )
-              })
-            }
-          </List>
+                              return content;
+                            })
+                          }
+                        } : team
+                      )
+                    }}
+                    key={card.id} />
+                  )
+                })
+              }
+            </List>
+
+            <List type="verified"
+            onDrop={(sourceList, cardIndex) => handleCardDrop(sourceList, cardIndex, "verified")}>
+              {
+                team.kanban_board && team.kanban_board.verified && [...team.kanban_board.verified].reverse().map((card, reversedIndex) => {
+                  const index = team.kanban_board.verified.length - 1 - reversedIndex;
+                  return (
+                    <Card
+                    content={card}
+                    sourceList="verified"
+                    onChange={(e) => {
+                      setTeam(
+                        prev => prev ? {
+                          ...prev,
+                          kanban_board: {
+                            ...prev.kanban_board,
+                            verified: prev.kanban_board.verified.filter((content, i) => {
+                              if(i !== index) return content;
+
+                              content.title = e.target.value
+
+                              return content;
+                            })
+                          }
+                        } : team
+                      )
+                    }}
+                    key={card.id} />
+                  )
+                })
+              }
+            </List>
+          </section>
         </main>
       </div>
     ) : (

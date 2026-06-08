@@ -19,6 +19,10 @@ export function showSnackbar(
   if(!snackbar.current) return;
 
   const current : HTMLElement = snackbar.current;
+  current.classList.remove("bg-green-600");
+  current.classList.remove("bg-orange-600");
+  current.classList.remove("bg-red-600");
+  
   if(current.classList.contains("animate-fade-out-down")) current.classList.remove("animate-fade-out-down");
 
   const bg_color = type === "valid" ? "bg-green-600" : type === "warn" ? "bg-orange-600" : "bg-red-600";
