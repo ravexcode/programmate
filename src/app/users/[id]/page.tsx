@@ -1,12 +1,11 @@
 "use client";
 
 //Next imports
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 
 //Prebuilt UI imports
 import LoadingScreen from "@/components/screens/loading-screen";
-import SideBar, { Icon } from "@/components/ui/sidebar";
 import PageLayout from "@/components/layouts/page";
 import BgGradient from "@/components/ui/bg-gradient";
 
@@ -20,13 +19,14 @@ import { fetchTemplate } from "@/actions/template";
 import type { UserData } from "@/types/user.types";
 import Team from "@/types/team.types";
 import Link from "next/link";
+import { IconArrowLeft, IconUserCircle } from "@tabler/icons-react";
 
 export default function ProfilePage() {
   const params = useParams();
+  const router = useRouter();
 
   //User data
   const [user, setUser] = useState<UserData | any>(null);
-  const [ expanded, setExpanded ] = useState(false);
   //Not found status
   const [ notFound, setNotFound ] = useState(false);
 
@@ -74,8 +74,6 @@ export default function ProfilePage() {
         teams: data.teams
       }
 
-      console.log(user_processed);
-
       setUser(user_processed);
     }
 
@@ -84,35 +82,7 @@ export default function ProfilePage() {
   return (
     user ? (
       <div
-      className="w-full bg-background grid grid-cols-[auto_1fr] h-screen">
-        <SideBar
-        email={user.email}
-        avatar={user.avatar_url}
-        plan={user.plan}
-        username={user.display_name}
-        setExpanded={(isExpanded : boolean) => {
-          setExpanded(isExpanded === true ? false : true);
-        }}>
-          {
-            expanded && (
-              <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
-                Projects
-              </span>
-            )
-          }
-
-          {
-            user.teams && user.teams.length > 0 && user.teams.map((team: Team, index: number) => 
-              <Icon
-              action={`/projects/${team.team_id}`}
-              name={team.name}
-              isDisplayed={expanded}
-              key={index}>
-                <></>
-              </Icon>
-            )
-          }
-        </SideBar>
+      className="w-full bg-background grid h-screen">
 
         <main
         className="w-full min-h-max h-full px-2 py-10 relative animate-fade-in animate-duration-250">
@@ -121,17 +91,33 @@ export default function ProfilePage() {
           <section
           className="w-full flex flex-col gap-3 p-2 max-w-250 mx-auto z-2">
 
+            <button
+            onClick={() => router.back()}
+            className="w-max p-1 px-4 rounded-full duration-400 hover:bg-neutral-700 cursor-pointer flex gap-2 text-center items-center justify-center text-sm">
+              <IconArrowLeft size={12} stroke={3} />
+              Go back
+            </button>
+
             { /* User's profile */ }
             <article
             className={cardClasses + " flex-col"}>
               <div
               className="flex gap-2 w-full">
-                <Image
-                src={user.avatar_url}
-                alt={user.name + "Profile picture"}
-                width={50}
-                height={50}
-                className="rounded-full aspect-square w-15" />
+                {
+                  user.avatar_url ? (
+                    <Image
+                    src={user.avatar_url}
+                    alt={user.name + "Profile picture"}
+                    width={50}
+                    height={50}
+                    className="rounded-full aspect-square w-15" />
+                  ) : (
+                    <IconUserCircle
+                    size={50}
+                    stroke={1}
+                    className="aspect-square w-15" />
+                  )
+                }
 
                 <div
                 className="flex flex-col gap-1 w-full">

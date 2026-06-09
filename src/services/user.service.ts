@@ -63,11 +63,13 @@ export default async function getUser(token: string) {
     teams = data.teams;
   }
 
+  const username = data.user.user_metadata.display_name ?? data.profile.display_name;
+
   //Creates the user object
   const user : UserData = {
     "id": data.profile.id,
     "email": data.profile.email,
-    "name": data.profile.display_name,
+    "name": username,
     "plan": plan,
     "teams": teams,
     "ai_chat": data.profile.ai_chat,

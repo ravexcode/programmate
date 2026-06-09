@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v46.0:**
+> Bugfix grave
+  1. Arreglo completo para usuarios sin provedor. 🛠️
+  2. Arreglo en la página de perfil, ahoran solo muestra el perfil sin el sidebar
+
 - **Indev v45.1:**
 > Page finished, new route
   1. Páginas de perfil terminadas. ✅

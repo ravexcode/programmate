@@ -3,12 +3,13 @@
 
 //Next imports
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 
 //React imports
 import { useEffect, useState, useRef } from "react";
 
 //Types imports
-import { UserData } from "@/types/user.types";
+import { UserBasic, UserData } from "@/types/user.types";
 
 //Prebuild ui imports
 import SideBar, { Icon } from "@/components/ui/sidebar";
@@ -34,8 +35,10 @@ import {
   IconLayoutKanban,
   IconMessage,
   IconSettings,
+  IconUserCircle,
   IconUsers
 } from "@tabler/icons-react";
+import Image from "next/image";
 
 export default function TeamPage(){
   //NextJS Setup
@@ -274,35 +277,44 @@ export default function TeamPage(){
                 </header>
 
                 <div className="p-6">
-                  <div className="grid grid-cols-2 pb-3 text-xs uppercase tracking-wider font-bold text-neutral-500 border-b border-neutral-800 mb-4 px-2">
-                    <span>Username</span>
-                    <span>Email</span>
-                  </div>
-
-                  <ul className="space-y-1 cursor-default">
-                    {team.integrants && team.integrants.length > 0 ? (
-                      team.integrants.map((member: any, index: number) => (
-                        <li
-                          key={index}
-                          className="grid grid-cols-2 gap-4 py-3 px-2 rounded-lg transition-colors hover:bg-white/5 items-center group">
-                          <span className="font-medium text-neutral-200 group-hover:text-blue-500 transition-colors">
-                            {member.username}
-                          </span>
-                          <span className="font-light text-neutral-400 truncate text-sm">
-                            {member.email}
-                          </span>
-                        </li>
-                      ))
-                    ) : (
-                      <div
-                      className="flex flex-col text-neutral-500 justfiy-cente items-center py-8">
-                        <IconUsers
-                        size={40}
-                        stroke={1} />
-                        <p className="text-center">No members found</p>
-                      </div>
-                    )}
-                  </ul>
+                  {team.integrants && team.integrants.length > 0 ? (
+                    team.integrants.map((member: UserBasic, index: number) => (
+                      <Link
+                      href={`/users/${member.id}`}
+                      key={index}
+                      className="flex gap-4 py-3 px-2 rounded-lg transition-colors hover:bg-white/5 items-center group">
+                        {
+                          member.avatar_url ? (
+                            <Image
+                            src={member.avatar_url}
+                            alt={`${member.username} profile picture`}
+                            width={50}
+                            height={50}
+                            preload
+                            loading="eager"
+                            className="rounded-full aspect-square w-8" />
+                          ) : (
+                            <IconUserCircle
+                            className="aspect-square w-8" />
+                          )
+                        }
+                        <span className="font-medium text-neutral-200 group-hover:text-blue-500 transition-colors">
+                          {member.username}
+                        </span>
+                        <span className="font-light text-neutral-400 truncate text-sm ml-auto">
+                          {member.email}
+                        </span>
+                      </Link>
+                    ))
+                  ) : (
+                    <div
+                    className="flex flex-col text-neutral-500 justfiy-cente items-center py-8">
+                      <IconUsers
+                      size={40}
+                      stroke={1} />
+                      <p className="text-center">No members found</p>
+                    </div>
+                  )}
                 </div>
               </section>
 

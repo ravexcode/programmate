@@ -20,9 +20,9 @@ export async function POST(req: NextRequest) {
       password,
       options: {
         data: {
-          username: name
+          display_name: name,
         },
-        emailRedirectTo: `${process.env.API_URL || "http://localhost:7000"}/oauth/callback`
+        emailRedirectTo: `${process.env.API_URL || "http://localhost:7000"}/oauth/callback`,
       }
     });
 

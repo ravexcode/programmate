@@ -67,6 +67,14 @@ export async function GET( req: NextRequest ) {
       });
     }
 
+    if(profile.display_name === null) {
+      await supabase
+      .from("profiles")
+      .update({"display_name": user.user_metadata.display_name ?? "User"})
+      .eq("id", profile.id)
+      .select("*");
+    };
+
     //Returns the user's data
     return NextResponse.json({
       message: "User data got",

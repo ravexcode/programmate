@@ -48,7 +48,7 @@ export async function signIn(
 export async function signUp(
   credentials: {
     email: string,
-    username: string,
+    name: string,
     password: string
   },
   confirm: string
@@ -74,7 +74,7 @@ export async function signUp(
   //Process the data
   const data = await res.json();
 
-  if(res.status === 200) {
+  if(res.status === 201) {
     //Saves the cookie
     useSaveToken(data.token);
     return {

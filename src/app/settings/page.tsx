@@ -31,6 +31,7 @@ import {
   IconMail,
   IconSparkles,
   IconTrash,
+  IconUserCircle,
   IconZoomMoney
 } from "@tabler/icons-react";
 
@@ -192,15 +193,24 @@ export default function ConfigurationPage(){
             className="w-full max-w-4xl flex flex-col gap-6 z-2 items-center justify-center">
               <article className="bg-[#101010] text-white p-5 flex flex-col w-full rounded-xl items-center h-max mt-16">
                 <div className="-mt-16 mb-4 bg-[#101010] rounded-full w-32 aspect-square p-3">
-                  <Image
-                    src={user?.avatar_url!}
-                    alt={`${user?.email} profile picture`}
-                    width={500}
-                    height={500}
-                    className="w-full h-full object-cover rounded-full" 
-                    preload
-                    loading="eager"
-                  />
+                  {
+                    user.avatar_url ? (
+                      <Image
+                        src={user.avatar_url}
+                        alt={`${user.email} profile picture`}
+                        width={500}
+                        height={500}
+                        className="w-full h-full object-cover rounded-full" 
+                        preload
+                        loading="eager"
+                      />
+                    ) : (
+                      <IconUserCircle
+                      size={100}
+                      stroke={1}
+                      className="aspect-square object-cover w-full h-full" />
+                    )
+                  }
                 </div>
 
                 <p className="text-2xl font-medium tracking-wide">

@@ -55,7 +55,7 @@ export default function RegisterPage() {
   
       const credentials = {
         email,
-        username: name,
+        name,
         password
       };
   
@@ -64,7 +64,7 @@ export default function RegisterPage() {
   
       if(res.error) return showSnackbar(res.message, (res.status! >= 500 ? "critic" : "warn"), snackbar);
   
-      return router.push("/dashboard");
+      return router.push("/oauth/success");
   };
 
   return (
@@ -154,7 +154,7 @@ export default function RegisterPage() {
             <span className="h-3"></span>
 
             <PasswordInput
-            value={password}
+            value={confirm}
             onChange={(e) => {
               setConfirm(e.target.value)
             }}

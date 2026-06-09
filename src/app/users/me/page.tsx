@@ -22,6 +22,7 @@ import { useEffect, useState } from "react";
 //Types imports
 import type { UserData } from "@/types/user.types";
 import Team from "@/types/team.types";
+import { IconUserCircle } from "@tabler/icons-react";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -129,12 +130,21 @@ export default function ProfilePage() {
             className={cardClasses + " flex-col"}>
               <div
               className="flex gap-2 w-full">
-                <Image
-                src={user.avatar_url!}
-                alt={user.name + "Profile picture"}
-                width={50}
-                height={50}
-                className="rounded-full aspect-square w-15" />
+                {
+                  user.avatar_url ? (
+                    <Image
+                    src={user.avatar_url}
+                    alt={user.name + "Profile picture"}
+                    width={50}
+                    height={50}
+                    className="rounded-full aspect-square w-15" />
+                  ) : (
+                    <IconUserCircle
+                    size={50}
+                    stroke={1}
+                    className="aspect-square w-15" />
+                  )
+                }
 
                 <div
                 className="flex flex-col gap-1 w-full">
