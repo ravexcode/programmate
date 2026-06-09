@@ -24,32 +24,36 @@ export async function fetchTemplate(
     const data = await res.json();
 
     if(res.status === 200 || res.status === 201) {
-      return showSnackbar(
+      showSnackbar(
         data.message,
         "valid",
         snackbar
       );
+      return data;
     }
     
-    return showSnackbar(
+    showSnackbar(
       data.message || "Server error",
       (res.status >= 500 ? "critic" : "warn"),
       snackbar
     );
+    return;
   } catch(e: unknown) {
     if(e instanceof Error) {
-      return showSnackbar(
+      showSnackbar(
         e.message,
         "critic",
         snackbar
-      )
+      );
+      return;
     };
 
     console.error(e);
-    return showSnackbar(
+    showSnackbar(
       "Server error",
       "critic",
       snackbar
-    )
+    );
+    return;
   }
 }

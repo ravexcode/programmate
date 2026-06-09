@@ -1,98 +1,95 @@
 "use client";
 
 //Next imports
-import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Image from "next/image";
-
-//Hooks imports
-import { getCached } from "@/hooks/cache.hook";
-import { useDeleteCookie, useGetToken } from "@/hooks/useCookies";
 
 //Prebuilt UI imports
 import LoadingScreen from "@/components/screens/loading-screen";
 import SideBar, { Icon } from "@/components/ui/sidebar";
-
-//Services imports
-import getUser from "@/services/user.service";
+import PageLayout from "@/components/layouts/page";
+import BgGradient from "@/components/ui/bg-gradient";
 
 //React imports
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+//Actions imports
+import { fetchTemplate } from "@/actions/template";
 
 //Types imports
 import type { UserData } from "@/types/user.types";
 import Team from "@/types/team.types";
+import Link from "next/link";
 
 export default function ProfilePage() {
-  const router = useRouter();
+  const params = useParams();
 
   //User data
-  const [user, setUser] = useState<UserData | null>(null);
-  const [ expanded, setExpanded ] = useState<boolean>(false);
+  const [user, setUser] = useState<UserData | any>(null);
+  const [ expanded, setExpanded ] = useState(false);
+  //Not found status
+  const [ notFound, setNotFound ] = useState(false);
+
+  //Componentes
+  const snackbar = useRef(null);
 
   //Constraints
-  const cardClasses = "w-full rounded-md bg-neutral-950 border border-neutral-800 p-4 flex gap-2 duration-300 hover:border-main items-center";
+  const cardClasses = "w-full rounded-md bg-neutral-950 border border-neutral-800 p-4 flex gap-2 duration-300 hover:border-main items-center z-2 animate-fade-in-up animate-duration-500";
   
   //Gets user data
   useEffect(() => {
-    //Function to update the user data
-    async function updateFromToken(){
-      let user_data;
-      //Id isn't cached gets the data
-      const token = useGetToken();
+    async function getUser() {
+      const data = await fetchTemplate(
+        `/api/users/${params.id}`,
+        "GET",
+        snackbar
+      );
 
-      if(!token) {
-        //If hasn't token returns to log in form
-        return router.push("/auth/login");
-      };
+      if(!data) return setNotFound(true);
 
-      
-      //Gets the cached user
-      const cached = getCached();
+      const user_fetched = data.user;
 
-      //If there is a cached user, sets the user data
-      if(cached) {
-        setUser(cached);
-        user_data = cached;
+      let plan = "Free";
+
+      if(data.payments && data.payments.length >= 1) {
+        const lastPayment = data.payments[data.payments.length - 1];
+        const expires = new Date(lastPayment.paid_at);
+        expires.setDate(expires.getDate() + 30);
+        const now = new Date();
+
+        if(now <= expires) {
+          plan = lastPayment.plan;
+          plan = plan.replaceAll('"', '');
+          plan = plan.charAt(0).toUpperCase() + plan.slice(1);
+        }
       }
 
-      //Updates the user's data
-      if(!cached) user_data = await getUser(token);
-      //Created at to Date
-      const created_at = new Date(user_data!.created_at!);
-      //Date now
-      const now = new Date();
-
-      if(user_data && (created_at.getDay() === now.getDay() && user_data.teams?.length! <= 0)) {
-        router.push("/get-started");
-
-        return;
-      } else if(user_data) {
-        setUser(user_data);
-
-        return;
+      const user_processed : UserData = {
+        id: user_fetched.id,
+        email: user_fetched.email,
+        name: user_fetched.display_name,
+        created_at: user_fetched.created_at,
+        avatar_url: user_fetched.avatar_url,
+        plan,
+        teams: data.teams
       }
 
-      useDeleteCookie("token");
-      localStorage.clear();
-      window.localStorage.clear();
-      return router.push("/auth/login");
+      console.log(user_processed);
+
+      setUser(user_processed);
     }
 
-    //Executes the function
-    updateFromToken();
-    
-    //Returns success
-    return;
+    getUser();
   }, []);
   return (
     user ? (
       <div
       className="w-full bg-background grid grid-cols-[auto_1fr] h-screen">
         <SideBar
-        email={user?.email}
+        email={user.email}
         avatar={user.avatar_url}
         plan={user.plan}
-        username={user.name}
+        username={user.display_name}
         setExpanded={(isExpanded : boolean) => {
           setExpanded(isExpanded === true ? false : true);
         }}>
@@ -105,7 +102,7 @@ export default function ProfilePage() {
           }
 
           {
-            user.teams && user.teams.length > 0 && user.teams.map((team: Team, index) => 
+            user.teams && user.teams.length > 0 && user.teams.map((team: Team, index: number) => 
               <Icon
               action={`/projects/${team.team_id}`}
               name={team.name}
@@ -118,9 +115,11 @@ export default function ProfilePage() {
         </SideBar>
 
         <main
-        className="w-full min-h-max h-full px-2 py-10">
+        className="w-full min-h-max h-full px-2 py-10 relative animate-fade-in animate-duration-250">
+          <BgGradient />
+
           <section
-          className="w-full flex flex-col gap-3 p-2 max-w-250 mx-auto">
+          className="w-full flex flex-col gap-3 p-2 max-w-250 mx-auto z-2">
 
             { /* User's profile */ }
             <article
@@ -128,7 +127,7 @@ export default function ProfilePage() {
               <div
               className="flex gap-2 w-full">
                 <Image
-                src={user.avatar_url!}
+                src={user.avatar_url}
                 alt={user.name + "Profile picture"}
                 width={50}
                 height={50}
@@ -151,7 +150,7 @@ export default function ProfilePage() {
 
               <p
               className="text-neutral-400 w-full text-sm">
-                Created at: {(new Date(user.created_at!)).toDateString()} <br />
+                Created at: {(new Date(user.created_at)).toDateString()} <br />
                 UUID: {user.id}
               </p>
             </article>
@@ -168,7 +167,7 @@ export default function ProfilePage() {
                   </p>
 
                   {
-                    user.teams.map((team) => 
+                    user.teams.map((team: Team) => 
                       <div
                       className="w-full rounded-md bg-neutral-900 flex flex-col gap-1 p-2"
                       key={team.team_id}>
@@ -222,8 +221,35 @@ export default function ProfilePage() {
           </section>
         </main>
       </div>
-    ) : (
-      <LoadingScreen />
-    )
+    ) : 
+    notFound ? (
+      <PageLayout>
+        <main
+        className="w-full min-h-200 relative flex flex-col items-center justify-center animate-fade-in-up">
+          <div
+          className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+            <div
+            className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-100 md:h-230 bg-main/40 blur-3xl rounded-full animate-pulse" />
+            <div className="bg-linear-to-t from-background to-transparent w-screen h-20 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
+            <div className="bg-linear-to-b from-background to-transparent w-screen h-20 left-0 top-0 absolute z-3 pointer-events-none"></div>
+          </div>
+
+          <p
+          className="text-8xl text-center z-2 font-medium tracking-wide">
+            404
+          </p>
+          <span
+          className="text-xl z-2 opacity-70 font-light">
+            Page not found
+          </span>
+
+          <Link
+          href="/"
+          className="mt-5 duration-400 hover:bg-neutral-100/20 z-2 py-2 px-6 rounded-xl">
+            Go back to home
+          </Link>
+        </main>
+      </PageLayout>
+    ) : <LoadingScreen />
   )
 }

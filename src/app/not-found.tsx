@@ -4,7 +4,7 @@
 import PageLayout from "@/components/layouts/page";
 import Link from "next/link";
 
-export default function ErrorPage(){
+export default function NotFoundPage(){
   return (
     <PageLayout>
       <main

@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v45.1:**
+> Page finished, new route
+  1. Páginas de perfil terminadas. ✅
+  2. Nueva ruta para obtener datos del usuario. 🚀
+
 - **Indev v45.0:**
 > New page
   1. Nueva página de perfil tanto personal como de usuarios. 🚀

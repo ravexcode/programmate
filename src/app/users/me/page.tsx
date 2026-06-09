@@ -11,6 +11,7 @@ import { useDeleteCookie, useGetToken } from "@/hooks/useCookies";
 //Prebuilt UI imports
 import LoadingScreen from "@/components/screens/loading-screen";
 import SideBar, { Icon } from "@/components/ui/sidebar";
+import BgGradient from "@/components/ui/bg-gradient";
 
 //Services imports
 import getUser from "@/services/user.service";
@@ -30,7 +31,7 @@ export default function ProfilePage() {
   const [ expanded, setExpanded ] = useState<boolean>(false);
 
   //Constraints
-  const cardClasses = "w-full rounded-md bg-neutral-950 border border-neutral-800 p-4 flex gap-2 duration-300 hover:border-main items-center";
+  const cardClasses = "w-full rounded-md bg-neutral-950 border border-neutral-800 p-4 flex gap-2 duration-300 hover:border-main items-center z-2 animate-fade-in-up animate-duration-500";
   
   //Gets user data
   useEffect(() => {
@@ -118,7 +119,8 @@ export default function ProfilePage() {
         </SideBar>
 
         <main
-        className="w-full min-h-max h-full px-2 py-10">
+        className="w-full min-h-max h-full px-2 py-10 relative animate-fade-in animate-duration-250">
+          <BgGradient />
           <section
           className="w-full flex flex-col gap-3 p-2 max-w-250 mx-auto">
 
