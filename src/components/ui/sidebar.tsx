@@ -119,6 +119,7 @@ export default function SideBar(props: SideBarProps) {
           width={200}
           height={200}
           preload
+          loading="eager"
           className={"animate-fade-in-right " + (expanded  ? "h-5" : "aspect-square w-5")}/>
         </Link>
       </div>

@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v45.0:**
+> New page
+  1. Nueva página de perfil tanto personal como de usuarios. 🚀
+
 - **Indev v44.3:**
 > Design update, new endpoint
   1. Intento de actualización de sidebar fallido (Intento 1). ❌
