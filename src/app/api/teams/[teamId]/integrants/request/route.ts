@@ -19,7 +19,8 @@ import {
   supabaseErrorHandler,
   unauthorizedErrorHandler,
   badRequestErrorHandler,
-  resendErrorHandler
+  resendErrorHandler,
+  errorTemplate
 } from "@/app/api/handlers";
 
 //Send request
@@ -68,6 +69,15 @@ export async function POST(req: NextRequest, { params }: ParamsType) {
 
     //Error handlers
     if(!requested) return notFoundErrorHandler("Profile don't found");
+    if(getRequestedError) return supabaseErrorHandler(getRequestedError);
+    
+    for(let i = 0; i >= requested.requests.length; i++) {
+      if(requested.request[i].id === team.id) return errorTemplate(
+        "User already requested",
+        "Conflict",
+        409
+      );
+    }
     
     //Sends the email
     const { error: resendError } = await resend

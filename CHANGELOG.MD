@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v46.1:**
+> Bugfix leve
+  1. Mejoras en la sección de integrantes. 🛠️
+  2. Mejoras en el sidebar de cada sección de las páginas del proyecto. ✅
+
 - **Indev v46.0:**
 > Bugfix grave
   1. Arreglo completo para usuarios sin provedor. 🛠️

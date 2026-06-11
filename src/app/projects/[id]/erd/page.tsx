@@ -935,17 +935,6 @@ const sql = `CREATE TABLE ${json.tableName} (
           </Icon>
 
           <Icon
-          action={`/projects/${team.team_id}/erd`}
-          name="ERD Creator"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconDatabase
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
           action={`/projects/${team.team_id}/chat`}
           name="Chat"
           isDisplayed={expanded}

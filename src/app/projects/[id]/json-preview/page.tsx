@@ -487,17 +487,6 @@ export default function Page(){
           </Icon>
 
           <Icon
-          action={`/projects/${team.team_id}/json-preview`}
-          name="JSON Preview"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconEye
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
           action={`/projects/${team.team_id}/kanban-board`}
           name="Kanban board"
           isDisplayed={expanded}

@@ -369,8 +369,9 @@ export default function Page(){
           <CreatorForm
           action={async(e) => { await save_integrant(e) }}
           title="Add a new teammate"
-          actionIsDisabled={formDisabled && (!found || found.length < 1)}
-          hideAction={toggleForm}>
+          actionIsDisabled={formDisabled || !found || found.length < 1}
+          hideAction={toggleForm}
+          confirmMessage="Request integrant">
             
             <label
             className="text-sm font-light w-full text-start">
@@ -395,7 +396,7 @@ export default function Page(){
               Users found
             </label>
             <section
-            className="w-full rounded-md bg-neutral-800 py-2 mb-3">
+            className="w-full rounded-md bg-neutral-800/50 py-2 mb-3">
               {
                 found && found.length > 0 ? found.map((user, index) => 
                   <button
@@ -444,7 +445,7 @@ export default function Page(){
               Integrants to request
             </label>
             <section
-            className="w-full rounded-md bg-neutral-800 py-2 mb-4">
+            className="w-full rounded-md bg-neutral-800/50 py-2 mb-4">
               {
                 added && added.length > 0 ? added.map((user, index) => 
                   <button
@@ -460,7 +461,7 @@ export default function Page(){
                   </button>
                 ) : (
                   <p
-                  className="text-sm font-light cursor-default opacity-80 animate-pulse px-2">
+                  className="text-sm font-light cursor-default opacity-80 px-2">
                     Add a user...
                   </p>
                 )
@@ -492,16 +493,6 @@ export default function Page(){
           name="Dashboard"
           isDisplayed={expanded}>
             <IconAppWindow
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/integrants`}
-          name="Integrants"
-          isDisplayed={expanded}>
-            <IconUsers
             size={23}
             stroke={2}
             color="white"/>

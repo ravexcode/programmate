@@ -346,16 +346,6 @@ export default function TicketsTeamPage(){
           </Icon>
 
           <Icon
-          action={`/projects/${team.team_id}/tickets`}
-          name="Tickets"
-          isDisplayed={expanded}>
-            <IconFolder
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
           action={`/projects/${team.team_id}/erd`}
           name="ERD Creator"
           isDisplayed={expanded}

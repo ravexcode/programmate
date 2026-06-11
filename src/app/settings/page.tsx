@@ -173,6 +173,7 @@ export default function ConfigurationPage(){
         </div>
       </section>
 
+      <SnackBar ref={snackbar} />
       <SideBar
       email={user?.email!}
       plan={user?.plan!}

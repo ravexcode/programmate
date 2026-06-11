@@ -253,17 +253,6 @@ export default function KanBanBoard() {
           </Icon>
 
           <Icon
-          action={`/projects/${team.team_id}/kanban-board`}
-          name="Kanban board"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconLayoutKanban
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
           action={`/projects/${team.team_id}/calendar`}
           name="Calendar"
           isDisplayed={expanded}

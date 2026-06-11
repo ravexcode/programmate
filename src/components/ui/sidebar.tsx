@@ -104,23 +104,35 @@ export default function SideBar(props: SideBarProps) {
   
   return (
     <aside
-      className={`text-xs md:text-sm scrollbar-hide h-full items-center justify-center bg-neutral-950 text-text transition-all duration-400 flex flex-col animate-fade-in overflow-x-auto sm:overflow-y-auto overflow-hidden
+      className={`text-xs md:text-sm scrollbar-hide h-full items-center justify-start bg-neutral-950 text-text transition-all duration-400 flex flex-col animate-fade-in overflow-x-auto sm:overflow-y-auto overflow-hidden
         ${expanded ? "w-64" : "w-16"}
       `}>
 
       <div
-      className="p-3 flex flex-col justify-center items-center sm:mt-1 sm:mb-3">
+      className="flex flex-col justify-center items-center sm:mt-1 sm:mb-3">
         <Link
         href="/"
-        className="duration-300 hover:scale-105 hover:brightness-120">
-          <Image
-          src={expanded ? "/logos/large.svg" : "/logos/logo.svg"}
-          alt="Logo made by RavexCode"
-          width={200}
-          height={200}
-          preload
-          loading="eager"
-          className={"animate-fade-in-right " + (expanded  ? "h-5" : "aspect-square w-5")}/>
+        className="duration-300 hover:scale-105 hover:brightness-120 p-3">
+          {
+            expanded ? 
+              <Image
+              src="/logos/large.svg"
+              alt="Logo made by RavexCode"
+              width={200}
+              height={200}
+              preload
+              loading="eager"
+              className="animate-fade-in h-5 min-w-max"/>
+            :
+              <Image
+              src="/logos/logo.svg"
+              alt="Logo made by RavexCode"
+              width={200}
+              height={200}
+              preload
+              loading="eager"
+              className="animate-fade-in h-5 min-w-max"/>
+          }
         </Link>
       </div>
       
@@ -161,7 +173,7 @@ export default function SideBar(props: SideBarProps) {
           color="white" />
         </Icon>
 
-        { expanded && ( <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right"> User </span> ) }
+        { expanded && ( <span className="w-full text-base font-bold p-2 animate-fade-in-right"> User </span> ) }
 
         <Icon
         action="/todo"
