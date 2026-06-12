@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v47.0:**
+> Bugfix leve
+  1. Mejoras en la sección de integrantes. 🛠️
+  2. Mejora en la página de tickets, ahora no se ve tan vibecodeado. 🚀
+
 - **Indev v46.1:**
 > Bugfix leve
   1. Mejoras en la sección de integrantes. 🛠️

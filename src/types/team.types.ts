@@ -17,6 +17,7 @@ export interface IntegrantData {
   email: string,
   username: string,
   type?: string,
+  avatar_url?: string,
 }
 
 export interface ChatMessage {

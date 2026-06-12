@@ -16,6 +16,7 @@ import SideBar, { Icon } from "@/components/ui/sidebar";
 import AIChat from "@/components/ui/ai-chat";
 import SnackBar from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
+import BgGradient from "@/components/ui/bg-gradient";
 
 //Hooks imports
 import { useDeleteToken, useGetToken } from "@/hooks/useCookies";
@@ -219,9 +220,7 @@ export default function TeamPage(){
 
           <main
           className="w-full h-screen overflow-w-hidden overflow-y-auto py-5 px-18 bg-background relative flex flex-col justify-start items-start">
-            <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-              <div className="absolute left-1/2 top-1/2 aspect-square block w-200 -translate-x-1/2 -translate-y-1/2 rounded-full bg-main/15 blur-3xl animate-pulse" />
-            </div>
+            <BgGradient />
 
             {/* Team data section */}
             <section

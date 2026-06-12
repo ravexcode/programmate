@@ -11,7 +11,8 @@ import { useEffect, useState, useRef } from "react";
 
 //Hooks imports
 import { getCached } from "@/hooks/cache.hook";
-import { useGetToken } from "@/hooks/useCookies";
+import { useDeleteToken, useGetToken } from "@/hooks/useCookies";
+import useAnimationClose from "@/hooks/useAnimationClose";
 
 //Services imports
 import getUser from "@/services/user.service";
@@ -26,6 +27,7 @@ import LoadingDashboard from "@/components/screens/loading-screen";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import ConfirmationCard from "@/components/ui/confirmation-card";
 import CreatorForm from "@/components/forms/creator-form";
+import MainButton from "@/components/ui/buttons/main";
 
 //Icons imports
 import {
@@ -41,7 +43,8 @@ import {
   IconShieldCheck,
   IconShield,
   IconAppWindow,
-  IconSettings
+  IconSettings,
+  IconUserCircle
 } from "@tabler/icons-react";
 
 //Types imports
@@ -77,6 +80,7 @@ export default function Page(){
   }> | undefined>();
   //Searcher status
   const [ searchStatus, setSearchStatus ] = useState<"not-searched" | "not-found" | "searching">("not-searched");
+  const [ currentRole, setCurrentRole ] = useState("member");
 
   //Confirmation dialog states
   const [ confirmationOpen, setConfirmationOpen ] = useState<boolean>(false);
@@ -101,7 +105,7 @@ export default function Page(){
 
   useEffect(() => {
     async function getData() {
-      let user_data : UserData | undefined;
+      let user_data : UserData;
       const token = useGetToken();
 
       if(!token) return router.push("/auth/login");
@@ -111,6 +115,12 @@ export default function Page(){
       if(!cached) {
         const user_fetched = await getUser(token);
 
+        if(!user_fetched) {
+          useDeleteToken();
+          window.localStorage.clear();
+          return router.push("/auth/login");
+        }
+
         user_data = user_fetched;
       } else {
         user_data = cached;
@@ -118,16 +128,29 @@ export default function Page(){
 
       setUser(user_data);
 
-      const team = await getTeam(
+      const team_data = await getTeam(
         Number(params.id),
         token,
         snackbar
       );
 
-      setTeam(team);
+      setTeam(team_data);
+      
+      const integrants = team_data.integrants;
+
+      const user_index = integrants.findIndex(
+        (integrant : IntegrantData) => integrant.id === user?.id
+      );
+
+      if(user_index === undefined) return router.push("/dashboard");
+      
+      setCurrentRole(team_data.integrants[user_index + 1].type || "member")
+
+      return;
     }
 
     getData();
+    return;
   }, []);
 
   const save_integrant = async(e: React.SubmitEvent) => {
@@ -173,15 +196,19 @@ export default function Page(){
   const toggleForm = () => {
     if(!addIntgForm.current) return;
 
-    const current : HTMLFormElement = addIntgForm.current;
+    const current : HTMLElement = addIntgForm.current;
+    const classlist = current.classList;
 
-    if(current.classList.contains("grid")) {
-      current.classList.add("hidden");
-      current.classList.remove("grid");
-    } else {
-      current.classList.add("grid");
-      current.classList.remove("hidden");
-    }
+    if(classlist.contains("hidden")){
+      classlist.remove("animate-fade-out-down");
+      classlist.replace("hidden", "flex");
+
+      return;
+    };
+
+    classlist.add("animate-fade-out-down");
+    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    return;
   }
 
   //Change member role
@@ -362,7 +389,7 @@ export default function Page(){
 
         {/* Form component */}
         <section
-        className="fixed w-screen min-h-screen overflow-x-hidden p-10 hidden z-20 bg-black/30 backdrop-blur animate-fade-in justify-center items-center"
+        className="fixed backdrop-blur backdrop-brightness-60 top-0 left-0 w-screen h-screen overflow-x-hidden overflow-y-auto justify-center py-10 z-20 hidden animate-fade-in-up animate-duration-200"
         ref={addIntgForm}
         onClick={toggleForm}>
 
@@ -423,7 +450,7 @@ export default function Page(){
                   </button>
                 ) : (
                   <p
-                  className="text-sm font-light cursor-default opacity-80 animate-pulse px-2">
+                  className="text-sm font-light cursor-default opacity-80 px-2">
                     {
                       searchStatus === "not-searched" ? (
                         "Search a user..."
@@ -585,25 +612,26 @@ export default function Page(){
           className="flex flex-col py-2 w-full justify-center items-start mb-8 relative z-10">
             <h2
             className="text-5xl font-semibold mb-2">
-              Team Integrants
+              { team.name } Integrants
             </h2>
 
             <p
             className="opacity-90">
-              Manage team members and their permissions for <span className="font-semibold text-blue-500">{team?.name}</span>
+              Manage project members and their permissions for <span className="font-semibold text-blue-500">{team?.name}</span>
             </p>
 
             <div
             className="flex gap-3 flex-wrap w-full justify-start items-center mt-5">
-              <button
-              type="button"
-              className="bg-main rounded-full px-6 py-2 flex gap-2 items-center justify-center duration-400 cursor-pointer hover:-translate-y-0.5 hover:brightness-125"
-              onClick={toggleForm}>
+              <MainButton
+              size="w-50"
+              className="flex flex-row justify-center items-center gap-2"
+              isDisabled={currentRole !== "admin"}
+              action={toggleForm}>
                 <IconUserPlus
                 size={20}
                 stroke={2} />
                 Add a new integrant
-              </button>
+              </MainButton>
             </div>
           </section>
 
@@ -614,34 +642,36 @@ export default function Page(){
             className="px-6 py-4 border-b border-neutral-800 bg-neutral-950 flex justify-between items-center">
               <h3
               className="text-xl font-semibold text-white">
-                Team Members ({team?.integrants?.length || 0})
+                Project integrants: {team?.integrants?.length || 0}
               </h3>
             </header>
 
             <div className="p-6">
               {team?.integrants && team.integrants.length > 0 ? (
                 <>
-                  <div className="grid grid-cols-5 pb-3 text-xs uppercase tracking-wider font-bold text-neutral-500 border-b border-neutral-800 mb-4 px-2">
-                    <span>Username</span>
-                    <span>Email</span>
-                    <span>Role</span>
-                    <span className="text-right">Actions</span>
-                  </div>
-
                   <ul className="space-y-1 cursor-default">
-                    { team.integrants && team.integrants.length > 0 && team.integrants.map((member: IntegrantData, index: number) => (
+                    { team.integrants && team.integrants.length > 0 && team.integrants.map((member: IntegrantData) => (
                       <li
-                        key={index}
-                        className="grid grid-cols-5 gap-4 py-3 px-2 rounded-lg transition-colors hover:bg-white/5 items-center group">
+                      key={member.id}
+                      className="flex gap-4 py-3 px-2 rounded-lg transition-colors hover:bg-white/5 items-center group">
+                          {/* Member profile picture */}
                         <div className="flex items-center gap-3">
-                          <Image
-                          src={user?.avatar_url!}
-                          alt={user?.email + " profile picture"}
-                          width={50}
-                          height={50}
-                          className="w-9 rounded-full"
-                          preload
-                          loading="eager" />
+                          {
+                            member.avatar_url ? (
+                            <Image
+                            src={member.avatar_url}
+                            alt={member.username + " profile picture"}
+                            width={50}
+                            height={50}
+                            className="w-9 rounded-full"
+                            preload
+                            loading="eager" />
+                            ) : (
+                              <IconUserCircle
+                              size={30}
+                              stroke={1.5} />
+                            )
+                          }
                           <span className="font-medium text-neutral-200 group-hover:text-blue-500 transition-colors">
                             {member.username}
                           </span>
@@ -651,6 +681,8 @@ export default function Page(){
                           {member.email}
                         </span>
 
+
+                          {/* Member role */}
                         <div className="flex items-center gap-2">
                           {member.type === "admin" ? (
                             <>
@@ -671,6 +703,7 @@ export default function Page(){
                           )}
                         </div>
 
+                        {/* Member actions (Invalid in user) */}
                         {
                           member.id !== user.id ? (
                             <div className="flex justify-end gap-2">

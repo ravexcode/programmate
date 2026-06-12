@@ -244,20 +244,20 @@ export default function TicketPage(){
         </SideBar>
 
         <main
-        className="w-full h-max min-h-screen bg-background relative animate-fade-in overflow-y-auto">
-          <BgGradient />
+        className="w-full h-max min-h-screen bg-background relative animate-fade-in overflow-y-auto z-1">
+          <div className="pointer-events-none absolute inset-0 -z-1 overflow-hidden">
+            <div className="absolute left-1/2 top-1/2 aspect-square block w-200 -translate-x-1/2 -translate-y-1/2 rounded-full bg-main/15 blur-3xl animate-pulse" />
+          </div>
           
-          <div className="p-8 md:p-12 max-w-5xl mx-auto">
+          <div className="p-8 md:p-12 max-w-5xl mx-auto z-2">
             {/* Back Button */}
             <Link
             href={`/projects/${params.id}/tickets`}
             className="inline-flex items-center gap-2 mb-8 px-3 py-2 rounded-lg hover:bg-neutral-900 transition-colors duration-200">
               <IconArrowLeft
-              size={20}
-              stroke={2.5}
-              color="#1A43BF" />
-              <span className="text-sm font-medium text-neutral-400 hover:text-neutral-200">
-                Back to Tickets
+              size={15} />
+              <span className="text-sm font-medium">
+                Go back
               </span>
             </Link>
 
@@ -271,78 +271,40 @@ export default function TicketPage(){
                   </h1>
                   
                   {/* Importance Badge */}
-                  <div className="flex items-center gap-3">
-                    <div 
-                    className={`px-3 py-1.5 rounded-full flex items-center gap-2 font-semibold text-sm ${
-                      ticket.importance === "Low" ? "bg-blue-500/20 text-blue-300 border border-blue-500/50" :
-                      ticket.importance === "Medium" ? "bg-orange-500/20 text-orange-300 border border-orange-500/50" : 
-                      "bg-red-500/20 text-red-300 border border-red-500/50"
-                    }`}>
-                      <IconCircleFilled
-                      size={8}
-                      fill="currentColor"
-                      stroke={0}
-                      color={
-                        ticket.importance === "Low" ? "#93c5fd" :
-                        ticket.importance === "Medium" ? "#fed7aa" : "#fca5a5"
-                      } />
-                      <span>{ticket.importance} Priority</span>
-                    </div>
-                  </div>
+                  <p
+                  className="flex gap-2 items-center">
+                    <span
+                    className="aspect-square rounded-full w-2 h-2 block"
+                    style={{
+                      backgroundColor: (
+                        ticket.importance === "Low" ? "blue" :
+                        ticket.importance === "Medium" ? "orange" :
+                        "red"
+                      )
+                    }}></span>
+                    Importance: {ticket.importance.toLowerCase()}
+                  </p>
                 </div>
               </div>
 
               {/* Metadata Section */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-6 border-t border-neutral-800">
-                {/* Creator */}
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/30">
-                    <IconUser size={20} className="text-blue-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                      Created By
-                    </p>
-                    <p className="text-sm font-medium text-neutral-200 mt-1">
-                      {ticket.creator || "Unknown"}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Assigned To */}
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/30">
-                    <IconUsers size={20} className="text-purple-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                      Assigned To
-                    </p>
-                    <p className="text-sm font-medium text-neutral-200 mt-1">
-                      {ticket.to || "Unassigned"}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Created Date */}
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
-                    <IconClock size={20} className="text-emerald-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                      Created
-                    </p>
-                    <p className="text-sm font-medium text-neutral-200 mt-1">
-                      {formatDate(ticket.created_at)}
-                    </p>
-                  </div>
-                </div>
+              <div className="flex justify-center items-center gap-4 py-6 border-t border-neutral-800">
+                <p
+                className="border-r-2 border-neutral-600 pr-4">
+                  Made by <span className="text-sky-500"> {ticket.creator} </span>
+                </p>
+                <p
+                className="border-r-2 border-neutral-600 pr-4">
+                  For <span className="text-sky-500"> {ticket.to} </span>
+                </p>
+                <p>
+                  At <span className="text-sky-500"> {(new Date(ticket.created_at!)).toDateString()} </span>
+                </p>
               </div>
             </header>
 
             {/* Content Section */}
-            <section className="rounded-xl border border-neutral-800 bg-neutral-950/50 backdrop-blur-sm p-6 md:p-8 hover:border-neutral-700 transition-colors duration-200">
+            <section className="rounded-md border border-neutral-800 bg-neutral-950 p-3 z-5 duration-300 hover:border-main">
               <h2 className="text-lg font-semibold text-neutral-200 mb-4">Description</h2>
               <div className="prose prose-invert max-w-none text-neutral-300 prose-a:text-main hover:prose-a:underline">
                 <ReactMarkdown
