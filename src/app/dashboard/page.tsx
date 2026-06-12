@@ -15,7 +15,6 @@ import { useEffect, useState, useRef, RefObject } from "react";
 //Components imports
 import SideBar,  { Icon } from "@/components/ui/sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
-import AIChat from "@/components/ui/ai-chat";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
@@ -431,7 +430,6 @@ export default function Dashboard(){
   return (
     <div className="min-h-screen bg-background grid grid-rows-[auto_1fr] sm:grid-cols-[auto_1fr] overflow-hidden text-text">
       {/* Layout sections */}
-      <AIChat />
       <SnackBar
       ref={snackbar} />
 

@@ -13,7 +13,6 @@ import { UserBasic, UserData } from "@/types/user.types";
 
 //Prebuild ui imports
 import SideBar, { Icon } from "@/components/ui/sidebar";
-import AIChat from "@/components/ui/ai-chat";
 import SnackBar from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import BgGradient from "@/components/ui/bg-gradient";
@@ -112,7 +111,6 @@ export default function TeamPage(){
       team ? (
         <div
         className="bg-background grid grid-cols-[auto_1fr] text-text">
-          <AIChat />
           <SnackBar
           ref={snackbar} />
 

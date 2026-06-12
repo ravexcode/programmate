@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 import IconCarousel from "@/components/icon-carrousel";
+import LandingGradient from "@/components/ui/gradients/landing";
 
 //Custom components
 import SmoothProvider from "@/lib/components/lennis";
@@ -70,13 +71,7 @@ export default function HomePage(){
         <section
         className="relative px-4 w-full min-h-screen flex flex-col justify-center items-center text-text pt-20 pb-10 animate-fade-in-up overflow-hidden">
 
-          <div
-          className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-            <div
-            className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-100 md:h-230 bg-main/60 blur-3xl rounded-full animate-pulse" />
-            <div className="bg-linear-to-t from-background to-transparent w-screen h-50 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
-            <div className="bg-linear-to-b from-background to-transparent w-screen h-20 left-0 top-0 absolute z-3 pointer-events-none"></div>
-          </div>
+          <LandingGradient scale={150} />
 
           <h1
           className="text-6xl font-bold mb-4 z-2 text-center">
@@ -142,10 +137,10 @@ export default function HomePage(){
         </section>
 
         <section
-        className="flex flex-col justify-center items-center bg-background gap-15 mt-10 text-text relative w-full timeline-view-y animate-zoom-in animate-range-[entry_0%_cover_30%] min-h-150 py-5">
+        className="flex flex-col justify-center items-center bg-background gap-15 mt-10 text-text relative w-full timeline-view-y animate-zoom-in animate-range-[entry_0%_cover_30%] min-h-150 py-5 z-2">
           <p
           id="pricing"
-          className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30">
+          className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30 z-5">
             Pricing
           </p>
 
@@ -196,7 +191,12 @@ export default function HomePage(){
           <div
           className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
             <div
-            className="absolute aspect-square left-1/2 top-1/1 -translate-x-1/2 -translate-y-1/2 h-300 md:h-250 bg-main/60 blur-3xl rounded-full animate-pulse" />
+            className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/6 h-250 bg-main rounded-full animate-pulse blur-3xl brightness-50 animate-duration-[4s] -z-1">
+              <div
+              className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-100 bg-sky-600 rounded-full" />
+              <div
+              className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-50 bg-sky-300 rounded-full" />
+            </div>
             <div className="bg-linear-to-t from-background to-transparent w-screen h-50 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
           </div>
         </section>

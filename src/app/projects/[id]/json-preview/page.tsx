@@ -13,7 +13,6 @@ import Team from "@/types/team.types";
 
 //Prebuild ui imports
 import SideBar, { Icon } from "@/components/ui/sidebar";
-import AIChat from "@/components/ui/ai-chat";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import { JsonNode } from "@/components/ui/json-node";
@@ -278,7 +277,6 @@ export default function Page(){
       <div
       className="bg-background grid grid-cols-[auto_1fr] min-h-screen w-screen text-text overflow-hidden">
         <SnackBar ref={snackbar} />
-        <AIChat />
 
         {/* Exporter modal */}
         <div

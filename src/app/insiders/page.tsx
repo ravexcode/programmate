@@ -4,6 +4,7 @@
 //Prebuilt ui components
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
+import LandingGradient from "@/components/ui/gradients/landing";
 
 //Hooks imports
 import SmoothProvider from "@/lib/components/lennis";
@@ -39,16 +40,8 @@ export default function DevsPage(){
         <SmoothProvider />
 
         <section
-        className="relative px-4 w-full min-h-screen flex flex-col justify-center items-center animate-fade-in-up overflow-hidden">
-
-          <div
-          className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-            <div
-            className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-100 md:h-230 bg-main/60 blur-3xl rounded-full animate-pulse" />
-            <div className="bg-linear-to-t from-background to-transparent w-screen h-50 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
-            <div className="bg-linear-to-b from-background to-transparent w-screen h-20 left-0 top-0 absolute z-3 pointer-events-none"></div>
-          </div>
-
+        className="relative px-4 w-full min-h-200 flex flex-col justify-center items-center animate-fade-in-up overflow-hidden">
+          <LandingGradient />
           <h1
           className="text-6xl font-bold z-2 text-center">
             Explore Prismaflow <br />

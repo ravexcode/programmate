@@ -12,10 +12,8 @@ import { UserData } from "@/types/user.types";
 
 //Prebuild ui imports
 import SideBar, { Icon } from "@/components/ui/sidebar";
-import AIChat from "@/components/ui/ai-chat";
 import SnackBar from "@/components/ui/snackbar";
 import LoadingScreen from "@/components/screens/loading-screen";
-import MainButton from "@/components/ui/buttons/main";
 
 //Board components imports
 import Card from "@components/ui/kanban/card";
@@ -169,7 +167,6 @@ export default function KanBanBoard() {
     team && user ? (
       <div
       className="h-screen grid grid-cols-[auto_1fr] bg-background overflow-hidden">
-        <AIChat />
         <SnackBar
         ref={snackbar} />
 

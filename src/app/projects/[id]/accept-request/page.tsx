@@ -8,7 +8,7 @@ import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 
 //Next imports
 import Link from "next/link";
-import { deleteCookie, getCookie } from "cookies-next/client";
+import { useGetToken, useDeleteToken } from "@/hooks/useCookies";
 import { useParams } from "next/navigation";
 
 //React imports
@@ -29,7 +29,7 @@ export default function AcceptRequestPage(){
 
   useEffect(() => {
     async function getData(){
-      const token = await getCookie("token");
+      const token = useGetToken();
 
       if(!token) return window.location.href = "/auth/login";
 
@@ -37,7 +37,7 @@ export default function AcceptRequestPage(){
       const user_data = await UpdateUserData(token);
       
       if(!user_data){
-        deleteCookie("token");
+        useDeleteToken();
         window.localStorage.clear();
         window.location.href = "/auth/login";
       }

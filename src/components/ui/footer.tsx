@@ -59,11 +59,11 @@ export default function Footer() {
               <CustomLi link="/#pricing">Pricing</CustomLi>
             </FooterColumn>
 
-            <FooterColumn title="Developers">
-              <CustomLi link="/devs">More info</CustomLi>
-              <CustomLi link="/devs#arch">Architecture</CustomLi>
-              <CustomLi link="/devs#techs">Technologies</CustomLi>
-              <CustomLi link="/devs#lnt">Libraries</CustomLi>
+            <FooterColumn title="Insiders">
+              <CustomLi link="/insiders">More info</CustomLi>
+              <CustomLi link="/insiders#arch">Architecture</CustomLi>
+              <CustomLi link="/insiders#techs">Technologies</CustomLi>
+              <CustomLi link="/insiders#lnt">Libraries</CustomLi>
             </FooterColumn>
 
             <FooterColumn title="Social media">

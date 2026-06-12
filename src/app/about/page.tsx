@@ -7,6 +7,7 @@ import Image from "next/image";
 //Prebuilt components
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
+import LandingGradient from "@/components/ui/gradients/landing";
 
 //Custom components
 import SmoothProvider from "@/lib/components/lennis";
@@ -53,14 +54,8 @@ export default function AboutPage(){
       className="flex flex-col justify-start items-center pb-10">
 
         <section
-        className="flex flex-col justify-center items-center relative animate-fade-in-up overflow-hidden w-full text-text min-h-220">
-          <div
-          className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-            <div
-            className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-120 md:w-200 bg-main/40 blur-3xl rounded-full animate-pulse" />
-            <div className="bg-linear-to-t from-background to-transparent w-full h-20 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
-            <div className="bg-linear-to-b from-background to-transparent w-full h-20 left-0 top-0 absolute z-3 pointer-events-none"></div>
-          </div>
+        className="flex flex-col justify-center items-center relative animate-fade-in-up overflow-hidden w-full text-text min-h-200">
+          <LandingGradient />
 
           <h1
           className="text-6xl font-bold mb-4 z-2 text-center px-6">
