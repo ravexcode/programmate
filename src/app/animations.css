@@ -1,9 +1,35 @@
 @keyframes carousel {
   0% { transform: translateX(0); }
-  100% { transform: translateX(calc(-50% - 1.5rem)); } /* Ajusta el calc según tu gap */
+  100% { transform: translateX(calc(-50% - 1.5rem)); }
 }
-
 .carousel {
   animation: carousel 20s linear infinite;
   will-change: transform;
+}
+
+
+@property --gradient-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes border-animate {
+  0% {
+    --gradient-angle: 0deg;
+  }
+  100% {
+    --gradient-angle: 360deg;
+  }
+}
+
+.border-animate {
+  background: conic-gradient(
+    from var(--gradient-angle),
+    #1A43BF,
+    #1A43BF,
+    #00000000 40%,
+    #00000000
+  );
+  animation: border-animate 3s linear infinite;
 }

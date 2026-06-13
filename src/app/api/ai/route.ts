@@ -1,146 +1,97 @@
-//Connections imports
-//OpenRouter Client ID
-import openRouter from "@/lib/ai";
-//Supabase Client ID
-import supabase from "@/lib/db";
-
-//NextJS imports
+//Next imports
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 
-//Node modules imports
-import { Encrypt } from "@/functions/crypto";
-
 //Handlers imports
 import {
+  badRequestErrorHandler,
+  errorTemplate,
   serverErrorHandler,
-  notFoundErrorHandler,
-  supabaseErrorHandler,
-  unauthorizedErrorHandler,
-  badRequestErrorHandler
-} from "@/app/api/handlers";
+  unauthorizedErrorHandler
+} from "@api/handlers"
 
-//Exports function for making ai requests
-export async function POST(req: NextRequest){
+export async function GET( req: NextRequest ){
   try {
-    //Gets the message
-    const { message } = await req.json();
-    //Gets the auth token
-    const token = (await headers()).get("Authorization");
-
-    //Verifies if the data is OK
-    if(!message) return badRequestErrorHandler();
+    const headers_list = await headers();
+    const provider_api_key = headers_list.get("provider-api-key");
+    const provider_name = headers_list.get("provider");
+    const token = headers_list.get("Authorization");
 
     if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
+    
+    if(!provider_api_key || !provider_name) return badRequestErrorHandler();
 
-    //Gets the user's data
-    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
-
-    //Verifies if the user has been returned
-    if(!user) return notFoundErrorHandler("User not found");
-
-    //Verifies if there's an error
-    if(getUserError) return unauthorizedErrorHandler(getUserError.message);
-
-    //User last payment
-    const { data: payments } = await supabase
-    .from("payments")
-    .select("*")
-    .eq("user_id", user.id);
-
-    //User profile data
-    const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .maybeSingle();
-
-    //Profile data
-    if(!profile) return notFoundErrorHandler("Profile not found");
-
-    //Now date
-    const now = new Date();
-
-    //Verifies last updated
-    if(new Date(profile.last_updated) < new Date(Date.UTC(
-      now.getUTCFullYear(),
-      now.getUTCMonth(),
-      now.getUTCDate(),
-      0, 0, 0, 0
-    ))) {
-      //Restores the user usages
-      profile.daily_requests = 0;
-    }
-
-    //OpenRouter max requests and model
-    let max_requests = 20;
-    let model = "deepseek-chat";
-
-    //Verifies if there's an payment
-    if(payments && payments.length >= 1) {
-      const lastPayment = payments[payments.length -1];
-
-      //Verifies if isn't expired
-      if(new Date(lastPayment.paid_at) < now){
-        max_requests = 50;
-        model = "deepseek-reasoner";
-      }
-    }
-
-    //Makes the request
-    const stream = await openRouter.chat.send({
-      chatRequest: {
-        model: "nex-agi/deepseek-v3.1-nex-n1",
-        messages: [
+    switch (provider_name) {
+      //----------- GOOGLE VALIDATOR -----------
+      case "google":
+        const google_res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models?key=${provider_api_key}`,
           {
-            role: "user",
-            content: message
+            method: "GET"
           }
-        ],
-        stream: true,
-        reasoning: {
-          effort: "low",
-        }
-      }
-    });
+        )
+        .catch((e) => {
+          return serverErrorHandler(e);
+        });
 
-    let response = "";
-    for await (const chunk of stream) {
-      const content = chunk.choices[0]?.delta?.content;
-      if (content) {
-        response += content;
-        process.stdout.write(content);
-      }
+        if(google_res.ok) {
+          const data = await google_res.json();
+          return NextResponse.json({
+            message: "Google AI Api key validated",
+            models: data.models
+          })
+        }
+
+        return errorTemplate(
+          "Google AI Api key error",
+          "Provider error",
+          500
+        );
+
+      //----------- CLAUDE VALIDATOR -----------
+      case "claude":
+        const claude_res = await fetch(
+          `https://api.anthropic.com/v1/messages`,
+          {
+            method: "POST",
+            headers: {
+              'X-API-Key': provider_api_key,
+              'Anthropic-Version': '2023-06-01',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'claude-3-5-sonnet-20240620',
+              max_tokens: 1,
+              messages: [{ role: 'user', content: 'Ping' }],
+            }),
+          }
+        )
+        .catch((e) => {
+          return serverErrorHandler(e);
+        });
+
+        if(claude_res.ok) {
+          const data = await claude_res.json();
+          return NextResponse.json({
+            message: "Claude AI Api key validated"
+          })
+        }
+
+        return errorTemplate(
+          "Claude AI Api key error",
+          "Provider error",
+          500
+        );
+        break;
+        
+      default:
+        return errorTemplate(
+          "Method not supported",
+          "Conflict",
+          409
+        );
     }
-
-    //Updated the user profile
-    const { error: updateUserError } = await supabase
-    .from("profiles")
-    .update({
-      daily_requests: profile.daily_requests! + 1,
-      ai_chat: [
-        ...profile.ai_chat || [],
-        {
-          "sent_by": "user",
-          "message": Encrypt(message)
-        },
-        {
-          "sent_by": "ai",
-          "message": Encrypt(response)
-        }
-      ]
-    })
-    .eq("id", profile.id);
-
-    //Verifies if there's an error
-    if(updateUserError) return supabaseErrorHandler(updateUserError);
-
-    //Result
-    return NextResponse.json({
-      message: "AI response got",
-      result: response
-    });
-  } catch(e: unknown) {
-    serverErrorHandler(e);
+  } catch(e) {
+    return serverErrorHandler(e);
   }
 }

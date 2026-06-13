@@ -9,7 +9,7 @@ import supabase from "@/lib/db";
 import { PostgrestSingleResponse } from "@supabase/supabase-js";
 
 //Types imports
-import { UserData } from "@/types/user.types";
+import { ToDoList, UserData } from "@/types/user.types";
 
 //Responses imports
 import * as Handlers from "@/app/api/handlers";
@@ -17,7 +17,7 @@ import * as Handlers from "@/app/api/handlers";
 export async function POST(req: NextRequest) {
   try {
     //Gets the new list data
-    const { list_title, list_description } = await req.json();
+    const { list_title, list_description, tags } = await req.json();
     //Gets the auth token
     const token = (await headers()).get("Authorization");
 
@@ -52,7 +52,8 @@ export async function POST(req: NextRequest) {
     .update({
       to_do_list: [...profile.to_do_list || [], {
         title: list_title,
-        description: list_description
+        description: list_description,
+        tags
       }]
     })
     .eq("id", user.id);
@@ -164,25 +165,23 @@ export async function DELETE(req: NextRequest) {
     if(getUserError) return Handlers.unauthorizedErrorHandler(getUserError.message);
 
     //User profile data
-    const { data: profile } = await supabase
+    const { data: profile, error: getProfileError } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
-    .maybeSingle() as PostgrestSingleResponse<UserData> || null;
+    .maybeSingle();
 
     if(!profile) return Handlers.notFoundErrorHandler("Profile not found");
+    if(getProfileError) return Handlers.supabaseErrorHandler(getProfileError);
 
     //Deletes the list
-    const updated_lists = profile.to_do_list || [];
-
-    //Removes the list at the specified index
-    updated_lists.filter((_, i) => i !== list_index );
+    const updated_list = profile.to_do_list.filter((_: any, i: number) => i !== list_index);
 
     //Uploads the updated list
     const { error: deleteListError } = await supabase
     .from("profiles")
     .update({
-      to_do_list: updated_lists
+      to_do_list: updated_list
     })
     .eq("id", user.id);
 

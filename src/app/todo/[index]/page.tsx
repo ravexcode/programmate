@@ -12,7 +12,6 @@ import { useGetToken } from "@/hooks/useCookies";
 
 //Components imports
 import SideBar from "@/components/ui/sidebar";
-import AIChat from "@/components/ui/ai-chat";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 
 //Types imports
@@ -121,7 +120,6 @@ export default function ToDoListPage() {
           avatar={user.avatar_url}
           plan={user.plan}
           username={user.name}/>
-          <AIChat />
           <SnackBar
           ref={snackbar}/>
 

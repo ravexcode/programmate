@@ -5,7 +5,7 @@
 import { useRouter } from "next/navigation";
 
 //React imports
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, cache } from "react";
 
 //Hooks imports
 import { getCached } from "@/hooks/cache.hook";
@@ -16,7 +16,6 @@ import useAnimationClose from "@/hooks/useAnimationClose";
 import SideBar, { Icon } from "@/components/ui/sidebar";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
-import AIChat from "@/components/ui/ai-chat";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 
 //Types imports
@@ -24,7 +23,7 @@ import type { UserData, ToDoList } from "@/types/user.types";
 import type Team from "@/types/team.types";
 
 //Services imports
-import UpdateUserData from "@/services/user.service";
+import getUser from "@/services/user.service";
 import LoadingDashboard from "@/components/screens/loading-screen";
 
 //Icons imports
@@ -35,6 +34,7 @@ import {
   IconReload,
   IconTrash
 } from "@tabler/icons-react";
+import { fetchTemplate } from "@/actions/template";
 
 export default function ToDoListPage() {
   //Router settings
@@ -66,10 +66,13 @@ export default function ToDoListPage() {
   const [ listTags, setListTags ] = useState<string []>([]);
   const [ listIndex, setListIndex ] = useState<number>();
   const [ editorIsLoading, setEditorIsLoading ] = useState<boolean>(false);
+  const [ currentIndex, setCurrentIndex ] = useState<number | undefined>();
+  const [ deleteDisabled, setDeleteDisabled ] = useState(false);
 
   //Components refs
   const form_creator = useRef<HTMLDivElement>(null);
   const form_editor = useRef<HTMLDivElement>(null);
+  const warn_card = useRef<HTMLDivElement>(null)
   //Snackbar
   const snackbar = useRef(null);
 
@@ -91,13 +94,25 @@ export default function ToDoListPage() {
 
   //Data fetching form cache
   useEffect(() => {
-    //Gets the cached user
-    const user = getCached();
+    async function get(){
+      const token = useGetToken();
 
-    //If there is a cached user, sets the user data
-    if(user) {
-      setUser(user);
+      if(!token) return router.push("/auth/login");
+
+      const cached = getCached();
+      
+      if(cached) {
+        return setUser(cached);
+      } else {
+        const user_fetched = await getUser(token);
+
+        if(!user_fetched) return router.push("/dashboard");
+
+        return setUser(user_fetched);
+      }
     }
+
+    get();
   }, []);
 
   //Function to handle project creation
@@ -294,6 +309,51 @@ export default function ToDoListPage() {
     setIsLoading(false);
   }
 
+  const toggleWarn = () => {
+    if(!warn_card.current) return;
+
+    const current : HTMLElement = warn_card.current;
+    const classlist = current.classList;
+
+    if(classlist.contains("hidden")){
+      classlist.remove("animate-fade-out-down");
+      classlist.replace("hidden", "flex");
+
+      return;
+    };
+
+    classlist.add("animate-fade-out-down");
+    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    return;
+  }
+
+  const handleDeleteList = async() => {
+    if(currentIndex === undefined) return;
+    const token = useGetToken();
+
+    if(!token) return router.push("/auth/login");
+
+    setDeleteDisabled(true);
+    toggleWarn();
+
+    setUser(prev => prev ? {
+      ...prev,
+      to_do_list: (prev.to_do_list || []).filter((_, index) => index !== currentIndex)
+    } : user);
+
+    await fetchTemplate(
+      "/api/todos",
+      "DELETE",
+      snackbar,
+      {
+        "Authorization": token
+      },
+      JSON.stringify({
+        list_index: currentIndex
+      })
+    );
+  }
+
   return (
     <div
     className="min-h-screen bg-background grid grid-cols-[auto_1fr] overflow-hidden text-text"
@@ -347,7 +407,6 @@ export default function ToDoListPage() {
               )
             }
           </SideBar>
-          <AIChat />
           <SnackBar
           ref={snackbar}/>
 
@@ -492,6 +551,45 @@ export default function ToDoListPage() {
             </CreatorForm>
           </div>
 
+          {/* Warning card */}
+          <div
+          className="min-w-screen min-h-screen backdrop-blur backdrop-brightness-80 hidden items-center justify-center py-10 fixed z-99 inset-0 animate-fade-in-up animate-duration-300"
+          ref={warn_card}
+          onClick={toggleWarn}>
+            <section
+            onClick={(e) => {
+              e.preventDefault();
+              e.nativeEvent.preventDefault();
+            }}
+            className="rounded-md bg-neutral-950 border border-neutral-800 p-5 w-120 flex flex-col items-center">
+              <p
+              className="text-lg font-medium text-center">
+                Are you shure to you want to delete this list?
+              </p>
+              <span
+              className="font-normal text-red-500 w-80 bg-red-950/50 border border-red-700 mt-2 p-1 rounded-sm text-center scale-90">
+                This action is not reversible!
+              </span>
+
+              <div
+              className="w-full grid grid-cols-2 gap-2 text-sm mt-4">
+                <button
+                type="button"
+                onClick={toggleWarn}
+                className="border border-transparent p-2 rounded-sm duration-400 cursor-pointer hover:bg-neutral-800">
+                  Cancel
+                </button>
+                <button
+                type="button"
+                onClick={async() => await handleDeleteList()}
+                disabled={deleteDisabled}
+                className="p-2 rounded-sm duration-400 cursor-pointer bg-red-600 hover:bg-red-800 disabled:grayscale disabled:cursor-wait disabled:hover:bg-red-600">
+                  Confirm
+                </button>
+              </div>
+            </section>
+          </div>
+
           <main
           className="relative flex flex-col h-screen overflow-y-auto px-4 md:px-8 animate-fade-in">
             <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
@@ -528,8 +626,14 @@ export default function ToDoListPage() {
                 onClick={ async(e) => {
                   setIsReloading(true);
                   const token = useGetToken();
+                  if(!token) return;
 
-                  await UpdateUserData(token!);
+                  const user_fetched = await getUser(token);
+
+                  if(!user_fetched) return router.push("/dashboard");
+
+                  setUser(user_fetched);
+
                   setIsReloading(false);
                 }}>
                   <IconReload
@@ -564,7 +668,7 @@ export default function ToDoListPage() {
 
                 <section
                 className={user.to_do_list && user.to_do_list.length >= 1 ? "grid grid-cols-1 lg:grid-cols-2 gap-6" : "flex flex-col justify-center items-center"}>
-                  { user?.to_do_list && user.to_do_list.length >= 1 ? 
+                  { user.to_do_list && user.to_do_list.length >= 1 ? 
                     user.to_do_list.map((list, index) => (
                       <section
                       key={index}
@@ -621,6 +725,8 @@ export default function ToDoListPage() {
                               e.nativeEvent.stopImmediatePropagation(); 
                               e.stopPropagation();
                               setOpenMenuIndex(null);
+                              setCurrentIndex(index)
+                              toggleWarn();
                             }}
                             className="flex w-full items-center px-4 py-2.5 text-sm text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300">
 

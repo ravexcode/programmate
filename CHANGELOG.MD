@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v47.2:**
+> Bugfix leve
+  1. Ahora la páginan to do tiene todas sus funcionalidades. 🛠️
+  2. Nueva card para alertar al usuario. ⚠️
+
 - **Indev v47.1:**
   1. Cambios en la páginas de información, el gradiente mejorado.
   2. Inicio para mover el AI Chat de un botón a una página destinada solamente a eso.

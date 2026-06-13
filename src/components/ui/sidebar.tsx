@@ -15,6 +15,7 @@ import {
   IconLayoutSidebar,
   IconReceipt2,
   IconSettings,
+  IconSparkles,
   IconUserCircle
 } from "@tabler/icons-react";
 
@@ -180,6 +181,16 @@ export default function SideBar(props: SideBarProps) {
         name="To Do lists"
         isDisplayed={expanded} >
           <IconChecklist
+          size={23}
+          stroke={2}
+          color="white" />
+        </Icon>
+
+        <Icon
+        action="/ai"
+        name="Prismaflow AI"
+        isDisplayed={expanded} >
+          <IconSparkles
           size={23}
           stroke={2}
           color="white" />

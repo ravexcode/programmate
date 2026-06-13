@@ -1,6 +1,12 @@
 //Imports
 
-import Team from "./team.types"
+import Team from "./team.types";
+
+export interface Provider {
+  name: string;
+  api_key: string;
+  models: string [];
+}
 
 export interface Task {
   title: string,
@@ -29,6 +35,7 @@ export interface UserData {
   created_at?: string,
   last_sign_in?: string,
   avatar_url?: string,
+  ai_providers: Provider [],
 }
 
 //User basic data (for example teammates)
