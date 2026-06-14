@@ -192,7 +192,7 @@ export default function SideBar(props: SideBarProps) {
         isDisplayed={expanded} >
           <IconSparkles
           size={23}
-          stroke={2}
+          stroke={1.5}
           color="white" />
         </Icon>
 

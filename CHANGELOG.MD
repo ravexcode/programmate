@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v47.3:**
+> Page improvement
+  1. Avances en AI Chat. 🚀
+  2. Arreglo menor en sidebar. 🛠️
+
 - **Indev v47.2:**
 > Bugfix leve
   1. Ahora la páginan to do tiene todas sus funcionalidades. 🛠️

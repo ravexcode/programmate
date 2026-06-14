@@ -28,11 +28,13 @@ import { Provider } from "@/types/user.types";
 import {
   IconArrowLeft,
   IconArrowsMoveVertical,
+  IconFolderOff,
   IconReceipt2,
   IconSend,
   IconSettings,
   IconUserCircle
 } from "@tabler/icons-react";
+import MainButton from "@/components/ui/buttons/main";
 
 export default function AgentsPage() {
   const router = useRouter();
@@ -46,7 +48,20 @@ export default function AgentsPage() {
   const [ currentProvider, setCurrentProvider ] = useState("");
   const [ currentModel, setCurrentModel ] = useState("");
 
+  const messages = [
+    {
+      sender: "user",
+      content: "Hello Claude Haiku! 👋",
+      sent_at: new Date(), //now
+    },
+    {
+      sender: "agent",
+      content: "Hi, i'm Claude Hailku, what are building today?"
+    }
+  ]
+
   const profileSettings = useRef(null);
+  const modelMenu = useRef(null);
   const snackbar = useRef(null);
 
   useEffect(() => {
@@ -90,6 +105,26 @@ export default function AgentsPage() {
     return;
   }
 
+  const toggleModelMenu = () => {
+    if(!modelMenu.current) return;
+
+    const current : HTMLElement = modelMenu.current;
+    const classlist = current.classList;
+
+    setProfileDisabled(prev => prev ? false : true);
+
+    if(classlist.contains("hidden")){
+      classlist.remove("animate-fade-out-down");
+      classlist.replace("hidden", "flex");
+
+      return;
+    };
+
+    classlist.add("animate-fade-out-down");
+    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    return;
+  }
+
   return (
     user ? (
       <div
@@ -109,14 +144,56 @@ export default function AgentsPage() {
         }
       }}>
         <SnackBar ref={snackbar} />
+
+        {/* Model menu */}
+        <div
+        className="w-screen h-screen fixed inset-0 backdrop-blur backdrop-brightness-80 z-10 hidden flex-col animate-fade-in-up animate-duration-300 items-center justify-center"
+        ref={modelMenu}
+        onClick={toggleModelMenu}>
+          <section
+          onClick={(e) => {
+            e.preventDefault();
+            e.nativeEvent.preventDefault();
+          }}
+          className="w-full max-w-250 rounded-md bg-neutral-900 border border-neutral-700 flex flex-col p-4">
+            <div
+            className="flex items-center justify-between border-b border-neutral-800 pb-5">
+              <p
+              className="text-lg font-medium tracking-wide">
+                Your models
+              </p>
+
+              <MainButton
+              size="w-40 h-max"
+              action={toggleModelMenu}>
+                + Add a new model
+              </MainButton>
+            </div>
+            
+            <div
+            className="py-15 flex flex-col gap-1 items-center justify-center opacity-80 font-light">
+              <IconFolderOff
+              size={40}
+              stroke={1} />
+              <p
+              className="text-xl">
+                You don't have models at this moment
+              </p>
+              <p>
+                Try adding a new one
+              </p>
+            </div>
+          </section>
+        </div>
+
         <header
         className="p-2 border-b border-neutral-800 flex items-center justify-between animate-fade-in-down">
           <button
           type="button"
           onClick={() => router.back()}
-          className="flex gap-1 py-2 px-4 rounded-md duration-300 cursor-pointer hover:bg-neutral-800 items-center justify-center">
+          className="flex gap-2 py-2 px-4 rounded-md duration-300 cursor-pointer hover:bg-neutral-800 items-center justify-center">
             <IconArrowLeft
-            size={20} />
+            size={15} />
             Go back
           </button>
           
@@ -126,6 +203,7 @@ export default function AgentsPage() {
             {/* AI provider button */}
             <button
             type="button"
+            onClick={toggleModelMenu}
             className="rounded-md hover:bg-neutral-800 h-full outline-none flex gap-2 items-center justify-center py-2 px-4 w-full max-w-max cursor-pointer duration-400 text-sm">
               <p> Claude </p>
               <span
@@ -199,7 +277,22 @@ export default function AgentsPage() {
 
         <main
         className="mx-auto px-4 py-3 overflow-y-auto w-full max-w-350 h-full">
-          
+          {
+            messages && messages.length > 10 ? messages.map((message, index) =>
+              <div
+              key={index}>
+
+              </div>
+            ) : (
+              <div
+              className="flex justify-center items-center w-full h-full">
+                <p
+                className="text-5xl font-light opacity-80 select-none">
+                  What are we building today?
+                </p>
+              </div>
+            )
+          }
         </main>
 
         <footer
