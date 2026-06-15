@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v48.0:**
+> Page improvement, Design fix
+  1. Nuevo mini dashboard en la página principal. 🚀
+  2. Nuevos componentes para el mini dashboard. 🛠️
+
 - **Indev v47.3:**
 > Page improvement
   1. Avances en AI Chat. 🚀

@@ -9,17 +9,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-//Prebuilt components
+//Prebuilt ui imports
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 import IconCarousel from "@/components/icon-carrousel";
 import LandingGradient from "@/components/ui/gradients/landing";
-
-//Custom components
 import SmoothProvider from "@/lib/components/lennis";
 import Card from "@/components/ui/card";
 import PricingCard from "@/components/ui/pricing-card";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import MiniDashboard from "@/components/ui/mini-dashboard/main";
 
 //Hooks imports
 import { useGetToken } from "@/hooks/useCookies";
@@ -69,22 +68,21 @@ export default function HomePage(){
       className="flex flex-col justify-center items-center">
         <SmoothProvider />
         <section
-        className="relative px-4 w-full min-h-screen flex flex-col justify-center items-center text-text pt-20 pb-10 animate-fade-in-up overflow-hidden">
-
+        className="relative px-4 w-full min-h-screen flex flex-col justify-center items-center text-text pt-20 pb-10 animate-fade-in-up overflow-hidden z-2">
           <LandingGradient scale={150} />
 
           <h1
-          className="text-6xl font-bold mb-4 z-2 text-center">
+          className="text-6xl font-bold mb-4 z-2 text-center animate-fade-in-down">
             Built to improve <br />
             your team workflow
           </h1>
           <p
-          className="opacity-80 z-2">
+          className="opacity-80 z-2 animate-fade-in-down">
             For design, development, code, databases and more!
           </p>
 
           <div
-          className="w-full md:w-[50%] flex justify-center items-center mt-5 z-2">
+          className="w-full md:w-[50%] flex justify-center items-center mt-5 z-2 animate-fade-in-up">
             <Link
             href="/about"
             className="bg-main rounded-full px-12 py-2 duration-200 hover:brightness-120 hover:-translate-y-0.5">
@@ -92,19 +90,21 @@ export default function HomePage(){
             </Link>
           </div>
 
-          <Image
+          {/* <Image
           src="/images/dashboard.webp"
           alt="Image made by RavexCode"
           width={1800}
           height={1800}
           loading="eager"
-          className="z-3 w-full max-w-300 mt-10 mx-auto rounded-xl md:rounded-4xl border-2 border-neutral-800"/>
+          className="z-3 w-full max-w-300 mt-10 mx-auto rounded-md border border-neutral-800 animate-fade-in-up animate-duration-1500"/> */}
+          <MiniDashboard />
         </section>
 
         <IconCarousel />
 
         <span className="h-10"></span>
 
+        {/* Features */}
         <section 
         className="text-text bg-background flex flex-col justify-center items-center gap-5 px-4 z-2 w-full timeline-view-y animate-zoom-in animate-range-[entry_0%_cover_10%]">
           <p
@@ -136,6 +136,7 @@ export default function HomePage(){
           </div>
         </section>
 
+        {/* Pricing */}
         <section
         className="flex flex-col justify-center items-center bg-background gap-15 mt-10 text-text relative w-full timeline-view-y animate-zoom-in animate-range-[entry_0%_cover_30%] min-h-150 py-5 z-2">
           <p
@@ -191,13 +192,13 @@ export default function HomePage(){
           <div
           className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
             <div
-            className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/6 h-250 bg-main rounded-full animate-pulse blur-3xl brightness-50 animate-duration-[4s] -z-1">
+            className="aspect-square block absolute left-1/2 top-1/4 -translate-x-1/2 h-200 bg-main rounded-full animate-pulse blur-3xl brightness-50 animate-duration-[4s] scale-120">
               <div
               className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-100 bg-sky-600 rounded-full" />
               <div
               className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-50 bg-sky-300 rounded-full" />
             </div>
-            <div className="bg-linear-to-t from-background to-transparent w-screen h-50 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
+            <div className="bg-linear-to-t from-background to-transparent w-screen h-20 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
           </div>
         </section>
       </main>
