@@ -1,5 +1,11 @@
 # Indev
 
+- **Indev v48.1:**
+> Bugfix, Page improvement, Design fix
+  1. Mejora de diseño en la página de to do lists. 🚀
+  2. Ahora los projectos se tienen que eliminar internamente. 🛠️
+  3. Ahora las to do lists tienen tags, funcionales. 🛠️
+
 - **Indev v48.0:**
 > Page improvement, Design fix
   1. Nuevo mini dashboard en la página principal. 🚀

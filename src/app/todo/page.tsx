@@ -32,9 +32,11 @@ import {
   IconPencil,
   IconPlus,
   IconReload,
+  IconSearch,
   IconTrash
 } from "@tabler/icons-react";
 import { fetchTemplate } from "@/actions/template";
+import MainButton from "@/components/ui/buttons/main";
 
 export default function ToDoListPage() {
   //Router settings
@@ -125,7 +127,8 @@ export default function ToDoListPage() {
     //Sets the list data
     const new_list = {
       list_title: newListName,
-      list_description: newListDescription
+      list_description: newListDescription,
+      tags
     };
 
     //Gets the token
@@ -413,7 +416,7 @@ export default function ToDoListPage() {
           {/* Creator form */}
           <div
           ref={form_creator}
-          className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col justify-center items-center z-50 animate-fade-in-up hidden"
+          className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col justify-center items-center z-50 animate-fade-in-up animate-duration-300 hidden"
           onClick={toggleListCreator}>
             <CreatorForm
             title="Create a new to do list"
@@ -645,24 +648,18 @@ export default function ToDoListPage() {
                 </button>
               </header>
               
-              <section className="flex flex-col gap-6">
+              <section className="flex flex-col gap-6 h-full">
                 
                 <div className="flex w-full items-center justify-between">
                   <h3 className="text-xl font-semibold tracking-tight text-white/90">
                     To Do Lists
                   </h3>
 
-                  <button
-                  className="flex items-center gap-2 bg-main px-6 py-2 text-sm font-medium text-white rounded-full transition-all duration-300 hover:bg-main/80 focus:outline-none active:scale-95 cursor-pointer"
-                  onClick={() => {
-                    toggleListCreator();
-                  }}>
-                    <IconPlus
-                    color="white"
-                    size={16}
-                    stroke={2.5}/>
-                    Create new
-                  </button>
+                  <MainButton
+                  size="w-40"
+                  action={toggleListCreator}>
+                    + Create a new list
+                  </MainButton>
                 </div>
 
 
@@ -758,8 +755,47 @@ export default function ToDoListPage() {
                       </section>
                     </section>
                     )) : (
-                    <span
-                    className="w-full text-center text-2xl font-light text-text py-4"> No To Do lists found, try creating a new list!  </span>
+                      <div
+                      className="w-full h-full flex flex-col gap-3 items-center justify-center p-10">
+                        {/* Ghost card */}
+
+                        <section
+                        className="rounded-xl bg-neutral-950 p-4 flex flex-col items-start justify-center gap-3 w-120 cursor-default select-none">
+                          <p
+                          className="text-transparent bg-neutral-900 p-1 rounded-md text-sm">
+                            Lorem, ipsum dolor sit amet
+                          </p>
+                          <p
+                          className="text-transparent bg-neutral-900 p-1 rounded-md text-sm">
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum, sit totam placeat asperiores pariatur consequuntur? Quae voluptatum vitae provident quibusdam totam eos temporibus facilis similique! Nam nobis illum dolores nihil?
+                          </p>
+                          
+                          <div
+                          className="flex gap-2">
+                            <span className="text-transparent rounded-full text-sm bg-neutral-900 p-1"> Lorem ipsum </span>
+                            <span className="text-transparent rounded-full text-sm bg-neutral-900 p-1"> Lorem ipsum </span>
+                            <span className="text-transparent rounded-full text-sm bg-neutral-900 p-1"> Lorem ipsum </span>
+                            <span className="text-transparent rounded-full text-sm bg-neutral-900 p-1"> Lorem ipsum </span>
+                          </div>
+                        </section>
+
+                        {/* Recomendation text */}
+                        <p
+                        className="text-2xl font-medium tracking-wide mt-2">
+                          The way to get order in your projects
+                        </p>
+                        <p
+                        className="text-neutral-400 max-w-120 text-center">
+                          Prismaflow gives you a way to get a better organization in your projects using to  do lists. Try creating a new one!
+                        </p>
+
+                        <MainButton
+                        size="w-50"
+                        className="mt-4"
+                        action={toggleListCreator}>
+                          + Create a new list
+                        </MainButton>
+                      </div>
                   ) }
                 </section>
 

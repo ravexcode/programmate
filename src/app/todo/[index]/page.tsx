@@ -20,7 +20,8 @@ import { UserData, Task, ToDoList } from "@/types/user.types";
 //Services imports
 import UpdateUserData from "@/services/user.service";
 import LoadingDashboard from "@/components/screens/loading-screen";
-import { IconCheck, IconTrash } from "@tabler/icons-react";
+import { IconArrowLeft, IconCheck, IconTrash } from "@tabler/icons-react";
+import AltButton from "@/components/ui/buttons/alternate";
 
 export default function ToDoListPage() {
   //Next settings
@@ -131,9 +132,19 @@ export default function ToDoListPage() {
 
 
             <section
-            className="z-2 flex flex-col justify-center items-center w-full">
+            className="z-2 flex flex-col justify-center items-center w-full max-w-200">
+              <button
+              type="button"
+              onClick={() => router.back()}
+              className="p-2 flex gap-2 rounded-md duration-400 hover:bg-neutral-800 mt-10 mr-auto w-30 cursor-pointer items-center justify-center">
+                <IconArrowLeft
+                size={20}
+                stroke={2} />
+
+                Go back
+              </button>
               <p
-              className="text-2xl font-medium tracking-wider text-center my-10 animate-fade-in-down">
+              className="text-2xl font-medium tracking-wider text-center mb-10 animate-fade-in-down">
                 { toDoList.title } <br />
                 <span
                 className="text-lg font-light tracking-normal">

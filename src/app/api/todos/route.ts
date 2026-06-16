@@ -9,7 +9,7 @@ import supabase from "@/lib/db";
 import { PostgrestSingleResponse } from "@supabase/supabase-js";
 
 //Types imports
-import { ToDoList, UserData } from "@/types/user.types";
+import { UserData } from "@/types/user.types";
 
 //Responses imports
 import * as Handlers from "@/app/api/handlers";

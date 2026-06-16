@@ -287,7 +287,7 @@ export default function AgentsPage() {
               <div
               className="flex justify-center items-center w-full h-full">
                 <p
-                className="text-5xl font-light opacity-80 select-none">
+                className="text-5xl font-light opacity-80 select-none animate-fade-in-up">
                   What are we building today?
                 </p>
               </div>
