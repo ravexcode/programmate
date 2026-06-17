@@ -90,14 +90,10 @@ export default function HomePage(){
             </Link>
           </div>
 
-          {/* <Image
-          src="/images/dashboard.webp"
-          alt="Image made by RavexCode"
-          width={1800}
-          height={1800}
-          loading="eager"
-          className="z-3 w-full max-w-300 mt-10 mx-auto rounded-md border border-neutral-800 animate-fade-in-up animate-duration-1500"/> */}
-          <MiniDashboard />
+          <div
+          className="w-max mx-auto px-5 overflow-hidden flex items-center justify-start">
+            <MiniDashboard />
+          </div>
         </section>
 
         <IconCarousel />

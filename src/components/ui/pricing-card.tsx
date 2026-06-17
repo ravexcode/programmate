@@ -11,7 +11,7 @@ export default function PricingCard(props: {
   const recomended_classes = "scale-110 border-blue-600 bg-blue-800/20 backdrop-brightness-40 backdrop-blur-2xl";
   const basic_classes = "border-neutral-800 bg-neutral-950";
 
-  const pricingCardClassess = "flex flex-col px-6 py-4 rounded-xl h-100 shadow-lg shadow-ultramarine-950/50 mb-10 w-60 timeline-view-y animate-fade-in animate-range-[entry_0%_cover_30%] relative border cursor-default " + (props.isRecomended ? recomended_classes : basic_classes);
+  const pricingCardClassess = "flex flex-col px-6 py-4 rounded-xl h-100 shadow-lg shadow-ultramarine-950/50 mb-10 w-60 timeline-view-y animate-zoom-in animate-range-[entry_0%_cover_30%] relative border cursor-default " + (props.isRecomended ? recomended_classes : basic_classes);
 
   return (
     <div

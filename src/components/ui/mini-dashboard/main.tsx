@@ -77,7 +77,7 @@ export default function MiniDashboard() {
 
   return (
     <div
-    className="flex flex-col sm:flex-row bg-background rounded-md border border-neutral-800 w-300 z-2 aspect-video mt-6 animate-fade-in-up animate-duration-1000">
+    className="flex flex-row bg-background rounded-md border border-neutral-800 w-300 z-2 aspect-video mt-6 animate-fade-in-up animate-duration-1000">
       <MiniDashboardSidebar
       setCurrentView={setCurrentView} />
 

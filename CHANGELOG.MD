@@ -1,5 +1,12 @@
 # Indev
 
+- **Indev v49.0:**
+> Page improvement, Design fix
+  1. Ahora el dashboard es "responsive". 🛠️
+  2. Arreglo de diseño en el botón de energencia. 🛠️
+  3. Arreglos menores de diseño en landing page. 🛠️
+  4. Página de edición de proyectos actualizada. 🚀
+
 - **Indev v48.1:**
 > Bugfix, Page improvement, Design fix
   1. Mejora de diseño en la página de to do lists. 🚀

@@ -18,7 +18,7 @@ export default function HazardButton(props: Props) {
 
       return ;
     }}
-    className={"bg-red-600 rounded-md p-2 text-sm duration-400 cursor-pointer active:bg-red-900 active:scale-95 hover:bg-red-900 disabled:grayscale disabled:cursor-wait disabled:hover:bg-red-600 " + props.className + " " + props.size}>
+    className={"bg-red-600 rounded-md p-2 text-sm duration-400 cursor-pointer active:brightness-60 active:scale-95 hover:brightness-60 disabled:grayscale disabled:cursor-wait disabled:brightness-60 " + props.className + " " + props.size}>
       { props.children }
     </button>
   )

@@ -17,7 +17,7 @@ export default function DashboardCard(props: Props) {
       {
         props.status && (
           <p
-          className="mt-1 flex gap-1 text-xs items-center">
+          className="mt-1 flex gap-2 text-xs items-center">
             <span
             className={"h-1.5 w-1.5 rounded-full block " + ( props.status === "Backlog" ? "bg-zinc-500" : props.status === "Planning" ? "bg-blue-400" : props.status === "In Progress" ? "bg-orange-400" : props.status === "On Hold" ? "bg-red-400" : "bg-purple-500" )} />
             {props.status}

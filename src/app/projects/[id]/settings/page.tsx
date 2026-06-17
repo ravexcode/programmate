@@ -35,9 +35,15 @@ import {
   IconFolder,
   IconLayoutKanban,
   IconMessage,
-  IconSettings,
-  IconUsers
+  IconUsers,
+  IconCommand,
+  IconSpace,
+  IconAssembly,
+  IconLogout,
+  IconTrash
 } from "@tabler/icons-react";
+import MainButton from "@/components/ui/buttons/main";
+import HazardButton from "@/components/ui/buttons/hazard";
 
 export default function SettingsPage(){
   //Next setup
@@ -47,7 +53,10 @@ export default function SettingsPage(){
   //Data states
   const [ user, setUser ] = useState<UserData>();
   const [ team, setTeam ] = useState<Team>();
-  const [ expanded, setExpanded ] = useState<boolean>(false);
+  const [ expanded, setExpanded ] = useState(false);
+  const [ isStatusOpen, setIsStatusOpen ] = useState(false);
+  const [ currentTag, setCurrentTag ] = useState("");
+  const [ userIndex, setUserIndex ] = useState<number>();
 
   //Components ref
   const snackbar = useRef(null);
@@ -60,6 +69,8 @@ export default function SettingsPage(){
 
     return;
   }, []);
+
+  //Gets data
   useEffect(() => {
     async function fetchData() {
       let user_data: UserData;
@@ -93,15 +104,30 @@ export default function SettingsPage(){
       );
 
       setTeam(team);
+      const user_index = team.integrants_id.indexOf(user_data.id);
+
+      if(user_index === undefined) return router.push("/dashboard");
+
+      setUserIndex(user_index)
     }
 
     fetchData();
   }, []);
 
+  
+  //Status options for project
+  const statusOptions = [
+    { value: "Backlog", label: "Backlog", color: "bg-zinc-500" },
+    { value: "Planning", label: "Planning", color: "bg-blue-400" },
+    { value: "In Progress", label: "In Progress", color: "bg-orange-400" },
+    { value: "On Hold", label: "On Hold", color: "bg-red-400" },
+    { value: "Done", label: "Done", color: "bg-purple-500" },
+  ];
+
   return (
-    user && team ? (
+    user && team && userIndex !== undefined ? (
       <div
-      className="bg-background text-text h-screen grid grid-cols-[auto_1fr]">
+      className="bg-background text-text h-screen grid grid-cols-[auto_1fr] overflow-hidden">
         <SnackBar
         ref={snackbar} />
         <SideBar
@@ -202,7 +228,7 @@ export default function SettingsPage(){
         </SideBar>
 
         <main
-        className="flex flex-col justify-start items-center p-10 relative">
+        className="flex flex-col justify-start items-center p-10 relative overflow-auto">
           <BgGradient />
 
           <p
@@ -211,11 +237,11 @@ export default function SettingsPage(){
           </p>
 
           <form
-          className="w-full max-w-200 rounded-md p-2 bg-neutral-950 border border-neutral-800 z-2 flex flex-col items-start justify-start gap-4">
+          className="w-full max-w-200 rounded-md p-4 z-2 flex flex-col items-start justify-start gap-4">
             <div
             className="w-full flex flex-col gap-2 text-sm items-start justify-center">
               <label
-              className="text-xs">
+              className="font-medium text-lg">
                 Team name
               </label>
               <input
@@ -229,15 +255,14 @@ export default function SettingsPage(){
                 )
               }}
               type="text"
-              className="outline-none bg-neutral-900 rounded-md py-1 px-2 text-sm duration-300 border border-transparent focus:border-main w-80"
+              className="outline-none bg-neutral-950 rounded-sm p-3 duration-300 border border-neutral-900 focus:border-main w-full"
               placeholder="e.g. Project apollo" />
             </div>
-
             
             <div
             className="w-full flex flex-col gap-2 text-sm items-start justify-center">
               <label
-              className="text-xs">
+              className="font-medium text-lg">
                 Team description
               </label>
               <textarea
@@ -250,10 +275,186 @@ export default function SettingsPage(){
                   } : team
                 )
               }}
-              className="outline-none bg-neutral-900 rounded-md py-1 px-2 text-sm duration-300 border border-transparent focus:border-main w-full min-h-30 max-h-30"
+              className="outline-none bg-neutral-950 rounded-sm p-3 duration-300 border border-neutral-900 focus:border-main w-full min-h-30 h-30 max-h-100"
               placeholder="e.g. Project apollo" />
             </div>
+            
+            <div
+            className="w-full flex flex-col gap-2 text-sm items-start justify-center">
+              <label
+              className="font-medium text-lg">
+                Team status
+              </label>
+              
+              <div className="w-full flex flex-col items-start mb-2 relative">
+                        <label className="font-light w-full text-sm text-start mb-1 block">
+                          Project Status
+                        </label>
+                        
+              <button
+                type="button"
+                onClick={() => setIsStatusOpen(!isStatusOpen)}
+                className="w-full flex items-center justify-between bg-neutral-950 rounded-sm p-2 text-text/80 hover:bg-neutral-800 transition-all duration-200"
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`w-2 h-2 rounded-full ${
+                    statusOptions.find(opt => opt.value === team.status)?.color || "bg-zinc-500"
+                  }`} />
+                  <span className="text-sm">{team.status}</span>
+                </div>
+                <IconAssembly
+                size={14}
+                stroke={2} />
+              </button>
+    
+              {isStatusOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setIsStatusOpen(false)} />
+                  <div className="absolute top-[calc(100%+4px)] left-0 w-full bg-neutral-950 border border-neutral-800 rounded-md shadow-xl overflow-hidden z-20 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="p-1">
+                      {statusOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => {
+                            setTeam(
+                              prev => prev ? {
+                                ...prev,
+                                status: (option.value as any)
+                              } : team
+                            );
+                            setIsStatusOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-3 px-3 py-2 rounded-sm text-sm transition-all ${
+                            status === option.value 
+                            ? 'bg-neutral-800 text-white' 
+                            : 'text-text/60 hover:bg-neutral-800/50 hover:text-text/90'
+                          }`}
+                        >
+                          <span className={`w-2 h-2 rounded-full ${option.color}`} />
+                          <span className="flex-1 text-left">{option.label}</span>
+                          {status === option.value && <div className="w-1 h-1 bg-blue-500 rounded-full" />}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            </div>
+            
+            <div
+            className="w-full flex flex-col gap-2 text-sm items-start justify-center">
+              <label
+              className="font-medium text-lg">
+                Team tags
+              </label>
+              
+              <div
+              className="h-max w-full relative">
+                <input
+                value={currentTag}
+                onChange={(e) => setCurrentTag(e.target.value)}
+                onKeyDown={(e) => {
+                  if(e.key !== " " || currentTag.length < 1) return;
+                  if(team.tags && team.tags && team.tags.filter(tag => tag === currentTag).length > 0) return;
+
+                  setTeam(
+                    prev => prev ?
+                    {
+                      ...prev,
+                      tags: [
+                        ...prev.tags || [],
+                        currentTag
+                      ]
+                    } : team
+                  );
+                  setCurrentTag("");
+
+                  return;
+                }}
+                type="text"
+                className="outline-none bg-neutral-950 rounded-sm p-3 duration-300 border border-neutral-900 focus:border-main w-full"
+                placeholder="e.g. NextJS, TypeScript, NodeJS" />
+
+                <div
+                className="flex gap-1 absolute right-2 top-1/2 -translate-y-1/2 w-max items-center justify-end">
+                  <IconSpace
+                  size={20}
+                  className="rounded-md p-1 bg-zinc-800 h-6 w-6 text-neutral-500" />
+                </div>
+              </div>
+
+              <div
+              className="w-full flex gap-2 mt-2">
+                {
+                  team.tags && team.tags.map((tag, index) =>
+                    <p
+                    className="px-3 py-1 rounded-full text-sm font-light border border-main/50 bg-main/20 text-text/80 w-max cursor-default hover:border-red-700 hover:bg-red-950"
+                    key={ index }
+                    onClick={() => setTeam(
+                      prev => prev ? {
+                        ...prev,
+                        tags: prev.tags ?
+                          prev.tags.filter((_, i) => i !== index)
+                         : []
+                      } : team
+                    )}>
+                      {tag}
+                    </p>
+                  )
+                }
+              </div>
+            </div>
+
+            <MainButton
+            size="w-40"
+            className="mx-auto mt-5"
+            type="submit">
+              Save
+            </MainButton>
           </form>
+          
+          <div
+          className="flex gap-2 justify-center items-center w-full max-w-250">
+            <span className="w-full h-px rounded-md bg-red-600" />
+            
+            <p
+            className="w-80 text-center p-2 text-lg text-red-600">
+              Hazard options
+            </p>
+
+            <span className="w-full h-px rounded-md bg-red-600" />
+          </div>
+
+          <HazardButton
+          size="w-60"
+          className="mx-auto mt-5 font-medium tracking-wide flex gap-2 items-center justify-center z-2"
+          action={() => {
+            //Open warn card logic
+          }}>
+            Leave from the team
+
+            <IconLogout
+            size={20}
+            stroke={2} />
+          </HazardButton>
+
+          {
+            team.integrants[userIndex].type === "admin" &&
+            <HazardButton
+            size="w-60"
+            className="mx-auto mt-5 font-medium tracking-wide flex gap-2 items-center justify-center z-2"
+            action={() => {
+              //Open warn card logic
+            }}>
+              Delete this team
+
+              <IconTrash
+              size={20}
+              stroke={2} />
+            </HazardButton>
+          }
         </main>
       </div>
     ) : (
