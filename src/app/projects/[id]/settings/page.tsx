@@ -36,7 +36,6 @@ import {
   IconLayoutKanban,
   IconMessage,
   IconUsers,
-  IconCommand,
   IconSpace,
   IconAssembly,
   IconLogout,
@@ -44,6 +43,8 @@ import {
 } from "@tabler/icons-react";
 import MainButton from "@/components/ui/buttons/main";
 import HazardButton from "@/components/ui/buttons/hazard";
+import { fetchTemplate } from "@/actions/template";
+import useAnimationClose from "@/hooks/useAnimationClose";
 
 export default function SettingsPage(){
   //Next setup
@@ -55,11 +56,16 @@ export default function SettingsPage(){
   const [ team, setTeam ] = useState<Team>();
   const [ expanded, setExpanded ] = useState(false);
   const [ isStatusOpen, setIsStatusOpen ] = useState(false);
+  const [ isLoading, setIsLoading ] = useState(false);
   const [ currentTag, setCurrentTag ] = useState("");
   const [ userIndex, setUserIndex ] = useState<number>();
+  const [ prevTeam, setPrevTeam ] = useState<Team>();
+  const [ warnText, setWarnText ] = useState<0 | 1>(0);
+  const [ confirmationText, setConfirmationText ] = useState("");
 
   //Components ref
   const snackbar = useRef(null);
+  const warnCard = useRef(null);
   
   //Set expanded based in localstorage
   useEffect(() => {
@@ -104,6 +110,7 @@ export default function SettingsPage(){
       );
 
       setTeam(team);
+      setPrevTeam(team);
       const user_index = team.integrants_id.indexOf(user_data.id);
 
       if(user_index === undefined) return router.push("/dashboard");
@@ -124,10 +131,108 @@ export default function SettingsPage(){
     { value: "Done", label: "Done", color: "bg-purple-500" },
   ];
 
+  const handleUpdateTeam = async(e: React.SubmitEvent) => {
+    e.preventDefault();
+    e.nativeEvent.preventDefault();
+
+    if(!team) return;
+
+    const token = useGetToken();
+
+    if(!token) return router.push("/auth/login");
+
+    setIsLoading(true);
+
+    await fetchTemplate(
+      "/api/teams",
+      "PUT",
+      snackbar,
+      {
+        "Authorization": token
+      },
+      JSON.stringify({
+        teamId: params.id,
+        newName: team.name,
+        newDescription: team.description,
+        newTags: team.tags,
+        newStatus: team.status
+      })
+    );
+
+    setIsLoading(false);
+    setPrevTeam(team);
+  }
+
+  const warnTexts = [
+    "Are you shure to you want to leave from this team?",
+    "Are you shure to you want to delete this team?"
+  ];
+
+  const toggleWarn = () => {
+    if(!warnCard.current) return;
+    setConfirmationText("");
+
+    const current : HTMLElement = warnCard.current;
+    const classlist = current.classList;
+
+    if(classlist.contains("hidden")){
+      classlist.remove("animate-fade-out-down");
+      classlist.replace("hidden", "flex");
+
+      return;
+    };
+
+    classlist.add("animate-fade-out-down");
+    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    return;
+  };
+
+  const handleDeleteTeam = async() => {
+    const token = useGetToken();
+    setIsLoading(true);
+
+    if(!token) return;
+
+    await fetchTemplate(
+      `/api/teams/${params.id}`,
+      "DELETE",
+      snackbar,
+      {
+        "Authorization": token,
+      }
+    );
+
+    router.push("/dashboard");
+  }
+
+  const handleLeave = async() => {
+    if(!user) return;
+
+    const token = useGetToken();
+    setIsLoading(true);
+
+    if(!token) return;
+
+    await fetchTemplate(
+      `/api/teams/${params.id}/integrants/remove-member`,
+      "DELETE",
+      snackbar,
+      {
+        "Authorization": token,
+      },
+      JSON.stringify({
+        member_id: user.id
+      })
+    );
+
+    router.push("/dashboard");
+  }
+
   return (
     user && team && userIndex !== undefined ? (
       <div
-      className="bg-background text-text h-screen grid grid-cols-[auto_1fr] overflow-hidden">
+      className="bg-background text-text h-screen grid grid-cols-[auto_1fr] overflow-hidden"
+      onClick={() => setIsStatusOpen(false)}>
         <SnackBar
         ref={snackbar} />
         <SideBar
@@ -229,15 +334,83 @@ export default function SettingsPage(){
 
         <main
         className="flex flex-col justify-start items-center p-10 relative overflow-auto">
+          <div
+          className="p-10 hidden items-center justify-center fixed z-10 backdrop-blur backdrop-brightness-75 w-screen h-screen inset-0 animate-fade-in-up animate-duration-300"
+          ref={warnCard}
+          onClick={toggleWarn}>
+            
+            <section
+            className="p-3 rounded-md border border-neutral-800 bg-neutral-900 w-120 text-center flex flex-col gap-4 items-center justify-center"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.nativeEvent.stopPropagation();
+            }}>
+              <p
+              className="text-2xl font-medium tracking-wide">
+                Caution!
+              </p>
+
+              { warnTexts[warnText] }
+
+              {
+                warnText === 1 && 
+                <div
+                className="flex flex-col gap-1 w-full items-start justify-center px-10">
+                  <label>
+                    Set "{team.name.toLowerCase()}" to confirm team elimination
+                  </label>
+                  <input
+                  type="text"
+                  value={confirmationText}
+                  onChange={(e) => setConfirmationText(e.target.value)}
+                  placeholder="Set your confimation text"
+                  className="w-full p-2 rounded-md bg-neutral-900 border border-neutral-800 outline-none duration-300 focus:border-main" />
+                </div>
+              }
+
+              {
+                warnText === 1 && 
+                <span
+                className="w-70 rounded-md border border-red-700 bg-red-950 text-red-400 p-1 text-sm">
+                  This action is not reversible
+                </span>
+              }
+
+              <div
+              className="mt-2 grid grid-cols-2 items-center justify-center gap-3 w-full">
+                <button
+                type="button"
+                className="h-full rounded-md bg-neutral-800 duration-500 hover:bg-neutral-950 cursor-pointer text-sm"
+                onClick={toggleWarn}>
+                  Cancel
+                </button>
+
+                <HazardButton
+                size="w-auto"
+                action={async() => {
+                  if(warnText === 1) return await handleDeleteTeam();
+
+                  if(warnText === 0) return await handleLeave();
+                }}
+                isDisabled={warnText === 1 && confirmationText !== team.name.toLowerCase()}>
+                  {
+                    warnText && warnText === 1 ? "Delete" : "Leave from the team"
+                  }
+                </HazardButton>
+              </div>
+            </section>
+          </div>
+
           <BgGradient />
 
           <p
-          className="text-3xl font-medium tracking-wide mb-5 z-2">
+          className="text-5xl font-medium tracking-wide mb-5 z-2 animate-fade-in-down animate-duration-300">
             {team.name} settings
           </p>
 
           <form
-          className="w-full max-w-200 rounded-md p-4 z-2 flex flex-col items-start justify-start gap-4">
+          className="w-full max-w-200 rounded-md p-4 z-2 flex flex-col items-start justify-start gap-4 animate-fade-in-up animate-duration-300"
+          onSubmit={async(e) => handleUpdateTeam(e)}>
             <div
             className="w-full flex flex-col gap-2 text-sm items-start justify-center">
               <label
@@ -287,15 +460,19 @@ export default function SettingsPage(){
               </label>
               
               <div className="w-full flex flex-col items-start mb-2 relative">
-                        <label className="font-light w-full text-sm text-start mb-1 block">
-                          Project Status
-                        </label>
+                <label className="font-light w-full text-sm text-start mb-1 block">
+                  Project Status
+                </label>
                         
               <button
                 type="button"
-                onClick={() => setIsStatusOpen(!isStatusOpen)}
-                className="w-full flex items-center justify-between bg-neutral-950 rounded-sm p-2 text-text/80 hover:bg-neutral-800 transition-all duration-200"
-              >
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.nativeEvent.stopPropagation();
+
+                  setIsStatusOpen(!isStatusOpen);
+                }}
+                className="w-full flex items-center justify-between bg-neutral-950 rounded-sm p-2 text-text/80 hover:bg-neutral-800 transition-all duration-200" >
                 <div className="flex items-center gap-3">
                   <span className={`w-2 h-2 rounded-full ${
                     statusOptions.find(opt => opt.value === team.status)?.color || "bg-zinc-500"
@@ -326,14 +503,14 @@ export default function SettingsPage(){
                             setIsStatusOpen(false);
                           }}
                           className={`w-full flex items-center gap-3 px-3 py-2 rounded-sm text-sm transition-all ${
-                            status === option.value 
+                            team.status === option.value 
                             ? 'bg-neutral-800 text-white' 
                             : 'text-text/60 hover:bg-neutral-800/50 hover:text-text/90'
                           }`}
                         >
                           <span className={`w-2 h-2 rounded-full ${option.color}`} />
                           <span className="flex-1 text-left">{option.label}</span>
-                          {status === option.value && <div className="w-1 h-1 bg-blue-500 rounded-full" />}
+                          {team.status === option.value && <div className="w-1 h-1 bg-blue-500 rounded-full" />}
                         </button>
                       ))}
                     </div>
@@ -390,7 +567,7 @@ export default function SettingsPage(){
                 {
                   team.tags && team.tags.map((tag, index) =>
                     <p
-                    className="px-3 py-1 rounded-full text-sm font-light border border-main/50 bg-main/20 text-text/80 w-max cursor-default hover:border-red-700 hover:bg-red-950"
+                    className="px-3 py-1 rounded-full text-sm font-light border border-main/50 bg-main/20 text-text/80 w-max cursor-default duration-300 hover:border-red-700 hover:bg-red-950"
                     key={ index }
                     onClick={() => setTeam(
                       prev => prev ? {
@@ -408,53 +585,60 @@ export default function SettingsPage(){
             </div>
 
             <MainButton
-            size="w-40"
-            className="mx-auto mt-5"
-            type="submit">
-              Save
+            size="w-80"
+            className="mx-auto mt-5 animate-fade-in-up animate-duration-300"
+            type="submit"
+            isDisabled={team === prevTeam}
+            isLoading={isLoading}>
+              Apply changes
             </MainButton>
           </form>
           
           <div
           className="flex gap-2 justify-center items-center w-full max-w-250">
-            <span className="w-full h-px rounded-md bg-red-600" />
+            <span className="w-full h-px rounded-md bg-red-600 animate-fade-in-right" />
             
             <p
-            className="w-80 text-center p-2 text-lg text-red-600">
+            className="w-80 text-center p-2 text-lg text-red-600 animate-fade-in-up animate-duration-300">
               Hazard options
             </p>
 
-            <span className="w-full h-px rounded-md bg-red-600" />
+            <span className="w-full h-px rounded-md bg-red-600 animate-fade-in-left" />
           </div>
 
-          <HazardButton
-          size="w-60"
-          className="mx-auto mt-5 font-medium tracking-wide flex gap-2 items-center justify-center z-2"
-          action={() => {
-            //Open warn card logic
-          }}>
-            Leave from the team
-
-            <IconLogout
-            size={20}
-            stroke={2} />
-          </HazardButton>
-
-          {
-            team.integrants[userIndex].type === "admin" &&
+          <div
+          className="w-full flex items-center justify-center gap-10 mt-5 animate-fade-in-up animate-duration-300">
             <HazardButton
             size="w-60"
-            className="mx-auto mt-5 font-medium tracking-wide flex gap-2 items-center justify-center z-2"
+            className="font-medium tracking-wide flex gap-2 items-center justify-center z-2"
             action={() => {
-              //Open warn card logic
+              toggleWarn();
+              setWarnText(0);
             }}>
-              Delete this team
+              Leave from the team
 
-              <IconTrash
+              <IconLogout
               size={20}
               stroke={2} />
             </HazardButton>
-          }
+
+            {
+              team.integrants[userIndex].type === "admin" &&
+              <HazardButton
+              size="w-60"
+              className="font-medium tracking-wide flex gap-2 items-center justify-center z-2"
+              action={() => {
+                toggleWarn();
+                setWarnText(1);
+              }}>
+                Delete this team
+
+                <IconTrash
+                size={20}
+                stroke={2} />
+              </HazardButton>
+            }
+          </div>
         </main>
       </div>
     ) : (

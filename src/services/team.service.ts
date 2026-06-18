@@ -21,7 +21,6 @@ export default async function getTeam(
   const data = await res.json();
 
   if(res.status === 200) {
-    showSnackbar(data.message, "valid", snackbar);
     return data.team;
   }
 

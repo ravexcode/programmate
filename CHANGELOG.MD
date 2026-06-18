@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v49.1:**
+> Page improvement
+  1. Página de configuración de proyecto mejorada. 🚀
+
 - **Indev v49.0:**
 > Page improvement, Design fix
   1. Ahora el dashboard es "responsive". 🛠️
