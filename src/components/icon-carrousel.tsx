@@ -44,8 +44,7 @@ export default function IconCarousel() {
                 alt={icon.alt}
                 width={150}
                 height={150}
-                preload
-                loading="eager"
+                loading="lazy"
                 className={`object-contain max-w-none w-auto ${icon.className ?? ''}`}
               />
             </Link>

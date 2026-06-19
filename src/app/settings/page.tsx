@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 //Prebuilt components
 import SideBar from "@/components/ui/sidebar";
 import ActionButton from "@/components/ui/action-button";
-import AIChat from "@/components/ui/ai-chat";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import AltButton from "@/components/ui/buttons/alternate";
 import HazardButton from "@/components/ui/buttons/hazard";
@@ -179,8 +178,6 @@ export default function ConfigurationPage(){
       plan={user?.plan!}
       avatar={user?.avatar_url}
       username={user?.name!}/>
-
-      <AIChat />
 
       {
         user ? (

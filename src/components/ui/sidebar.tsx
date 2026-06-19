@@ -1,5 +1,5 @@
 //React imports
-import { ReactNode, useState, useEffect, useRef } from "react";
+import { ReactNode, useState, useEffect, useRef, memo } from "react";
 
 //Next imports
 import Link from "next/link";
@@ -60,7 +60,7 @@ interface SideBarProps {
   avatar?: string;
 }
 
-export default function SideBar(props: SideBarProps) {
+function SideBar(props: SideBarProps) {
   const router = useRouter();
 
   const [expanded, setExpanded] = useState(false);
@@ -309,3 +309,5 @@ export default function SideBar(props: SideBarProps) {
     </aside>
   );
 }
+
+export default memo(SideBar);

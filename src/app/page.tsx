@@ -2,23 +2,19 @@
 "use client";
 
 //React imports
-import { useRef } from "react";
+import { useRef, lazy, Suspense } from "react";
 
 //Next imports
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 //Prebuilt ui imports
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
-import IconCarousel from "@/components/icon-carrousel";
 import LandingGradient from "@/components/ui/gradients/landing";
 import SmoothProvider from "@/lib/components/lennis";
 import Card from "@/components/ui/card";
-import PricingCard from "@/components/ui/pricing-card";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
-import MiniDashboard from "@/components/ui/mini-dashboard/main";
 
 //Hooks imports
 import { useGetToken } from "@/hooks/useCookies";
@@ -57,7 +53,14 @@ export default function HomePage(){
     if(res.status === 200) return router.push(data.checkout_link);
 
     showSnackbar(data.message, (res.status >= 500 ? "critic": "warn"), snackbar);
-  }  
+  };
+
+  //Lazy loading
+  //Carousel consumes many resources because it renders images
+  const IconCarousel = lazy(() => import("@components/icon-carrousel"));
+  //Mini dashboard has too many components/animations
+  const MiniDashboard = lazy(() => import("@components/ui/mini-dashboard/main"));
+
   return (
     <div className="bg-background min-h-dvh animate-fade-in">
       <SnackBar ref={snackbar} />
@@ -92,11 +95,21 @@ export default function HomePage(){
 
           <div
           className="w-max mx-auto px-5 overflow-hidden flex items-center justify-start">
-            <MiniDashboard />
+            <Suspense
+            fallback={
+              <div> Loading presentation dashboard... </div>
+            }>
+              <MiniDashboard />
+            </Suspense>
           </div>
         </section>
 
-        <IconCarousel />
+        <Suspense
+        fallback={
+          <div> Loading carousel... </div>
+        }>
+          <IconCarousel />
+        </Suspense>
 
         <span className="h-10"></span>
 
@@ -129,72 +142,6 @@ export default function HomePage(){
               Scale your workspace as your projects grow without paying for unnecessary
               features.
             </Card>
-          </div>
-        </section>
-
-        {/* Pricing */}
-        <section
-        className="flex flex-col justify-center items-center bg-background gap-15 mt-10 text-text relative w-full timeline-view-y animate-zoom-in animate-range-[entry_0%_cover_30%] min-h-150 py-5 z-2">
-          <p
-          id="pricing"
-          className="text-lg px-10 py-1 rounded-full bg-main shadow-md shadow-main/30 z-5">
-            Pricing
-          </p>
-
-          <div className="flex flex-col md:flex-row w-full justify-center items-center md:gap-20 z-2 relative">
-
-            <PricingCard
-            plan="Free"
-            cost="$0"
-            benefits={[
-              "2 proyects limit",
-              "To do list",
-              "Ticket creator",
-            ]}/>
-
-            <PricingCard
-            plan="Pro"
-            cost="$4"
-            isRecomended={true}
-            benefits={[
-              "All free benefits +",
-              "Unlimited proyects",
-              "ERD Tool",
-              "JSON viewer tool",
-              "Prismaflow AI +"
-            ]}
-            action={async() => {
-              await handlePayment("pro");
-            }}/>
-
-            <PricingCard
-            plan="Enterprise"
-            cost="$8"
-            benefits={[
-              "All pro plans +",
-              "Chat IRT",
-              "Kanban board",
-              "Unlimited integrants",
-              "Unlimited integrants",
-              "Team roles",
-              "Callendar",
-            ]}
-            action={async() => {
-              await handlePayment("team");
-            }}/>
-
-          </div>
-
-          <div
-          className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-            <div
-            className="aspect-square block absolute left-1/2 top-1/4 -translate-x-1/2 h-200 bg-main rounded-full animate-pulse blur-3xl brightness-50 animate-duration-[4s] scale-120">
-              <div
-              className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-100 bg-sky-600 rounded-full" />
-              <div
-              className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-50 bg-sky-300 rounded-full" />
-            </div>
-            <div className="bg-linear-to-t from-background to-transparent w-screen h-20 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
           </div>
         </section>
       </main>

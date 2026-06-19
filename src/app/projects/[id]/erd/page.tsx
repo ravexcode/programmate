@@ -615,7 +615,7 @@ const sql = `CREATE TABLE ${json.tableName} (
 
         {/* Table creator form */}
         <div
-        className="w-screen h-screen fixed hidden items-start justify-center backdrop-brightness-50 backdrop-blur-xs z-10 overflow-hidden animate-fade-in"
+        className="w-screen h-screen fixed hidden items-start justify-center backdrop-brightness-50 backdrop-blur-xs z-10 overflow-auto py-10 animate-fade-in"
         ref={form}
         onClick={toggleCreatorForm}>
 

@@ -44,7 +44,7 @@ export default function ProjectCard(props : Props) {
       </p>
       
       <div
-      className="flex gap-2 mt-2 flex-wrap">
+      className="flex gap-2 mt-auto pt-2 flex-wrap">
         {
           props.tags && props.tags.map((tag: string, index) => (
             <div

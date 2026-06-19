@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v50.0:**
+> New page, page improvement
+  1. Nueva página de pricing. 🚀
+  2. Nuevo enfoque de la aplicación. 🚀
+
 - **Indev v49.1:**
 > Page improvement
   1. Página de configuración de proyecto mejorada. 🚀
