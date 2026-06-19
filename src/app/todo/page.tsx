@@ -30,9 +30,7 @@ import LoadingDashboard from "@/components/screens/loading-screen";
 import {
   IconDotsVertical,
   IconPencil,
-  IconPlus,
   IconReload,
-  IconSearch,
   IconTrash
 } from "@tabler/icons-react";
 import { fetchTemplate } from "@/actions/template";

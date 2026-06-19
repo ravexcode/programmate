@@ -1,12 +1,16 @@
 # Indev
 
-- **Indev v50.2:**
+- **Indev v51.1:**
 > Design fix
-  1. Agents setup update. 🤖
-  2. example.env updated. 🛠️
-  3. Deprecated enpoints deleted. 🗑️
-  4. New sidebar for teams and dashboard. 🚀
-  5. Tickets page updated. 🚀
+  1. Nuevo diseño de las features. 🚀
+
+- **Indev v51.0:**
+> Design fix, page improvement
+  1. Actualizacion de agents. 🤖
+  2. actualizacion de example.md. 🛠️
+  3. Archivos sin uso eliminados. 🗑️
+  4. Nuevo diseño de sidebar. 🚀
+  5. Actualización de la página de tickets. 🚀
 
 - **Indev v50.1:**
 > Dev update
