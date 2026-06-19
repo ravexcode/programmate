@@ -16,51 +16,29 @@ Internal prebuilt components: root/src/components
 
 # Desing
 
-- Main containers
-1. Pages:
+1. Setting pages
 ``` tsx
-return (
-  <div
-  className="bg-background text-zinc-50 min-h-screen grid grid-rows-[auto_1fr_auto]" >
+"use client"; //Important!
 
-    <Header />
+import PageLayout from "@components/layouts/page";
+import SmoothProvider from "@/lib/components/lennis";
 
-      <main
-      className="other-clases" >
-      <SmoothProvider>
-      
-        <section
-        className="relative px-4 w-full min-h-200 flex flex-col justify-center items-center text-text py-10 animate-fade-in-up overflow-hidden">
+export default function ThisPage() {
+  return (
+    <PageLayout>
+      <SmoothProvider />
 
-          <div
-          className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-            <div
-            className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-100 md:h-230 bg-main/60 blur-3xl rounded-full animate-pulse" />
-            <div className="bg-linear-to-t from-background to-transparent w-screen h-50 left-0 bottom-0 absolute z-3 pointer-events-none"></div>
-            <div className="bg-linear-to-b from-background to-transparent w-screen h-20 left-0 top-0 absolute z-3 pointer-events-none"></div>
-          </div>
+      <main>
 
+        {/* Page content */}
 
-          <h1
-          className="text-6xl font-bold mb-4 z-2 text-center">
-            Title <br />
-            Text
-          </h1>
-          <p
-          className="opacity-80 z-2">
-            
-          </p>
-        </section>
-        {/* Interesting code... */}
       </main>
-
-    <Footer />
-
-  </div>
-)
+    </PageLayout>
+  )
+}
 ```
 
-2. Main component:
+2. Building a component:
 ``` tsx
 return (
   <section
@@ -76,20 +54,19 @@ return (
     </p>
     <p
     className="text-base font-normal tracking-normal" >
+    {/* The classes aren't important, is just for example */}
       Content
     </p>
     <p
     className="text-neutral-500 text-base font-normal tracking-normal" >
       Gray content
     </p>
-
-    {/* Interesting code... */}
   </section>
 )
 ```
 
 
-3. Dashboard component:
+3. Creating a new dashboard:
 ``` tsx
 {
   content ? (
@@ -113,65 +90,76 @@ return (
 }
 ```
 
-4. Secondary component (ussually tinier than main component):
+4. Setting a card/content container:
 
 ``` tsx
 return (
   <article
-  className="w-your-width px-4 py-2 bg-neutral-950 rounded-md" >
+  className="w-your-width px-4 py-2 bg-neutral-950 rounded-md border border-neutral-800 duration-300 hover:bg-main" >
     {/* Interesting code... */}
   </article>
 )
 ```
 
-5. Card component:
+5. Creating buttons:
 
+- Main button
+- Usage: Prefered options
 ``` tsx
-return (
-  <div
-  className="w-your-width px-4 py-2 bg-neutral-950 rounded-md border border-neutral-800 duration-300 hover:border-main hover:-translate-y-1" >
-    {/* Interesting code... */}
-  </div>
-)
+import MainButton from "@components/ui/buttons/main";
+
+export function ExampleUsage() {
+  return (
+    <MainButton
+    size="w-60" //Required
+    type="submit" //For normal buttons you can skip this or use reset option
+    action={ () => window.alert("Hello world! 👋") }
+    className="more-classes"
+    isLoading={isWaiting}
+    isDisabled={isAutorized} >
+      Click me!
+    </MainButton>
+  )
+}
+```
+- Secondary
+- Usage: Not prefered options
+``` tsx
+import AltButton from "@components/ui/buttons/alternate";
+
+export function ExampleUsage() {
+  return (
+    <AltButton
+    size="w-60" //Required
+    action={ () => window.alert("Clicked!") }
+    className="more-classes"
+    isLoading={isWaiting}>
+      You can click here...
+    </AltButton>
+  )
+}
 ```
 
-6. Main button:
-
+- Hazard:
+- Usage: Important options
 ``` tsx
-return (
-  <button
-  className="px-4 py-2 rounded-md text-zinc-50 bg-main duration-400 hover:bg-main/80 active:bg-main/80 active:size-[0.95] min-w-10" 
-  /* Interesting code... */>
-    Click me!
-  </button>
-)
+import HazardButton from "@components/ui/buttons/hazard";
+
+export function ExampleUsage() {
+  return (
+    <HazardButton
+    size="w-60" //Required
+    action={ () => window.alert("Button clicked ⚠️") }
+    className="more-classes"
+    isLoading={isWaiting}
+    isDisabled={isAutorized} >
+      Click me!
+    </HazardButton>
+  )
+}
 ```
 
-7. Secondary button:
-
-``` tsx
-return(
-  <button
-  className="px-4 py-2 rounded-md text-zinc-50 bg-neutral-700 duration-400 hover:bg-neutral-800 active:bg-neutral-900 active:size-[0.95] min-w-10"
-  /* Interesting code... */>
-    Click me!
-  </button>
-)
-```
-
-8. Ghost button:
-
-``` tsx
-return (
-  <button
-  className="px-4 py-2 rounded-md text-zinc-50 duration-400 border-neutral-800 hover:bg-neutral-800 active:bg-neutral-800 active:size-[0.95] min-w-10"
-  /* Interesting code... */>
-    Click me!
-  </button>
-)
-```
-
-9. Forms:
+6. Forms:
 - You can use it in two ways
 
 - Without CreatorForm (Only for necessary cases)

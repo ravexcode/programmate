@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v50.1:**
+> Dev update
+  1. Agents setup updated. 🚀
+
 - **Indev v50.0:**
 > New page, page improvement
   1. Nueva página de pricing. 🚀

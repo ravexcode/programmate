@@ -6,7 +6,6 @@ auth: /auth
 ai: /ai
 stripe: /payments/capture-payment, /webhooks/stripe
 resend: /login-warn (In progress)
-cancel signup: /security/cancel-signup/[token] (Deprecated)
 teams CRUD: /teams/[teamId]
 erd: /teams/[teamId]/erd
 tickets: /teams/[teamId]/tickets
