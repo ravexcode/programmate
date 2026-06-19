@@ -5,7 +5,6 @@ main: root/src/app/api
 auth: /auth
 ai: /ai
 stripe: /payments/capture-payment, /webhooks/stripe
-resend: /login-warn (In progress)
 teams CRUD: /teams/[teamId]
 erd: /teams/[teamId]/erd
 tickets: /teams/[teamId]/tickets

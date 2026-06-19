@@ -6,7 +6,9 @@
     "dev": "next dev -p 7000",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "push-d": "git push origin development",
+    "push-p": "git push origin production"
   },
   "dependencies": {
     "@openrouter/sdk": "^0.12.35",

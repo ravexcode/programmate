@@ -331,7 +331,7 @@ export default function ToDoListPage() {
   }
 
   const handleDeleteList = async() => {
-    if(currentIndex === undefined) return;
+    if(currentIndex === undefined || !user) return;
     const token = useGetToken();
 
     if(!token) return router.push("/auth/login");
@@ -344,6 +344,13 @@ export default function ToDoListPage() {
       to_do_list: (prev.to_do_list || []).filter((_, index) => index !== currentIndex)
     } : user);
 
+    const new_cache : UserData = {
+      ...user,
+      to_do_list: (user.to_do_list || []).filter((_, index) => index !== currentIndex)
+    };
+
+    window.localStorage.setItem("user", JSON.stringify(new_cache));
+
     await fetchTemplate(
       "/api/todos",
       "DELETE",
@@ -355,6 +362,8 @@ export default function ToDoListPage() {
         list_index: currentIndex
       })
     );
+
+    setDeleteDisabled(false);
   }
 
   return (

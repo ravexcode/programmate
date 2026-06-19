@@ -13,7 +13,7 @@ import {
 import { useEffect, useState, useRef, RefObject } from "react";
 
 //Components imports
-import SideBar,  { Icon } from "@/components/ui/sidebar";
+import Sidebar from "@/components/ui/dashboard/sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
@@ -567,34 +567,8 @@ export default function Dashboard(){
       {
         user && user.email ? (
           <>
-            <SideBar
-            email={user.email}
-            plan={user.plan}
-            avatar={user.avatar_url}
-            username={user.name}
-            setExpanded={(isExpanded : boolean) => {
-              setExpanded(isExpanded === true ? false : true);
-            }}>
-              {
-                expanded && (
-                  <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
-                    Projects
-                  </span>
-                )
-              }
-
-              {
-                user.teams && user.teams.length > 0 && user.teams.map((team: Team, index) => 
-                  <Icon
-                  action={`/projects/${team.team_id}`}
-                  name={team.name}
-                  isDisplayed={expanded}
-                  key={index + "-proyect"}>
-                    <></>
-                  </Icon>
-                )
-              }
-            </SideBar>
+            <Sidebar
+            user={user} />
             <main className="relative flex flex-col h-screen overflow-y-auto px-4 md:px-8 animate-fade-in">
               {
                 user.plan && (

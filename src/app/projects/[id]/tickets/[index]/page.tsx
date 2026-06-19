@@ -9,9 +9,7 @@ import { useRouter, useParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
 //Prebuilt ui imports
-import SideBar, { Icon } from "@/components/ui/sidebar";
 import SnackBar from "@/components/ui/snackbar";
-import BgGradient from "@/components/ui/bg-gradient";
 import LoadingScreen from "@/components/screens/loading-screen";
 import ReactMarkdown from "@lib/components/react-markdown";
 
@@ -28,17 +26,12 @@ import {
   IconAppWindow,
   IconArrowLeft,
   IconCalendar,
-  IconCircleFilled,
   IconDatabase,
   IconEye,
   IconFolder,
   IconLayoutKanban,
   IconMessage,
   IconUsers,
-  IconTrash,
-  IconPencil,
-  IconClock,
-  IconUser,
   IconSettings
 } from "@tabler/icons-react";
 
@@ -130,118 +123,6 @@ export default function TicketPage(){
       className="h-screen grid grid-cols-[auto_1fr] text-zinc-50">
         <SnackBar
         ref={snackbar} />
-        
-        <SideBar
-        email={user?.email!}
-        plan={user?.plan!}
-        avatar={user?.avatar_url}
-        username={user?.name!}
-        setExpanded={(isExpanded : boolean) => {
-          setExpanded(isExpanded === true ? false : true);
-        }}>
-          {
-            expanded && (
-              <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
-                Project 
-              </span>
-            )
-          }
-
-          <Icon
-          action={`/projects/${params.id}`}
-          name="Dashboard"
-          isDisplayed={expanded}>
-            <IconAppWindow
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${params.id}/integrants`}
-          name="Integrants"
-          isDisplayed={expanded}>
-            <IconUsers
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${params.id}/tickets`}
-          name="Tickets"
-          isDisplayed={expanded}>
-            <IconFolder
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${params.id}/erd`}
-          name="ERD Creator"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconDatabase
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${params.id}/chat`}
-          name="Chat"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconMessage
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${params.id}/json-preview`}
-          name="JSON Preview"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconEye
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${params.id}/kanban-board`}
-          name="Kanban board"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconLayoutKanban
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${params.id}/calendar`}
-          name="Calendar"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconCalendar
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${params.id}/settings`}
-          name="Project settings"
-          isDisplayed={expanded}>
-            <IconSettings
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-        </SideBar>
 
         <main
         className="w-full h-max min-h-screen bg-background relative animate-fade-in overflow-y-auto z-1">

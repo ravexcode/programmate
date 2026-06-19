@@ -1,10 +1,23 @@
-//React imports
-import { ReactNode, useState, useEffect, useRef, memo } from "react";
-
 //Next imports
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+
+//React imports
+import { memo, useState, useEffect, useRef } from "react";
+
+//Hooks imports
+import useAnimationClose from "@/hooks/useAnimationClose";
+
+//Prebuilt UI imports
+import Icon from "./icon";
+
+//Types imports
+import type { UserData } from "@/types/user.types";
+
+interface Props {
+  user: UserData;
+}
 
 //Icons imports
 import {
@@ -19,60 +32,13 @@ import {
   IconUserCircle
 } from "@tabler/icons-react";
 
-//Hooks imports
-import useAnimationClose from "@/hooks/useAnimationClose";
-
-//Icon interface
-export interface IconProps {
-  action: string;
-  name: string;
-  isDisplayed: boolean;
-  children: ReactNode;
-  disabled?: boolean;
-  key?: number | string;
-}
-
-//Icon button component
-export function Icon(props : IconProps) {
-  const [ , setIs ] = useState(false);
-
-  useEffect(() => {
-    const is = window.innerWidth <= 640;
-    setIs(is);
-  }, []);
-
-  return (
-    <Link
-    href={props.action}
-    className={"flex justify-start items-center gap-2 p-2 rounded-lg hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-400 w-full " + (props.disabled && "grayscale brightness-50 pointer-events-none ")}>
-      {props.children}
-      {props.isDisplayed && <span className="text-sm animate-fade-in-right"> {props.name} </span>}
-    </Link>
-  )
-}
-
-interface SideBarProps {
-  email: string;
-  plan: string;
-  username: string;
-  children?: ReactNode;
-  setExpanded?: (expanded : boolean) => void;
-  avatar?: string;
-}
-
-function SideBar(props: SideBarProps) {
+function SideBar(props: Props) {
   const router = useRouter();
 
   const [expanded, setExpanded] = useState(false);
   const [ settingsVisible, changeSettingsVisibility ] = useState(false);
-  const [ is, setIs ] = useState(false);
 
   const userSettings = useRef(null);
-
-  useEffect(() => {
-    const is = window.innerWidth <= 640;
-    setIs(is);
-  }, []);
 
   useEffect(() => {
     const expanded = window.localStorage.getItem("expanded");
@@ -102,7 +68,7 @@ function SideBar(props: SideBarProps) {
     useAnimationClose(current, "fade-out-down", "hidden", "flex");
     return;
   }
-  
+
   return (
     <aside
       className={`text-xs md:text-sm scrollbar-hide h-full items-center justify-start bg-neutral-950 text-text transition-all duration-400 flex flex-col animate-fade-in overflow-x-auto sm:overflow-y-auto overflow-hidden
@@ -145,13 +111,12 @@ function SideBar(props: SideBarProps) {
         type="button"
           onClick={() => {
             setExpanded(prev => !prev)
-            props.setExpanded && props.setExpanded(expanded);
             if(!expanded) return window.localStorage.setItem("expanded", "expanded");
             return window.localStorage.removeItem("expanded");
           }}
-          className="flex justify-start items-center gap-2 p-2 rounded-lg hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-800 w-full">
+          className="flex justify-start items-center gap-1.5 py-1.5 px-2 rounded-sm hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-200 w-full">
           <IconLayoutSidebar
-          size={23}
+          size={18}
           stroke={2}
           color="white" />
 
@@ -163,25 +128,24 @@ function SideBar(props: SideBarProps) {
 
       {/* Items */}
       <nav className="flex flex-row sm:flex-col gap-1 sm:px-3 w-auto sm:w-full h-full duration-400 items-center justify-center">
-
         <Icon
         action="/dashboard"
         name="Dashboard"
         isDisplayed={expanded}>
           <IconLayoutDashboard
-          size={23}
+          size={18}
           stroke={2}
           color="white" />
         </Icon>
 
-        { expanded && ( <span className="w-full text-base font-bold p-2 animate-fade-in-right"> User </span> ) }
+        { expanded && ( <span className="w-full px-2 animate-fade-in-right"> User </span> ) }
 
         <Icon
         action="/todo"
         name="To Do lists"
         isDisplayed={expanded} >
           <IconChecklist
-          size={23}
+          size={18}
           stroke={2}
           color="white" />
         </Icon>
@@ -191,21 +155,17 @@ function SideBar(props: SideBarProps) {
         name="Prismaflow AI"
         isDisplayed={expanded} >
           <IconSparkles
-          size={23}
+          size={18}
           stroke={1.5}
           color="white" />
         </Icon>
 
-        {
-          props.children
-        }
-
         <div
         className="ml-auto sm:ml-0 mt-auto flex flex-row sm:flex-col items-center justify-center sm:justify-end gap-1 sm:pb-3">
           {
-            (props.plan === "Free" || props.plan === "Pro") && expanded ? (
+            (props.user.plan === "Free" || props.user.plan === "Pro") && expanded ? (
               <Link
-              href="/#pricing"
+              href="/pricing"
               className="w-full rounded-xl border border-neutral-800 p-2 bg-neutral-900 animate-fade-in-right sm:mt-10">
                 <div className="w-full flex items-center gap-1 sm:pt-1">
                   <IconBolt
@@ -224,7 +184,7 @@ function SideBar(props: SideBarProps) {
               </Link>
             ) : (
               <Link
-              href="/#pricing"
+              href="/pricing"
               className="flex justify-start items-center gap-2 p-2 rounded-lg hover:bg-blue-900 duration-400 border-transparent">
                 <IconBolt
                 size={23}
@@ -233,7 +193,6 @@ function SideBar(props: SideBarProps) {
               </Link>
             )
           }
-
 
           <div
           className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg cursor-pointer transition focus:outline-none duration-400 relative " + (expanded ? "w-46 md:w-60" : "w-full") + (settingsVisible  ? "" : " hover:bg-blue-900")}
@@ -245,10 +204,10 @@ function SideBar(props: SideBarProps) {
             }
           }}>
             {
-              props.avatar ? (
+              props.user.avatar_url ? (
                 <Image
-                src={props.avatar}
-                alt={props.username + "avatar"}
+                src={props.user.avatar_url}
+                alt={props.user.name + "avatar"}
                 width={50}
                 height={50}
                 className="rounded-full w-6 aspect-square"
@@ -266,8 +225,8 @@ function SideBar(props: SideBarProps) {
               className="w-full flex gap-2 h-full items-center justify-center">
                 <div
                 className="w-full flex flex-col items-start">
-                  <p className="text-sm animate-fade-in-right"> {props.username} </p>
-                  <p className="text-xs text-neutral-400 animate-fade-in-right"> {props.email} </p>
+                  <p className="text-sm animate-fade-in-right"> {props.user.name} </p>
+                  <p className="text-xs text-neutral-400 animate-fade-in-right"> {props.user.email} </p>
                 </div>
 
                 <IconArrowsMoveVertical
@@ -307,7 +266,8 @@ function SideBar(props: SideBarProps) {
         </div>
       </nav>
     </aside>
-  );
+  )
 }
 
-export default memo(SideBar);
+//Optimization
+export default memo(SideBar)

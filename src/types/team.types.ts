@@ -5,6 +5,7 @@ import {
 
 export interface Ticket {
   creator: string | null;
+  creator_id: string;
   to: string;
   title: string;
   message: string;
@@ -32,35 +33,6 @@ export interface ChatMessage {
   isEdited?: boolean;
   reactions?: Array<string>;
   status?: "sending" | "sent" | "error";
-}
-
-export interface JSONNode {
-  id: string;
-  label: string;
-  type: "object" | "array" | "string" | "number" | "boolean" | "null";
-  value?: string | number | boolean | null;
-  children?: Array<string>;
-  parentId?: string;
-  position: {
-    x: number;
-    y: number;
-  };
-  offset?: {
-    x: number;
-    y: number;
-  };
-}
-
-export interface JSON_views {
-  id: string;
-  name: string;
-  rootNodeId: string;
-  nodes: JSONNode [];
-}
-
-export interface JSON_connections {
-  parent: string;
-  child: string;
 }
 
 export interface Card {

@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 //Prebuild UI imports
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
-import SideBar, { Icon } from "@/components/ui/sidebar";
+import TeamSidebar from "@/components/ui/dashboard/team-sidebar";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
 import MainButton from "@/components/ui/buttons/main";
@@ -31,6 +31,7 @@ import Team, { Ticket } from "@/types/team.types";
 import {
   IconAppWindow,
   IconArrowDown,
+  IconAssembly,
   IconCalendar,
   IconCircleFilled,
   IconDatabase,
@@ -59,8 +60,6 @@ export default function TicketsTeamPage(){
   const [ team, setTeam ] = useState<Team>();
   //Tickets data
   const [ tickets, setTickets ] = useState<Ticket []>();
-  //Sidebar expanded
-  const [ expanded, setExpanded ] = useState<boolean>(false);
   //Loading form status
   const [loading, setLoading] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
@@ -85,15 +84,6 @@ export default function TicketsTeamPage(){
   const creatorContainer= useRef(null);
   //Ticket creator
   const editContainer = useRef(null);
-
-  //Set expanded based in localstorage
-  useEffect(() => {
-    const expanded = window.localStorage.getItem("expanded");
-
-    if(expanded) return setExpanded(true);
-
-    return;
-  }, []);
 
   //Handle showing/hiding edit form when currentIndex changes
   useEffect(() => {
@@ -197,7 +187,40 @@ export default function TicketsTeamPage(){
   //Handle submit
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
+
+    if(!user || !team) return;
     setLoading(true);
+    
+    const preTeam = team; //Error supporter
+
+    //Creates the ticket
+    const ticket = {
+      creator: user.name || "",
+      creator_id: user.id,
+      to,
+      title,
+      message,
+      importance
+    }
+
+    //Updates the team
+    setTeam(
+      prev => prev ? {
+        ...prev,
+        tickets: [
+          ...prev.tickets || [],
+          ticket
+        ]
+      } : team
+    );
+
+    
+    //Hides the form
+    toggleForm();
+    //Clears the data
+    setMessage("");
+    setTo("");
+    setImportance("Low");
 
     try {
       //Gets user's token
@@ -207,15 +230,6 @@ export default function TicketsTeamPage(){
       if (!token) {
         window.location.href = "/auth/login";
         return;
-      }
-
-      //Creates the ticket
-      const ticket = {
-        creator: user?.name || "",
-        to,
-        title,
-        message,
-        importance
       }
 
       //Makes the API call to create ticket
@@ -233,22 +247,13 @@ export default function TicketsTeamPage(){
       const data = await res.json();
 
       //Verifies status
-      if (res.status === 200) {
-        //Sets the team
-        const duplied_team = team;
-        duplied_team?.tickets?.push(ticket);
-        setTeam(duplied_team);
-        //Hides the form
-        toggleForm();
-        //Clears the data
-        setMessage("");
-        setTo("");
-        setImportance("Low");
-        return;
-      }
+      if (res.status === 200) return;
 
+      setTeam(preTeam);
       showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
+      return;
     } catch(e: unknown) {
+      setTeam(preTeam);
       if(e instanceof Error) {
         showSnackbar(e.message, "critic", snackbar);
       }
@@ -301,7 +306,7 @@ export default function TicketsTeamPage(){
   }
 
   return (
-    team ? (
+    team && user ? (
       <div
       className="bg-background text-text h-screen grid grid-cols-[auto_1fr]"
       onClick={() => {
@@ -309,107 +314,9 @@ export default function TicketsTeamPage(){
       }}>
         <SnackBar
         ref={snackbar} />
-        <SideBar
-        email={user?.email!}
-        plan={user?.plan!}
-        avatar={user?.avatar_url}
-        username={user?.name!}
-        setExpanded={(isExpanded : boolean) => {
-          setExpanded(isExpanded === true ? false : true);
-        }}>
-          {
-            expanded && (
-              <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
-                Project 
-              </span>
-            )
-          }
-
-          <Icon
-          action={`/projects/${params.id}`}
-          name="Dashboard"
-          isDisplayed={expanded}>
-            <IconAppWindow
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/integrants`}
-          name="Integrants"
-          isDisplayed={expanded}>
-            <IconUsers
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/erd`}
-          name="ERD Creator"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconDatabase
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/chat`}
-          name="Chat"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconMessage
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/json-preview`}
-          name="JSON Preview"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconEye
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/kanban-board`}
-          name="Kanban board"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconLayoutKanban
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/calendar`}
-          name="Calendar"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconCalendar
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/settings`}
-          name="Project settings"
-          isDisplayed={expanded}>
-            <IconSettings
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-        </SideBar>
+        <TeamSidebar
+        user={user}
+        team={team} />
 
         {/* Creator form */}
         <div
@@ -465,7 +372,7 @@ export default function TicketsTeamPage(){
                   <span className="text-sm font-medium">{importance}</span>
                 </div>
 
-                <IconArrowDown
+                <IconAssembly
                 className={`w-4 h-4 text-zinc-500 transition-transform duration-200 ${isImportantOpen ? 'rotate-180' : ''}`} />
               </button>
 
@@ -666,36 +573,82 @@ export default function TicketsTeamPage(){
           </header>
 
           <main
-          className="gap-5 py-5 px-8 grid grid-rows md:grid-cols-2 xl:grid-cols-3">
+          className="flex flex-col items-center justify-center">
             {/* Tickets cards */}
             {
-              team.tickets && team.tickets.length > 0 ? team.tickets.map((ticket: Ticket, index: number) =>
-                <TicketCard
-                content={ticket}
-                teamId={params.id}
-                index={index}
-                setMenuIndex={setMenuIndex}
-                menuIndex={menuIndex}
-                router={router}
-                key={index}
-                editAction={() => {
-                  setCurrentIndex(index);
-                  setMenuIndex(undefined);
-                  return;
-                }}
-                deleteAction={() => {
-                  setCurrentIndex(index);
-                  setMenuIndex(undefined);
-                  toggleCofirm();
-                  return;
-                }} />
+              team.tickets && team.tickets.length > 0 ?
+              (
+                <section
+                className="gap-5 grid grid-rows md:grid-cols-2 xl:grid-cols-3 h-full p-10">
+                  {
+                    team.tickets.map((ticket, index) =>
+                      <TicketCard
+                      content={ticket}
+                      userId={user.id}
+                      teamId={params.id}
+                      index={index}
+                      setMenuIndex={setMenuIndex}
+                      menuIndex={menuIndex}
+                      router={router}
+                      key={index}
+                      editAction={() => {
+                        setCurrentIndex(index);
+                        setMenuIndex(undefined);
+                        return;
+                      }}
+                      deleteAction={() => {
+                        setCurrentIndex(index);
+                        setMenuIndex(undefined);
+                        toggleCofirm();
+                        return;
+                      }} />
+                    )
+                  }
+                </section>
               ) : (
                 <div
-                className="flex flex-col text-neutral-500 justfiy-center items-center py-10">
-                  <IconFolderCancel
-                  size={50}
-                  stroke={1} />
-                  <p className="text-center text-lg">No Tickets Made yet</p>
+                className="flex flex-col text-neutral-200 justfiy-start items-center py-10 w-full z-2 h-full">
+                  <section
+                  className="w-150 text-sm p-4 rounded-md bg-neutral-950 mt-10 flex flex-col gap-2 items-start justify-center select-none">
+                    <p
+                    className="text-transparent bg-neutral-900 p-0.5 rounded-md text-sm">
+                      Lorem, ipsum dolor sit amet
+                    </p>
+                    <p
+                    className="text-transparent bg-neutral-900 p-0.5 rounded-md text-sm">
+                      Lorem, ipsum dolor sit amet consectetur adipisicing
+                    </p>
+                    <p
+                    className="text-transparent bg-neutral-900 p-0.5 rounded-md text-sm">
+                      Lorem, ipsum dolor sit amet consectetur adipisicing
+                    </p>
+                    <p
+                    className="text-transparent bg-neutral-900 p-0.5 rounded-md text-sm">
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum, sit totam placeat asperiores pariatur consequuntur? Quae voluptatum vitae provident quibusdam totam eos temporibus facilis similique! Nam nobis illum dolores nihil?
+                    </p>
+
+                    
+                    <p
+                    className="text-transparent bg-neutral-900 p-2 rounded-md text-sm mt-3 w-full">
+                      Lorem
+                    </p>
+                  </section>
+
+                  <p
+                  className="font-medium tracking-wide mt-3 text-2xl">
+                    Track the project issues
+                  </p>
+                  <p
+                  className="opacity-80 w-130 text-center mt-1">
+                    Start tracking project issues using Issue tracker provided by Prismaflow creating a new issue and setting it for your teammates
+                  </p>
+
+                  <MainButton
+                  size="w-60"
+                  className="mt-4"
+                  action={toggleForm}>
+                    + Create a new issue
+                  </MainButton>
                 </div>
               )
             }

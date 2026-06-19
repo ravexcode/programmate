@@ -17,6 +17,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 
 interface Props {
   content: Ticket;
+  userId: string;
   teamId: ParamValue;
   index: number;
   setMenuIndex: Dispatch<SetStateAction<number | undefined>>;
@@ -30,7 +31,6 @@ export default function TicketCard(props: Props) {
   const wrappedTitle : string = props.content.title.slice(0, 30) + "...";
 
   const importance = props.content.importance;
-  const title = props.content.title;
   const color: string = (importance === "Low" ? "blue" : importance === "Medium" ? "orange": "red" );
 
   return (
@@ -66,7 +66,7 @@ export default function TicketCard(props: Props) {
             e.stopPropagation();
             props.deleteAction();
           }}
-          className="flex w-full items-center px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-200 gap-2 disabled:brightness-80 disabled:cursor-wait">
+          className="flex w-full items-center px-4 py-2.5 text-sm text-red-400 hover:bg-red-950 gap-2 disabled:brightness-80 disabled:cursor-wait">
 
             <IconTrash
             size={20}
@@ -84,17 +84,21 @@ export default function TicketCard(props: Props) {
         className="text-lg font-medium tracking-wide">
           {props.content.title.length > 30 ? wrappedTitle : props.content.title}
         </p>
-        <button
-        type="button"
-        className="p-2 rounded-full hover:bg-neutral-800 cursor-pointer"
-        onClick={(e) => {
-          e.stopPropagation();
-          e.nativeEvent.stopPropagation();
-          props.setMenuIndex(prev => prev === props.index ? undefined : props.index);
-        }}>
-          <IconDotsVertical
-          size={20} />
-        </button>
+
+        {
+          props.userId === props.content.creator_id &&
+            <button
+            type="button"
+            className="p-2 rounded-full hover:bg-neutral-800 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.nativeEvent.stopPropagation();
+              props.setMenuIndex(prev => prev === props.index ? undefined : props.index);
+            }}>
+              <IconDotsVertical
+              size={20} />
+            </button>
+        }
       </div>
 
       <p>
@@ -105,7 +109,7 @@ export default function TicketCard(props: Props) {
       <p
       className="text-neutral-400 mt-2 font-light mb-2">
         <span className="text-neutral-200"> Message: </span> <br />
-        {props.content.message.trim().replace(/\r?\n/g, " ").replace(/\s+/g, " ").slice(0, 100) + (props.content.message.length > 100 ? "..." : "")}
+        {props.content.message.trim().replace(/\r?\n/g, " ").replace(/\s+/g, " ").slice(0, 150) + (props.content.message.length > 150 ? "..." : "")}
       </p>
 
       <section
