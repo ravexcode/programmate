@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v51.2:**
+> New route
+  1. Nueva ruta para que la IA cree proyectos integrada. 🚀
+
 - **Indev v51.1:**
 > Design fix
   1. Nuevo diseño de las features. 🚀

@@ -243,14 +243,14 @@ You can now start planning tasks, designing workflows, and managing development 
 
         {/* AI Workflow feature */}
         <section
-        className="w-full p-3 flex flex-col items-center justify-center relative">
+        className="w-full p-3 flex flex-col items-center justify-center relative animate-range-[entry_0%_cover_20%] timeline-view-y animate-zoom-in">
           <p
           className="text-4xl font-semibold z-2">
             AI for workflows
           </p>
 
           <div
-          className="w-300 h-168 rounded-sm border border-neutral-800 bg-neutral-950 mt-6 block aspect-video z-2">
+          className="w-300 h-168 rounded-sm border border-neutral-800 bg-neutral-950 mt-6 block aspect-video z-2 animate-range-[entry_0%_cover_50%] timeline-view-y animate-fade-in-up">
             <section
             className="grid grid-rows-[auto_1fr_auto] cursor-default text-sm w-full h-full animate-fade-in animate-duration-300">
               <header

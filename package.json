@@ -13,6 +13,7 @@
   "dependencies": {
     "@openrouter/sdk": "^0.12.35",
     "@react-email/render": "^2.0.8",
+    "@slack/web-api": "^7.17.0",
     "@supabase/supabase-js": "^2.106.1",
     "@tabler/icons-react": "^3.44.0",
     "@xyflow/react": "^12.10.2",
