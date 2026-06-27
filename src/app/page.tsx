@@ -195,14 +195,18 @@ You can now start planning tasks, designing workflows, and managing development 
       className="flex flex-col justify-center items-center mb-10">
         <SmoothProvider />
         <section
-        className="relative px-4 w-full min-h-screen flex flex-col justify-center items-center text-text pt-20 pb-10 animate-fade-in-up overflow-hidden z-2">
+        className="relative px-4 w-full min-h-screen flex flex-col justify-center items-center text-text pt-20 pb-10 animate-fade-in-up overflow-hidden z-2 select-none">
           <LandingGradient scale={150} />
 
-          <h1
-          className="text-6xl font-bold mb-4 z-2 text-center animate-fade-in-down">
-            Built to improve <br />
-            your team workflow
-          </h1>
+          <div
+          className="w-full animate-duration-1000 animate-blurred-fade-in">
+            <h1
+            className="text-7xl font-bold mb-4 z-2 text-center animate-fade-in-down animate-duration-500 delay-200">
+              Built to improve <br />
+              your team <span className="text-sky-600"> Workflow </span>
+            </h1>
+          </div>
+
           <p
           className="opacity-80 z-2 animate-fade-in-down">
             For design, development, code, databases and more!

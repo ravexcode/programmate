@@ -100,7 +100,7 @@ function TeamSideBar(props: Props) {
               height={200}
               preload
               loading="eager"
-              className="animate-fade-in h-5 min-w-max"/>
+              className="animate-fade-in h-5 min-w-max w-auto"/>
             :
               <Image
               src="/logos/logo.svg"
@@ -109,7 +109,7 @@ function TeamSideBar(props: Props) {
               height={200}
               preload
               loading="eager"
-              className="animate-fade-in h-5 min-w-max"/>
+              className="animate-fade-in h-5 min-w-max w-auto"/>
           }
         </Link>
       </div>
@@ -125,7 +125,7 @@ function TeamSideBar(props: Props) {
             if(!expanded) return window.localStorage.setItem("expanded", "expanded");
             return window.localStorage.removeItem("expanded");
           }}
-          className="flex justify-start items-center gap-2 p-2 rounded-lg hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-800 w-full">
+          className={"flex items-center gap-2 p-2 rounded-lg hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-800 w-full " + (expanded ? "justify-start" : "justify-center")}>
           <IconLayoutSidebar
           size={18}
           stroke={2}
@@ -168,7 +168,7 @@ function TeamSideBar(props: Props) {
         isDisplayed={expanded} >
           <IconSparkles
           size={18}
-          stroke={1.5}
+          stroke={2}
           color="white" />
         </Icon>
 

@@ -123,7 +123,7 @@ function SideBar(props: SideBarProps) {
               height={200}
               preload
               loading="eager"
-              className="animate-fade-in h-5 min-w-max"/>
+              className="animate-fade-in h-5 min-w-max w-auto"/>
             :
               <Image
               src="/logos/logo.svg"
@@ -132,7 +132,7 @@ function SideBar(props: SideBarProps) {
               height={200}
               preload
               loading="eager"
-              className="animate-fade-in h-5 min-w-max"/>
+              className="animate-fade-in h-5 min-w-max w-auto"/>
           }
         </Link>
       </div>

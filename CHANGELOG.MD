@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v54.0:**
+> Design update
+  1. Mejora de la vista en el dashboard de equipo. 🚀
+  2. Mejor animación de entrada de texto en la Landing page. ✅
+
 - **Indev v53.0:**
 > Refactor, Design update
   1. Mejora completa y necesaria a la pagina y API de tickets, ahora funcional y mejor. 🎉

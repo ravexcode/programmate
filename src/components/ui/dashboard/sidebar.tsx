@@ -89,7 +89,7 @@ function SideBar(props: Props) {
               height={200}
               preload
               loading="eager"
-              className="animate-fade-in h-5 min-w-max"/>
+              className="animate-fade-in h-5 min-w-max w-auto"/>
             :
               <Image
               src="/logos/logo.svg"
@@ -98,7 +98,7 @@ function SideBar(props: Props) {
               height={200}
               preload
               loading="eager"
-              className="animate-fade-in h-5 min-w-max"/>
+              className="animate-fade-in h-5 min-w-max w-auto"/>
           }
         </Link>
       </div>
@@ -114,7 +114,7 @@ function SideBar(props: Props) {
             if(!expanded) return window.localStorage.setItem("expanded", "expanded");
             return window.localStorage.removeItem("expanded");
           }}
-          className="flex justify-start items-center gap-1.5 py-1.5 px-2 rounded-sm hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-200 w-full">
+          className={"flex items-center gap-1.5 p-2 rounded-sm hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-200 w-full " + (expanded ? "justify-start" : "justify-center")}>
           <IconLayoutSidebar
           size={18}
           stroke={2}
@@ -156,7 +156,7 @@ function SideBar(props: Props) {
         isDisplayed={expanded} >
           <IconSparkles
           size={18}
-          stroke={1.5}
+          stroke={2}
           color="white" />
         </Icon>
 
@@ -169,7 +169,7 @@ function SideBar(props: Props) {
               className="w-full rounded-xl border border-neutral-800 p-2 bg-neutral-900 animate-fade-in-right sm:mt-10">
                 <div className="w-full flex items-center gap-1 sm:pt-1">
                   <IconBolt
-                  size={23}
+                  size={18}
                   stroke={2}
                   color="#2b5ffb"/>
                   <p className="font-semibold text-wrap text-center bg-linear-to-r from-blue-600 via-sky-500 to-blue-200 w-max bg-clip-text text-transparent text-lg"> Upgrade your plan </p>
@@ -187,7 +187,7 @@ function SideBar(props: Props) {
               href="/pricing"
               className="flex justify-start items-center gap-2 p-2 rounded-lg hover:bg-blue-900 duration-400 border-transparent">
                 <IconBolt
-                size={23}
+                size={18}
                 stroke={2}
                 color="white" />
               </Link>

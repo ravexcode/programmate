@@ -3,19 +3,21 @@
 
 //Next imports
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 
 //React imports
 import { useEffect, useState, useRef } from "react";
 
 //Types imports
-import { UserBasic, UserData } from "@/types/user.types";
+import { UserData } from "@/types/user.types";
 
 //Prebuild ui imports
 import TeamSidebar from "@/components/ui/dashboard/team-sidebar";
 import SnackBar from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import BgGradient from "@/components/ui/bg-gradient";
+import DashCard from "@/components/ui/cards/dashboard";
 
 //Hooks imports
 import { useDeleteToken, useGetToken } from "@/hooks/useCookies";
@@ -24,14 +26,8 @@ import { getCached } from "@/hooks/cache.hook";
 //Services imports
 import getTeam from "@/services/team.service";
 import getUser from "@/services/user.service";
-
-//Icons imports
-import {
-  IconFolderCancel,
-  IconUserCircle,
-  IconUsers
-} from "@tabler/icons-react";
-import Image from "next/image";
+import Team from "@/types/team.types";
+import { IconCircleDot, IconUserCircle } from "@tabler/icons-react";
 
 export default function TeamPage(){
   //NextJS Setup
@@ -41,22 +37,11 @@ export default function TeamPage(){
   //States handler
   //User data
   const [ user, setUser ] = useState<UserData>();
-  //Sidebar expanded
-  const [ expanded, setExpanded ] = useState<boolean>(false);
   //Team data
-  const [ team, setTeam ] = useState<any>(null);
+  const [ team, setTeam ] = useState<Team>();
 
   //Snackbar container
   const snackbar = useRef(null);
-
-  //Sidebar status
-  useEffect(() => {
-    const expanded = window.localStorage.getItem("expanded");
-
-    if(expanded) return setExpanded(true);
-
-    return;
-  }, []);
 
   //Sets the data
   useEffect(() => {
@@ -130,7 +115,7 @@ export default function TeamPage(){
               <div
               className="flex gap-2 flex-wrap w-full justify-start items-center mt-5 cursor-default">
                 {
-                  team && team.tags.length >= 1 && team.tags.map((tag: string, index: number) => 
+                  team && team.tags && team.tags.length >= 1 && team.tags.map((tag: string, index: number) => 
                     <div
                     key={index}
                     className="text-sm px-4 py-1 rounded-full border border-main/50 bg-main/30 duration-400 hover:bg-main/50">
@@ -151,7 +136,7 @@ export default function TeamPage(){
                   team.status === "Backlog" ? "bg-zinc-500" :
                   team.status === "Planning" ? "bg-blue-400" :
                   team.status === "In Progress" ? "bg-orange-400" :
-                  team.stratus === "On Hold" ? "bg-red-400" :
+                  team.status === "On Hold" ? "bg-red-400" :
                   "bg-purple-500" ) }></span>
                 { team?.status }
               </p>
@@ -159,101 +144,111 @@ export default function TeamPage(){
 
             
             <section
-            className="w-full flex justify-center items-start gap-5 md:gap-15 flex-wrap">
+            className="w-full h-full py-5 flex flex-col md:grid md:grid-cols-2 items-center justify-center gap-5">
 
-              {/* Team members section */}
-              <section className="w-full md:max-w-2xl border border-neutral-800 bg-neutral-950 backdrop-blur-sm rounded-md overflow-hidden shadow-xl">
-                <header className="px-6 py-4 border-b border-neutral-800 bg-neutral-950">
-                  <h3 className="text-xl font-semibold text-white">Team Members</h3>
-                </header>
+              { /* Team integrants */ }
+              <DashCard
+              className="flex flex-col gap-2 items-center justify-start"
+              size="w-full h-full">
+                <p
+                className="text-xl font-medium tracking-wide w-full text-start">
+                  {team.name} integrants
+                </p>
 
-                <div className="p-6">
-                  {team.integrants && team.integrants.length > 0 ? (
-                    team.integrants.map((member: UserBasic, index: number) => (
-                      <Link
-                      href={`/users/${member.id}`}
-                      key={index}
-                      className="flex gap-4 py-3 px-2 rounded-lg transition-colors hover:bg-white/5 items-center group">
-                        {
-                          member.avatar_url ? (
-                            <Image
-                            src={member.avatar_url}
-                            alt={`${member.username} profile picture`}
-                            width={50}
-                            height={50}
-                            preload
-                            loading="eager"
-                            className="rounded-full aspect-square w-8" />
-                          ) : (
-                            <IconUserCircle
-                            className="aspect-square w-8" />
-                          )
-                        }
-                        <span className="font-medium text-neutral-200 group-hover:text-blue-500 transition-colors">
-                          {member.username}
-                        </span>
-                        <span className="font-light text-neutral-400 truncate text-sm ml-auto">
-                          {member.email}
-                        </span>
-                      </Link>
-                    ))
-                  ) : (
-                    <div
-                    className="flex flex-col text-neutral-500 justfiy-cente items-center py-8">
-                      <IconUsers
-                      size={40}
-                      stroke={1} />
-                      <p className="text-center">No members found</p>
-                    </div>
-                  )}
-                </div>
-              </section>
+                <span
+                className="my-1 h-px bg-neutral-800 rounded-full w-full" />
 
+                {
+                  team.integrants && team.integrants.length > 0 && team.integrants.map((int) =>
+                    <Link
+                    href={`/users/${int.id}`}
+                    key={int.id}
+                    className="w-full py-2 px-4 text-sm flex justify-start items-center hover:backdrop-brightness-200 rounded-sm duration-300 cursor-pointer"
+                    title={"Go to " + int.username + "'s profile" }>
+                      {
+                        int.avatar_url ? (
+                          <Image
+                          src={int.avatar_url}
+                          alt={int.email + " profile picture"}
+                          width={50}
+                          height={50}
+                          className="rounded-full aspect-square block w-8" />
+                        ) : (
+                          <IconUserCircle />
+                        )
+                      }
 
-              {/* Tickets section */}
-              <section
-              className="w-full md:max-w-2xl border border-neutral-800 bg-neutral-950 backdrop-blur-sm rounded-md overflow-hidden shadow-xl h-100 overflow-y-auto overflow-x-hidden">
-                <header
-                className="px-6 py-4 border-b border-neutral-800 bg-neutral-950">
-                  <h3
-                  className="text-xl font-semibold text-white">
-                    Team Tickets
-                  </h3>
-                </header>
-
-                <ul className="space-y-1 cursor-default px-6 py-2">
-                    {team.tickets && team.tickets.length > 0 ? (
-                      team.tickets.map((ticket: any, index: number) => (
-                        <li
-                        key={index}
-                        className="grid grid-cols-2 items-center gap-4 px-4 py-3 rounded-xl border border-white/5 bg-white/2 text-sm text-neutral-200 transition-all duration-200 hover:bg-white/5 hover:border-white/10 hover:shadow-md group cursor-pointer overflow-hidden mb-2"
-                        onClick={() => { window.location.href = `/teams/${params.id}/tickets/${index}` }}>
-                        <span className="truncate font-medium text-white">
-                          {ticket.title}
-                        </span>
-
-                        <span className="truncate text-right text-neutral-400 group-hover:text-neutral-200 transition-colors">
-                          for <span className="text-sky-600">{ticket.to}</span>
-                        </span>
-                      </li>
-                      ))
-                    ) : (
                       <div
-                      className="flex flex-col text-neutral-500 justfiy-center items-center py-10">
-                        <IconFolderCancel
-                        size={40}
-                        stroke={1} />
-                        <p className="text-center">No Tickets Made yet</p>
-
-                        <a
-                        href={`/teams/${team.team_id}/tickets/create`}
-                        className="px-4 py-1 mt-3 rounded-lg text-text/70 border-2 border-main/60 duration-400 cursor-pointer hover:border-main hover:text-text">
-                          Create new <span className="font-bold relative -top-0.5 ml-1">+</span>
-                        </a>
+                      className="flex flex-col items-start justify-center px-4 mr-auto">
+                        <p
+                        className="text-base font-medium">
+                          {
+                            int.username.length > 20 ?
+                              int.username.slice(0, 20) + "..." :
+                              int.username
+                          }
+                        </p>
+                        <p
+                        className="text-neutral-300">
+                          {
+                            int.email.length > 25 ?
+                              int.email.slice(0, 25) + "..." :
+                              int.email
+                          }
+                        </p>
                       </div>
-                    )}
-                  </ul>
-              </section>
+
+                      <p
+                      className="text-sky-500 uppercase font-medium tracking-widest">
+                        { int.type ?? "Member" }
+                      </p>
+                    </Link>
+                  )
+                }
+              </DashCard>
+
+              { /* Team tickets */ }
+              <DashCard
+              className="flex flex-col gap-2 items-center justify-start"
+              size="w-full h-full">
+                <p
+                className="text-xl font-medium tracking-wide w-full text-start">
+                  {team.name} issues
+                </p>
+
+                <span
+                className="my-1 h-px bg-neutral-800 rounded-full w-full" />
+
+                {
+                  team.tickets && team.tickets.length > 0 ? 
+                    team.tickets.map((ticket, i) =>
+                      <div
+                      key={"Ticket" + i}
+                      className="w-full py-2 px-4 rounded-md hover:backdrop-brightness-200">
+                        {
+                          ticket.title 
+                        }
+                      </div>
+                    )
+                  : 
+                    <div
+                    className="w-full h-full flex flex-col items-center justify-center text-neutral-300">
+                      <IconCircleDot
+                      size={50}
+                      stroke={1.5} />
+                      <p
+                      className="text-2xl font-medium">
+                        No issues found!
+                      </p>
+                      <Link
+                      href={`/projects/${params.id}/tickets`}
+                      className="duration-400 text-neutral-400 hover:text-sky-600 hover:underline">
+                        Try creating a new one...
+                      </Link>
+                    </div>
+                }
+              </DashCard>
+
             </section>
           </main>
         </div>
