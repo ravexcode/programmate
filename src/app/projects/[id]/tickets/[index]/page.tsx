@@ -11,7 +11,7 @@ import { useState, useRef, useEffect } from "react";
 //Prebuilt ui imports
 import SnackBar from "@/components/ui/snackbar";
 import LoadingScreen from "@/components/screens/loading-screen";
-import ReactMarkdown from "@lib/components/react-markdown";
+import ReactMarkdown from "@/lib/components/react-markdown";
 
 //Hooks imports
 import { useGetToken, useDeleteToken } from "@/hooks/useCookies";
@@ -49,20 +49,8 @@ export default function TicketPage(){
   const [ user, setUser ] = useState<UserData>();
   const [ ticket, setTicket ] = useState<Ticket>();
   
-  //Sidebar states
-  const [ expanded, setExpanded ] = useState(false);
-
   //Components ref
   const snackbar = useRef(null);
-
-  //Set expanded based in localstorage
-  useEffect(() => {
-    const expanded = window.localStorage.getItem("expanded");
-
-    if(expanded) return setExpanded(true);
-
-    return;
-  }, []);
 
   //Data fetching
   useEffect(() => {
@@ -91,36 +79,25 @@ export default function TicketPage(){
 
       setUser(user_data);
 
-      const ticket_got = await getTicket(
+      const ticket_got: Ticket = await getTicket(
         Number(params.id),
         Number(params.index),
         token,
         snackbar
       );
 
-      setTicket(ticket_got)
+      if(!ticket_got) return router.push(`/projects/${params.id}/tickets`);
+
+      setTicket(ticket_got);
     }
 
     get();
   }, []);
 
-  //Format date helper function
-  const formatDate = (date: string | undefined) => {
-    if (!date) return "Not specified";
-    const d = new Date(date);
-    return d.toLocaleDateString("en-US", { 
-      year: "numeric", 
-      month: "short", 
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  };
-
   return (
     user && ticket ? (
       <div
-      className="h-screen grid grid-cols-[auto_1fr] text-zinc-50">
+      className="h-screen text-zinc-50">
         <SnackBar
         ref={snackbar} />
 
@@ -134,7 +111,7 @@ export default function TicketPage(){
             {/* Back Button */}
             <Link
             href={`/projects/${params.id}/tickets`}
-            className="inline-flex items-center gap-2 mb-8 px-3 py-2 rounded-lg hover:bg-neutral-900 transition-colors duration-200">
+            className="inline-flex items-center gap-2 mb-8 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors duration-200">
               <IconArrowLeft
               size={15} />
               <span className="text-sm font-medium">
@@ -169,7 +146,8 @@ export default function TicketPage(){
               </div>
 
               {/* Metadata Section */}
-              <div className="flex justify-center items-center gap-4 py-6 border-t border-neutral-800">
+              <div className="flex justify-center items-center gap-4 py-6 border-t border-neutral-800 cursor-default"
+              title={"Ticket: " + ticket.title + "\nCreated by: " + ticket.creator_id}>
                 <p
                 className="border-r-2 border-neutral-600 pr-4">
                   Made by <span className="text-sky-500"> {ticket.creator} </span>
@@ -185,12 +163,13 @@ export default function TicketPage(){
             </header>
 
             {/* Content Section */}
-            <section className="rounded-md border border-neutral-800 bg-neutral-950 p-3 z-5 duration-300 hover:border-main">
-              <h2 className="text-lg font-semibold text-neutral-200 mb-4">Description</h2>
-              <div className="prose prose-invert max-w-none text-neutral-300 prose-a:text-main hover:prose-a:underline">
-                <ReactMarkdown
-                content={ticket.message} />
-              </div>
+            <p
+            className="mb-2 text-lg font-medium tracking-wide px-2">
+              Content
+            </p>
+            <section className="rounded-md border border-neutral-800 bg-neutral-950 p-3 z-5 duration-300 hover:border-neutral-600 cursor-default select-none">
+              <ReactMarkdown
+              content={ticket.message} />
             </section>
           </div>
         </main>

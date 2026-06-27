@@ -29,24 +29,18 @@ import Team, { Ticket } from "@/types/team.types";
 
 //Icons imports
 import {
-  IconAppWindow,
   IconArrowDown,
   IconAssembly,
-  IconCalendar,
   IconCircleFilled,
-  IconDatabase,
-  IconEye,
-  IconFolder,
-  IconFolderCancel,
-  IconLayoutKanban,
-  IconMessage,
-  IconSettings,
-  IconUsers
+  IconInfoCircle,
 } from "@tabler/icons-react";
 
 //Services imports
 import getUser from "@/services/user.service";
 import getTeam from "@/services/team.service";
+import AltButton from "@/components/ui/buttons/alternate";
+import HazardButton from "@/components/ui/buttons/hazard";
+import { fetchTemplate } from "@/actions/template";
 
 export default function TicketsTeamPage(){
   //NextJS Setup
@@ -63,8 +57,6 @@ export default function TicketsTeamPage(){
   //Loading form status
   const [loading, setLoading] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
-  //Recivier
-  const [to, setTo] = useState("");
   //Title
   const [title, setTitle] = useState("");
   //Sender
@@ -77,26 +69,51 @@ export default function TicketsTeamPage(){
   const [ menuIndex, setMenuIndex ] = useState<number | undefined>();
   const [ currentIndex, setCurrentIndex ] = useState<number | undefined>();
 
+  //Menu status
+  const [ currentMenu, setCurrentMenu ] = useState<"edit" | "delete" | undefined>();
+
+  //Selector
+  const [ currIntIndex, setCurrIntIndex ] = useState<number>(0);
+  const [ isSelOpen, setIsSelOpen ] = useState(false);
+
   //Ref Objects
   //Snackbar data
   const snackbar = useRef(null);
   //Ticket creator
   const creatorContainer= useRef(null);
-  //Ticket creator
   const editContainer = useRef(null);
+  const confirmMenu = useRef(null);
 
-  //Handle showing/hiding edit form when currentIndex changes
   useEffect(() => {
-    if(currentIndex !== undefined && editContainer.current) {
-      const current : HTMLElement = editContainer.current;
-      const classlist = current.classList;
+    if (currentIndex === undefined) {
+      setCurrentMenu(undefined);
+      return;
+    }
 
-      if(classlist.contains("hidden")){
+    const toggleMenu = (element: HTMLElement | null) => {
+      if (!element) return;
+      
+      const classlist = element.classList;
+
+      if (classlist.contains("hidden")) {
         classlist.remove("animate-fade-out-down");
         classlist.replace("hidden", "flex");
+      } else {
+        classlist.add("animate-fade-out-down");
+        useAnimationClose(element, "fade-out-down", "hidden", "flex"); 
+        setCurrentIndex(undefined);
       }
+    };
+
+    if (currentMenu === "edit") {
+      toggleMenu(editContainer.current);
+      return;
+    } else if (currentMenu === "delete") {
+      toggleMenu(confirmMenu.current);
+      return;
     }
-  }, [currentIndex]);
+
+  }, [currentIndex, currentMenu]);
 
   useEffect(() => {
     async function fetchData() {
@@ -176,19 +193,40 @@ export default function TicketsTeamPage(){
 
     classlist.add("animate-fade-out-down");
     useAnimationClose(current, "fade-out-down", "hidden", "flex");
-    setCurrentIndex(undefined);
+    setTimeout(() => {
+      setCurrentIndex(undefined);
+      return;
+    }, 400)
     return;
   };
 
   const toggleCofirm = () => {
+    if(!confirmMenu.current) return;
 
+    const current : HTMLElement = confirmMenu.current;
+    const classlist = current.classList;
+
+    if(classlist.contains("hidden")){
+      classlist.remove("animate-fade-out-down");
+      classlist.replace("hidden", "flex");
+
+      return;
+    };
+
+    classlist.add("animate-fade-out-down");
+    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    setTimeout(() => {
+      setCurrentIndex(undefined);
+      return;
+    }, 400)
+    return;
   }
 
   //Handle submit
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
 
-    if(!user || !team) return;
+    if(!user || !team || currIntIndex === undefined) return;
     setLoading(true);
     
     const preTeam = team; //Error supporter
@@ -197,7 +235,7 @@ export default function TicketsTeamPage(){
     const ticket = {
       creator: user.name || "",
       creator_id: user.id,
-      to,
+      to: team.integrants[currIntIndex].username,
       title,
       message,
       importance
@@ -219,7 +257,7 @@ export default function TicketsTeamPage(){
     toggleForm();
     //Clears the data
     setMessage("");
-    setTo("");
+    setCurrIntIndex(0);
     setImportance("Low");
 
     try {
@@ -269,6 +307,7 @@ export default function TicketsTeamPage(){
   const handleEdit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     if(currentIndex === undefined) return showSnackbar("Index not found", "warn", snackbar);
+    if(!tickets) return;
     setEditLoading(true);
 
     const token = useGetToken();
@@ -285,7 +324,7 @@ export default function TicketsTeamPage(){
           "Authorization": token
         },
         body: JSON.stringify({
-          ticket: tickets![currentIndex],
+          ticket: tickets[currentIndex],
           ticketIndex: currentIndex
         })
       }
@@ -305,6 +344,42 @@ export default function TicketsTeamPage(){
     return;
   }
 
+  const handleDelete = async () => {
+    if(currentIndex === undefined) return;
+
+    const token = useGetToken();
+
+    if(!token) return router.push("/auth/login");
+
+    setTickets(prev =>
+      prev ?
+        prev.filter((_, i) => i !== Number(currentIndex))
+        : []
+    );
+    setTeam(
+      prev => 
+        prev ? {
+          ...prev,
+          tickets: tickets ?
+            tickets.filter((_, i) => i !== Number(currentIndex))
+            : []
+        }
+        : team
+    );
+
+    await fetchTemplate(
+      `/api/teams/${params.id}/tickets/${currentIndex}`,
+      "DELETE",
+      snackbar,
+      {
+        "Authorization": token
+      }
+    );
+
+    setCurrentIndex(undefined);
+    toggleCofirm();
+  }
+
   return (
     team && user ? (
       <div
@@ -318,6 +393,43 @@ export default function TicketsTeamPage(){
         user={user}
         team={team} />
 
+        {/* Confirm menu */}
+        {
+          currentIndex !== undefined && tickets && tickets[currentIndex] && 
+          <div
+          className="w-screen h-screen hidden items-center justify-center fixed top-0 left-0 backdrop-blur backdrop-brightness-75 z-8 animate-fade-in-up animate-duration-300"
+          ref={confirmMenu}
+          onClick={() => {
+            toggleCofirm();
+          }}>
+            <section
+            className="rounded-sm bg-neutral-950 border border-neutral-900 py-6 px-3 w-150 text-center h-50 flex flex-col items-center justify-center">
+              <p
+              className="text-xl">
+                Are you shure to you want to delete the ticket titled <span className="font-bold"> "{tickets[currentIndex].title}"</span>?
+              </p>
+              <span
+              className="w-50 rounded-md flex items-center justify-center gap-1 text-xs bg-red-600/10 border border-red-600 text-red-400 p-2 my-3">
+                <IconInfoCircle size={15} />
+                This action is not reversible!
+              </span>
+
+              <div
+              className="grid grid-cols-2 gap-4 w-full mt-2 px-4">
+                <AltButton
+                size="w-full">
+                  Cancel
+                </AltButton>
+                <HazardButton
+                size="w-full"
+                action={async() => await handleDelete()}>
+                  Delete
+                </HazardButton>
+              </div>
+            </section>
+          </div>
+        }
+
         {/* Creator form */}
         <div
         className="fixed backdrop-blur backdrop-brightness-60 top-0 left-0 w-screen h-screen overflow-x-hidden overflow-y-auto justify-center py-10 z-20 hidden animate-fade-in-up animate-duration-200"
@@ -328,15 +440,50 @@ export default function TicketsTeamPage(){
           action={handleSubmit}
           hideAction={toggleForm}
           actionIsDisabled={loading}>
-            <CreatorInput
-            value={to}
-            label="Send to"
-            placeholder="e.g. Jhon Doe"
-            type="text"
-            onChange={(e) => {
-              setTo(e.target.value);
-            }}
-            required/>
+            <label
+            className="w-full text-start text-sm mb-1">
+              Ticket made for <span className="text-red-600"> * </span>
+            </label>
+            <button
+            type="button"
+            onClick={() => setIsSelOpen(prev => prev ? false : true)}
+            className={"w-full rounded-md relative py-2 px-3 duration-400 text-sm bg-neutral-800 mb-2 flex items-center justify-between cursor-pointer relative outline-none " + (isSelOpen ? "rounded-b-none" : "hover:brightness-80")}>
+              { team.integrants[currIntIndex].username }
+
+              <IconAssembly
+              size={14}
+              stroke={2} />
+
+              {
+                isSelOpen &&
+                <section
+                className="absolute top-1/1 py-2 bg-neutral-900 border border-neutral-800 w-full rounded-b-md left-0 flex flex-col text-xs">
+                  {
+                    team.integrants.map((int, ind) =>
+                      <div
+                      key={int.id}
+                      className="w-full hover:backdrop-brightness-80 py-1 px-3 text-start flex items-center justify-between"
+                      onClick={() => setCurrIntIndex(ind)}>
+                        <p>
+                          { int.username } <br />
+                          <span
+                          className="opacity-70 font-light">
+                            { int.email }
+                          </span>
+                        </p>
+
+                        {
+                          currIntIndex === ind &&
+                          <IconCircleFilled
+                          size={10}
+                          className="mr-2 text-main" />
+                        }
+                      </div>
+                    )
+                  }
+                </section>
+              }
+            </button>
 
             <CreatorInput
             value={title}
@@ -415,9 +562,9 @@ export default function TicketsTeamPage(){
 
         {/* Editor form */}
         {
-          currentIndex !== undefined && tickets && (
+          currentIndex !== undefined && tickets && tickets[currentIndex] && (
             <div
-            className="fixed backdrop-blur backdrop-brightness-60 top-0 left-0 w-screen h-screen overflow-x-hidden overflow-y-auto justify-center py-10 z-20 hidden animate-fade-in-up animate-duration-200"
+            className="fixed backdrop-blur backdrop-brightness-60 top-0 left-0 w-screen h-screen overflow-x-hidden overflow-y-auto justify-center py-10 z-20 hidden animate-fade-in-up animate-duration-300"
             ref={editContainer}
             onClick={toggleEditForm}>
               <CreatorForm
@@ -428,25 +575,50 @@ export default function TicketsTeamPage(){
               hideAction={toggleEditForm}
               actionIsDisabled={editLoading}
               confirmMessage="Edit">
-                <CreatorInput
-                value={tickets[currentIndex].to}
-                label="Send to"
-                placeholder="e.g. Jhon Doe"
-                type="text"
-                onChange={(e) => {
-                  setTickets(
-                    prev => prev ? 
-                    prev.filter((ticket, index) =>{
-                      if(index !== currentIndex) return ticket;
+                <label
+                className="w-full text-start text-sm mb-1">
+                  Ticket made for <span className="text-red-600"> * </span>
+                </label>
+                <button
+                type="button"
+                onClick={() => setIsSelOpen(prev => prev ? false : true)}
+                className={"w-full rounded-md relative py-2 px-3 duration-400 text-sm bg-neutral-800 mb-2 flex items-center justify-between cursor-pointer relative outline-none " + (isSelOpen ? "rounded-b-none" : "hover:brightness-80")}>
+                  { team.integrants[currIntIndex || 0].username }
 
-                      ticket.to = e.target.value;
+                  <IconAssembly
+                  size={14}
+                  stroke={2} />
 
-                      return ticket;
-                    })
-                    : []
-                  )
-                }}
-                required/>
+                  {
+                    isSelOpen &&
+                    <section
+                    className="absolute top-1/1 py-2 bg-neutral-900 border border-neutral-800 w-full rounded-b-md left-0 flex flex-col text-xs">
+                      {
+                        team.integrants.map((int, ind) =>
+                          <div
+                          key={int.id}
+                          className="w-full hover:backdrop-brightness-80 py-1 px-3 text-start flex items-center justify-between"
+                          onClick={() => setCurrIntIndex(ind)}>
+                            <p>
+                              { int.username } <br />
+                              <span
+                              className="opacity-70 font-light">
+                                { int.email }
+                              </span>
+                            </p>
+
+                            {
+                              currIntIndex === ind &&
+                              <IconCircleFilled
+                              size={10}
+                              className="mr-2 text-main" />
+                            }
+                          </div>
+                        )
+                      }
+                    </section>
+                  }
+                </button>
 
                 <CreatorInput
                 value={tickets[currentIndex].title}
@@ -502,7 +674,7 @@ export default function TicketsTeamPage(){
                       <span className="text-sm font-medium">{tickets[currentIndex].importance}</span>
                     </div>
 
-                    <IconArrowDown
+                    <IconAssembly
                     className={`w-4 h-4 text-zinc-500 transition-transform duration-200 ${isImportantOpen ? 'rotate-180' : ''}`} />
                   </button>
 
@@ -583,6 +755,7 @@ export default function TicketsTeamPage(){
                   {
                     team.tickets.map((ticket, index) =>
                       <TicketCard
+                      setMenu={setCurrentMenu}
                       content={ticket}
                       userId={user.id}
                       teamId={params.id}
@@ -594,12 +767,13 @@ export default function TicketsTeamPage(){
                       editAction={() => {
                         setCurrentIndex(index);
                         setMenuIndex(undefined);
+                        setCurrentMenu("edit");
                         return;
                       }}
                       deleteAction={() => {
                         setCurrentIndex(index);
                         setMenuIndex(undefined);
-                        toggleCofirm();
+                        setCurrentMenu("delete");
                         return;
                       }} />
                     )

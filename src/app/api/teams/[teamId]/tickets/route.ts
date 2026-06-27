@@ -23,7 +23,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tea
   try {
     //Gets the data
     const { teamId } = await params;
-    const { creator, to, title, message, importance } = await req.json();
+    const { creator, to, title, message, importance, creator_id } = await req.json();
     const token = (await headers()).get("Authorization");
 
     //Verifies if the data is OK
@@ -61,6 +61,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tea
       creator,
       to,
       title,
+      creator_id,
       message: encrypted_message,
       importance,
       created_at: new Date().toISOString()
@@ -134,24 +135,19 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ team
 
     //Find and update ticket
     const tickets = team.tickets;
+    tickets[ticketIndex] = ticket;
+    tickets[ticketIndex].message = Encrypt(tickets[ticketIndex].message);
 
     //Update team with modified tickets
     const { error: updateTeamError } = await supabase
     .from("teams")
     .update({
-      tickets: 
-        tickets.filter((prev_ticket: Ticket, index: number) => {
-          if(index !== ticketIndex) return prev_ticket;
-
-          return ticket;
-        })
+      tickets
     })
     .eq("team_id", teamId);
 
     //Verifies if there's no error
     if(updateTeamError) return supabaseErrorHandler(updateTeamError);
-
-    tickets[ticketIndex].message = Decrypt(tickets[ticketIndex].message)
 
     //If all is ok, returns success message
     return NextResponse.json({

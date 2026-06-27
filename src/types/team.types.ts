@@ -11,6 +11,7 @@ export interface Ticket {
   message: string;
   importance: "High" | "Medium" | "Low";
   created_at?: string;
+  is_completed?: boolean;
 }
 
 export interface IntegrantData {

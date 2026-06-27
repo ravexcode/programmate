@@ -21,6 +21,7 @@ interface Props {
   teamId: ParamValue;
   index: number;
   setMenuIndex: Dispatch<SetStateAction<number | undefined>>;
+  setMenu: Dispatch<SetStateAction<"edit" | "delete" | undefined>>;
   menuIndex: number | undefined;
   router: AppRouterInstance;
   editAction: () => void;
@@ -35,11 +36,17 @@ export default function TicketCard(props: Props) {
 
   return (
     <section
-    className="rounded-md h-max md:h-65 xl:h-60 bg-neutral-950 border border-neutral-800 duration-400 hover:border-main hover:-translate-y-1 p-4 relative cursor-pointer flex flex-col"
+    className="rounded-md min-h-max md:h-65 xl:h-60 bg-neutral-950 border border-neutral-800 duration-400 hover:border-main hover:-translate-y-1 p-4 relative cursor-pointer flex flex-col"
     onClick={() => {
       props.router.push(`/projects/${props.teamId}/tickets/${props.index}`);
       return;
+    }}
+    onContextMenu={(e) => {
+      if(props.userId !== props.content.creator_id) return;
+      e.preventDefault();
+      props.setMenuIndex(prev => prev === props.index ? undefined : props.index );
     }}>
+
       {/* Edit / Delete menu */}
       { props.menuIndex === props.index && (
         <div
@@ -109,7 +116,7 @@ export default function TicketCard(props: Props) {
       <p
       className="text-neutral-400 mt-2 font-light mb-2">
         <span className="text-neutral-200"> Message: </span> <br />
-        {props.content.message.trim().replace(/\r?\n/g, " ").replace(/\s+/g, " ").slice(0, 150) + (props.content.message.length > 150 ? "..." : "")}
+        {props.content.message.trim().replace(/\r?\n/g, " ").replace(/\s+/g, " ").slice(0, 140) + (props.content.message.length > 140 ? "..." : "")}
       </p>
 
       <section

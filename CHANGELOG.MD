@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v53.0:**
+> Refactor, Design update
+  1. Mejora completa y necesaria a la pagina y API de tickets, ahora funcional y mejor. 🎉
+  2. React Markdown functional. 🚀
+
 - **Indev v51.2:**
 > New route
   1. Nueva ruta para que la IA cree proyectos integrada. 🚀

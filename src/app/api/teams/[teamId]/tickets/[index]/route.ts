@@ -16,6 +16,7 @@ import {
   supabaseErrorHandler,
   unauthorizedErrorHandler
 } from "@api/handlers";
+import { Ticket } from "@/types/team.types";
 
 //Get ticket by index
 export async function GET(
@@ -110,16 +111,14 @@ export async function DELETE(
     if(!team?.integrants_id.includes(user.id)) return unauthorizedErrorHandler("Oops... You aren't in the team");
 
     //Find and remove ticket
-    const tickets = team.tickets || [];
-    const filteredTickets = tickets.splice(index, 1);
-
-    if(filteredTickets.length > tickets.length) return notFoundErrorHandler("Ticket not found");
+    const tickets: Ticket [] = team.tickets || [];
+    const filtered = tickets.filter((_, i) => i !== Number(index));
 
     //Update team with filtered tickets
     const { error: updateTeamError } = await supabase
     .from("teams")
     .update({
-      tickets: filteredTickets
+      tickets: filtered
     })
     .eq("team_id", teamId);
 
