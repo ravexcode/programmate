@@ -1,7 +1,20 @@
 import {
   type Node,
   type Edge
-} from "@xyflow/react"
+} from "@xyflow/react";
+
+import { UserBasic } from "./user.types";
+
+export interface CalendarDate {
+  title: string;
+  description: string;
+  creatorId: string;
+  creator: UserBasic;
+
+  date: Date;
+  type: "deadline" | "meeting" | "request" | "online-meeting" | "target-start";
+  color: "blue" | "cyan" | "teal" | "yellow" | "orange" | "red" | "violet" | "purple" | "rose" | "neutral";
+}
 
 export interface Ticket {
   creator: string | null;
@@ -58,7 +71,7 @@ export default interface Team {
   };
   tags?: Array<string>;
   tickets?: Array<Ticket>
-  calendar?: string;
+  calendar?: CalendarDate [];
   created_at: string;
   ERD?: Node[];
   ERD_connections?: Edge[];

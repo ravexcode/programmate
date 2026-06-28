@@ -29,7 +29,6 @@ import Team, { Ticket } from "@/types/team.types";
 
 //Icons imports
 import {
-  IconArrowDown,
   IconAssembly,
   IconCircleFilled,
   IconInfoCircle,
@@ -447,7 +446,7 @@ export default function TicketsTeamPage(){
             <button
             type="button"
             onClick={() => setIsSelOpen(prev => prev ? false : true)}
-            className={"w-full rounded-md relative py-2 px-3 duration-400 text-sm bg-neutral-800 mb-2 flex items-center justify-between cursor-pointer relative outline-none " + (isSelOpen ? "rounded-b-none" : "hover:brightness-80")}>
+            className={"w-full rounded-md relative py-2 px-3 duration-400 text-sm bg-neutral-800 mb-2 flex items-center justify-between cursor-pointer outline-none " + (isSelOpen ? "rounded-b-none" : "hover:brightness-80")}>
               { team.integrants[currIntIndex].username }
 
               <IconAssembly
@@ -582,7 +581,7 @@ export default function TicketsTeamPage(){
                 <button
                 type="button"
                 onClick={() => setIsSelOpen(prev => prev ? false : true)}
-                className={"w-full rounded-md relative py-2 px-3 duration-400 text-sm bg-neutral-800 mb-2 flex items-center justify-between cursor-pointer relative outline-none " + (isSelOpen ? "rounded-b-none" : "hover:brightness-80")}>
+                className={"w-full rounded-md relative py-2 px-3 duration-400 text-sm bg-neutral-800 mb-2 flex items-center justify-between cursor-pointer outline-none " + (isSelOpen ? "rounded-b-none" : "hover:brightness-80")}>
                   { team.integrants[currIntIndex || 0].username }
 
                   <IconAssembly

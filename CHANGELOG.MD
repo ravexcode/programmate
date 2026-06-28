@@ -1,5 +1,12 @@
 # Indev
 
+# **Indev v55.0:**
+> Dev update, Agents update, new route
+  1. Nueva ruta para el calendario del proyecto.
+  2. Agentes aparte removidos, ahora solo se usará opencode.
+  3. Nuevo tipo para los calendarios.
+  4. Inicialización de la página del calendario.
+
 - **Indev v54.0:**
 > Design update
   1. Mejora de la vista en el dashboard de equipo. 🚀
