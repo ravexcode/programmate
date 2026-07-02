@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v56.1:**
+  1. Nueva action para actualizar y eliminar eventos de calendario. 🚀
+  2. Settings de opencode agregadas. 🤖
+  3. Nuevo modo chat de opencode. 🤖
+
 - **Indev v56.0:**
 > Page improvement, new components
   1. Nuevos componentes de inputs para fechas y options. 🚀
