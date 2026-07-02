@@ -1,6 +1,11 @@
 # Indev
 
-# **Indev v55.0:**
+- **Indev v56.0:**
+> Page improvement, new components
+  1. Nuevos componentes de inputs para fechas y options. 🚀
+  2. Actualización de la página de calendarios. 🔄️
+
+- **Indev v55.0:**
 > Dev update, Agents update, new route
   1. Nueva ruta para el calendario del proyecto.
   2. Agentes aparte removidos, ahora solo se usará opencode.

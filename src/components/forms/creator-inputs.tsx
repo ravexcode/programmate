@@ -23,7 +23,7 @@ export default function CreatorInput(props: CreatorInputProps) {
           placeholder={props.placeholder}
           value={props.value}
           name={props.placeholder?.trim()}
-          className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400 min-h-50 max-h-50"
+          className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400 min-h-20 h-30 max-h-80"
           onChange={(e) => {
             props.onChange(e);
           }}/>

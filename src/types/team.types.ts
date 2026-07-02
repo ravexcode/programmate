@@ -5,15 +5,18 @@ import {
 
 import { UserBasic } from "./user.types";
 
+export type CalendarDateType = "deadline" | "meeting" | "request" | "online-meeting" | "target-start";
+export type CalendarDateColors = "blue" | "cyan" | "teal" | "yellow" | "orange" | "red" | "violet" | "purple" | "rose" | "neutral";
+
 export interface CalendarDate {
   title: string;
   description: string;
   creatorId: string;
   creator: UserBasic;
 
+  type: CalendarDateType;
   date: Date;
-  type: "deadline" | "meeting" | "request" | "online-meeting" | "target-start";
-  color: "blue" | "cyan" | "teal" | "yellow" | "orange" | "red" | "violet" | "purple" | "rose" | "neutral";
+  color: CalendarDateColors;
 }
 
 export interface Ticket {

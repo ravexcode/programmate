@@ -6,6 +6,7 @@ interface CreatorFormProps {
   actionIsDisabled?: boolean;
   confirmMessage?: string;
   isDangerous?: boolean;
+  disabledMessage?: string;
 }
 
 export default function CreatorForm(props: CreatorFormProps) {
@@ -42,6 +43,14 @@ export default function CreatorForm(props: CreatorFormProps) {
           { props.confirmMessage ?? "Create" }
         </button>
       </div>
+
+        {
+          props.disabledMessage && props.actionIsDisabled &&
+          <div
+          className="mt-4 text-sm text-red-400 w-full text-center p-1.5 rounded-md bg-red-950/50 border border-red-600">
+            { props.disabledMessage }
+          </div>
+        }
     </form>
   )
 }
