@@ -20,7 +20,10 @@ import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import { IconArrowLeft } from "@tabler/icons-react";
 
 //Actions imports
-import { signIn, verify } from "@/actions/auth";
+import { signIn } from "@/actions/auth";
+
+//Hooks imports
+import { useVerifyLogged } from "@/hooks/auth";
 
 export default function LogInPage() {
   //Next setup
@@ -37,30 +40,7 @@ export default function LogInPage() {
   //Password
   const [ password, setPassword ] = useState<string>("");
 
-  //Verifies session status
-  useEffect(() => {
-    if(verify()) return router.push("/dashboard");
-  }, []);
-
-  //Form submit handler
-  const handleSubmit = async(e: React.SubmitEvent<HTMLFormElement>) => {
-    //Prevents reloads
-    e.preventDefault();
-    //Turns off the form
-    setIsFormDisponible(false);
-
-    const credentials = {
-      email,
-      password
-    };
-
-    const res = await signIn(credentials);
-    setIsFormDisponible(true);
-
-    if(res.error) return showSnackbar(res.message, (res.status! >= 500 ? "critic" : "warn"), snackbar);
-
-    return router.push("/dashboard");
-  };
+  useVerifyLogged();
 
   return (
     <div className="bg-background min-h-screeb grid grid-rows-[1fr_auto]">
@@ -82,7 +62,14 @@ export default function LogInPage() {
             </Link>
 
             <AuthForm
-            onSubmit={(e) => { handleSubmit(e) }}
+            onSubmit={(e) => signIn(
+              e,
+              {
+                email,
+                password
+              },
+              setIsFormDisponible
+            )}
             title="Welcome back!"
             submitText="Sign in"
             disponible={isFormDisponible ? false : true}>

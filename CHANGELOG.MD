@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v56.3:**
+  1. Action para crear proyecto funcional y optimizado. ✅
+  2. Optimización de código en Auth. 🚀
+
 - **Indev v56.2**
   1. Acciones de calendario integradas. ✅
 

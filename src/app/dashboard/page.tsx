@@ -37,6 +37,14 @@ import useAnimationClose from "@/hooks/useAnimationClose";
 
 //Next imports
 import { useRouter } from "next/navigation";
+import { createProject } from "@/actions/dashboard";
+
+export type Status =
+  "Backlog" |
+  "Planning" |
+  "In progress" |
+  "On Hold" |
+  "Done";
 
 export default function Dashboard(){
   //Next setup
@@ -62,33 +70,12 @@ export default function Dashboard(){
   //Loading button state
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
   //Status selector
-  const [status, setStatus] = useState("Backlog");
+  const [status, setStatus] = useState<Status>("Backlog");
   const [isStatusOpen, setIsStatusOpen] = useState(false);
   //Tags
   const [ tags, setTags ] = useState<Array<string>>([]);
   //Current tag
   const [ currentTag, setCurrentTag ] = useState<string | null>(null);
-
-  //Projects options state
-  const [ openMenuIndex, setOpenMenuIndex ] = useState<number | null>(null);
-
-  //Project edit state
-  //Team that will be edited
-  const [ editTeamId, setEditTeamId ] = useState<number | null>(null);
-  //New name
-  const [ newTeamName, setNewTeamName ] = useState<string>("");
-  //New description
-  const [ newTeamDescription, setNewTeamDescription ] = useState<string>("");
-  //New tags
-  const [ newTeamTags, setNewTeamTags ] = useState<Array<string>>([]);
-  //New current tags
-  const [ newTeamCurrentTag, setNewTeamCurrentTag ] = useState<string>("");
-  //Team selected data
-  const [ selectedTeamData, setSelectedTeamData ] = useState<any>();
-  //New status
-  const [ newTeamStatus, setNewTeamStatus ] = useState<string>();
-  //Sidebar expanded
-  const [ expanded, setExpanded ] = useState<boolean>(false);
 
   //Containers
   //Project creator
@@ -96,25 +83,6 @@ export default function Dashboard(){
 
   //Snackbar container
   const snackbar = useRef(null);
-
-  //Project editor
-  const project_edit_container : RefObject<null> = useRef(null);
-
-  //Function for hide the menu of projects when user clicks outside
-  useEffect(() => {
-    //Function for close menu
-    const closeMenu = () => {
-      //Menu index
-      setOpenMenuIndex(null);
-      return;
-    }
-    
-    //Event that listens the click
-    document.addEventListener("click", closeMenu);
-    
-    //Remove the event listener
-    return () => document.removeEventListener("click", closeMenu);
-  }, []);
 
   //Gets user data
   useEffect(() => {
@@ -191,92 +159,6 @@ export default function Dashboard(){
     //Else, returns error
     return;
   }
-
-  //Project creator
-  const handleCreateProject = async(e: any) => {
-    //Prevents premature reloads
-    e.preventDefault();
-    setIsLoading(true);
-
-    //Id isn't cached gets the data
-    const token = useGetToken();
-
-    if(!token) return router.push("/auth/login");
-
-    //Insert user to integrants if not exists
-    const integrants_created = [
-      {
-        id: user?.id,
-        email: user?.email,
-        username: user?.name,
-        type: "admin",
-        avatar_url: user?.avatar_url
-      }
-    ];
-
-    //Fetchs to api
-    const res = await fetch("/api/teams", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
-        "Authorization": token!,
-      },
-      body: JSON.stringify({
-        name: projectName,
-        description: projectDescription,
-        integrants: integrants_created,
-        status,
-        tags
-      })
-    });
-
-    //Handles the response
-    const data = await res.json();
-
-    //If success, returns the data
-    if(res.status === 200) {
-      //Updates the user data
-      setUser(prev => prev ? {
-        ...prev,
-        teams: [ ...(prev.teams ?? []), data.team ]
-      } : prev);
-
-      //Sends invitations for integrants
-      if(found && found.length > 0) {
-        found.forEach(async( user ) => {
-          await sendRequest(
-            user.email,
-            data.team.id,
-            token!,
-            snackbar
-          );
-        })
-      }
-
-      //Hides the form
-      toggleCreatorContainer();
-      //Change loading state
-      setIsLoading(false);
-      //Clear all the inputs
-      setNewTeamName("");
-      setFound([]);
-      setSearched(undefined);
-      setIntegrants([]);
-      setProjectName("");
-      setProjectDescription("");
-      setStatus("Backlog");
-      setTags([]);
-
-      //Returns success
-      return;
-    }
-
-    //Else, returns error
-    showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar)
-    setIsLoading(false);
-    return;
-  }
   
   //Status options for project
   const statusOptions = [
@@ -315,6 +197,8 @@ export default function Dashboard(){
   }
 
   return (
+    !user ? <LoadingDashboard />
+      :
     <div className="min-h-screen bg-background grid grid-rows-[auto_1fr] sm:grid-cols-[auto_1fr] overflow-hidden text-text">
       {/* Layout sections */}
       <SnackBar
@@ -327,7 +211,28 @@ export default function Dashboard(){
       onClick={toggleCreatorContainer}>
         <CreatorForm
         title="Create a new project"
-        action={handleCreateProject}
+        action={(e) => 
+          createProject(
+            e,
+            {
+              name: projectName!,
+              description: projectDescription!,
+              integrants: [
+                {
+                  id: user.id,
+                  email: user.email,
+                  username: user.name,
+                  avatar_url: user.avatar_url,
+                  type: "admin"
+                }
+              ],
+              tags,
+              status
+            },
+            snackbar,
+            user
+          )
+        }
         hideAction={toggleCreatorContainer}
         actionIsDisabled={ isLoading || !projectName || projectName.length < 3 || !projectDescription}>
           <CreatorInput
@@ -496,7 +401,7 @@ export default function Dashboard(){
                       key={option.value}
                       type="button"
                       onClick={() => {
-                        setStatus(option.value);
+                        setStatus(option.value as Status);
                         setIsStatusOpen(false);
                       }}
                       className={`w-full flex items-center gap-3 px-3 py-2 rounded-sm text-sm transition-all ${

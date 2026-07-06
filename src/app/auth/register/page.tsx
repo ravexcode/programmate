@@ -46,26 +46,6 @@ export default function RegisterPage() {
     if(verify()) return router.push("/dashboard");
   }, []);
 
-  //Form submit handler
-  const handleSubmit = async(e: React.SubmitEvent<HTMLFormElement>) => {
-      //Prevents reloads
-      e.preventDefault();
-      //Turns off the form
-      setIsFormDisponible(false);
-  
-      const credentials = {
-        email,
-        name,
-        password
-      };
-  
-      const res = await signUp(credentials, confirm);
-      setIsFormDisponible(true);
-  
-      if(res.error) return showSnackbar(res.message, (res.status! >= 500 ? "critic" : "warn"), snackbar);
-  
-      return router.push("/oauth/success");
-  };
 
   return (
     <div className="bg-background min-h-screen grid grid-rows-[1fr_auto]">
@@ -87,7 +67,16 @@ export default function RegisterPage() {
           </Link>
 
           <AuthForm
-          onSubmit={(e) => { handleSubmit(e) }}
+          onSubmit={(e) => signUp(
+            e,
+            {
+              email,
+              name,
+              password,
+            },
+            setIsFormDisponible,
+            confirm
+          )}
           title="Get started!"
           submitText="Sign up"
           disponible={isFormDisponible ? false : true}>

@@ -3,16 +3,21 @@ import {
   useGetToken,
   useSaveToken
 } from "@/hooks/useCookies";
+import { useRouter } from "next/navigation";
 
 //Actions for auth
 
 //Login action
 export async function signIn(
+  e: React.SubmitEvent<HTMLFormElement>,
   credentials: {
     email: string,
     password: string
   },
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) {
+  e.preventDefault();
+  const router = useRouter();
 
   const res = await fetch(
     "/api/auth/login", {
@@ -31,34 +36,28 @@ export async function signIn(
   if(res.status === 200) {
     //Saves the cookie
     useSaveToken(data.token);
-    return {
-      message: data.message
-    };
+    return router.push("/dashboard");
   }
 
-  return {
-    message: data.message,
-    error: data,
-    status: res.status
-  };
+  return setLoading(false);
 }
 
 
 //Login action
 export async function signUp(
+  e: React.SubmitEvent<HTMLFormElement>,
   credentials: {
     email: string,
     name: string,
     password: string
   },
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   confirm: string
 ) {
+  e.preventDefault();
+  const router = useRouter();
 
-  if(credentials.password !== confirm) return {
-    message: "Passwords don't matches",
-    error: "Bad request",
-    status: 401
-  };
+  if(credentials.password !== confirm) return setLoading(false);
 
   const res = await fetch(
     "/api/auth/register", {
@@ -77,16 +76,10 @@ export async function signUp(
   if(res.status === 201) {
     //Saves the cookie
     useSaveToken(data.token);
-    return {
-      message: data.message
-    };
+    return router.push("/dashboard");
   }
 
-  return {
-    message: data.message,
-    error: data,
-    status: res.status
-  };
+  return setLoading(false);
 }
 
 //Verifies session status
