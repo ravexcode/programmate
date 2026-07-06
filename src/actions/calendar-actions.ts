@@ -11,13 +11,17 @@ export async function createEvent(
   const url = `/api/teams/${team_id}/calendar`;
   const body = JSON.stringify(eventData);
 
-  await fetchTemplate(
+  const res = await fetchTemplate(
     url,
     "POST", 
     snackbar,
     { "Authorization": token },
     body
   );
+  
+  if(res.data) return res.data;
+
+  return;
 }
 
 export async function updateEvent(
@@ -30,11 +34,15 @@ export async function updateEvent(
   const url = `/api/teams/${team_id}/calendar/${event_index}`;
   const body = JSON.stringify(eventData);
 
-  await fetchTemplate(
+  const res = await fetchTemplate(
     url, 
     "PUT", 
     snackbar,
     { "Authorization": token }, 
     body
   );
+
+  if(res.data) return res.data;
+
+  return;
 }

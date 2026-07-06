@@ -16,7 +16,7 @@ export default function ProjectCard(props : Props) {
     onClick={() => {
       props.goToTeam()
     }}
-    className="group relative w-full flex flex-col rounded-xl border border-neutral-800 bg-neutral-950 cursor-pointer duration-400 hover:-translate-y-1 hover:border-main p-5">
+    className="group relative w-full flex flex-col rounded-sm border border-neutral-800 bg-neutral-950 cursor-pointer duration-400 hover:-translate-y-1 hover:border-main p-5">
 
       <header
       className="flex items-start justify-between mb-3">
@@ -44,11 +44,11 @@ export default function ProjectCard(props : Props) {
       </p>
       
       <div
-      className="flex gap-2 mt-auto pt-2 flex-wrap">
+      className="flex gap-2 mt-auto pt-3 flex-wrap">
         {
           props.tags && props.tags.map((tag: string, index) => (
             <div
-            className="px-3 py-1 rounded-full text-sm font-light border border-main/50 bg-main/20 text-text/80 w-max cursor-default"
+            className="px-3 py-1 rounded-md text-xs font-light border border-main/50 bg-main/20 text-text/80 w-max cursor-default"
             key={ index }>
               {tag}
             </div>

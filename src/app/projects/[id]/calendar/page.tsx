@@ -29,7 +29,7 @@ import genDays from "@/utils/gen-days";
 
 //Types imports
 import { UserData } from "@/types/user.types";
-import Team, { CalendarDateType, Ticket } from "@/types/team.types";
+import Team, { CalendarDate, CalendarDateType, Ticket } from "@/types/team.types";
 
 //Icons imports
 import {
@@ -39,12 +39,14 @@ import {
   IconCircleFilled,
   IconInfoCircle,
   IconPlus,
+  IconUserCircle,
 } from "@tabler/icons-react";
 
 //Services imports
 import getUser from "@/services/user.service";
 import getTeam from "@/services/team.service";
 import { fetchTemplate } from "@/actions/template";
+import Image from "next/image";
 
 type Months = "January" | "February" | "March" | "April" | "May" | "June" | "July" | "August" | "September" | "October" | "November" | "December";
 
@@ -156,7 +158,146 @@ export default function CalendarPage() {
     classlist.add("animate-fade-out-down");
     useAnimationClose(current, "fade-out-down", "hidden", "flex");
     return;
-  }
+  };
+
+  const defaultDates: CalendarDate [] = [
+    {
+      title: "Sprint Planning",
+      description: "Define tasks and priorities for the next sprint.",
+      creatorId: "usr_001",
+      creator: {
+        id: "usr_001",
+        username: "Ravexcode",
+        email: "ravexcode@gmail.com",
+        avatar_url: "https://avatars.githubusercontent.com/u/195974083?v=4"
+      },
+      type: "meeting",
+      date: new Date("2026-07-03T10:00:00"),
+      color: "blue",
+    },
+    {
+      title: "Authentication Module Deadline",
+      description: "Complete JWT authentication and refresh token implementation.",
+      creatorId: "usr_002",
+      creator: {
+        id: "usr_002",
+        username: "Alice",
+        email: "alice@gmail.com"
+      },
+      type: "deadline",
+      date: new Date("2026-07-05T23:59:00"),
+      color: "red",
+    },
+    {
+      title: "Review Pull Request #84",
+      description: "Review the new Kanban board improvements.",
+      creatorId: "usr_003",
+      creator: {
+        id: "usr_003",
+        username: "Carlos",
+        email: "carlos@gmail.com"
+      },
+      type: "request",
+      date: new Date("2026-07-04T15:30:00"),
+      color: "orange",
+    },
+    {
+      title: "Backend Architecture Meeting",
+      description: "Discuss NestJS modules and project structure.",
+      creatorId: "usr_004",
+      creator: {
+        id: "usr_004",
+        username: "Emma",
+        email: "emma@gmail.com",
+        avatar_url: "/example/emma.jpeg"
+      },
+      type: "online-meeting",
+      date: new Date("2026-07-06T09:00:00"),
+      color: "cyan",
+    },
+    {
+      title: "Start UI Redesign",
+      description: "Begin implementing the new dashboard interface.",
+      creatorId: "usr_001",
+      creator: {
+        id: "usr_001",
+        username: "Ravexcode",
+        email: "ravexcode@gmail.com",
+        avatar_url: "https://avatars.githubusercontent.com/u/195974083?v=4"
+      },
+      type: "target-start",
+      date: new Date("2026-07-07T08:00:00"),
+      color: "teal",
+    },
+    {
+      title: "Database Migration Deadline",
+      description: "Finish migrating data to the new Prisma schema.",
+      creatorId: "usr_005",
+      creator: {
+        id: "usr_005",
+        username: "Lucas",
+        email: "lucas@gmail.com",
+        avatar_url: "/example/lucas.jpeg"
+      },
+      type: "deadline",
+      date: new Date("2026-07-08T18:00:00"),
+      color: "violet",
+    },
+    {
+      title: "Client Feedback Session",
+      description: "Present the latest prototype and gather feedback.",
+      creatorId: "usr_006",
+      creator: {
+        id: "usr_006",
+        username: "Sophia",
+        email: "sophia@gmail.com"
+      },
+      type: "meeting",
+      date: new Date("2026-07-09T14:00:00"),
+      color: "yellow",
+    },
+    {
+      title: "Approve New Workspace",
+      description: "Workspace creation request awaiting approval.",
+      creatorId: "usr_007",
+      creator: {
+        id: "usr_007",
+        username: "Daniel",
+        email: "daniel@gmail.com",
+        avatar_url: "/example/daniel.jpeg"
+      },
+      type: "request",
+      date: new Date("2026-07-10T11:00:00"),
+      color: "purple",
+    },
+    {
+      title: "Marketing Sync",
+      description: "Coordinate launch timeline with the marketing team.",
+      creatorId: "usr_008",
+      creator: {
+        id: "usr_008",
+        username: "Olivia",
+        email: "olivia@gmail.com",
+        avatar_url: "/example/olivia.jpeg"
+      },
+      type: "online-meeting",
+      date: new Date("2026-07-11T16:30:00"),
+      color: "rose",
+    },
+    {
+      title: "Prepare Release Candidate",
+      description: "Start stabilizing the project for the next release.",
+      creatorId: "usr_009",
+      creator: {
+        id: "usr_009",
+        username: "Noah",
+        email: "noah@gmail.com"
+      },
+      type: "target-start",
+      date: new Date("2026-07-12T09:30:00"),
+      color: "neutral",
+    },
+  ];
 
   return (
     team && user ? (
@@ -165,6 +306,7 @@ export default function CalendarPage() {
       <SnackBar
       ref={snackbar} />
 
+      { /* Creator form */ }
       <div
       className="fixed hidden items-start justify-center p-10 z-10 backdrop-blur backdrop-brightness-50 w-screen h-screen animate-fade-in-up animate-duration-300"
       ref={form_creator}
@@ -235,6 +377,7 @@ export default function CalendarPage() {
 
       <aside
       className="h-full flex flex-col items-center justify-start bg-neutral-900 p-4 w-120">
+        {/* Back button */}
         <button
         type="button"
         onClick={() => router.back()}
@@ -249,6 +392,7 @@ export default function CalendarPage() {
           { team.name.slice(0, 1).toUpperCase() + team.name.slice(1, team.name.length).toLowerCase() } calendar
         </p>
 
+        {/* Event creator */}
         <MainButton
         size="w-full"
         className="mt-5 flex gap-1 items-center justify-center"
@@ -264,6 +408,7 @@ export default function CalendarPage() {
 
         {/* Calendar logic */}
 
+        {/* Movement buttons */}
         <div
         className="w-full flex items-center justify-between mt-8">
           <p
@@ -335,6 +480,7 @@ export default function CalendarPage() {
 
         <section
         className="w-full rounded-md bg-neutral-800 mt-3 flex flex-col items-center justify-around p-2 py-4">
+          {/* Days */}
           <div
           className="grid grid-cols-7 w-full font-medium text-center mb-4 uppercase">
             <p> M </p>
@@ -346,6 +492,7 @@ export default function CalendarPage() {
             <p> S </p>
           </div>
           
+          {/* Days */}
           <div
           className="grid grid-cols-7 w-full font-medium text-center justify-center items-center gap-3">
             {
@@ -394,7 +541,7 @@ export default function CalendarPage() {
       <main
       className="w-full flex flex-col h-full p-5 px-10">
         <p
-        className="text-4xl tracking-wide">
+        className="text-4xl tracking-wide mb-8">
           {
             months[daySel.getMonth()] + " "
           }
@@ -407,33 +554,67 @@ export default function CalendarPage() {
         </p>
 
         {
+          //team.calendar && team.calendar.map(
           team.calendar && team.calendar.map(
             ( calEvent, index ) =>
-              calEvent.date === daySel && 
+              calEvent.date.getMonth() === daySel.getMonth() &&
+              calEvent.date.getDate() === daySel.getDate()  &&
+              calEvent.date.getFullYear() === daySel.getFullYear() &&
                 <section
                 key={"Event #" + index}
-                className="w-full rounded-sm bg-neutral-900 p-2 flex gap-2 justify-center items-center">
-                  <IconCircleFilled
-                  size={15}
-                  color={calEvent.color} />
+                className="w-full rounded-sm bg-neutral-900 py-2 px-6 flex flex-col justify-center items-center my-2 animate-fade-in-down animate-duration-200">
 
                   <div
-                  className="gap-1 flex flex-col w-full items-center justify-center text-start">
-                    <p
-                    className="text-lg font-medium tracking-wide text-start">
-                      { calEvent.title }
-                    </p>
-                    <p
-                    className="text-lg font-medium tracking-wide text-start">
-                      { calEvent.description }
-                    </p>
+                  className="w-full rounded-sm bg-neutral-900 flex gap-2 justify-center items-center my-2">
+                    <IconCircleFilled
+                    size={15}
+                    color={calEvent.color} />
+
+                    <div
+                    className="gap-1 flex flex-col w-full items-center justify-center text-start ml-2">
+                      <p
+                      className="font-medium tracking-wide text-start w-full">
+                        { calEvent.title }
+                      </p>
+                      <p
+                      className="text-sm text-start w-full opacity-80">
+                        { calEvent.description }
+                      </p>
+                    </div>
+
+                    <button
+                    type="button"
+                    className="w-">
+
+                    </button>
                   </div>
 
-                  <button
-                  type="button"
-                  className="w-">
+                  <div
+                  className="w-full flex gap-2 items-center pb-2">
+                    {
+                      calEvent.creator.avatar_url ? 
+                        <Image
+                        src={calEvent.creator.avatar_url}
+                        alt={calEvent.creator.username + " profile picture"}
+                        width={50}
+                        height={50}
+                        className="rounded-full aspect-square block w-6" />
+                        :
+                        <IconUserCircle
+                        size={30}
+                        className="rounded-full aspect-square block w-6" />
+                    }
 
-                  </button>
+                    <p> { calEvent.creator.username } </p>
+
+                    <p
+                    className="opacity-60 text-sm"> { calEvent.creator.email } </p>
+                  </div>
+
+                  <p
+                  className="text-sm opacity-60 w-full text-start">
+                    UUID: { calEvent.creator.id }
+                  </p>
                 </section>
           )
         }

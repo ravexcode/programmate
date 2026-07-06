@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v56.2**
+  1. Acciones de calendario integradas. ✅
+
 - **Indev v56.1:**
   1. Nueva action para actualizar y eliminar eventos de calendario. 🚀
   2. Settings de opencode agregadas. 🤖
