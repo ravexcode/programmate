@@ -13,7 +13,7 @@ export default function ProviderButton(props: {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
       }
     });
 

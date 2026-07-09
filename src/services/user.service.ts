@@ -10,7 +10,7 @@ export default async function getUser(token: string) {
     method: "GET",
     headers: {
       "Content-type": "application/json",
-      "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+      "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
       "Authorization": token
     }
   });
@@ -76,7 +76,8 @@ export default async function getUser(token: string) {
     "to_do_list": data.profile.to_do_list,
     "created_at": data.user.identities[0].created_at,
     "last_sign_in": data.user.last_sign_in_at,
-    "avatar_url": data.profile.avatar_url
+    "avatar_url": data.profile.avatar_url,
+    "ai_providers": data.profile.ai_providers
   }
 
   const now = new Date();

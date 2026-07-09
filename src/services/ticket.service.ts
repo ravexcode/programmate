@@ -13,7 +13,7 @@ export default async function getTicket(
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
         "Authorization": token
       }
     }

@@ -37,7 +37,7 @@ import useAnimationClose from "@/hooks/useAnimationClose";
 
 //Next imports
 import { useRouter } from "next/navigation";
-import { createProject } from "@/actions/dashboard";
+import { createProject } from "@/actions/project/main";
 
 export type Status =
   "Backlog" |
@@ -144,7 +144,7 @@ export default function Dashboard(){
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
+        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
       }
     });
 

@@ -138,7 +138,7 @@ export default function GetStarted() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
         "Authorization": token!,
       },
       body: JSON.stringify(newProject)
@@ -190,7 +190,7 @@ export default function GetStarted() {
           method: "GET",
           headers: {
             "Content-type": "application/json",
-            "x-api-key": process.env.NEXT_PUBLIC_API_KEY!
+            "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!
           }
         });
 
@@ -207,7 +207,7 @@ export default function GetStarted() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+            "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
             "Authorization": token,
           },
           body: JSON.stringify({

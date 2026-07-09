@@ -55,7 +55,7 @@ export default function AcceptRequestPage(){
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+          "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
           "Authorization": authToken
         },
         body: JSON.stringify({

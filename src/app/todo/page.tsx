@@ -139,7 +139,7 @@ export default function ToDoListPage() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
+        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
         "Authorization": token,
       },
       body: JSON.stringify(new_list)
@@ -261,7 +261,7 @@ export default function ToDoListPage() {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
+        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
         "Authorization": token,
       },
       body: JSON.stringify({

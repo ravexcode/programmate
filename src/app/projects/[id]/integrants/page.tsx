@@ -169,7 +169,7 @@ export default function Page(){
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+          "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
           "Authorization": token
         },
         body: JSON.stringify({
@@ -248,7 +248,7 @@ export default function Page(){
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
         "Authorization": token
       },
       body: JSON.stringify({
@@ -305,7 +305,7 @@ export default function Page(){
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
         "Authorization": token
       },
       body: JSON.stringify({
@@ -348,7 +348,7 @@ export default function Page(){
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
+        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
       }
     });
 
