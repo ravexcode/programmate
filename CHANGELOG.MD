@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v58.1:**
+  1. Readme actualizado para su uso con docker. ✅
+
 - **Indev v58.0:**
   1. Docker integrado. 🐋
 
