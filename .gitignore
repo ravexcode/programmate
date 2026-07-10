@@ -42,6 +42,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Enviroment files
+# IDE files
 .vscode/
 .vscode/*
+
+# Docker files
+doc/
+doc/*

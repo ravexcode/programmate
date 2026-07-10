@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v58.0:**
+  1. Docker integrado. 🐋
+
 - **Indev v57.0:**
   1. Carrusel de proveedores oauth agregados. 🚀
   2. Mejor landing page. ✅
