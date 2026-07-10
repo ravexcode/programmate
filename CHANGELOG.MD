@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v56.9:**
+  1. Pagina de Insiders actualizada. 🚀
+  2. Nuevo componente de codigo. ✅
+
 - **Indev v56.8.1:**
   - Sidebar fix (mostraba el icono de pago aun con plan MAX). 🐛
 

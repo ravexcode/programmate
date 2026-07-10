@@ -5,6 +5,7 @@
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 import LandingGradient from "@/components/ui/gradients/landing";
+import MiniCode from "@/components/ui/mini-code";
 
 //Hooks imports
 import SmoothProvider from "@/lib/components/lennis";
@@ -21,7 +22,7 @@ function ArticleComponent(props: {
 }){
   return (
     <p
-    className="w-full max-w-7xl rounded-xl bg-neutral-900 p-5 text-lg flex flex-col md:flex-row justify-center items-center border border-transparent hover:border-main duration-300 hover:-translate-y-1 cursor-default timeline-view-y animate-fade-in animate-range-[entry_0%_cover_10%]">
+    className="w-full max-w-7xl rounded-xl bg-neutral-950 p-5 text-lg flex flex-col md:flex-row justify-center items-center border border-transparent hover:border-main duration-300 hover:-translate-y-1 cursor-default timeline-view-y animate-fade-in animate-range-[entry_0%_cover_10%]">
       { props.title }
       <span
       className="md:ml-auto text-gray-400"> {  props.content } </span>
@@ -32,7 +33,7 @@ function ArticleComponent(props: {
 export default function DevsPage(){
   return (
     <div
-    className="min-h-screen grid grid-rows-[auto_1fr_auto]">
+    className="min-h-screen grid grid-rows-[auto_1fr_auto] bg-background">
       <Header />
 
       <main
@@ -45,12 +46,14 @@ export default function DevsPage(){
           <h1
           className="text-6xl font-bold z-2 text-center">
             Explore Prismaflow <br />
-            from the inside
+            from the <span className="text-main"> inside </span>
           </h1>
           <p
           className="opacity-80 z-2">
             Learn about API, techs used and more!
           </p>
+
+          <MiniCode />
         </section>
 
         <section
@@ -124,11 +127,15 @@ export default function DevsPage(){
             <ArticleComponent  title="Lenis"   content="A better scroll experience" />
             <ArticleComponent  title="Resend"   content="Emails gestor" />
             <ArticleComponent  title="Stripe"   content="Payments gestor" />
-            <ArticleComponent  title="OpenRouter"   content="AI gestor" />
             <ArticleComponent  title="CryptoJS"   content="Encrypt text" />
             <ArticleComponent  title="Tailwind Animations"   content="Animations that makes better your experience" />
           </article>
         </section>
+
+        <div
+        className="bg-linear-to-t to-transparent from-black w-screen h-20 z-3 pointer-events-none">
+
+        </div>
       </main>
 
       <Footer />
