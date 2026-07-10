@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "push-d": "git push origin development",
-    "push-p": "git push origin production"
+    "push-p": "git push origin production",
+    "opencode": "ollama launch opencode --model kavai/Caveman-Library:gemma4-e4b"
   },
   "dependencies": {
     "@openrouter/sdk": "^0.12.35",

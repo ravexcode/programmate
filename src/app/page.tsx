@@ -2,7 +2,7 @@
 "use client";
 
 //React imports
-import { useRef, lazy, Suspense, useState } from "react";
+import { useRef, lazy, Suspense } from "react";
 
 //Next imports
 import Link from "next/link";
@@ -18,18 +18,14 @@ import FeatureCard from "@/components/ui/cards/feature";
 
 //Hooks imports
 import { useGetToken } from "@/hooks/useCookies";
-import { IconArrowLeft, IconBrain, IconCalendar, IconLayoutKanban, IconSend } from "@tabler/icons-react";
+import { IconBrain, IconCalendar, IconLayoutKanban, IconSend, IconTable } from "@tabler/icons-react";
 
 //Landing page
 export default function HomePage(){
   //NextJS Setup
   const router = useRouter();
 
-  const [ exampleInput, setExampleInput ] = useState("Build me a new project for a e-shop to sell products");
-
   const snackbar = useRef(null);
-  const message = useRef(null);
-  const exampleChat = useRef(null);
 
   //Payment action
   const handlePayment = async(plan: string) => {
@@ -61,7 +57,8 @@ export default function HomePage(){
 
   //Lazy loading
   //Carousel consumes many resources because it renders images
-  const IconCarousel = lazy(() => import("@components/icon-carrousel"));
+  const TechCarousel = lazy(() => import("@/components/ui/carousel/techs"));
+  const ProvCarousel = lazy(() => import("@/components/ui/carousel/providers"));
   //Mini dashboard has too many components/animations
   const MiniDashboard = lazy(() => import("@components/ui/mini-dashboard/main"));
 
@@ -117,7 +114,12 @@ export default function HomePage(){
         fallback={
           <div> Loading carousel... </div>
         }>
-          <IconCarousel />
+          <TechCarousel />
+        </Suspense>
+
+
+        <Suspense>
+          <ProvCarousel />
         </Suspense>
 
         <p
@@ -126,67 +128,107 @@ export default function HomePage(){
 
           <span
           className="text-xl opacity-90 font-normal">
-            With prismaflow <span className="text-main"> centralize </span> your workflow with AI-powered automation
+            With prismaflow <span className="text-blue-600"> centralize </span> your workflow with AI-powered automation
           </span>
         </p>
 
         <p
         className="mt-30 text-5xl font-bold tracking-wide w-full text-center">
-          What does prismaflow provide?
+          What does prismaflow provide? <br />
+          <span
+          className="text-neutral-400 font-normal text-base">
+            Prismaflow provides you many tools for your projects workflow
+          </span>
         </p>
 
         <div
-        className="mt-20 grid grid-cols-2 justify-start items-start w-full max-w-300 gap-5">
-          <FeatureCard>
-            <p
-            className="font-bold text-4xl">
-              AI Assistant
-            </p>
-            <p
-            className="font-medium my-3">
-              <span className="text-main font-medium">Prismaflow</span> provides AI Assistant to build and manage your projects
-            </p>
+        className="mt-20 grid grid-cols-2 justify-center items-start w-full max-w-300 gap-16">
+          <section
+          className="w-full flex flex-col gap-18">
+            <FeatureCard>
+              <p
+              className="font-bold text-4xl">
+                AI Assistant
+              </p>
+              <p
+              className="font-medium my-3">
+                <span className="text-blue-600 font-medium">Prismaflow</span> provides AI Assistant to build and manage your projects
+              </p>
 
-            <IconBrain
-            size={200}
-            stroke={1}
-            className="text-main animate-pulse duration-500 hover:animate-none" />
-          </FeatureCard>
+              <IconBrain
+              size={200}
+              stroke={1}
+              className="text-main animate-pulse duration-500 hover:animate-none" />
+            </FeatureCard>
 
-          <FeatureCard
-          height="min-h-130">
-            <p
-            className="font-bold text-4xl">
-              Kanban board
-            </p>
-            <p
-            className="font-medium my-3">
-              Improve a better <span className="text-main font-medium">organization</span> with our kanban board
-            </p>
+            <FeatureCard>
+              <p
+              className="font-bold text-4xl">
+                Calendar
+              </p>
+              <p
+              className="font-medium my-3">
+                Get <span className="text-blue-600 font-medium">noticed</span> about your meetings and sprints with our calendar.
+              </p>
 
-            <IconLayoutKanban
-            size={200}
-            stroke={1}
-            className="text-main animate-pulse duration-500 hover:animate-none" />
-          </FeatureCard>
+              <IconCalendar
+              size={200}
+              stroke={1}
+              className="text-main animate-pulse duration-500 hover:animate-none" />
+            </FeatureCard>
+          </section>
 
-          <FeatureCard>
-            <p
-            className="font-bold text-4xl">
-              Calendar
-            </p>
-            <p
-            className="font-medium my-3">
-              Get <span className="text-main font-medium">noticed</span> about your meetings and sprints with our calendar.
-            </p>
 
-            <IconCalendar
-            size={200}
-            stroke={1}
-            className="text-main animate-pulse duration-500 hover:animate-none" />
-          </FeatureCard>
+          <section
+          className="w-full flex flex-col gap-18">
+            <FeatureCard
+            height="min-h-130">
+              <p
+              className="font-bold text-4xl">
+                Kanban board
+              </p>
+              <p
+              className="font-medium my-3">
+                Improve a better <span className="text-blue-600 font-medium">organization</span> with our kanban board
+              </p>
+
+              <IconLayoutKanban
+              size={200}
+              stroke={1}
+              className="text-main animate-pulse duration-500 hover:animate-none" />
+            </FeatureCard>
+
+            <FeatureCard>
+              <p
+              className="font-bold text-4xl">
+                ERD Builder
+              </p>
+              <p
+              className="font-medium my-3">
+                Create and edit a <span className="text-blue-600 font-medium">Entity Relation Data table</span> without any problem with the ERD Tool provided by us
+              </p>
+
+              <IconTable
+              size={200}
+              stroke={1}
+              className="text-main animate-pulse duration-500 hover:animate-none" />
+            </FeatureCard>
+          </section>
         </div>
 
+        <p
+        className="mt-50 text-5xl font-bold tracking-wide w-full text-center">
+          Tesmonials <br />
+          <span
+          className="text-neutral-400 font-normal text-base">
+            Know what people say about us
+          </span>
+        </p>
+
+        <section
+        className="w-full text-center flex flex-col items-center justify-center text-neutral-400 h-120 text-4xl animate-pulse">
+          Coming soon...
+        </section>
       </main>
 
       <Footer />

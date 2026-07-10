@@ -7,8 +7,8 @@
    viewBox="0 0 105.951 17.27"
    version="1.1"
    id="svg1"
-   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
-   sodipodi:docname="logo_large_white.svg"
+   inkscape:version="1.4.2 (ebf0e94, 2025-05-08)"
+   sodipodi:docname="large_white.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -24,13 +24,13 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#505050"
      inkscape:document-units="mm"
-     inkscape:zoom="1.3026915"
-     inkscape:cx="150.45773"
-     inkscape:cy="60.259856"
-     inkscape:window-width="1366"
-     inkscape:window-height="697"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:zoom="1.842284"
+     inkscape:cx="220.92142"
+     inkscape:cy="159.31311"
+     inkscape:window-width="1920"
+     inkscape:window-height="1019"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1" />
   <defs
@@ -107,17 +107,54 @@
          id="path12"
          sodipodi:nodetypes="cccc" />
     </g>
-    <text
-       xml:space="preserve"
-       style="font-weight:bold;font-size:13.1147px;line-height:2.4164px;font-family:'Microsoft JhengHei UI';-inkscape-font-specification:'Microsoft JhengHei UI Bold';text-align:start;letter-spacing:0.755063px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
-       x="24.539923"
-       y="14.45292"
-       id="text41"
-       transform="scale(1.013103,0.98706646)"><tspan
-         sodipodi:role="line"
-         id="tspan41"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.1147px;line-height:2.4164px;font-family:'Microsoft JhengHei UI';-inkscape-font-specification:'Microsoft JhengHei UI';fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-         x="24.539923"
-         y="14.45292">PrismaFlow</tspan></text>
+    <g
+       id="g18"
+       transform="translate(0,-26.987501)">
+      <path
+         d="m 93.182943,33.772617 1.953369,6.938595 h 1.328601 l 1.275374,-3.896403 c 0.124008,-0.362463 0.225689,-0.711943 0.305408,-1.048515 0.07972,-0.345203 0.137168,-0.612674 0.172599,-0.802535 h 0.05323 c 0.04429,0.189861 0.106316,0.457332 0.186035,0.802535 0.08858,0.336572 0.190775,0.681763 0.305925,1.035596 l 1.222147,3.909322 h 1.368389 l 1.97972,-6.938595 h -1.19579 l -0.99632,3.702617 c -0.10629,0.396982 -0.20797,0.785064 -0.30541,1.164786 -0.0886,0.379723 -0.14654,0.677735 -0.17311,0.893486 h -0.0532 c -0.0354,-0.250272 -0.10152,-0.548283 -0.19895,-0.893486 -0.0886,-0.345202 -0.18162,-0.664142 -0.27906,-0.957564 l -1.222692,-3.909839 h -1.275374 l -1.261939,3.909839 c -0.062,0.189861 -0.124031,0.405348 -0.186035,0.646989 -0.062,0.233011 -0.11997,0.457593 -0.173116,0.673344 -0.04429,0.215751 -0.08394,0.396925 -0.119372,0.543636 h -0.05323 c -0.03543,-0.250272 -0.09746,-0.56544 -0.186035,-0.945162 -0.08858,-0.379722 -0.181618,-0.754937 -0.279053,-1.126029 l -0.982883,-3.702617 z"
+         style="font-weight:bold;font-size:13.1147px;line-height:2.4164px;font-family:'Microsoft JhengHei UI';-inkscape-font-specification:'Microsoft JhengHei UI Bold';letter-spacing:0.755063px;fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+         id="path18" />
+      <path
+         d="m 88.538265,33.656345 c -1.018635,0 -1.824475,0.310879 -2.41794,0.932243 -0.593466,0.621364 -0.890385,1.505787 -0.890385,2.653585 0,0.768075 0.141851,1.424145 0.425297,1.967838 0.283446,0.535064 0.668828,0.944591 1.156002,1.229383 0.496031,0.276161 1.058339,0.414445 1.687235,0.414445 1.018635,0 1.824475,-0.315168 2.41794,-0.945162 0.602324,-0.629994 0.903821,-1.518707 0.903821,-2.666504 0,-0.768075 -0.141851,-1.415567 -0.425297,-1.942001 -0.274588,-0.535063 -0.659971,-0.940301 -1.156002,-1.216463 -0.487173,-0.284792 -1.054059,-0.427364 -1.700671,-0.427364 z m -0.02635,0.958081 c 0.726331,0 1.257626,0.232642 1.594218,0.698665 0.336592,0.466023 0.504879,1.109226 0.504879,1.929082 0,0.819855 -0.168287,1.47112 -0.504879,1.954403 -0.336592,0.474653 -0.863826,0.712101 -1.581299,0.712101 -0.726331,0 -1.257625,-0.237448 -1.594218,-0.712101 -0.327735,-0.483283 -0.491443,-1.134548 -0.491443,-1.954403 0,-0.819856 0.163708,-1.463059 0.491443,-1.929082 0.327735,-0.466023 0.854968,-0.698665 1.581299,-0.698665 z"
+         style="font-weight:bold;font-size:13.1147px;line-height:2.4164px;font-family:'Microsoft JhengHei UI';-inkscape-font-specification:'Microsoft JhengHei UI Bold';letter-spacing:0.755063px;fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+         id="path17" />
+      <path
+         d="m 81.435856,30.885971 v 9.83816 h 1.168921 v -9.83816 z"
+         style="font-weight:bold;font-size:13.1147px;line-height:2.4164px;font-family:'Microsoft JhengHei UI';-inkscape-font-specification:'Microsoft JhengHei UI Bold';letter-spacing:0.755063px;fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+         id="path11" />
+      <path
+         d="m 73.934505,31.481284 v 9.242847 h 1.195793 V 36.80189 h 3.852995 V 35.779213 H 75.130298 V 32.50396 h 4.105692 v -1.022676 z"
+         style="font-weight:bold;font-size:13.1147px;line-height:2.4164px;font-family:'Microsoft JhengHei UI';-inkscape-font-specification:'Microsoft JhengHei UI Bold';letter-spacing:0.755063px;fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+         id="path10" />
+      <path
+         d="m 68.253715,33.669264 c -0.4606,0 -0.903948,0.06056 -1.329118,0.181384 -0.425169,0.112191 -0.792756,0.249957 -1.102775,0.413929 l 0.359151,0.854728 c 0.292304,-0.138081 0.606503,-0.259208 0.943095,-0.362769 0.336593,-0.112191 0.690961,-0.167948 1.062984,-0.167948 0.469458,0 0.832466,0.112032 1.08934,0.336413 0.256873,0.224382 0.385506,0.625848 0.385506,1.204061 v 0.413929 l -1.209229,0.03876 c -1.160358,0.03452 -2.019585,0.241945 -2.57762,0.621668 -0.558035,0.371092 -0.836642,0.901746 -0.836642,1.59215 0,0.707665 0.212518,1.229741 0.637688,1.566313 0.425169,0.327942 0.961042,0.49196 1.607653,0.49196 0.602324,0 1.071591,-0.09059 1.408183,-0.271818 0.34545,-0.181231 0.673383,-0.46157 0.983403,-0.841293 h 0.05323 l 0.225826,0.983403 h 0.850078 v -4.72478 c 0,-0.811225 -0.20794,-1.402442 -0.624252,-1.773535 -0.416315,-0.371092 -1.058447,-0.556555 -1.926501,-0.556555 z m 1.394747,3.663343 v 0.621667 c 0,0.673144 -0.1993,1.173258 -0.597896,1.5012 -0.398597,0.319312 -0.898878,0.479041 -1.501201,0.479041 -0.380881,0 -0.695596,-0.09059 -0.943611,-0.271818 -0.239158,-0.181231 -0.358635,-0.465859 -0.358635,-0.854211 0,-0.440133 0.168286,-0.781036 0.504879,-1.022677 0.34545,-0.241642 0.961146,-0.379925 1.846916,-0.414445 z"
+         style="font-weight:bold;font-size:13.1147px;line-height:2.4164px;font-family:'Microsoft JhengHei UI';-inkscape-font-specification:'Microsoft JhengHei UI Bold';letter-spacing:0.755063px;fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+         id="path9" />
+      <path
+         d="m 55.65035,33.656345 c -0.425169,0 -0.828348,0.09059 -1.209229,0.271818 -0.372023,0.172601 -0.668942,0.440073 -0.890385,0.802535 h -0.06614 l -0.1726,-0.945162 H 52.36838 v 6.938595 h 1.169437 v -3.598747 c 0,-0.811225 0.137273,-1.432466 0.411862,-1.863969 0.274588,-0.431503 0.770291,-0.646989 1.487764,-0.646989 0.974346,0 1.461926,0.54781 1.461926,1.643827 v 4.465878 h 1.155485 V 36.89284 c 0,-0.742185 0.146429,-1.307668 0.438733,-1.696021 0.301162,-0.388352 0.797381,-0.582393 1.488281,-0.582393 0.965489,0 1.447974,0.54781 1.447974,1.643827 v 4.465878 h 1.156002 v -4.517554 c 0,-0.897526 -0.1993,-1.545018 -0.597896,-1.942 -0.398597,-0.405613 -1.001075,-0.608232 -1.807125,-0.608232 -0.4606,0 -0.898854,0.09488 -1.315165,0.284737 -0.407454,0.189861 -0.730809,0.483067 -0.969967,0.88005 h -0.06666 C 57.492436,34.044427 56.766419,33.656345 55.65035,33.656345 Z"
+         style="font-weight:bold;font-size:13.1147px;line-height:2.4164px;font-family:'Microsoft JhengHei UI';-inkscape-font-specification:'Microsoft JhengHei UI Bold';letter-spacing:0.755063px;fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+         id="path7" />
+      <path
+         d="m 47.458085,33.656345 c -0.797192,0 -1.443902,0.159728 -1.939933,0.47904 -0.487173,0.319312 -0.730705,0.772247 -0.730705,1.359091 0,0.379722 0.08846,0.690601 0.265617,0.932242 0.177154,0.241642 0.429842,0.44855 0.757576,0.621152 0.327735,0.172601 0.721757,0.345196 1.182357,0.517797 0.469458,0.172601 0.828405,0.328041 1.07642,0.466122 0.256873,0.138081 0.433799,0.276364 0.531234,0.414445 0.09744,0.138081 0.146244,0.293003 0.146244,0.465604 0,0.310682 -0.132694,0.560998 -0.398425,0.750859 -0.265731,0.181231 -0.695345,0.271818 -1.28881,0.271818 -0.416312,0 -0.82813,-0.05576 -1.235584,-0.167948 -0.398596,-0.120821 -0.739747,-0.250526 -1.023193,-0.388607 v 1.035596 c 0.274589,0.13808 0.588787,0.245824 0.943095,0.323494 0.363165,0.07767 0.792779,0.116789 1.28881,0.116789 0.868054,0 1.558995,-0.172596 2.072742,-0.517798 0.513746,-0.345202 0.771012,-0.854411 0.771012,-1.527555 0,-0.371093 -0.0844,-0.677683 -0.252698,-0.919324 -0.168296,-0.250272 -0.411827,-0.461469 -0.730704,-0.63407 -0.318877,-0.172601 -0.70426,-0.340908 -1.156002,-0.504879 -0.451743,-0.172601 -0.814751,-0.319463 -1.089339,-0.440283 -0.265731,-0.129451 -0.456392,-0.258639 -0.571542,-0.38809 -0.11515,-0.138081 -0.172599,-0.302099 -0.172599,-0.49196 0,-0.258902 0.124055,-0.462037 0.37207,-0.608748 0.256874,-0.155341 0.62446,-0.232544 1.102775,-0.232544 0.345451,0 0.682023,0.04289 1.009758,0.129191 0.327735,0.0863 0.641933,0.189754 0.943095,0.310575 l 0.398942,-0.905888 c -0.327735,-0.146711 -0.682103,-0.25926 -1.062984,-0.33693 -0.372024,-0.0863 -0.775202,-0.129191 -1.209229,-0.129191 z"
+         style="font-weight:bold;font-size:13.1147px;line-height:2.4164px;font-family:'Microsoft JhengHei UI';-inkscape-font-specification:'Microsoft JhengHei UI Bold';letter-spacing:0.755063px;fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+         id="path6" />
+      <path
+         d="m 41.644486,31.183628 c -0.194869,0 -0.359094,0.06056 -0.491959,0.181384 -0.132866,0.112191 -0.198954,0.293364 -0.198954,0.543636 0,0.241641 0.06609,0.422815 0.198954,0.543636 0.132865,0.120821 0.29709,0.181384 0.491959,0.181384 0.177154,0 0.332223,-0.06056 0.465088,-0.181384 0.141723,-0.120821 0.212391,-0.301995 0.212391,-0.543636 0,-0.250272 -0.07067,-0.431445 -0.212391,-0.543636 -0.132865,-0.120821 -0.287934,-0.181384 -0.465088,-0.181384 z"
+         style="font-weight:bold;font-size:13.1147px;line-height:2.4164px;font-family:'Microsoft JhengHei UI';-inkscape-font-specification:'Microsoft JhengHei UI Bold';letter-spacing:0.755063px;fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+         id="path5" />
+      <path
+         d="m 41.04659,33.785536 v 6.938595 h 1.168921 v -6.938595 z"
+         style="font-weight:bold;font-size:13.1147px;line-height:2.4164px;font-family:'Microsoft JhengHei UI';-inkscape-font-specification:'Microsoft JhengHei UI Bold';letter-spacing:0.755063px;fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+         id="path4" />
+      <path
+         d="m 38.11602,33.656345 c -0.496031,0 -0.925645,0.138283 -1.288811,0.414445 -0.363165,0.276162 -0.660084,0.60368 -0.890384,0.983402 h -0.05323 l -0.132806,-1.268656 h -0.95653 v 6.938595 h 1.168921 v -3.7021 c 0,-0.466023 0.09304,-0.871778 0.279052,-1.21698 0.19487,-0.353832 0.451619,-0.625593 0.770496,-0.815454 0.318877,-0.198491 0.660028,-0.297656 1.023193,-0.297656 0.124008,0 0.252641,0.0086 0.385506,0.02584 0.141724,0.01726 0.26984,0.03871 0.38499,0.06459 l 0.146244,-1.048515 c -0.11515,-0.02589 -0.252423,-0.04305 -0.411861,-0.05168 -0.150581,-0.01726 -0.291915,-0.02584 -0.42478,-0.02584 z"
+         style="font-weight:bold;font-size:13.1147px;line-height:2.4164px;font-family:'Microsoft JhengHei UI';-inkscape-font-specification:'Microsoft JhengHei UI Bold';letter-spacing:0.755063px;fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+         id="path3" />
+      <path
+         d="m 26.150342,31.481284 v 9.242847 h 1.195792 v -3.598747 h 1.08934 c 0.947773,0 1.696164,-0.137766 2.245341,-0.413928 0.558034,-0.276162 0.952573,-0.634221 1.182873,-1.074353 0.239158,-0.448763 0.358635,-0.927949 0.358635,-1.437122 0,-0.863005 -0.283702,-1.531943 -0.850594,-2.006596 -0.566893,-0.474653 -1.470352,-0.712101 -2.710429,-0.712101 z m 1.195792,0.996838 h 1.209229 c 0.841481,0 1.45666,0.146862 1.846399,0.440283 0.389738,0.293422 0.584977,0.737779 0.584977,1.333252 0,0.681775 -0.221674,1.165249 -0.664559,1.450041 -0.442885,0.284792 -1.11603,0.427364 -2.019515,0.427364 h -0.956531 z"
+         style="font-weight:bold;font-size:13.1147px;line-height:2.4164px;font-family:'Microsoft JhengHei UI';-inkscape-font-specification:'Microsoft JhengHei UI Bold';letter-spacing:0.755063px;fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+         id="path1"
+         sodipodi:nodetypes="ccccsccsssccssssscc" />
+    </g>
   </g>
 </svg>

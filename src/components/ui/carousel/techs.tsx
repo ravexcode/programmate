@@ -8,7 +8,7 @@ interface IconProps {
   className?: string;
 }
 
-export default function IconCarousel() {
+export default function TechCarousel() {
   const icons: IconProps[] = [
     { src: "/icons/supabase.svg", alt: "Supabase", className: "h-10", url: "https://supabase.com/" },
     { src: "/icons/stripe.svg", alt: "Stripe", className: "h-8", url: "https://stripe.com/" },
@@ -45,7 +45,7 @@ export default function IconCarousel() {
                 width={150}
                 height={150}
                 loading="lazy"
-                className={`object-contain max-w-none w-auto ${icon.className ?? ''}`}
+                className={`object-contain min-w-max max-w-none w-auto ${icon.className ?? ''}`}
               />
             </Link>
           ))}

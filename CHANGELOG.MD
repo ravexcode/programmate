@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v57.0:**
+  1. Carrusel de proveedores oauth agregados. 🚀
+  2. Mejor landing page. ✅
+
 - **Indev v56.9:**
   1. Pagina de Insiders actualizada. 🚀
   2. Nuevo componente de codigo. ✅
