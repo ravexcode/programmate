@@ -43,3 +43,18 @@
   );
   animation: border-animate 3s linear infinite;
 }
+
+@keyframes rotateIn {
+  0% {
+    transform: rotate(-180deg) translateX(-50%);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(0) translateX(0);
+    opacity: 1;
+  }
+}
+
+.rotate-in-left {
+  animation: rotateIn 400ms ease-in-out linear forwards;
+}

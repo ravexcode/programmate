@@ -12,10 +12,11 @@ function OptionsButton(props: {
   children: React.ReactNode
 }){
   return (
-    <li>
+    <li
+    className="w-25 h-8 cursor-pointer rounded-sm duration-200 hover:bg-zinc-50/10 text-center">
       <Link
       href={props.link}
-      className="px-8 py-2 cursor-pointer opacity-80 rounded-full duration-200 hover:bg-zinc-50/10 hover:opacity-100">
+      className="w-full h-full flex items-center justify-center">
         {props.children}
       </Link>
     </li>
@@ -47,7 +48,7 @@ export default function Header(){
 
       <ul
       className="hidden md:flex gap-2 justify-center items-center">
-        <OptionsButton link="/about#features"> Product </OptionsButton>
+        <OptionsButton link="/product"> Product </OptionsButton>
         <OptionsButton link="/pricing"> Pricing </OptionsButton>
         <OptionsButton link="/about#contact"> Contact </OptionsButton>
       </ul>

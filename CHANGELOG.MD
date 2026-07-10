@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v59.0:**
+  1. Pagina de about eliminada e integración de la página de producto
+
 - **Indev v58.2:**
   1. Licencia integrada. 📜
 
