@@ -251,35 +251,37 @@ function TeamSideBar(props: Props) {
         <div
         className="ml-auto sm:ml-0 mt-auto flex flex-row sm:flex-col items-center justify-center sm:justify-end gap-1 sm:pb-3">
           {
-            (props.user.plan === "Free" || props.user.plan === "Pro") && expanded ? (
-              <Link
-              href="/pricing"
-              className="w-full rounded-xl border border-neutral-800 p-2 bg-neutral-900 animate-fade-in-right sm:mt-10">
-                <div className="w-full flex items-center gap-1 sm:pt-1">
+            (props.user.plan === "Free" || props.user.plan === "Pro") ?
+              expanded ? (
+                <Link
+                href="/pricing"
+                className="w-full rounded-xl border border-neutral-800 p-2 bg-neutral-900 animate-fade-in-right sm:mt-10">
+                  <div className="w-full flex items-center gap-1 sm:pt-1">
+                    <IconBolt
+                    size={18}
+                    stroke={2}
+                    color="#2b5ffb"/>
+                    <p className="font-semibold text-wrap text-center bg-linear-to-r from-blue-600 via-sky-500 to-blue-200 w-max bg-clip-text text-transparent text-lg"> Upgrade your plan </p>
+                  </div>
+                  <p className="text-neutral-200 font-light text-sm pb-2 px-1">
+                    Upgrade your projects workflow with a monhtly subscription
+                  </p>
+                  <button
+                  className="bg-main rounded-md w-full px-2 py-1 cursor-pointer text-center duration-400 hover:brightness-80 shadow-lg shadow-blue-800/30">
+                    Look pricing
+                  </button>
+                </Link>
+              ) : (
+                <Link
+                href="/pricing"
+                className="flex justify-start items-center gap-2 p-2 rounded-lg hover:bg-blue-900 duration-400 border-transparent">
                   <IconBolt
                   size={18}
                   stroke={2}
-                  color="#2b5ffb"/>
-                  <p className="font-semibold text-wrap text-center bg-linear-to-r from-blue-600 via-sky-500 to-blue-200 w-max bg-clip-text text-transparent text-lg"> Upgrade your plan </p>
-                </div>
-                <p className="text-neutral-200 font-light text-sm pb-2 px-1">
-                  Upgrade your projects workflow with a monhtly subscription
-                </p>
-                <button
-                className="bg-main rounded-md w-full px-2 py-1 cursor-pointer text-center duration-400 hover:brightness-80 shadow-lg shadow-blue-800/30">
-                  Look pricing
-                </button>
-              </Link>
-            ) : (
-              <Link
-              href="/pricing"
-              className="flex justify-start items-center gap-2 p-2 rounded-lg hover:bg-blue-900 duration-400 border-transparent">
-                <IconBolt
-                size={18}
-                stroke={2}
-                color="white" />
-              </Link>
-            )
+                  color="white" />
+                </Link>
+              )
+            : null
           }
 
           <div

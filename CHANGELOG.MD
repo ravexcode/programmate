@@ -1,4 +1,8 @@
 # Indev
+
+- **Indev v56.8.1:**
+  - Sidebar fix (mostraba el icono de pago aun con plan MAX). 🐛
+
 - **Indev v56.8:**
   1. Caveman skills agregadas. 🚀
 
