@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v58.2:**
+  1. Licencia integrada. 📜
+
 - **Indev v58.1:**
   1. Readme actualizado para su uso con docker. ✅
 

@@ -2,6 +2,8 @@
   <img src="public/logos/large.svg" alt="Centered image" width="400">
 </p>
 
+> **Note: this project is source-avaible. Learn more in LICENSE.md**
+
 # Get started about our project
 1. **Languajes used:**
   - Docker
