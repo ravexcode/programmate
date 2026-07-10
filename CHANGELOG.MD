@@ -1,4 +1,6 @@
 # Indev
+- **Indev v56.8:**
+  1. Caveman skills agregadas. 🚀
 
 - **Indev v56.7:**
   1. OpenSans puesta como fuente principal. ✅
