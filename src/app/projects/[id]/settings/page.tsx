@@ -2,17 +2,15 @@
 
 //Next imports
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
 
 //React imports
 import { useEffect, useState, useRef } from "react";
 
 //Prebuilt ui imports
-import SideBar, { Icon } from "@/components/ui/sidebar";
 import BgGradient from "@/components/ui/bg-gradient";
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import SnackBar from "@/components/ui/snackbar";
 import LoadingScreen from "@/components/screens/loading-screen";
+import TeamSideBar from "@/components/ui/dashboard/team-sidebar";
 
 //Services imports
 import getUser from "@/services/user.service";
@@ -28,14 +26,6 @@ import { getCached } from "@/hooks/cache.hook";
 
 //Icons imports
 import {
-  IconAppWindow,
-  IconCalendar,
-  IconDatabase,
-  IconEye,
-  IconFolder,
-  IconLayoutKanban,
-  IconMessage,
-  IconUsers,
   IconSpace,
   IconAssembly,
   IconLogout,
@@ -43,8 +33,11 @@ import {
 } from "@tabler/icons-react";
 import MainButton from "@/components/ui/buttons/main";
 import HazardButton from "@/components/ui/buttons/hazard";
-import { fetchTemplate } from "@/actions/template";
 import useAnimationClose from "@/hooks/useAnimationClose";
+
+//Actions imports
+import { fetchTemplate } from "@/actions/template";
+import { updateProject, deleteProject } from "@/actions/project/main";
 
 export default function SettingsPage(){
   //Next setup
@@ -66,15 +59,6 @@ export default function SettingsPage(){
   //Components ref
   const snackbar = useRef(null);
   const warnCard = useRef(null);
-  
-  //Set expanded based in localstorage
-  useEffect(() => {
-    const expanded = window.localStorage.getItem("expanded");
-
-    if(expanded) return setExpanded(true);
-
-    return;
-  }, []);
 
   //Gets data
   useEffect(() => {
@@ -109,6 +93,8 @@ export default function SettingsPage(){
         snackbar
       );
 
+      if(!team) return router.push("/dashboard")
+
       setTeam(team);
       setPrevTeam(team);
       const user_index = team.integrants_id.indexOf(user_data.id);
@@ -120,7 +106,6 @@ export default function SettingsPage(){
 
     fetchData();
   }, []);
-
   
   //Status options for project
   const statusOptions = [
@@ -235,105 +220,13 @@ export default function SettingsPage(){
       onClick={() => setIsStatusOpen(false)}>
         <SnackBar
         ref={snackbar} />
-        <SideBar
-        email={user?.email!}
-        plan={user?.plan!}
-        avatar={user?.avatar_url}
-        username={user?.name!}
-        setExpanded={(isExpanded : boolean) => {
-          setExpanded(isExpanded === true ? false : true);
-        }}>
-          
-          { expanded && ( <span className="w-full text-base font-bold p-2 animate-fade-in-right"> Project </span> ) }
-
-          <Icon
-          action={`/projects/${params.id}`}
-          name="Dashboard"
-          isDisplayed={expanded}>
-            <IconAppWindow
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/integrants`}
-          name="Integrants"
-          isDisplayed={expanded}>
-            <IconUsers
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/tickets`}
-          name="Tickets"
-          isDisplayed={expanded}>
-            <IconFolder
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/erd`}
-          name="ERD Creator"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconDatabase
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/chat`}
-          name="Chat"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconMessage
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/json-preview`}
-          name="JSON Preview"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconEye
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/kanban-board`}
-          name="Kanban board"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconLayoutKanban
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/calendar`}
-          name="Calendar"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconCalendar
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-        </SideBar>
+        <TeamSideBar
+        user={user}
+        team={team} />
 
         <main
         className="flex flex-col justify-start items-center p-10 relative overflow-auto">
+          { /* Warn card */ }
           <div
           className="p-10 hidden items-center justify-center fixed z-10 backdrop-blur backdrop-brightness-75 w-screen h-screen inset-0 animate-fade-in-up animate-duration-300"
           ref={warnCard}
@@ -410,7 +303,18 @@ export default function SettingsPage(){
 
           <form
           className="w-full max-w-200 rounded-md p-4 z-2 flex flex-col items-start justify-start gap-4 animate-fade-in-up animate-duration-300"
-          onSubmit={async(e) => handleUpdateTeam(e)}>
+          onSubmit={async(e) => {
+            setIsLoading(true);
+            await updateProject(
+              e,
+              team,
+              snackbar,
+              user,
+              router
+            )
+            .finally(() => setPrevTeam(team));
+            setIsLoading(false);
+          }}>
             <div
             className="w-full flex flex-col gap-2 text-sm items-start justify-center">
               <label
@@ -551,7 +455,7 @@ export default function SettingsPage(){
                   return;
                 }}
                 type="text"
-                className="outline-none bg-neutral-950 rounded-sm p-3 duration-300 border border-neutral-900 focus:border-main w-full"
+                className="w-max px-2 py-1 rounded-md bg-neutral-800 text-sm font-light cursor-default hover:bg-red-700 duration-400"
                 placeholder="e.g. NextJS, TypeScript, NodeJS" />
 
                 <div

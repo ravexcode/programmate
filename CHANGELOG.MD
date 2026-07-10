@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v56.5:**
+  1. Avances en el apartado de actions. 🚀
+
 - **Indev v56.4:**
   1. Cambio dentro de las llamadas de appi en el frontend, cambiando la parte del proxy que recibe la api key de x-api-key a prismaflow-api key. ✅
   2. Nuevas actions para optimizar el código usado. 🚀

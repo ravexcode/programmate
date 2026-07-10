@@ -8,6 +8,7 @@ import { showSnackbar } from "@/components/ui/snackbar";
 import { UserData } from "@/types/user.types";
 import Team, { IntegrantData } from "@/types/team.types";
 import type { Status } from "@/app/dashboard/page";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 //Alter types
 interface Project {
   name: string;
@@ -99,32 +100,36 @@ export async function createProject(
 export async function updateProject(
   e: React.SubmitEvent<HTMLFormElement>,
   project: Team,
-  index: number,
   snackbar: React.RefObject<null>,
-  user: UserData
+  user: UserData,
+  router: AppRouterInstance
 ) {
   e.preventDefault();
 
   const token = verify();
-  const router = useRouter();
 
   const res = await fetch(
-    `/api/teams/${project.team_id}`, {
+    "/api/teams", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
         "Authorization": token!
       },
-      body: JSON.stringify(project)
+      body: JSON.stringify({
+        teamId: project.team_id,
+        newName: project.name,
+        newDescription: project.description,
+        newStatus: project.status,
+        newTags: project.tags || [],
+      })
     }
   );
 
   const data: undefined | {
     message: string,
-    error?: string,
-    team?: Team
-  } = await res.json();
+    error?: string
+  }= await res.json();
 
   if(!data) return showSnackbar(
     "Server error, try again later",
@@ -132,14 +137,16 @@ export async function updateProject(
     snackbar
   );
 
+  console.log(data);
+
   if(res.status === 401) return router.push("/dashboard");
 
-  if(res.ok && data.team) {
+  if(res.ok) {
     const updated: UserData = {
       ...user,
       teams: (user.teams || []).filter(
-        ( t, i ) => {
-          if(i !== index) return t;
+        t => {
+          if(t.team_id !== project.team_id) return t;
 
           return project;
         }
@@ -148,7 +155,11 @@ export async function updateProject(
     
     window.localStorage.setItem("user", JSON.stringify(updated));
 
-    return router.push(`/projects/${data.team.team_id}`);
+    return showSnackbar(
+      data.message,
+      "valid",
+      snackbar
+    );
   };
 
   return showSnackbar(
@@ -183,8 +194,7 @@ export async function deleteProject(
 
   const data: undefined | {
     message: string,
-    error?: string,
-    team?: Team
+    error?: string
   } = await res.json();
 
   if(!data) return showSnackbar(
@@ -195,7 +205,7 @@ export async function deleteProject(
 
   if(res.status === 401) return router.push("/dashboard");
 
-  if(res.ok && data.team) {
+  if(res.ok) {
     const updated: UserData = {
       ...user,
       teams: (user.teams || []).filter(
