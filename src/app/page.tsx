@@ -14,11 +14,11 @@ import Footer from "@/components/ui/footer";
 import LandingGradient from "@/components/ui/gradients/landing";
 import SmoothProvider from "@/lib/components/lennis";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
-import ReactMarkdown from "@/lib/components/react-markdown";
+import FeatureCard from "@/components/ui/cards/feature";
 
 //Hooks imports
 import { useGetToken } from "@/hooks/useCookies";
-import { IconArrowLeft, IconSend } from "@tabler/icons-react";
+import { IconArrowLeft, IconBrain, IconCalendar, IconLayoutKanban, IconSend } from "@tabler/icons-react";
 
 //Landing page
 export default function HomePage(){
@@ -65,126 +65,6 @@ export default function HomePage(){
   //Mini dashboard has too many components/animations
   const MiniDashboard = lazy(() => import("@components/ui/mini-dashboard/main"));
 
-  const showExample = () => {
-    setExampleInput("");
-
-    if(
-      !message.current ||
-      !exampleChat.current
-    ) return;
-
-    const msgcurr : HTMLElement = message.current;
-    const exchacurr : HTMLElement = exampleChat.current;
-
-    msgcurr.classList.add("animate-fade-out-down");
-
-    const close_animation = (e: AnimationEvent) => {
-      if(e.animationName !== "fade-out-down") return;
-
-      msgcurr.classList.replace("flex", "hidden");
-      exchacurr.classList.replace("hidden", "flex");
-      return;
-    }
-
-    msgcurr.addEventListener("animationend", (e: AnimationEvent) => close_animation(e));
-
-    msgcurr.removeEventListener("animationend",  (e: AnimationEvent) => close_animation(e));
-    return;
-  };
-
-  const exampleMessage = `Ok, let's get started...
-
-Setting project name...\n
-✓ Project initialized successfully
-
-Project Details
----
-
-Title:\n
-Modern E-Shop Platform
-
-Description:\n
-A scalable e-commerce platform designed to sell physical and digital products. Features include product catalog management, customer accounts, shopping cart functionality, order tracking, payment integration, inventory management, and analytics dashboards.
-
-Status:\n
-Planning
-
-Tags:\n
-E-Commerce\n
-Web Application\n
-Next.js\n
-React\n
-TypeScript\n
-Node.js\n
-PostgreSQL\n
-Stripe\n
-TailwindCSS\n
-
-Generating Entity Relationship Diagram...\n
-✓ ERD created
-
-Entities:
-- Users
-- Products
-- Categories
-- Orders
-- Order Items
-- Payments
-- Reviews
-- Addresses
-
-Generating Kanban Board...\n
-✓ Board created
-
-Columns:
-
-Backlog
-- Define business requirements
-- Research payment providers
-- Create product structure
-
-To Do
-- Design database schema
-- Create authentication system
-- Build product catalog page
-
-In Progress
-- Project setup
-
-Review
-- Empty
-
-Done
-- Project initialization
-
-Generating Calendar...\n
-✓ Calendar created
-
-Upcoming Milestones:
-
-Week 1
-- Requirements gathering
-- Database design
-
-Week 2
-- Authentication
-- User profiles
-
-Week 3
-- Product management
-
-Week 4
-- Shopping cart and checkout
-
-Week 5
-- Payment integration
-
-Week 6
-- Testing and deployment
-
-Project ready.\n
-You can now start planning tasks, designing workflows, and managing development progress.`
-
   return (
     <div className="bg-background min-h-dvh animate-fade-in">
       <SnackBar ref={snackbar} />
@@ -201,9 +81,9 @@ You can now start planning tasks, designing workflows, and managing development 
           <div
           className="w-full animate-duration-1000 animate-blurred-fade-in">
             <h1
-            className="text-7xl font-bold mb-4 z-2 text-center animate-fade-in-down animate-duration-500 delay-200">
+            className="text-7xl font-black mb-4 z-2 text-center animate-fade-in-down animate-duration-500 delay-200">
               Built to improve <br />
-              your team <span className="text-sky-600"> Workflow </span>
+              your team <span className="text-main"> Workflow </span>
             </h1>
           </div>
 
@@ -240,85 +120,72 @@ You can now start planning tasks, designing workflows, and managing development 
           <IconCarousel />
         </Suspense>
 
-        <span className="h-10"></span>
-        
-        {/* Features */}
+        <p
+        className="text-6xl font-bold tracking-wide p-10 w-full text-center max-w-280 mt-30 timeline-view-y animate-fade-in-down animate-range-[entry_0%_cover_30%]">
+          Stop wasting time building across multiple plataforms <br />
 
-        {/* AI Workflow feature */}
-        <section
-        className="w-full p-3 flex flex-col items-center justify-center relative animate-range-[entry_0%_cover_20%] timeline-view-y animate-zoom-in">
-          <p
-          className="text-4xl font-semibold z-2">
-            AI for workflows
-          </p>
+          <span
+          className="text-xl opacity-90 font-normal">
+            With prismaflow <span className="text-main"> centralize </span> your workflow with AI-powered automation
+          </span>
+        </p>
 
-          <div
-          className="w-300 h-168 rounded-sm border border-neutral-800 bg-neutral-950 mt-6 block aspect-video z-2 animate-range-[entry_0%_cover_50%] timeline-view-y animate-fade-in-up">
-            <section
-            className="grid grid-rows-[auto_1fr_auto] cursor-default text-sm w-full h-full animate-fade-in animate-duration-300">
-              <header
-              className="w-full flex items-center justify-between p-2 border-b border-neutral-800 animate-fade-in animate-duration-400">
-                <div
-                className="flex gap-2 items-center py-2 px-5 duration-300 rounded-md hover:bg-neutral-900 animate-fade-in-down">
-                  <IconArrowLeft
-                  size={15} />
-                  Go back
-                </div>
-                
-                <p
-                className="flex gap-2 items-center py-2 px-4 rounded-md duration-300 hover:bg-neutral-900 animate-fade-in-down">
-                  Claude
-                  <span
-                  className="opacity-70">
-                    Opus 4.8
-                  </span>
-                </p>
-              </header>
+        <p
+        className="mt-30 text-5xl font-bold tracking-wide w-full text-center">
+          What does prismaflow provide?
+        </p>
 
-              <main
-              className="flex items-center justify-center w-full h-full overflow-auto">
-                <p
-                className="text-4xl tracking-wide opacity-80 animate-fade-in-up flex animate-duration-300"
-                ref={message}>
-                  What are we building today?
-                </p>
+        <div
+        className="mt-20 grid grid-cols-2 justify-start items-start w-full max-w-300 gap-5">
+          <FeatureCard>
+            <p
+            className="font-bold text-4xl">
+              AI Assistant
+            </p>
+            <p
+            className="font-medium my-3">
+              <span className="text-main font-medium">Prismaflow</span> provides AI Assistant to build and manage your projects
+            </p>
 
-                <section
-                className="max-h-full w-230 hidden flex-col items-center justify-start p-10"
-                ref={exampleChat}>
-                  <p
-                  className="max-w-200 ml-auto p-3 rounded-md rounded-br-none bg-neutral-800 w-max animate-fade-in-up animate-duration-400">
-                    Build me a new project for a e-shop to sell products
-                  </p>
+            <IconBrain
+            size={200}
+            stroke={1}
+            className="text-main animate-pulse duration-500 hover:animate-none" />
+          </FeatureCard>
 
-                  <div
-                  className="max-w-200 w-max rounded-md rounded-bl-none p-3 mr-auto animate-fade-in animate-duration-500">  
-                    <ReactMarkdown
-                    content={exampleMessage} />
-                  </div>
-                </section>
-              </main>
+          <FeatureCard
+          height="min-h-130">
+            <p
+            className="font-bold text-4xl">
+              Kanban board
+            </p>
+            <p
+            className="font-medium my-3">
+              Improve a better <span className="text-main font-medium">organization</span> with our kanban board
+            </p>
 
-              <footer
-              className="mx-auto gap-3 p-3 mb-3 w-200 flex items-center">
-                <input
-                value={exampleInput}
-                onChange={() => {}}
-                type="text"
-                className="rounded-md bg-neutral-900 border border-neutral-700 duration-300 outline-none focus:border-main p-2 w-full animate-fade-in-up"
-                placeholder="Ask me anything" />
+            <IconLayoutKanban
+            size={200}
+            stroke={1}
+            className="text-main animate-pulse duration-500 hover:animate-none" />
+          </FeatureCard>
 
-                <button
-                type="button"
-                className="bg-main flex gap-2 py-1.5 px-4 rounded-md items-center duration-300 hover:bg-main/70 animate-fade-in-up"
-                onClick={showExample}>
-                  <IconSend size={15} />
-                  Send
-                </button>
-              </footer>
-            </section>
-          </div>
-        </section>
+          <FeatureCard>
+            <p
+            className="font-bold text-4xl">
+              Calendar
+            </p>
+            <p
+            className="font-medium my-3">
+              Get <span className="text-main font-medium">noticed</span> about your meetings and sprints with our calendar.
+            </p>
+
+            <IconCalendar
+            size={200}
+            stroke={1}
+            className="text-main animate-pulse duration-500 hover:animate-none" />
+          </FeatureCard>
+        </div>
 
       </main>
 

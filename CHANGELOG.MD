@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v56.7:**
+  1. OpenSans puesta como fuente principal. ✅
+  2. Inicio de cambios en la pagina principal. 🔨
+  3. Nuevo componente de feature card. 🚀
+
 - **Indev v56.5:**
   1. Avances en el apartado de actions. 🚀
 
