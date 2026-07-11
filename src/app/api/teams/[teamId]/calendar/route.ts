@@ -19,39 +19,6 @@ import supabase from "@/lib/db";
 import { CalendarDate } from "@/types/team.types";
 import { ParamsType } from "@api/teams/[teamId]/params.type";
 
-export async function GET({ params }: ParamsType, req: NextRequest) {
-  try {
-    const { teamId } = await params;
-    const token = (await headers()).get("Authorization");
-    
-    if (!teamId) return badRequestErrorHandler();
-    if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
-
-    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
-
-    if(!user) return notFoundErrorHandler("User data not found");
-    if(getUserError) return unauthorizedErrorHandler("Authorization token expired");
-
-    const { data: team, error: getTeamError } = await supabase
-    .from("teams")
-    .select("*")
-    .eq("team_id", teamId)
-    .maybeSingle();
-
-    if(!team) return notFoundErrorHandler("Team not found");
-    if(getTeamError) return supabaseErrorHandler(getTeamError);
-
-    if(team.integrants_id.includes(user.id)) return unauthorizedErrorHandler("You're not in the team");
-
-    return NextResponse.json({
-      message: "Events got successfully!",
-      calendar: team.calendar
-    });
-  } catch (error: unknown) {
-    return serverErrorHandler(error);
-  }
-}
-
 export async function POST({ params }: ParamsType, req: NextRequest) {
   try {
     const { teamId } = await params;

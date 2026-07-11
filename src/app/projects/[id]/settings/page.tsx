@@ -37,7 +37,7 @@ import useAnimationClose from "@/hooks/useAnimationClose";
 
 //Actions imports
 import { fetchTemplate } from "@/actions/template";
-import { updateProject, deleteProject } from "@/actions/project/main";
+import { updateProject, deleteProject } from "@/controllers/project/project.controller";
 
 export default function SettingsPage(){
   //Next setup

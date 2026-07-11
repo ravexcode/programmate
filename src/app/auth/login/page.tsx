@@ -20,7 +20,7 @@ import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import { IconArrowLeft } from "@tabler/icons-react";
 
 //Actions imports
-import { signIn } from "@/actions/auth";
+import { signIn } from "@/controllers/auth.controller";
 
 //Hooks imports
 import { useVerifyLogged } from "@/hooks/auth";

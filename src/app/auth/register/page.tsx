@@ -20,7 +20,7 @@ import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import { IconArrowLeft } from "@tabler/icons-react";
 
 //Actions imports
-import { signUp, verify } from "@/actions/auth";
+import { signUp, verify } from "@/controllers/auth.controller";
 
 export default function RegisterPage() {
   //NextJS Setup

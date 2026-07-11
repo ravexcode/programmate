@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v60.0:**
+  1. Controllers, services y modules integrados (patron MSC). ⚙️
+  2. Mejor control en la request de eventos. ⚒️
+
 - **Indev v59.0:**
   1. Pagina de about eliminada e integración de la página de producto
 
