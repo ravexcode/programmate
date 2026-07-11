@@ -1,92 +1,64 @@
-//Hooks imports
-import {
-  useGetToken,
-  useSaveToken
-} from "@/hooks/useCookies";
-import { useRouter } from "next/navigation";
+import { useGetToken } from "@/hooks/useCookies";
 
-//Actions for auth
+type SignInCredentials = {
+  email: string;
+  password: string;
+};
 
-//Login action
-export async function signIn(
-  e: React.SubmitEvent<HTMLFormElement>,
-  credentials: {
-    email: string,
-    password: string
-  },
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>
-) {
-  e.preventDefault();
-  const router = useRouter();
+type SignUpCredentials = {
+  email: string;
+  name: string;
+  password: string;
+};
 
-  const res = await fetch(
-    "/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-      },
-      body: JSON.stringify(credentials),
-    }
-  );
+type AuthResponse = {
+  status: number;
+  message?: string;
+  token?: string;
+};
 
-  //Process the data
-  const data = await res.json();
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
 
-  if(res.status === 200) {
-    //Saves the cookie
-    useSaveToken(data.token);
-    return router.push("/dashboard");
-  }
+export async function signInController(credentials: SignInCredentials): Promise<AuthResponse> {
+  const res = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "prismaflow-api-key": API_KEY,
+    },
+    body: JSON.stringify(credentials),
+  });
 
-  return setLoading(false);
+  const data = await res.json().catch(() => ({ message: "Server error", status: res.status }));
+
+  return {
+    status: res.status,
+    message: data.message,
+    token: data.token,
+  };
 }
 
+export async function signUpController(credentials: SignUpCredentials): Promise<AuthResponse> {
+  const res = await fetch("/api/auth/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "prismaflow-api-key": API_KEY,
+    },
+    body: JSON.stringify(credentials),
+  });
 
-//Login action
-export async function signUp(
-  e: React.SubmitEvent<HTMLFormElement>,
-  credentials: {
-    email: string,
-    name: string,
-    password: string
-  },
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  confirm: string
-) {
-  e.preventDefault();
-  const router = useRouter();
+  const data = await res.json().catch(() => ({ message: "Server error", status: res.status }));
 
-  if(credentials.password !== confirm) return setLoading(false);
-
-  const res = await fetch(
-    "/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-      },
-      body: JSON.stringify(credentials),
-    }
-  );
-
-  //Process the data
-  const data = await res.json();
-
-  if(res.status === 201) {
-    //Saves the cookie
-    useSaveToken(data.token);
-    return router.push("/dashboard");
-  }
-
-  return setLoading(false);
+  return {
+    status: res.status,
+    message: data.message,
+    token: data.token,
+  };
 }
 
-//Verifies session status
-export function verify() {
+export function verifyController() {
   const token = useGetToken();
 
-  if(!token) return false;
-
-  return true;
+  return Boolean(token);
 }

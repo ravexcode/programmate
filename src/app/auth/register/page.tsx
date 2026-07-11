@@ -20,7 +20,7 @@ import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import { IconArrowLeft } from "@tabler/icons-react";
 
 //Actions imports
-import { signUp, verify } from "@/controllers/auth.controller";
+import { signUpModule, verifyModule } from "@/modules/auth.module";
 
 export default function RegisterPage() {
   //NextJS Setup
@@ -43,7 +43,7 @@ export default function RegisterPage() {
 
   //Verifies session status
   useEffect(() => {
-    if(verify()) return router.push("/dashboard");
+    if(verifyModule()) return router.push("/dashboard");
   }, []);
 
 
@@ -67,7 +67,7 @@ export default function RegisterPage() {
           </Link>
 
           <AuthForm
-          onSubmit={(e) => signUp(
+          onSubmit={(e) => signUpModule(
             e,
             {
               email,
@@ -75,7 +75,8 @@ export default function RegisterPage() {
               password,
             },
             setIsFormDisponible,
-            confirm
+            confirm,
+            router
           )}
           title="Get started!"
           submitText="Sign up"

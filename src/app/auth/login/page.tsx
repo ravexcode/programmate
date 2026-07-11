@@ -20,7 +20,7 @@ import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import { IconArrowLeft } from "@tabler/icons-react";
 
 //Actions imports
-import { signIn } from "@/controllers/auth.controller";
+import { signInModule } from "@/modules/auth.module";
 
 //Hooks imports
 import { useVerifyLogged } from "@/hooks/auth";
@@ -62,13 +62,14 @@ export default function LogInPage() {
             </Link>
 
             <AuthForm
-            onSubmit={(e) => signIn(
+            onSubmit={(e) => signInModule(
               e,
               {
                 email,
                 password
               },
-              setIsFormDisponible
+              setIsFormDisponible,
+              router
             )}
             title="Welcome back!"
             submitText="Sign in"

@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v61.0:**
+  1. Nuevo MSC para auth. (proveido por Copilot)
+
 - **Indev v60.0:**
   1. Controllers, services y modules integrados (patron MSC). ⚙️
   2. Mejor control en la request de eventos. ⚒️
