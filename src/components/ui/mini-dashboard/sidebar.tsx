@@ -84,7 +84,7 @@ export default function MiniDashboardSidebar(props: Props) {
           Prismaflow <br />
           <span
           className="text-[10px] opacity-70">
-            example@prismaflow.app
+            example@nexzero.app
           </span>
         </p>
       </div>

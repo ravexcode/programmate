@@ -11,7 +11,7 @@ export async function fetchProfile(data: GetData) {
       "method": "GET",
       "headers": {
         "Content-Type": "application/json",
-        "prismaflow-api-key": API_KEY,
+        "nexzero-api-key": API_KEY,
         "Authorization": data.token
       },
     }

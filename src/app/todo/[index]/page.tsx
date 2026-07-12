@@ -87,7 +87,7 @@ export default function ToDoListPage() {
         method: "PUT",
         headers: {
           "Content-type": "application/json",
-          "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+          "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
           "Authorization": token
         },
         body: JSON.stringify({

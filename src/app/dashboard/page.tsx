@@ -144,7 +144,7 @@ export default function Dashboard(){
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
       }
     });
 

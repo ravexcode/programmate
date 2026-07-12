@@ -12,7 +12,7 @@ export function proxy(req: NextRequest) {
   if(path.startsWith('/api/webhooks')) return NextResponse.next();
 
   //Gets the API Key
-  const api_key = req.headers.get("prismaflow-api-key");
+  const api_key = req.headers.get("nexzero-api-key");
 
   //Verifies if the API Key in server exists
   const valid_api_key = process.env.API_KEY;

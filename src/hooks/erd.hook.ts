@@ -32,7 +32,7 @@ export async function saveERD(
     headers: {
       "Content-Type": "application/json",
       "Authorization": token,
-      "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!
+      "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!
     },
     body: JSON.stringify({
       erd: erd,
@@ -66,7 +66,7 @@ export async function getERD(
     headers: {
       "Content-Type": "application/json",
       "Authorization": token,
-      "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!
+      "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!
     },
   });
 

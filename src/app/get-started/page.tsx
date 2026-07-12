@@ -138,7 +138,7 @@ export default function GetStarted() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
         "Authorization": token!,
       },
       body: JSON.stringify(newProject)
@@ -190,7 +190,7 @@ export default function GetStarted() {
           method: "GET",
           headers: {
             "Content-type": "application/json",
-            "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!
+            "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!
           }
         });
 
@@ -207,7 +207,7 @@ export default function GetStarted() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+            "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
             "Authorization": token,
           },
           body: JSON.stringify({
@@ -295,7 +295,7 @@ export default function GetStarted() {
           Welcome to this new experience
         </h1>
         <p className="text-base xl:text-lg text-zinc-400 font-light max-w-lg mb-10">
-          In prismaflow our principal goal is a better flow in your proyect
+          In nexzero our principal goal is a better flow in your proyect
         </p>
 
         <button

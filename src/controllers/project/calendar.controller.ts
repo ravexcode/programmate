@@ -29,7 +29,7 @@ export async function createEventController(data: UploadData) {
       "method": "POST",
       "headers": {
         "Content-Type": "application/json",
-        "prismaflow-api-key": API_KEY,
+        "nexzero-api-key": API_KEY,
         "Authorization": data.token
       },
       body: JSON.stringify({
@@ -68,7 +68,7 @@ export async function updateEventController(data: UpdateData) {
       "method": "PUT",
       "headers": {
         "Content-Type": "application/json",
-        "prismaflow-api-key": API_KEY,
+        "nexzero-api-key": API_KEY,
         "Authorization": data.token
       },
       body: JSON.stringify({
@@ -108,7 +108,7 @@ export async function deleteEventController(data: DeleteData) {
       "method": "DELETE",
       "headers": {
         "Content-Type": "application/json",
-        "prismaflow-api-key": API_KEY,
+        "nexzero-api-key": API_KEY,
         "Authorization": data.token
       },
       "body": JSON.stringify({

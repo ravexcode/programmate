@@ -76,7 +76,7 @@ export default function ConfigurationPage(){
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+          "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
           "Authorization": token!,
         }
       });

@@ -13,7 +13,7 @@ export async function requestIntegrantController(data: RequestData) {
       "method": "POST",
       "headers" : {
         "Content-Type": "application/json",
-        "prismaflow-api-key": API_KEY,
+        "nexzero-api-key": API_KEY,
         "Authorization": data.token
       }
     }

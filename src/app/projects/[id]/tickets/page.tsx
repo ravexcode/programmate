@@ -275,7 +275,7 @@ export default function TicketsTeamPage(){
         headers: {
           "Content-Type": "application/json",
           "Authorization": token,
-          "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!
+          "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!
         },
         body: JSON.stringify(ticket)
       });
@@ -319,7 +319,7 @@ export default function TicketsTeamPage(){
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+          "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
           "Authorization": token
         },
         body: JSON.stringify({

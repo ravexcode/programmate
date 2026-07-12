@@ -39,7 +39,7 @@ export default function HomePage(){
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+          "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
           "Authorization": token
         },
         body: JSON.stringify({
@@ -128,13 +128,13 @@ export default function HomePage(){
 
           <span
           className="text-xl opacity-90 font-normal">
-            With prismaflow <span className="text-blue-600"> centralize </span> your workflow with AI-powered automation
+            With nexzero <span className="text-blue-600"> centralize </span> your workflow with AI-powered automation
           </span>
         </p>
 
         <p
         className="mt-30 text-5xl font-bold tracking-wide w-full text-center">
-          What does prismaflow provide? <br />
+          What does nexzero provide? <br />
           <span
           className="text-neutral-400 font-normal text-base">
             Prismaflow provides you many tools for your projects workflow

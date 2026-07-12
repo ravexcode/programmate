@@ -1,8 +1,11 @@
 # Indev
 
+- **Indev v64.0:**
+  1. Renombre prismaflow => nexzero (Nex0)
+
 - **INdev v63.0:**
   1. Renombre en ruta /auth/login => /auth/signin, /auth/login solo queda como redireccion. ⚒️
-  1. Renombre en ruta /auth/register => /auth/signup, /auth/register solo queda como redireccion. ⚒️
+  2. Renombre en ruta /auth/register => /auth/signup, /auth/register solo queda como redireccion. ⚒️
 
 - **Indev v62.1:**
   1. Refactor en la opcion para mandar una request a los integrantes. 📬

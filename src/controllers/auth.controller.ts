@@ -24,7 +24,7 @@ export async function signInController(credentials: SignInCredentials): Promise<
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "prismaflow-api-key": API_KEY,
+      "nexzero-api-key": API_KEY,
     },
     body: JSON.stringify(credentials),
   });
@@ -43,7 +43,7 @@ export async function signUpController(credentials: SignUpCredentials): Promise<
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "prismaflow-api-key": API_KEY,
+      "nexzero-api-key": API_KEY,
     },
     body: JSON.stringify(credentials),
   });

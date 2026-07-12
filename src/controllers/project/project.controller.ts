@@ -55,7 +55,7 @@ export async function createProject(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
         "Authorization": token!
       },
       body: JSON.stringify(project)
@@ -113,7 +113,7 @@ export async function updateProject(
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
         "Authorization": token!
       },
       body: JSON.stringify({
@@ -186,7 +186,7 @@ export async function deleteProject(
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
         "Authorization": token!
       }
     }
