@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v65.0:**
+  1. Logo update. 🖼️
+
 - **Indev v64.0:**
   1. Renombre prismaflow => nexzero (Nex0)
 
