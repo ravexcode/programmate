@@ -50,7 +50,7 @@ export default function TeamPage(){
 
       const token = useGetToken();
 
-      if(!token) return router.push("/auth/login");
+      if(!token) return router.push("/auth/signin");
 
       const cached = getCached();
 
@@ -62,7 +62,7 @@ export default function TeamPage(){
         if(!fetched) {
           useDeleteToken();
           window.localStorage.clear();
-          return router.push("/auth/login");
+          return router.push("/auth/signin");
         };
 
         user_data = fetched;

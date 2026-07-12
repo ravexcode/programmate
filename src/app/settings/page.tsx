@@ -89,7 +89,7 @@ export default function ConfigurationPage(){
         window.localStorage.clear();
         useDeleteToken();
         //Redirects to the login page
-        router.push("/auth/login");
+        router.push("/auth/signin");
         return;
       }
 
@@ -237,7 +237,7 @@ export default function ConfigurationPage(){
               action={() => {
                 useDeleteToken();
                 window.localStorage.clear();
-                router.push("/auth/login");
+                router.push("/auth/signin");
               }}>
                 <IconLogout
                 stroke={1.5} />

@@ -31,7 +31,7 @@ export default function HomePage(){
   const handlePayment = async(plan: string) => {
     const token = useGetToken();
 
-    if(!token) return router.push("/auth/login");
+    if(!token) return router.push("/auth/signin");
 
     const res = await fetch(
       '/api/payments/capture-payment',

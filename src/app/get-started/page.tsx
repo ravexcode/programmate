@@ -45,7 +45,7 @@ export default function GetStarted() {
     async function validator(){
       const token = useGetToken();
 
-      if(!token) return window.location.href = "/auth/login";
+      if(!token) return window.location.href = "/auth/signin";
 
       const user = await UpdateUserData(token);
 
@@ -105,7 +105,7 @@ export default function GetStarted() {
 
     if(!token) {
       //If hasn't token returns to log in form
-      window.location.href = "/auth/login";
+      window.location.href = "/auth/signin";
     };
 
     const user = JSON.parse(localStorage.getItem("user")!);
@@ -168,7 +168,7 @@ export default function GetStarted() {
     const token = useGetToken();
 
     if(!token) {
-      window.location.href = "/auth/login";
+      window.location.href = "/auth/signin";
       return;
     }
 

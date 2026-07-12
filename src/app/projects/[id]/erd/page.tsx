@@ -149,7 +149,7 @@ export default function Page(){
     async function fetchData(){
       const token = useGetToken();
 
-      if(!token) return router.push("/auth/login");
+      if(!token) return router.push("/auth/signin");
 
       const user_data = await getUser(token);
       setUser(user_data);
@@ -325,7 +325,7 @@ export default function Page(){
 
     const token = useGetToken();
 
-    if(!token) return router.push("/auth/login");
+    if(!token) return router.push("/auth/signin");
 
     const res = await fetch(
       `/api/teams/${params.id}/erd`, {

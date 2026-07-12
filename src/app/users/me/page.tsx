@@ -44,7 +44,7 @@ export default function ProfilePage() {
 
       if(!token) {
         //If hasn't token returns to log in form
-        return router.push("/auth/login");
+        return router.push("/auth/signin");
       };
 
       
@@ -77,7 +77,7 @@ export default function ProfilePage() {
       useDeleteCookie("token");
       localStorage.clear();
       window.localStorage.clear();
-      return router.push("/auth/login");
+      return router.push("/auth/signin");
     }
 
     //Executes the function

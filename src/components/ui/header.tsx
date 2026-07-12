@@ -54,7 +54,7 @@ export default function Header(){
       </ul>
       
       <Link
-      href={isSignedIn ? "/dashboard" : "/auth/register"}
+      href={isSignedIn ? "/dashboard" : "/auth/signup"}
       className="bg-main hover:bg-main/80 duration-400 py-2 w-30 text-center text-sm tracking-wide rounded-md">
         {isSignedIn ? "Dashboard" : "Get started"}
       </Link>

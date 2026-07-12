@@ -25,7 +25,7 @@ function logOut() {
   useDeleteToken();
   window.localStorage.clear();
 
-  return router.push("/auth/login");
+  return router.push("/auth/signin");
 }
 function checkStatus(status: number) {
   if(status >= 500) return "critic";

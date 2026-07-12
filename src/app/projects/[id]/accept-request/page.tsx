@@ -31,7 +31,7 @@ export default function AcceptRequestPage(){
     async function getData(){
       const token = useGetToken();
 
-      if(!token) return window.location.href = "/auth/login";
+      if(!token) return window.location.href = "/auth/signin";
 
       setAuthToken(token);
       const user_data = await UpdateUserData(token);
@@ -39,7 +39,7 @@ export default function AcceptRequestPage(){
       if(!user_data){
         useDeleteToken();
         window.localStorage.clear();
-        window.location.href = "/auth/login";
+        window.location.href = "/auth/signin";
       }
 
       setUser(user_data)

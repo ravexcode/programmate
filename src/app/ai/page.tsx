@@ -68,7 +68,7 @@ export default function AgentsPage() {
     async function get() {
       const token = useGetToken();
 
-      if(!token) return router.push("/auth/login");
+      if(!token) return router.push("/auth/signin");
 
       const cached = getCached();
 
@@ -76,7 +76,7 @@ export default function AgentsPage() {
       
       const fetched = await getUser(token);
 
-      if(!fetched) return router.push("/auth/login");
+      if(!fetched) return router.push("/auth/signin");
 
       return setUser(fetched);
     }

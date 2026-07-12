@@ -31,7 +31,7 @@ export async function createEventService(data: UploadData) {
   const token = getSessionStr();
 
   if(!token) {
-    router.push("/auth/register")
+    router.push("/auth/signup")
     return false;
   };
 
@@ -59,7 +59,7 @@ export async function updateEventService(data: UpdateData) {
   const token = getSessionStr();
 
   if(!token) {
-    router.push("/auth/register")
+    router.push("/auth/signup")
     return false;
   };
 

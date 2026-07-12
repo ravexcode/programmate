@@ -57,7 +57,7 @@ export default function TicketPage(){
     async function get() {
       const token = useGetToken();
 
-      if(!token) return router.push("/auth/login");
+      if(!token) return router.push("/auth/signin");
 
       let user_data: UserData;
 

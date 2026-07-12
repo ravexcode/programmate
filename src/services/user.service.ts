@@ -16,11 +16,11 @@ export default async function getUserService(data: GetData) {
   const token = getSessionStr();
   const router = data.router;
 
-  if(!token) return router.push("/auth/login");
+  if(!token) return router.push("/auth/signin");
 
   const req = await fetchProfile({ token });
 
-  if(req.status === 401) return router.push("/auth/login");
+  if(req.status === 401) return router.push("/auth/signin");
   if(req.status >= 205) return logOut(router);
 
   let plan : string = "Free";

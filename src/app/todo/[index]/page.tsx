@@ -54,7 +54,7 @@ export default function ToDoListPage() {
       //Checks session status
       const token = useGetToken();
 
-      if(!token) return router.push('/auth/login');
+      if(!token) return router.push('/auth/signin');
 
       //Sets data if there's no data cached
       const user_data = await UpdateUserData(token);
@@ -79,7 +79,7 @@ export default function ToDoListPage() {
 
     const token = useGetToken();
 
-    if(!token) return router.push("/auth/login");
+    if(!token) return router.push("/auth/signin");
 
     const res = await fetch(
       `/api/todos`,

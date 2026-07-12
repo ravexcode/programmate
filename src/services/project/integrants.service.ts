@@ -20,7 +20,7 @@ export async function requestIntegrantService(data: RequestData) {
   const token = getSessionStr();
   const router = data.router;
 
-  if(!token) return router.push("/auth/login");
+  if(!token) return router.push("/auth/signin");
 
   const response = await requestIntegrantController({
     id: data.id,

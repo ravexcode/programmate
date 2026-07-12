@@ -120,7 +120,7 @@ export default function TicketsTeamPage(){
 
       const token = useGetToken();
 
-      if(!token) return router.push("/auth/login");
+      if(!token) return router.push("/auth/signin");
 
       const cached = getCached();
 
@@ -130,7 +130,7 @@ export default function TicketsTeamPage(){
         if(!user_fetched) {
           useDeleteToken();
           window.localStorage.clear();
-          return router.push("/auth/login");
+          return router.push("/auth/signin");
         }
 
         user_data = user_fetched
@@ -265,7 +265,7 @@ export default function TicketsTeamPage(){
 
       //If token isn't returned sends to login
       if (!token) {
-        window.location.href = "/auth/login";
+        window.location.href = "/auth/signin";
         return;
       }
 
@@ -311,7 +311,7 @@ export default function TicketsTeamPage(){
 
     const token = useGetToken();
 
-    if(!token) return router.push("/auth/login");
+    if(!token) return router.push("/auth/signin");
     toggleEditForm();
 
     const res = await fetch(
@@ -348,7 +348,7 @@ export default function TicketsTeamPage(){
 
     const token = useGetToken();
 
-    if(!token) return router.push("/auth/login");
+    if(!token) return router.push("/auth/signin");
 
     setTickets(prev =>
       prev ?

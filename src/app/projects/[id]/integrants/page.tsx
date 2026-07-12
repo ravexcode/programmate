@@ -108,7 +108,7 @@ export default function Page(){
       let user_data : UserData;
       const token = useGetToken();
 
-      if(!token) return router.push("/auth/login");
+      if(!token) return router.push("/auth/signin");
 
       const cached = getCached();
 
@@ -118,7 +118,7 @@ export default function Page(){
         if(!user_fetched) {
           useDeleteToken();
           window.localStorage.clear();
-          return router.push("/auth/login");
+          return router.push("/auth/signin");
         }
 
         user_data = user_fetched;
@@ -163,7 +163,7 @@ export default function Page(){
 
       const token = useGetToken();
 
-      if(!token) return router.push("/auth/login");
+      if(!token) return router.push("/auth/signin");
 
       const res = await fetch(`/api/teams/${params.id}/integrants/request`, {
         method: "POST",
@@ -215,7 +215,7 @@ export default function Page(){
   const changeMemberRole = async(memberId: string, currentRole: string) => {
     const token = useGetToken();
     if(!team) return;
-    if(!token) return router.push("/auth/login");
+    if(!token) return router.push("/auth/signin");
 
     // Constants
     const integrants = team.integrants;
@@ -240,7 +240,7 @@ export default function Page(){
   //Confirm role change
   const confirmRoleChange = async() => {
     const token = useGetToken();
-    if(!token) return router.push("/auth/login");
+    if(!token) return router.push("/auth/signin");
 
     setIsProcessing(true);
 
@@ -297,7 +297,7 @@ export default function Page(){
   //Confirm member deletion
   const confirmMemberDeletion = async() => {
     const token = useGetToken();
-    if(!token) return router.push("/auth/login");
+    if(!token) return router.push("/auth/signin");
 
     setIsProcessing(true);
 

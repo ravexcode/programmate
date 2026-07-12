@@ -72,7 +72,7 @@ export default function ChatPage() {
     async function setAllData(){
       //Sets user data
       const token = useGetToken();
-      if(!token) return window.location.href = "/auth/login";
+      if(!token) return window.location.href = "/auth/signin";
 
       //Sets cached
       const cached = getCached();
@@ -83,7 +83,7 @@ export default function ChatPage() {
       } else {
         user_fetched = await getUser(token);
         
-        if(!user) return window.location.href = "/auth/login";
+        if(!user) return window.location.href = "/auth/signin";
 
         setUser(user_fetched);
       }

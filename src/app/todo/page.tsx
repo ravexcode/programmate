@@ -97,7 +97,7 @@ export default function ToDoListPage() {
     async function get(){
       const token = useGetToken();
 
-      if(!token) return router.push("/auth/login");
+      if(!token) return router.push("/auth/signin");
 
       const cached = getCached();
       
@@ -132,7 +132,7 @@ export default function ToDoListPage() {
     //Gets the token
     const token = useGetToken();
 
-    if(!token) return window.location.href = "/auth/login";
+    if(!token) return window.location.href = "/auth/signin";
 
     //Creates the new list
     const res = await fetch("/api/todos", {
@@ -248,7 +248,7 @@ export default function ToDoListPage() {
     //Gets the token
     const token = useGetToken();
 
-    if(!token) return window.location.href = "/auth/login";
+    if(!token) return window.location.href = "/auth/signin";
 
     const content = {
       title: listName,
@@ -332,7 +332,7 @@ export default function ToDoListPage() {
     if(currentIndex === undefined || !user) return;
     const token = useGetToken();
 
-    if(!token) return router.push("/auth/login");
+    if(!token) return router.push("/auth/signin");
 
     setDeleteDisabled(true);
     toggleWarn();
