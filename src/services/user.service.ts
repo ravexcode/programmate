@@ -1,90 +1,68 @@
-//Hooks imports
-import { useDeleteToken } from "@/hooks/useCookies";
+import {
+  getSessionStr,
+  logOut
+} from "@/services/session.service";
 
-//Types imports
-import { UserData } from "@/types/user.types";
+import { fetchProfile } from "@/controllers/user.controller";
 
-export default async function getUser(token: string) {
-  //Fetch to user api
-  const res = await fetch('/api/users/me', {
-    method: "GET",
-    headers: {
-      "Content-type": "application/json",
-      "prismaflow-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-      "Authorization": token
-    }
-  });
+import type { UserData } from "@/types/user.types";
+import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-  //Gets the user data
-  const data = await res.json();
-  
-  //Verifies if status is OK
-  if(res.status !== 200) {
-    //If there's an error
-    //Deletes token auth
-    useDeleteToken();
-    //Deletes cache
-    window.localStorage.clear();
-    //Returns to log in page
-    window.location.href = "/auth/login";
+type GetData = {
+  router: AppRouterInstance;
+}
 
-    return;
-  }
+export default async function getUserService(data: GetData) {
+  const token = getSessionStr();
+  const router = data.router;
 
-  //Plan default
+  if(!token) return router.push("/auth/login");
+
+  const req = await fetchProfile({ token });
+
+  if(req.status === 401) return router.push("/auth/login");
+  if(req.status >= 205) return logOut(router);
+
   let plan : string = "Free";
-  //Teams
   let teams = [];
 
-  //Payments section
-  if(data.payments && data.payments.length >= 1) {
-    //Gets the latest payment
-    const lastPayment = data.payments[data.payments.length - 1]; //Minus 1 because the array is 1 spot before the data
-    //Expiration date
+  if(req.data.payments && req.data.payments.length >= 1) {
+    const lastPayment = req.data.payments[req.data.payments.length - 1];
     const expires = new Date(lastPayment.paid_at);
-    //Plus 30 days (subscription time)
     expires.setDate(expires.getDate() + 30);
-    //Now
     const now = new Date();
 
-    //Verifies if the payment isn't expired
     if(now <= expires) {
-      //Plan
       plan = lastPayment.plan;
-      //Deletes the "" ("pro" -> pro)
       plan = plan.replaceAll('"', '');
-      //First letter to capital (pro -> Pro)
       plan = plan.charAt(0).toUpperCase() + plan.slice(1);
     }
   }
   
   //Teams updater
-  if(data.teams && data.teams.length >= 1) {
-    teams = data.teams;
+  if(req.data.teams && req.data.teams.length >= 1) {
+    teams = req.data.teams;
   }
 
-  const username = data.user.user_metadata.display_name ?? data.profile.display_name;
+  const username = req.data.user.user_metareq.data.display_name ?? req.data.profile.display_name;
 
-  //Creates the user object
   const user : UserData = {
-    "id": data.profile.id,
-    "email": data.profile.email,
+    "id": req.data.profile.id,
+    "email": req.data.profile.email,
     "name": username,
     "plan": plan,
     "teams": teams,
-    "ai_chat": data.profile.ai_chat,
-    "to_do_list": data.profile.to_do_list,
-    "created_at": data.user.identities[0].created_at,
-    "last_sign_in": data.user.last_sign_in_at,
-    "avatar_url": data.profile.avatar_url,
-    "ai_providers": data.profile.ai_providers
+    "ai_chat": req.data.profile.ai_chat,
+    "to_do_list": req.data.profile.to_do_list,
+    "created_at": req.data.user.identities[0].created_at,
+    "last_sign_in": req.data.user.last_sign_in_at,
+    "avatar_url": req.data.profile.avatar_url,
+    "ai_providers": req.data.profile.ai_providers
   }
 
   const now = new Date();
 
-  //Saves in cache
   window.localStorage.setItem("user", JSON.stringify(user));
   window.localStorage.setItem("cached_at", now.toString());
-  //Returns as user
   return user;
 }

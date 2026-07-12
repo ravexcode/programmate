@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v62.0:**
+  1. Continua el refactor completo de la App, ahora se obtienen datos del usuario facilmente. ⚒️
+
 - **Indev v61.0:**
   1. Nuevo MSC para auth. (proveido por Copilot)
 

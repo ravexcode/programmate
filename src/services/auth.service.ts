@@ -1,4 +1,3 @@
-import type { Dispatch, FormEvent, SetStateAction } from "react";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 import {
@@ -20,9 +19,9 @@ type SignUpCredentials = {
 };
 
 export async function signInService(
-  e: FormEvent<HTMLFormElement>,
+  e: React.SubmitEvent<HTMLFormElement>,
   credentials: SignInCredentials,
-  setLoading: Dispatch<SetStateAction<boolean>>,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   router: AppRouterInstance
 ) {
   e.preventDefault();
@@ -40,9 +39,9 @@ export async function signInService(
 }
 
 export async function signUpService(
-  e: FormEvent<HTMLFormElement>,
+  e: React.SubmitEvent<HTMLFormElement>,
   credentials: SignUpCredentials,
-  setLoading: Dispatch<SetStateAction<boolean>>,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   confirm: string,
   router: AppRouterInstance
 ) {
