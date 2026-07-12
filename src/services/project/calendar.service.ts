@@ -1,15 +1,13 @@
-//Controllers
-import { showSnackbar } from "@/components/ui/snackbar";
-import { createEventController, updateEventController } from "@/controllers/project/calendar.controller";
-import { useGetToken } from "@/hooks/useCookies";
+import { getSessionStr } from "../session.service";
 
-//Utils imports
+import { showSnackbar } from "@/components/ui/snackbar";
+
 import checkStatus from "@/utils/check-status";
 
-//Types
+import { createEventController, updateEventController } from "@/controllers/project/calendar.controller";
+
 import type { CalendarDate } from "@/types/team.types";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import type Team from "@/types/team.types";
 
 type UploadData = {
   id: number;
@@ -30,7 +28,7 @@ export async function createEventService(data: UploadData) {
   const snackbar = data.snackbar;
   const router = data.router;
 
-  const token = useGetToken();
+  const token = getSessionStr();
 
   if(!token) {
     router.push("/auth/register")
@@ -58,7 +56,7 @@ export async function updateEventService(data: UpdateData) {
   const snackbar = data.snackbar;
   const router = data.router;
 
-  const token = useGetToken();
+  const token = getSessionStr();
 
   if(!token) {
     router.push("/auth/register")

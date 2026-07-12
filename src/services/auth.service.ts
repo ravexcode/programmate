@@ -5,7 +5,8 @@ import {
   signUpController,
   verifyController,
 } from "@/controllers/auth.controller";
-import { useSaveToken } from "@/hooks/useCookies";
+
+import { saveSession } from "./session.service";
 
 type SignInCredentials = {
   email: string;
@@ -29,7 +30,7 @@ export async function signInService(
   const response = await signInController(credentials);
 
   if (response.status === 200 && response.token) {
-    useSaveToken(response.token);
+    saveSession(response.token);
     router.push("/dashboard");
     return true;
   }
@@ -55,7 +56,7 @@ export async function signUpService(
   const response = await signUpController(credentials);
 
   if (response.status === 201 && response.token) {
-    useSaveToken(response.token);
+    saveSession(response.token);
     router.push("/dashboard");
     return true;
   }

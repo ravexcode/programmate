@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v62.1:**
+  1. Refactor en la opcion para mandar una request a los integrantes. 📬
+
 - **Indev v62.0:**
   1. Continua el refactor completo de la App, ahora se obtienen datos del usuario facilmente. ⚒️
 
