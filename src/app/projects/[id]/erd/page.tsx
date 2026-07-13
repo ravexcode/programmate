@@ -238,7 +238,7 @@ export default function Page(){
     type?: string
   ) => {
     //Duplicate the value
-    let rows_duplied = [... newRows];
+    const rows_duplied = [... newRows];
 
     //Sets value
     rows_duplied[index].name = value || "";
@@ -259,7 +259,7 @@ export default function Page(){
     //Nodes
     const table_nodes : Array<Node> = [];
     //Rows
-    let rows : Column[] = [];
+    const rows : Column[] = [];
 
     //Asigns the key for all columns
     for (let l_i = 0; l_i < newRows.length; l_i++) {
@@ -446,7 +446,7 @@ export default function Page(){
   //Table "translator"
   //SQL
   const translateToSQL = (json: {
-    tableName: String,
+    tableName: string,
     columns: Column[]
   }) => {
     const columns = json.columns
@@ -461,7 +461,7 @@ const sql = `CREATE TABLE ${json.tableName} (
   }
   //Json (yep, it needs to be translated)
   const translateToJson = (json: {
-    tableName: String,
+    tableName: string,
     columns: Column[]
   }) => {
     const exportJson = JSON.stringify(
@@ -523,7 +523,7 @@ const sql = `CREATE TABLE ${json.tableName} (
                   return;
                 }
 
-                navigator.clipboard.writeText((tableNodes.map(table => translateToSQL(table.data as { tableName: String, columns: Column[] }))).toString());
+                navigator.clipboard.writeText((tableNodes.map(table => translateToSQL(table.data as { tableName: string, columns: Column[] }))).toString());
                 setInterval(() => {
                   setSqlCopied(false);
                 }, 1000);
@@ -544,7 +544,7 @@ const sql = `CREATE TABLE ${json.tableName} (
             </div>
 
             <textarea
-            value={sqlValue || tableNodes.map(table => translateToSQL(table.data as { tableName: String, columns: Column[] }))}
+            value={sqlValue || tableNodes.map(table => translateToSQL(table.data as { tableName: string, columns: Column[] }))}
             onChange={(e) => {
               setsqlValue(e.target.value);
             }}
@@ -582,7 +582,7 @@ const sql = `CREATE TABLE ${json.tableName} (
                   return;
                 }
 
-                navigator.clipboard.writeText((tableNodes.map(table => translateToJson(table.data as { tableName: String, columns: Column[] }))).toString());
+                navigator.clipboard.writeText((tableNodes.map(table => translateToJson(table.data as { tableName: string, columns: Column[] }))).toString());
                 setInterval(() => {
                   setJsonCopied(false);
                 }, 1000);
@@ -603,7 +603,7 @@ const sql = `CREATE TABLE ${json.tableName} (
             </div>
 
             <textarea
-            value={jsonValue || tableNodes.map(table => translateToJson(table.data as { tableName: String, columns: Column[] }))}
+            value={jsonValue || tableNodes.map(table => translateToJson(table.data as { tableName: string, columns: Column[] }))}
             onChange={(e) => {
               setJsonValue(e.target.value);
             }}
@@ -753,7 +753,7 @@ const sql = `CREATE TABLE ${json.tableName} (
                   className="flex justify-between items-center w-full">
                     <p
                     className="tracking-wide font-medium uppercase">
-                      { table.data.tableName as String }
+                      { table.data.tableName as string }
                     </p>
 
                     <IconDatabaseMinus

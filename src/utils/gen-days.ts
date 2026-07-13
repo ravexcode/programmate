@@ -12,7 +12,7 @@ export default function genDays(
   monthEnd.setDate(monthEnd.getDate() + (6 - monthEnd.getDay()));
 
   const days = [];
-  let now = new Date(monthStart);
+  const now = new Date(monthStart);
 
   while (now <= monthEnd) {
     days.push({

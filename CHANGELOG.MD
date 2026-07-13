@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v65.1:**
+  1. Bugfix minima de errores dentro del codigo. 🐛
+
 - **Indev v65.0:**
   1. Logo update. 🖼️
 

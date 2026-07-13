@@ -65,7 +65,7 @@ export default interface Team {
   description: string;
   integrants: Array<IntegrantData>;
   integrants_id: Array<string>;
-  chat?: Array<any>; //Undefined
+  chat?: Array<ChatMessage>;
   kanban_board: {
     todo: Card [],
     inprogress: Card [],
@@ -78,6 +78,4 @@ export default interface Team {
   created_at: string;
   ERD?: Node[];
   ERD_connections?: Edge[];
-  json_views: any;
-  json_connections: any;
 }

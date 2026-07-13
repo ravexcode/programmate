@@ -118,7 +118,7 @@ export default function GetStarted() {
       type: "admin"
     }];
 
-    let integrants_id : Array<string> = [];
+    const integrants_id : Array<string> = [];
 
     found.forEach(integrant => {
       integrants_id.push(integrant.id);

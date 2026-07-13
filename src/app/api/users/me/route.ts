@@ -53,7 +53,7 @@ export async function GET( req: NextRequest ) {
     .maybeSingle();
 
     //Declare's the AI chat data
-    let ai_chat : Array<Object | null> = [];
+    const ai_chat : Array<object | null> = [];
 
     //Verifies if the user had a chat with ai before
     if(profile && profile.ai_chat && profile.ai_chat.length >= 1) {

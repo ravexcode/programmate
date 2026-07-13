@@ -443,7 +443,7 @@ export default function CalendarPage() {
             type="button"
             className="p-2.5 rounded-full duration-300 hover:bg-neutral-700 cursor-pointer"
             onClick={() => {
-              let month_num: number = currMonthNumber > 0 ? currMonthNumber - 1 : 11;
+              const month_num: number = currMonthNumber > 0 ? currMonthNumber - 1 : 11;
               setCurrMonthNumber(month_num);
               SetCurrMonth(months[month_num]);
               setDays(genDays(
@@ -461,7 +461,7 @@ export default function CalendarPage() {
             type="button"
             className="p-2.5 rounded-full duration-300 hover:bg-neutral-700 cursor-pointer"
             onClick={() => {
-              let month_num: number = currMonthNumber < 11 ? currMonthNumber + 1 : 0;
+              const month_num: number = currMonthNumber < 11 ? currMonthNumber + 1 : 0;
 
               setCurrMonthNumber(month_num);
               SetCurrMonth(months[month_num]);

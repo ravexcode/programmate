@@ -11,7 +11,7 @@ import Image from "next/image";
 function Button(props: {
   action: () => void;
   icon: React.ReactNode;
-  content: String
+  content: string
 }) {
   return (
     <button
