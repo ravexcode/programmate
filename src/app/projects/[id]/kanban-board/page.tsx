@@ -20,7 +20,7 @@ import Card from "@components/ui/kanban/card";
 import List from "@/components/ui/kanban/list";
 
 //Hooks imports
-import { useDeleteToken, useGetToken } from "@/hooks/useCookies";
+import { deleteSessionStr, getSessionStr } from "@/services/session.service";
 import { getCached } from "@/hooks/cache.hook";
 
 //Services imports
@@ -104,7 +104,7 @@ export default function KanBanBoard() {
     async function get() {
       let user_data : UserData;
 
-      const token = useGetToken();
+      const token = getSessionStr();
 
       if(!token) return router.push("/auth/signin");
 
@@ -113,10 +113,10 @@ export default function KanBanBoard() {
       if(cached) {
         user_data = cached
       } else {
-        const fetched = await getUser(token);
+        const fetched = await getUserService({router});
         
         if(!fetched) {
-          useDeleteToken();
+          deleteSessionStr();
           window.localStorage.clear();
           return router.push("/auth/signin");
         };
@@ -144,7 +144,7 @@ export default function KanBanBoard() {
   const handleSave = async() => {
     if(!team) return;
 
-    const token = useGetToken();
+    const token = getSessionStr();
 
     if(!token) return router.push("/auth/signin");
 

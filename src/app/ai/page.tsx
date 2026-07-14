@@ -9,7 +9,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 
 //Hooks imports
-import { useGetToken } from "@/hooks/useCookies";
+import { getSessionStr } from "@/services/session.service";
 import { getCached } from "@/hooks/cache.hook";
 import useAnimationClose from "@/hooks/useAnimationClose";
 
@@ -66,7 +66,7 @@ export default function AgentsPage() {
 
   useEffect(() => {
     async function get() {
-      const token = useGetToken();
+      const token = getSessionStr();
 
       if(!token) return router.push("/auth/signin");
 
@@ -74,7 +74,7 @@ export default function AgentsPage() {
 
       if(cached) return setUser(cached);
       
-      const fetched = await getUser(token);
+      const fetched = await getUserService({router});
 
       if(!fetched) return router.push("/auth/signin");
 

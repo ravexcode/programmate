@@ -14,7 +14,7 @@ import HazardButton from "@/components/ui/buttons/hazard";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 
 //Hooks imports
-import { useDeleteToken, useGetToken } from "@/hooks/useCookies";
+import { deleteSessionStr, getSessionStr } from "@/services/session.service";
 import useAnimationClose from "@/hooks/useAnimationClose";
 
 //React imports
@@ -68,7 +68,7 @@ export default function ConfigurationPage(){
   const handleUserDelete = async () => {
     setIsLoading(true);
     //User token
-    const token = useGetToken();
+    const token = getSessionStr();
 
     try {
       //Sends the delete request to the server
@@ -87,7 +87,7 @@ export default function ConfigurationPage(){
       if(res.status === 200) {
         //Deletes the user from cache
         window.localStorage.clear();
-        useDeleteToken();
+        deleteSessionStr();
         //Redirects to the login page
         router.push("/auth/signin");
         return;
@@ -235,7 +235,7 @@ export default function ConfigurationPage(){
               <ActionButton
               title="Log out"
               action={() => {
-                useDeleteToken();
+                deleteSessionStr();
                 window.localStorage.clear();
                 router.push("/auth/signin");
               }}>

@@ -14,7 +14,7 @@ import LoadingScreen from "@/components/screens/loading-screen";
 import ReactMarkdown from "@/lib/components/react-markdown";
 
 //Hooks imports
-import { useGetToken, useDeleteToken } from "@/hooks/useCookies";
+import { getSessionStr, deleteSessionStr } from "@/services/session.service";
 import { getCached } from "@/hooks/cache.hook";
 
 //Services imports
@@ -55,7 +55,7 @@ export default function TicketPage(){
   //Data fetching
   useEffect(() => {
     async function get() {
-      const token = useGetToken();
+      const token = getSessionStr();
 
       if(!token) return router.push("/auth/signin");
 
@@ -69,7 +69,7 @@ export default function TicketPage(){
         const user_fetched = await UpdateUserData(token);
 
         if(!user_fetched) {
-          useDeleteToken();
+          deleteSessionStr();
           window.localStorage.clear();
           return;
         }

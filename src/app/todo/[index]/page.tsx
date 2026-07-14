@@ -8,7 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
 //Hooks imports
-import { useGetToken } from "@/hooks/useCookies";
+import { getSessionStr } from "@/services/session.service";
 
 //Components imports
 import SideBar from "@/components/ui/sidebar";
@@ -52,7 +52,7 @@ export default function ToDoListPage() {
 
     async function GetData() {
       //Checks session status
-      const token = useGetToken();
+      const token = getSessionStr();
 
       if(!token) return router.push('/auth/signin');
 
@@ -77,7 +77,7 @@ export default function ToDoListPage() {
   const handleSaveToDoList = async() => {
     setIsLoading(true);
 
-    const token = useGetToken();
+    const token = getSessionStr();
 
     if(!token) return router.push("/auth/signin");
 

@@ -20,7 +20,7 @@ import TicketCard from "@/components/ui/ticket-card";
 
 //Hooks imports
 import useAnimationClose from "@/hooks/useAnimationClose";
-import { useDeleteToken, useGetToken } from "@/hooks/useCookies";
+import { deleteSessionStr, getSessionStr } from "@/services/session.service";
 import { getCached } from "@/hooks/cache.hook";
 
 //Types imports
@@ -118,17 +118,17 @@ export default function TicketsTeamPage(){
     async function fetchData() {
       let user_data: UserData;
 
-      const token = useGetToken();
+      const token = getSessionStr();
 
       if(!token) return router.push("/auth/signin");
 
       const cached = getCached();
 
       if(!cached) {
-        const user_fetched = await getUser(token);
+        const user_fetched = await getUserService({router});
 
         if(!user_fetched) {
-          useDeleteToken();
+          deleteSessionStr();
           window.localStorage.clear();
           return router.push("/auth/signin");
         }
@@ -261,7 +261,7 @@ export default function TicketsTeamPage(){
 
     try {
       //Gets user's token
-      const token = useGetToken();
+      const token = getSessionStr();
 
       //If token isn't returned sends to login
       if (!token) {
@@ -309,7 +309,7 @@ export default function TicketsTeamPage(){
     if(!tickets) return;
     setEditLoading(true);
 
-    const token = useGetToken();
+    const token = getSessionStr();
 
     if(!token) return router.push("/auth/signin");
     toggleEditForm();
@@ -346,7 +346,7 @@ export default function TicketsTeamPage(){
   const handleDelete = async () => {
     if(currentIndex === undefined) return;
 
-    const token = useGetToken();
+    const token = getSessionStr();
 
     if(!token) return router.push("/auth/signin");
 

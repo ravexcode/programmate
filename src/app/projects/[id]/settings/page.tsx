@@ -17,7 +17,7 @@ import getUser from "@/services/user.service";
 import getTeam from "@/services/team.service";
 
 //Hooks imports
-import { useDeleteToken, useGetToken } from "@/hooks/useCookies";
+import { deleteSessionStr, getSessionStr } from "@/services/session.service";
 
 //Types imports
 import { UserData } from "@/types/user.types";
@@ -65,17 +65,17 @@ export default function SettingsPage(){
     async function fetchData() {
       let user_data: UserData;
 
-      const token = useGetToken();
+      const token = getSessionStr();
 
       if(!token) return router.push("/auth/signin");
 
       const cached = getCached();
 
       if(!cached) {
-        const user_fetched = await getUser(token);
+        const user_fetched = await getUserService({router});
 
         if(!user_fetched) {
-          useDeleteToken();
+          deleteSessionStr();
           window.localStorage.clear();
           return router.push("/auth/signin");
         }
@@ -122,7 +122,7 @@ export default function SettingsPage(){
 
     if(!team) return;
 
-    const token = useGetToken();
+    const token = getSessionStr();
 
     if(!token) return router.push("/auth/signin");
 
@@ -173,7 +173,7 @@ export default function SettingsPage(){
   };
 
   const handleDeleteTeam = async() => {
-    const token = useGetToken();
+    const token = getSessionStr();
     setIsLoading(true);
 
     if(!token) return;
@@ -193,7 +193,7 @@ export default function SettingsPage(){
   const handleLeave = async() => {
     if(!user) return;
 
-    const token = useGetToken();
+    const token = getSessionStr();
     setIsLoading(true);
 
     if(!token) return;

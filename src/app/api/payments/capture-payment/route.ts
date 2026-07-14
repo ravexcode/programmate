@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     if(!token) return Handler.unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user data from the token
-    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
 
     //If doesn't exist returns error
     if(!user) return Handler.notFoundErrorHandler("User not found");

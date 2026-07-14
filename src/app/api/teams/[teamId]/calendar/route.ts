@@ -28,7 +28,7 @@ export async function POST({ params }: ParamsType, req: NextRequest) {
     if (!teamId || event) return badRequestErrorHandler();
     if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
-    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
 
     if(!user) return notFoundErrorHandler("User data not found");
     if(getUserError) return unauthorizedErrorHandler("Authorization token expired");
@@ -73,7 +73,7 @@ export async function PUT({ params }: ParamsType, req: NextRequest) {
     if (!teamId || event || eventIndex === undefined) return badRequestErrorHandler();
     if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
-    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
 
     if(!user) return notFoundErrorHandler("User data not found");
     if(getUserError) return unauthorizedErrorHandler("Authorization token expired");
@@ -127,7 +127,7 @@ export async function DELETE({ params }: ParamsType, req: NextRequest) {
     if (!teamId || eventIndex === undefined) return badRequestErrorHandler();
     if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
-    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
 
     if(!user) return notFoundErrorHandler("User data not found");
     if(getUserError) return unauthorizedErrorHandler("Authorization token expired");

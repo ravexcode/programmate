@@ -44,7 +44,7 @@ import getTeam from "@/services/team.service";
 import getUser from "@/services/user.service";
 
 //Hooks imports
-import { useGetToken } from "@/hooks/useCookies";
+import { getSessionStr } from "@/services/session.service";
 
 //Types imports
 import { type UserData } from "@/types/user.types";
@@ -147,11 +147,11 @@ export default function Page(){
   //Data fetching
   useEffect(() => {
     async function fetchData(){
-      const token = useGetToken();
+      const token = getSessionStr();
 
       if(!token) return router.push("/auth/signin");
 
-      const user_data = await getUser(token);
+      const user_data = await getUserService({router});
       setUser(user_data);
 
       const team_data : Team = await getTeam(
@@ -323,7 +323,7 @@ export default function Page(){
   const saveERD = async() => {
     setIsSaveLoading(true);
 
-    const token = useGetToken();
+    const token = getSessionStr();
 
     if(!token) return router.push("/auth/signin");
 

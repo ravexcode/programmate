@@ -30,7 +30,7 @@ export async function POST(
     if(!ai_provider || !project) return Handler.badRequestErrorHandler();
     if(!token) return Handler.unauthorizedErrorHandler("Authorization token not inserted");
 
-    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
 
     if(!user) return Handler.notFoundErrorHandler("User not found");
     if(getUserError) return Handler.unauthorizedErrorHandler("Invalid access token");

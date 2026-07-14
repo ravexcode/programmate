@@ -1,6 +1,9 @@
 # Indev
 
-- **INdev v66.0:**
+- **Indev v67.0:**
+  1. Ahora se obtienen los datos del usuario de manera correcta. 🐛
+
+- **Indev v66.0:**
   1. Renombre final PrismaFlow => NexZero. ✏️
   2. Bugfix necesario para obtener token. 🐛
 

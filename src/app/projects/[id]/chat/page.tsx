@@ -8,7 +8,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 
 //Hooks imports
-import { useGetToken } from "@/hooks/useCookies";
+import { getSessionStr } from "@/services/session.service";
 import { getCached } from "@/hooks/cache.hook";
 
 //Services
@@ -71,7 +71,7 @@ export default function ChatPage() {
   useEffect(() => {
     async function setAllData(){
       //Sets user data
-      const token = useGetToken();
+      const token = getSessionStr();
       if(!token) return window.location.href = "/auth/signin";
 
       //Sets cached
@@ -81,7 +81,7 @@ export default function ChatPage() {
       if(cached) {
         setUser(cached);
       } else {
-        user_fetched = await getUser(token);
+        user_fetched = await getUserService({router});
         
         if(!user) return window.location.href = "/auth/signin";
 

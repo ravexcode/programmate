@@ -20,13 +20,13 @@ import BgGradient from "@/components/ui/bg-gradient";
 import DashCard from "@/components/ui/cards/dashboard";
 
 //Hooks imports
-import { useDeleteToken, useGetToken } from "@/hooks/useCookies";
 import { getCached } from "@/hooks/cache.hook";
 
 //Services imports
-import getTeam from "@/services/team.service";
-import getUser from "@/services/user.service";
+import getUserService from "@/services/user.service";
 import Team from "@/types/team.types";
+import { deleteSessionStr, getSessionStr } from "@/services/session.service";
+
 import { IconCircleDot, IconUserCircle } from "@tabler/icons-react";
 
 export default function TeamPage(){
@@ -48,7 +48,7 @@ export default function TeamPage(){
     async function get() {
       let user_data : UserData;
 
-      const token = useGetToken();
+      const token = getSessionStr();
 
       if(!token) return router.push("/auth/signin");
 
@@ -57,10 +57,10 @@ export default function TeamPage(){
       if(cached) {
         user_data = cached
       } else {
-        const fetched = await getUser(token);
+        const fetched = await getUserService({router});
         
         if(!fetched) {
-          useDeleteToken();
+          deleteSessionStr();
           window.localStorage.clear();
           return router.push("/auth/signin");
         };

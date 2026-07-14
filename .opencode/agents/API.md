@@ -471,7 +471,7 @@ Creating a new endpoint:
       if (!teamId) return badRequestErrorHandler();
       if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
-      const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
+      const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
 
       if(!user) return notFoundErrorHandler("User data not found");
       if(getUserError) return unauthorizedErrorHandler("Authorization token expired");

@@ -9,7 +9,7 @@ import { useEffect, useState, useRef, cache } from "react";
 
 //Hooks imports
 import { getCached } from "@/hooks/cache.hook";
-import { useGetToken } from "@/hooks/useCookies";
+import { getSessionStr } from "@/services/session.service";
 import useAnimationClose from "@/hooks/useAnimationClose";
 
 //Components imports
@@ -95,7 +95,7 @@ export default function ToDoListPage() {
   //Data fetching form cache
   useEffect(() => {
     async function get(){
-      const token = useGetToken();
+      const token = getSessionStr();
 
       if(!token) return router.push("/auth/signin");
 
@@ -104,7 +104,7 @@ export default function ToDoListPage() {
       if(cached) {
         return setUser(cached);
       } else {
-        const user_fetched = await getUser(token);
+        const user_fetched = await getUserService({router});
 
         if(!user_fetched) return router.push("/dashboard");
 
@@ -130,7 +130,7 @@ export default function ToDoListPage() {
     };
 
     //Gets the token
-    const token = useGetToken();
+    const token = getSessionStr();
 
     if(!token) return window.location.href = "/auth/signin";
 
@@ -246,7 +246,7 @@ export default function ToDoListPage() {
 
 
     //Gets the token
-    const token = useGetToken();
+    const token = getSessionStr();
 
     if(!token) return window.location.href = "/auth/signin";
 
@@ -330,7 +330,7 @@ export default function ToDoListPage() {
 
   const handleDeleteList = async() => {
     if(currentIndex === undefined || !user) return;
-    const token = useGetToken();
+    const token = getSessionStr();
 
     if(!token) return router.push("/auth/signin");
 
@@ -635,10 +635,10 @@ export default function ToDoListPage() {
                 disabled={isReloading}
                 onClick={ async(e) => {
                   setIsReloading(true);
-                  const token = useGetToken();
+                  const token = getSessionStr();
                   if(!token) return;
 
-                  const user_fetched = await getUser(token);
+                  const user_fetched = await getUserService({router});
 
                   if(!user_fetched) return router.push("/dashboard");
 

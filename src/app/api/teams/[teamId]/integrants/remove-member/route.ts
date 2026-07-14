@@ -33,7 +33,7 @@ export async function DELETE(
     if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user from Supabase Auth
-    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
 
     //Verifies if the user has been returned
     if(!user) return notFoundErrorHandler("User not found");

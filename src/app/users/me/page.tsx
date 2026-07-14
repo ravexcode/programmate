@@ -6,7 +6,7 @@ import Image from "next/image";
 
 //Hooks imports
 import { getCached } from "@/hooks/cache.hook";
-import { useDeleteCookie, useGetToken } from "@/hooks/useCookies";
+import { useDeleteCookie, getSessionStr } from "@/services/session.service";
 
 //Prebuilt UI imports
 import LoadingScreen from "@/components/screens/loading-screen";
@@ -40,7 +40,7 @@ export default function ProfilePage() {
     async function updateFromToken(){
       let user_data;
       //Id isn't cached gets the data
-      const token = useGetToken();
+      const token = getSessionStr();
 
       if(!token) {
         //If hasn't token returns to log in form
@@ -58,7 +58,7 @@ export default function ProfilePage() {
       }
 
       //Updates the user's data
-      if(!cached) user_data = await getUser(token);
+      if(!cached) user_data = await getUserService({router});
       //Created at to Date
       const created_at = new Date(user_data!.created_at!);
       //Date now

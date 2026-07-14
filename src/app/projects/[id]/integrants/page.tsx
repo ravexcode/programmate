@@ -11,7 +11,7 @@ import { useEffect, useState, useRef } from "react";
 
 //Hooks imports
 import { getCached } from "@/hooks/cache.hook";
-import { useDeleteToken, useGetToken } from "@/hooks/useCookies";
+import { deleteSessionStr, getSessionStr } from "@/services/session.service";
 import useAnimationClose from "@/hooks/useAnimationClose";
 
 //Services imports
@@ -106,17 +106,17 @@ export default function Page(){
   useEffect(() => {
     async function getData() {
       let user_data : UserData;
-      const token = useGetToken();
+      const token = getSessionStr();
 
       if(!token) return router.push("/auth/signin");
 
       const cached = getCached();
 
       if(!cached) {
-        const user_fetched = await getUser(token);
+        const user_fetched = await getUserService({router});
 
         if(!user_fetched) {
-          useDeleteToken();
+          deleteSessionStr();
           window.localStorage.clear();
           return router.push("/auth/signin");
         }
@@ -161,7 +161,7 @@ export default function Page(){
     added.forEach(async (added) => {
       e.preventDefault();
 
-      const token = useGetToken();
+      const token = getSessionStr();
 
       if(!token) return router.push("/auth/signin");
 
@@ -213,7 +213,7 @@ export default function Page(){
 
   //Change member role
   const changeMemberRole = async(memberId: string, currentRole: string) => {
-    const token = useGetToken();
+    const token = getSessionStr();
     if(!team) return;
     if(!token) return router.push("/auth/signin");
 
@@ -239,7 +239,7 @@ export default function Page(){
 
   //Confirm role change
   const confirmRoleChange = async() => {
-    const token = useGetToken();
+    const token = getSessionStr();
     if(!token) return router.push("/auth/signin");
 
     setIsProcessing(true);
@@ -296,7 +296,7 @@ export default function Page(){
 
   //Confirm member deletion
   const confirmMemberDeletion = async() => {
-    const token = useGetToken();
+    const token = getSessionStr();
     if(!token) return router.push("/auth/signin");
 
     setIsProcessing(true);
