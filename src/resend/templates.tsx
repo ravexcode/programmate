@@ -72,7 +72,7 @@ export function RequestTemplate({
           opacity: 0.7,
         }}
       >
-        Prismaflow © 2026
+        NexZero © 2026
       </footer>
     </div>
   );
@@ -94,7 +94,7 @@ export function LoginWarn(props : LoginWarnProps){
 
       <p
       className="mt-5">
-        Hello {props.username.toLowerCase()}, you've logged in Prismaflow..
+        Hello {props.username.toLowerCase()}, you've logged in NexZero..
       </p>
 
       <p
@@ -104,7 +104,7 @@ export function LoginWarn(props : LoginWarnProps){
       
       <footer
       className="opacity-80 mt-10 text-sm font-light">
-        Prismaflow - 2026
+        NexZero - 2026
       </footer>
     </div>
   )
@@ -201,7 +201,7 @@ export function PaymentTemplate({
           opacity: 0.7,
         }}
       >
-        Prismaflow © 2026
+        NexZero © 2026
       </footer>
     </div>
   );

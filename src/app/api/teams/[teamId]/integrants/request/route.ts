@@ -83,7 +83,7 @@ export async function POST(req: NextRequest, { params }: ParamsType) {
     const { error: resendError } = await resend
     .emails
     .send({
-      from: 'Prismaflow <noreply@ravexcode.com>',
+      from: 'NexZero <noreply@ravexcode.com>',
       to: requested_email,
       subject: "Request recivied",
       react: RequestTemplate({

@@ -14,7 +14,7 @@ import AuthForm from "@/components/forms/auth";
 import { Input, PasswordInput } from "@/components/forms/inputs";
 import ProviderButton from "@/components/forms/provider-buttons";
 import Footer from "@/components/ui/footer";
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import SnackBar from "@/components/ui/snackbar";
 
 //Icons imports
 import { IconArrowLeft } from "@tabler/icons-react";

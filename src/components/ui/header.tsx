@@ -1,8 +1,8 @@
 //Next imports
 import Link from "next/link";
 
-//Hooks imports
-import { useGetToken } from "@/hooks/useCookies";
+//Services imports
+import { getSessionStr } from "@/services/session.service";
 
 //React imports
 import { useState, useEffect } from "react";
@@ -27,7 +27,7 @@ export default function Header(){
   const [ isSignedIn, setIsSignedIn ] = useState(false);
 
   useEffect(() => {
-    const token = useGetToken();
+    const token = getSessionStr();
 
     if(token) {
       setIsSignedIn(true);

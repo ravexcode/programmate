@@ -49,7 +49,7 @@ export default function PricingPage() {
             className="aspect-square block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-50 bg-sky-300 rounded-full" />
           </div>
 
-          <div className="bg-linear-to-b from-background to-transparent w-screen h-20 left-0 top-0 absolute z-3 pointer-events-none" />
+          <div className="bg-linear-to-b from-background to-transparent w-screen h-10 left-0 top-0 absolute z-3 pointer-events-none" />
         </div>
 
         <section
@@ -70,7 +70,7 @@ export default function PricingPage() {
 
             <PricingCard
             tier="Pro"
-            slogan="Unlock the full Prismaflow experience"
+            slogan="Unlock the full NexZero experience"
             price={8}
             type="normal"
             benefits={benefits.pro} />

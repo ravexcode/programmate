@@ -7,8 +7,8 @@ import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 //React imports
 import { useState, KeyboardEvent, useRef, useEffect } from "react";
 
-//Hooks imports
-import { useGetToken } from "@/hooks/useCookies";
+//Services imports
+import { getSessionStr } from "@/services/session.service";
 import UpdateUserData from "@/services/user.service";
 
 //Next import
@@ -43,11 +43,11 @@ export default function GetStarted() {
 
   useEffect(() => {
     async function validator(){
-      const token = useGetToken();
+      const token = getSessionStr();
 
       if(!token) return window.location.href = "/auth/signin";
 
-      const user = await UpdateUserData(token);
+      const user = await UpdateUserData({ router });
 
       if(!user) return router.push("/");
       
@@ -101,7 +101,7 @@ export default function GetStarted() {
   //Project creator
   const createProject = async() => {
     //Id isn't cached gets the data
-    const token = useGetToken();
+    const token = getSessionStr();
 
     if(!token) {
       //If hasn't token returns to log in form
@@ -149,11 +149,6 @@ export default function GetStarted() {
 
     //If success, returns the data
     if(res.status === 200) {
-      //Clear all the inputs
-      setIntegrants([]);
-      setNewProjectName("");
-      setNewProjectDescription("");
-
       //Returns success with the team data
       return { success: true, team: data.team };
     }
@@ -165,7 +160,7 @@ export default function GetStarted() {
 
   //Send invitations to the emails inserted
   const sendInvitations = async(teamId: string | number) => {
-    const token = useGetToken();
+    const token = getSessionStr();
 
     if(!token) {
       window.location.href = "/auth/signin";

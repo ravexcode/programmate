@@ -14,14 +14,14 @@ const proyectURL = process.env.API_URL || "http://localhost:3000";
 
 //Plans
 const pro = {
-  name: "Prismaflow pro plan",
+  name: "NexZero pro plan",
   currency: "usd",
   cost: 400, //Dollar cents
   url_image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDl2gg4N0WhybinSClgsZD6KePMVZ0B39thQ&s"
 };
 
 const team = {
-  name: "Prismaflow team plan",
+  name: "NexZero team plan",
   currency: "usd",
   cost: 1000, //Dollar cents
   url_image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDl2gg4N0WhybinSClgsZD6KePMVZ0B39thQ&s"

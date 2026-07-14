@@ -8,7 +8,7 @@ export default function ViewDashboard(
     className="w-200 h-full z-2 animate-fade-in animate-duration-300">
       <p
       className="text-3xl font-semibold tracking-wide w-full text-start flex flex-col gap-1">
-        Welcome to Prismaflow! <br />
+        Welcome to NexZero! <br />
         <span
         className="text-base font-normal tracking-normal opacity-80">
           There will be your proyects

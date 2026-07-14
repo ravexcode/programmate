@@ -1,12 +1,12 @@
-# PrismaFlow Community License 1.0
+# NexZero Community License 1.0
 
 Copyright (c) 2026 Ravexcode. All rights reserved.
 
-PrismaFlow is source-available software. The source code is publicly accessible for transparency, education, personal use, and community contributions. This license does **not** grant permission to use the Software commercially.
+NexZero is source-available software. The source code is publicly accessible for transparency, education, personal use, and community contributions. This license does **not** grant permission to use the Software commercially.
 
 ## 1. Definitions
 
-* **Software** refers to the PrismaFlow source code, documentation, assets, and all associated files.
+* **Software** refers to the NexZero source code, documentation, assets, and all associated files.
 * **Commercial Use** means any activity intended to generate revenue or other commercial advantage, directly or indirectly.
 
 ## 2. Permitted Uses
@@ -28,7 +28,7 @@ Without prior written permission from Ravexcode, you may **not**:
 * Deploy the Software for customers or third parties.
 * Use the Software, in whole or in part, in a commercial product or service.
 * Remove or modify copyright or license notices.
-* Rebrand, clone, or redistribute PrismaFlow as a competing product.
+* Rebrand, clone, or redistribute NexZero as a competing product.
 * Use the Software in any activity that directly or indirectly generates revenue.
 
 ## 4. Commercial Licensing
@@ -41,7 +41,7 @@ For commercial licensing inquiries:
 
 ## 5. Contributions
 
-By submitting a contribution to this repository, you agree that your contribution may be incorporated into PrismaFlow and distributed under this license or any future version of this license.
+By submitting a contribution to this repository, you agree that your contribution may be incorporated into NexZero and distributed under this license or any future version of this license.
 
 ## 6. Ownership
 

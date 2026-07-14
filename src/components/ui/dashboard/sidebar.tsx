@@ -152,7 +152,7 @@ function SideBar(props: Props) {
 
         <Icon
         action="/ai"
-        name="Prismaflow AI"
+        name="NexZero AI"
         isDisplayed={expanded} >
           <IconSparkles
           size={18}

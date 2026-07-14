@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Prismaflow - Legal"
+  title: "NexZero - Legal"
 };
 
 export default function LegalLayout({

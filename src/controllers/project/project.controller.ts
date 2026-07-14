@@ -1,6 +1,6 @@
 //Hooks imports
 import { useRouter } from "next/navigation";
-import { useDeleteToken, useGetToken } from "@/hooks/useCookies";
+import { getSessionStr, deleteSessionStr } from "@/services/session.service";
 import { showSnackbar } from "@/components/ui/snackbar";
 
 //Types
@@ -22,7 +22,7 @@ interface Project {
 function logOut() {
   const router = useRouter();
 
-  useDeleteToken();
+  deleteSessionStr();
   window.localStorage.clear();
 
   return router.push("/auth/signin");
@@ -33,7 +33,7 @@ function checkStatus(status: number) {
   return "warn";
 }
 function verify(){
-  const token = useGetToken();
+  const token = getSessionStr();
   if(!token) return logOut();
   return token;
 }

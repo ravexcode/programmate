@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Prismaflow - Project calendar"
+  title: "NexZero - Project calendar"
 };
 
 export default function Layout({

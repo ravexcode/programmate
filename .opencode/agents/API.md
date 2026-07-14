@@ -1,5 +1,5 @@
 ---
-project name: Prismaflow
+project name: NexZero
 description: SaaS made for developers workflow
 code language: TypeScript
 text language: English (USA)

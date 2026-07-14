@@ -46,11 +46,11 @@ export default function MiniDashboard() {
 
   const exampleLists = [
     {
-      title: "Prismaflow API Refactor",
+      title: "NexZero API Refactor",
       description: "List to organice the API Refactor based in tasks.",
       tags: [
         "Refactor",
-        "Prismaflow",
+        "NexZero",
         "API"
       ]
     },

@@ -104,7 +104,7 @@ export default function BugReportsPage() {
               Bug
             </h1>
             <p className="opacity-80 max-w-2xl tracking-wide">
-              You found a bug? Help us to improve a better experience reporting bugs in Prismaflow. Your opinion is important
+              You found a bug? Help us to improve a better experience reporting bugs in NexZero. Your opinion is important
             </p>
           </div>
         </section>
@@ -147,7 +147,7 @@ export default function BugReportsPage() {
             required />
             
             <CreatorInput
-            label="Prismaflow version"
+            label="NexZero version"
             placeholder="e.g. Production 1.0.0"
             value={version}
             onChange={(e) => {

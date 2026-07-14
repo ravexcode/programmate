@@ -21,11 +21,13 @@ import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import ProjectCard from "@/components/ui/project-card";
 
 //Hooks imports
-import { useDeleteCookie, useGetToken } from "@/hooks/useCookies";
+import {
+  getSessionStr,
+  deleteSessionStr
+} from "@/services/session.service";
 
 //Services imports
 import UpdateUserData from "@/services/user.service";
-import { sendRequest } from "@/services/resend.service";
 
 //Types imports
 import { UserData, UserBasic } from "@/types/user.types";
@@ -89,15 +91,7 @@ export default function Dashboard(){
     //Function to update the user data
     async function updateFromToken(){
       let user_data;
-      //Id isn't cached gets the data
-      const token = useGetToken();
 
-      if(!token) {
-        //If hasn't token returns to log in form
-        return router.push("/auth/signin");
-      };
-
-      
       //Gets the cached user
       const cached = getCached();
 
@@ -108,7 +102,7 @@ export default function Dashboard(){
       }
 
       //Updates the user's data
-      if(!cached) user_data = await UpdateUserData(token);
+      if(!cached) user_data = await UpdateUserData({ router });
       //Created at to Date
       const created_at = new Date(user_data!.created_at!);
       //Date now
@@ -124,7 +118,7 @@ export default function Dashboard(){
         return;
       }
 
-      useDeleteCookie("token");
+      deleteSessionStr();
       localStorage.clear();
       window.localStorage.clear();
       return router.push("/auth/signin");
@@ -509,9 +503,8 @@ export default function Dashboard(){
                   disabled={isReloading}
                   onClick={ async(e) => {
                     setIsReloading(true);
-                    const token = useGetToken();
 
-                    await UpdateUserData(token!);
+                    await UpdateUserData({ router });
                     setIsReloading(false);
                   }}>
                     <IconReload

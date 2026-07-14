@@ -1,5 +1,5 @@
 ---
-Project name: Prismaflow
+Project name: NexZero
 Frontend folder: src/app/*
 Users service document: src/services/user.service.ts
 Lib components: src/lib/client/*

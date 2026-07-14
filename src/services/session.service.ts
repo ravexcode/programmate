@@ -1,9 +1,9 @@
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 function isExpired(token: string) {
-    const payload = JSON.parse(atob(token.split(".")[1]));
+  const payload = JSON.parse(atob(token.split(".")[1]));
 
-    return payload.exp * 1000 < Date.now();
+  return payload.exp * 1000 < Date.now();
 }
 
 export function getSessionStr() {
@@ -13,8 +13,6 @@ export function getSessionStr() {
 
   if (parts && parts.length === 2) {
     const token = parts.pop()!.split(';').shift();
-    
-    if(!token || isExpired(token)) return null;
 
     return token;
   }

@@ -96,7 +96,7 @@ export default function SuggestionsPage() {
               Suggestion
             </h1>
             <p className="opacity-80 max-w-2xl tracking-wide">
-              Have an idea to improve Prismaflow? Share your suggestions with us. Your feedback helps us create a better experience for everyone
+              Have an idea to improve NexZero? Share your suggestions with us. Your feedback helps us create a better experience for everyone
             </p>
           </div>
         </section>

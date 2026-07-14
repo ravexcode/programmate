@@ -45,7 +45,7 @@ export default function DevsPage(){
           <LandingGradient />
           <h1
           className="text-6xl font-bold z-2 text-center">
-            Explore Prismaflow <br />
+            Explore NexZero <br />
             from the <span className="text-main"> inside </span>
           </h1>
           <p

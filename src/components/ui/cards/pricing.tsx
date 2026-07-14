@@ -36,8 +36,8 @@ export default function PricingCard(props: Props) {
         props.type === "free" ? (
           <Link
           href="/auth/signin"
-          className="w-full rounded-xl border-2 border-neutral-800 p-2 text-sm mt-2 cursor-pointer duration-300 hover:brightness-75 font-medium text-center">
-            Start in Prismaflow
+          className="w-full rounded-xl border-2 border-neutral-800 p-2 text-sm mt-2 cursor-pointer duration-300 hover:bg-neutral-800 font-medium text-center">
+            Start in NexZero
           </Link>
         ) : (
           <button

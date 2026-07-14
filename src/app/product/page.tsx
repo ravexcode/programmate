@@ -30,7 +30,7 @@ export default function ProductPage() {
           </p>
           <p
           className="w-full text-start pt-2 animate-blurred-fade-in animate-duration-700">
-            A closer look at the ideas, philosophy and people behind PrismaFlow.
+            A closer look at the ideas, philosophy and people behind NexZero.
           </p>
 
           <div
@@ -51,7 +51,7 @@ export default function ProductPage() {
           className="aspect-square w-60 block absolute right-5 animate-fade-in-left animate-duration-700">
             <Image
             src="/logos/logo.svg"
-            alt="Prismaflow logo"
+            alt="NexZero logo"
             width={800}
             height={800}
             loading="lazy"
@@ -84,7 +84,7 @@ export default function ProductPage() {
         </p>
         <span
         className="text-center text-neutral-200 animate-fade-in-up animate-delay-200 mt-2 mb-20 w-1polished and genuinely useful.50">
-          Every feature inside PrismaFlow is built with one idea in mind: <br />
+          Every feature inside NexZero is built with one idea in mind: <br />
           <span className="text-blue-500">Good things require time</span> <br />
           Instead of releasing dozens of unfinished tools, we focus on creating experiences that are reliable, <span className="text-blue-500">polished and genuinely useful.</span>
         </span>

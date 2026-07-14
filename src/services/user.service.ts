@@ -26,8 +26,13 @@ export default async function getUserService(data: GetData) {
   let plan : string = "Free";
   let teams = [];
 
-  if(req.data.payments && req.data.payments.length >= 1) {
-    const lastPayment = req.data.payments[req.data.payments.length - 1];
+  const oAuthUser = req.data.user;
+  const profile = req.data.profile;
+
+  console.log(req.data);
+
+  if(profile.payments && profile.payments.length >= 1) {
+    const lastPayment = profile.payments[profile.payments.length - 1];
     const expires = new Date(lastPayment.paid_at);
     expires.setDate(expires.getDate() + 30);
     const now = new Date();
@@ -40,24 +45,24 @@ export default async function getUserService(data: GetData) {
   }
   
   //Teams updater
-  if(req.data.teams && req.data.teams.length >= 1) {
-    teams = req.data.teams;
+  if(profile.teams && profile.teams.length >= 1) {
+    teams = profile.teams;
   }
 
-  const username = req.data.user.user_metareq.data.display_name ?? req.data.profile.display_name;
+  const username = oAuthUser.user_metareq? oAuthUser.user_metareq.data.display_name : profile.display_name;
 
   const user : UserData = {
-    "id": req.data.profile.id,
-    "email": req.data.profile.email,
+    "id": profile.id,
+    "email": profile.email,
     "name": username,
     "plan": plan,
     "teams": teams,
-    "ai_chat": req.data.profile.ai_chat,
-    "to_do_list": req.data.profile.to_do_list,
-    "created_at": req.data.user.identities[0].created_at,
-    "last_sign_in": req.data.user.last_sign_in_at,
-    "avatar_url": req.data.profile.avatar_url,
-    "ai_providers": req.data.profile.ai_providers
+    "ai_chat": profile.ai_chat,
+    "to_do_list": profile.to_do_list,
+    "created_at": profile.created_at,
+    "last_sign_in": oAuthUser.last_sign_in_at,
+    "avatar_url": profile.avatar_url,
+    "ai_providers": profile.ai_providers
   }
 
   const now = new Date();

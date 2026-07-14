@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
         const { error: resendError } = await resend
         .emails
         .send({
-          from: 'Prismaflow <noreply@ravexcode.com>',
+          from: 'NexZero <noreply@ravexcode.com>',
           to: event.data.object.metadata?.email!,
           subject: "Request recivied",
           react: PaymentTemplate({

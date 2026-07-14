@@ -7,11 +7,15 @@ import Footer from "@/components/ui/footer";
 
 //React imports
 import { useEffect } from "react";
-import { useSaveToken } from "@/hooks/useCookies";
 
 //Next imports
 import { useRouter } from "next/navigation";
+
+//Icons imports
 import { IconSparkleHighlight } from "@tabler/icons-react";
+
+//Services imports
+import { saveSession } from "@/services/session.service";
 
 export default function OAuthCallback(){
   //Next router setup
@@ -37,7 +41,7 @@ export default function OAuthCallback(){
     //Waits 2 seconds before redirecting to dashboard
     setTimeout(() => {
       //Saves cookie and redirects to dashboard
-      useSaveToken(access_token!);
+      saveSession(access_token);
       return router.push("/dashboard");
     }, 2000);
   }, []);
@@ -61,7 +65,7 @@ export default function OAuthCallback(){
 
           <h1
           className="text-3xl font-bold">
-            Welcome to PrismaFlow!
+            Welcome to NexZero!
           </h1>
           <p
           className="font-light text-lg opacity-80">

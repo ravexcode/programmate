@@ -793,7 +793,7 @@ export default function ToDoListPage() {
                         </p>
                         <p
                         className="text-neutral-400 max-w-120 text-center">
-                          Prismaflow gives you a way to get a better organization in your projects using to  do lists. Try creating a new one!
+                          NexZero gives you a way to get a better organization in your projects using to  do lists. Try creating a new one!
                         </p>
 
                         <MainButton

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Prismaflow - Kanban board"
+  title: "NexZero - Kanban board"
 };
 
 export default function Layout({

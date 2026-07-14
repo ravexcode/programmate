@@ -17,8 +17,7 @@ import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import FeatureCard from "@/components/ui/cards/feature";
 
 //Hooks imports
-import { useGetToken } from "@/hooks/useCookies";
-import { IconBrain, IconCalendar, IconLayoutKanban, IconSend, IconTable } from "@tabler/icons-react";
+import { IconBrain, IconCalendar, IconLayoutKanban, IconTable } from "@tabler/icons-react";
 
 //Landing page
 export default function HomePage(){
@@ -26,34 +25,6 @@ export default function HomePage(){
   const router = useRouter();
 
   const snackbar = useRef(null);
-
-  //Payment action
-  const handlePayment = async(plan: string) => {
-    const token = useGetToken();
-
-    if(!token) return router.push("/auth/signin");
-
-    const res = await fetch(
-      '/api/payments/capture-payment',
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-          "Authorization": token
-        },
-        body: JSON.stringify({
-          plan
-        })
-      }
-    );
-
-    const data = await res.json();
-
-    if(res.status === 200) return router.push(data.checkout_link);
-
-    showSnackbar(data.message, (res.status >= 500 ? "critic": "warn"), snackbar);
-  };
 
   //Lazy loading
   //Carousel consumes many resources because it renders images
@@ -137,7 +108,7 @@ export default function HomePage(){
           What does nexzero provide? <br />
           <span
           className="text-neutral-400 font-normal text-base">
-            Prismaflow provides you many tools for your projects workflow
+            NexZero provides you many tools for your projects workflow
           </span>
         </p>
 
@@ -152,7 +123,7 @@ export default function HomePage(){
               </p>
               <p
               className="font-medium my-3">
-                <span className="text-blue-600 font-medium">Prismaflow</span> provides AI Assistant to build and manage your projects
+                <span className="text-blue-600 font-medium">NexZero</span> provides AI Assistant to build and manage your projects
               </p>
 
               <IconBrain

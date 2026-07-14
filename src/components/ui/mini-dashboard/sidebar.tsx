@@ -38,7 +38,7 @@ export default function MiniDashboardSidebar(props: Props) {
     className="flex flex-col gap-2 items-center justify-start bg-neutral-950 w-70 py-3 px-2">
       <Image
       src="/logos/large.svg"
-      alt="Prismaflow logo"
+      alt="NexZero logo"
       width={400}
       height={400}
       preload
@@ -64,7 +64,7 @@ export default function MiniDashboardSidebar(props: Props) {
       action={() => props.setCurrentView("todo")}
       icon={<IconChecklist size={18} />} />
       <Button
-      content="Prismaflow AI"
+      content="NexZero AI"
       action={() => props.setCurrentView("ai")}
       icon={<IconSparkles size={18} />} />
 
@@ -72,7 +72,7 @@ export default function MiniDashboardSidebar(props: Props) {
       className="mt-auto flex gap-2 w-full items-center justify-start p-2 text-xs duration-300 hover:bg-main/60 rounded-md cursor-pointer">
         <Image
         src="/logos/logo.svg"
-        alt="Prismaflow logo"
+        alt="NexZero logo"
         width={100}
         height={100}
         preload
@@ -81,7 +81,7 @@ export default function MiniDashboardSidebar(props: Props) {
 
         <p
         className="text-xs">
-          Prismaflow <br />
+          NexZero <br />
           <span
           className="text-[10px] opacity-70">
             example@nexzero.app

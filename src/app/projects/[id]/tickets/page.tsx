@@ -813,7 +813,7 @@ export default function TicketsTeamPage(){
                   </p>
                   <p
                   className="opacity-80 w-130 text-center mt-1">
-                    Start tracking project issues using Issue tracker provided by Prismaflow creating a new issue and setting it for your teammates
+                    Start tracking project issues using Issue tracker provided by NexZero creating a new issue and setting it for your teammates
                   </p>
 
                   <MainButton

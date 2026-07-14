@@ -38,7 +38,7 @@ export default function Footer() {
             <Link href="/" className="hover:opacity-80 transition-opacity">
               <Image
                 src="/logos/white_gradient.svg"
-                alt="Prismaflow logo"
+                alt="NexZero logo"
                 width={40}
                 height={40}
                 className="mb-4 aspect-square w-10"
@@ -89,7 +89,7 @@ export default function Footer() {
 
         <div className="mt-16 flex flex-col items-center justify-between border-t border-gray-800 pt-8 sm:flex-row gap-4">
           <p className="text-sm tracking-widest text-gray-500">
-            © 2026 Prismaflow.
+            © 2026 NexZero.
           </p>
           <p className="text-sm tracking-widest text-gray-500">
             Powered by{" "}

@@ -14,16 +14,14 @@ import AuthForm from "@/components/forms/auth";
 import { Input, PasswordInput } from "@/components/forms/inputs";
 import ProviderButton from "@/components/forms/provider-buttons";
 import Footer from "@/components/ui/footer";
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import SnackBar from "@/components/ui/snackbar";
 
 //Icons imports
 import { IconArrowLeft } from "@tabler/icons-react";
 
-//Actions imports
+//Modules imports
 import { signInModule } from "@/modules/auth.module";
-
-//Hooks imports
-import { useVerifyLogged } from "@/hooks/auth";
+import { verifyModule } from "@/modules/auth.module";
 
 export default function LogInPage() {
   //Next setup
@@ -40,7 +38,10 @@ export default function LogInPage() {
   //Password
   const [ password, setPassword ] = useState<string>("");
 
-  useVerifyLogged();
+  //Verifies session status
+  useEffect(() => {
+    if(verifyModule()) return router.push("/dashboard");
+  }, []);
 
   return (
     <div className="bg-background min-h-screeb grid grid-rows-[1fr_auto]">

@@ -1,4 +1,4 @@
-import { useGetToken } from "@/hooks/useCookies";
+import { getSessionStr } from "@/services/session.service";
 
 type SignInCredentials = {
   email: string;
@@ -58,7 +58,7 @@ export async function signUpController(credentials: SignUpCredentials): Promise<
 }
 
 export function verifyController() {
-  const token = useGetToken();
+  const token = getSessionStr();
 
   return Boolean(token);
 }

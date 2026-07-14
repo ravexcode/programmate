@@ -5,7 +5,7 @@ import "./config.css";
 import "./fonts.css";
 
 export const metadata: Metadata = {
-  title: "Prismaflow",
+  title: "NexZero",
   description: "The aplication from programmers to programmers"
 };
 

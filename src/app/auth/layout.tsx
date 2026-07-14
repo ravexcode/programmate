@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Prismaflow - Authentification"
+  title: "NexZero - Authentification"
 };
 
 export default function Layout({

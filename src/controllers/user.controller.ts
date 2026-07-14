@@ -1,3 +1,5 @@
+import { profile } from "console";
+
 type GetData = {
   token: string;
 }
@@ -5,6 +7,8 @@ type GetData = {
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
 
 export async function fetchProfile(data: GetData) {
+  console.log(data.token);
+
   const req = await fetch(
     `/api/users/me`,
     {
@@ -36,7 +40,10 @@ export async function fetchProfile(data: GetData) {
 
   return {
     message: response.message,
-    data: response.data,
-    status: response.status
+    data: {
+      user: response.user,
+      profile: response.profile
+    },
+    status: req.status
   }
 }

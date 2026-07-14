@@ -34,8 +34,8 @@ export default function TOSPage() {
           </h1>
           <p
           className="opacity-80 z-2 max-w-md text-center">
-            These Terms of Service govern the access and use of PrismaFlow and
-            all related services provided by PrismaFlow.
+            These Terms of Service govern the access and use of NexZero and
+            all related services provided by NexZero.
           </p>
         </section>
 

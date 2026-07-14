@@ -1,5 +1,9 @@
 # Indev
 
+- **INdev v66.0:**
+  1. Renombre final PrismaFlow => NexZero. ✏️
+  2. Bugfix necesario para obtener token. 🐛
+
 - **Indev v65.1:**
   1. Bugfix minima de errores dentro del codigo. 🐛
 
