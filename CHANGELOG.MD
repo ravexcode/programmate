@@ -1,5 +1,10 @@
 # Indev
 
+- **Indev v69.0:**
+  1. Fix dentro de Docker. 🐛
+  2. Mejoras dentro del script de rewrite. ⚒️
+  3. Arreglo de errores minimos dentro del proyecto. 🐛
+
 - **Indev v68.0:**
   1. Function para obtener datos del proyecto creada. 🚀
 

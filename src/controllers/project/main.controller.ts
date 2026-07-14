@@ -5,6 +5,7 @@ type GetData = {
 
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
 
+//-------- Main functions --------
 export async function getProjectController(data: GetData) {
   const req = await fetch(
     `/api/teams/${data.id}`,
@@ -40,4 +41,16 @@ export async function getProjectController(data: GetData) {
     project: response.team,
     status: req.status
   }
+}
+
+export async function createProject(
+) {
+}
+
+export async function updateProject(
+) {
+}
+
+export async function deleteProject(
+) {
 }

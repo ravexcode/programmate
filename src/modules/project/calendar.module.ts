@@ -4,7 +4,6 @@ import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.
 
 //Services
 import { createEventService, updateEventService } from "@/services/project/calendar.service";
-import Team from "@/types/team.types";
 
 export async function createEvent(
   id: number,

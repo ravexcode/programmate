@@ -1,11 +1,14 @@
 //React flow imports
 import { NodeProps, Node } from '@xyflow/react';
 
-//Types imports
-import { Column } from '@/app/teams/[id]/erd/page';
 
 //Props type
 type TableContainerNodeProps = NodeProps<Node<any>>;
+
+type Column = {
+  name: string;
+  type: string;
+}
 
 export function TableContainerNode({ data }: TableContainerNodeProps) {
   return (

@@ -1,11 +1,5 @@
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-function isExpired(token: string) {
-  const payload = JSON.parse(atob(token.split(".")[1]));
-
-  return payload.exp * 1000 < Date.now();
-}
-
 export function getSessionStr() {
   const cookies = `; ${document.cookie}`;
 

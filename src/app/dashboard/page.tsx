@@ -39,7 +39,7 @@ import useAnimationClose from "@/hooks/useAnimationClose";
 
 //Next imports
 import { useRouter } from "next/navigation";
-import { createProject } from "@/controllers/project/project.controller";
+import { createProject } from "@/controllers/project/main.controller";
 
 export type Status =
   "Backlog" |

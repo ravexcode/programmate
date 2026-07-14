@@ -91,7 +91,8 @@ export default function ReactMarkdown(props: Props){
           {...props}
         />
       ),
-    }}
-    children={props.content} />
+    }}>
+      { props.content }
+    </Markdown>
   )
 }

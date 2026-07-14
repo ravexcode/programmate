@@ -15,7 +15,7 @@ for file in Path(directory).rglob("*"):
             if search.lower() in text.lower():
                 new_text = text.replace(search, find)
                 file.write_text(new_text)
-                print("file changed: " + file.__dir__)
+                print("Changes made in: " + file.__dir__)
         except:
             pass
         

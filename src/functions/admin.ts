@@ -1,6 +1,6 @@
 //Types imports
 import type Team from "@/types/team.types";
-import { UserData } from "@/types/user.types";
+import { IntegrantData } from "@/types/team.types";
 
 /**
  * Verifies if a user is an admin in a given team
@@ -11,7 +11,7 @@ import { UserData } from "@/types/user.types";
 export function isUserAdmin(team: Team | null, userId: string | undefined): boolean {
   if(!team || !userId) return false;
   
-  const userIntegrant = team.integrants?.find((int: any) => int.id === userId);
+  const userIntegrant = team.integrants?.find((int: IntegrantData) => int.id === userId);
   return userIntegrant?.type === "admin";
 }
 
@@ -24,7 +24,7 @@ export function isUserAdmin(team: Team | null, userId: string | undefined): bool
 export function isMemberAdmin(team: Team | null, memberId: string): boolean {
   if(!team || !memberId) return false;
   
-  const member = team.integrants?.find((int: any) => int.id === memberId);
+  const member = team.integrants?.find((int: IntegrantData) => int.id === memberId);
   return member?.type === "admin";
 }
 
@@ -34,10 +34,10 @@ export function isMemberAdmin(team: Team | null, memberId: string): boolean {
  * @param memberId - The member's ID
  * @returns The member object or undefined
  */
-export function getMemberById(team: Team | null, memberId: string): any {
+export function getMemberById(team: Team | null, memberId: string): unknown {
   if(!team || !memberId) return undefined;
   
-  return team.integrants?.find((int: any) => int.id === memberId);
+  return team.integrants?.find((int: IntegrantData) => int.id === memberId);
 }
 
 /**

@@ -1,5 +1,3 @@
-import { profile } from "console";
-
 type GetData = {
   token: string;
 }
