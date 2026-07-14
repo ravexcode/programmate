@@ -1,5 +1,5 @@
 export default function checkStatus(s: number) {
   if(s >= 500) return "critic";
-
-  return "warn"
+  else if (s >= 205) return "warn";
+  return "valid";
 }

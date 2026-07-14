@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v68.0:**
+  1. Function para obtener datos del proyecto creada. 🚀
+
 - **Indev v67.0:**
   1. Ahora se obtienen los datos del usuario de manera correcta. 🐛
 
