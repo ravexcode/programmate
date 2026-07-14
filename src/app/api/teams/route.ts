@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user from Supabase Auth
-    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
     if(!user) return notFoundErrorHandler("User not found");
@@ -99,17 +99,17 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest){
   try {
     //Gets the data
-    const { teamId, newName, newDescription, newStatus, newTags } = await req.json();
+    const { id, name, description, status, tags } = await req.json();
 
     const token = (await headers()).get("Authorization");
 
     //Verifies if the data is OK
-    if(!teamId || (!newName && !newDescription && newStatus && newTags)) return badRequestErrorHandler();
+    if(!id || (!name && !description && status && tags)) return badRequestErrorHandler();
 
     if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user from Supabase Auth
-    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
     if(!user) return notFoundErrorHandler("User not found");
@@ -121,7 +121,7 @@ export async function PUT(req: NextRequest){
     const { data: team, error: getTeamError } = await supabase
     .from("teams")
     .select("*")
-    .eq("team_id", teamId)
+    .eq("team_id", id)
     .maybeSingle();
 
     //Verifies if the team data has been gotten
@@ -137,12 +137,12 @@ export async function PUT(req: NextRequest){
     const { error: updateTeamError } = await supabase
     .from("teams")
     .update({
-      name: newName,
-      description: newDescription,
-      status: newStatus,
-      tags: newTags,
+      name: name,
+      description: description,
+      status: status,
+      tags: tags,
     })
-    .eq("team_id", teamId);
+    .eq("team_id", id);
 
     //Verifies if there's no error
     if(updateTeamError) return supabaseErrorHandler(updateTeamError);

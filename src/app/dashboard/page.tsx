@@ -32,6 +32,7 @@ import UpdateUserData from "@/services/user.service";
 //Types imports
 import { UserData, UserBasic } from "@/types/user.types";
 import Team, { IntegrantData } from "@/types/team.types";
+import { Status } from "@/types/team.types";
 
 //Hooks imports
 import { getCached } from "@/hooks/cache.hook";
@@ -40,13 +41,6 @@ import useAnimationClose from "@/hooks/useAnimationClose";
 //Next imports
 import { useRouter } from "next/navigation";
 import { createProject } from "@/controllers/project/main.controller";
-
-export type Status =
-  "Backlog" |
-  "Planning" |
-  "In progress" |
-  "On Hold" |
-  "Done";
 
 export default function Dashboard(){
   //Next setup
@@ -205,28 +199,7 @@ export default function Dashboard(){
       onClick={toggleCreatorContainer}>
         <CreatorForm
         title="Create a new project"
-        action={(e) => 
-          createProject(
-            e,
-            {
-              name: projectName!,
-              description: projectDescription!,
-              integrants: [
-                {
-                  id: user.id,
-                  email: user.email,
-                  username: user.name,
-                  avatar_url: user.avatar_url,
-                  type: "admin"
-                }
-              ],
-              tags,
-              status
-            },
-            snackbar,
-            user
-          )
-        }
+        action={(e) => {}}
         hideAction={toggleCreatorContainer}
         actionIsDisabled={ isLoading || !projectName || projectName.length < 3 || !projectDescription}>
           <CreatorInput

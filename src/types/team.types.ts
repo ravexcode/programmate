@@ -8,6 +8,13 @@ import { UserBasic } from "./user.types";
 export type CalendarDateType = "deadline" | "meeting" | "request" | "online-meeting" | "target-start";
 export type CalendarDateColors = "blue" | "cyan" | "teal" | "yellow" | "orange" | "red" | "violet" | "purple" | "rose" | "neutral";
 
+export type Status =
+  "Backlog" |
+  "Planning" |
+  "In progress" |
+  "On Hold" |
+  "Done";
+
 export interface CalendarDate {
   title: string;
   description: string;

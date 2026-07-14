@@ -1,4 +1,31 @@
+import type { Status} from "@/types/team.types";
+import type { UserData } from "@/types/user.types";
+
 type GetData = {
+  token: string;
+  id: number;
+};
+type CreateData = {
+  token: string;
+  project: {
+    name: string;
+    description: string;
+    user: UserData;
+    tags: string [];
+    status: Status;
+  };
+};
+type UpdateData = {
+  token: string;
+  project: {
+    id: number;
+    name: string;
+    description: string;
+    status: Status;
+    tags: string [];
+  };
+};
+type DeleteData = {
   token: string;
   id: number;
 }
@@ -43,14 +70,113 @@ export async function getProjectController(data: GetData) {
   }
 }
 
-export async function createProject(
-) {
+export async function createProjectController(data: CreateData) {
+  const req = await fetch(
+    "/api/teams",
+    {
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json",
+        "nexzero-api-key": API_KEY,
+        "Authorization": data.token
+      },
+      body: JSON.stringify(data.project)
+    }
+  );
+
+  const response = await req.json()
+  .catch((e) => {
+    if(e instanceof Error) {
+      console.error("Server error: ", e.cause);
+
+      return {
+        message: e.message,
+        status: req.status
+      }
+    }
+
+    return {
+      message: "Server error",
+      status: 500
+    }
+  });
+
+  return {
+    message: response.message,
+    project: response.team,
+    status: req.status
+  }
 }
 
-export async function updateProject(
-) {
+export async function updateProjectController(data: UpdateData) {
+  const req = await fetch(
+    "/api/teams",
+    {
+      "method": "PUT",
+      "headers": {
+        "Content-Type": "application/json",
+        "nexzero-api-key": API_KEY,
+        "Authorization": data.token
+      },
+      body: JSON.stringify(data.project)
+    }
+  );
+
+  const response = await req.json()
+  .catch((e) => {
+    if(e instanceof Error) {
+      console.error("Server error: ", e.cause);
+
+      return {
+        message: e.message,
+        status: req.status
+      }
+    }
+
+    return {
+      message: "Server error",
+      status: 500
+    }
+  });
+
+  return {
+    message: response.message,
+    status: req.status
+  }
 }
 
-export async function deleteProject(
-) {
+export async function deleteProjectController(data: DeleteData) {
+  const req = await fetch(
+    `/api/teams/${data.id}`,
+    {
+      "method": "DELETE",
+      "headers": {
+        "Content-Type": "application/json",
+        "nexzero-api-key": API_KEY,
+        "Authorization": data.token
+      }
+    }
+  );
+
+  const response = await req.json()
+  .catch((e) => {
+    if(e instanceof Error) {
+      console.error("Server error: ", e.cause);
+
+      return {
+        message: e.message,
+        status: req.status
+      }
+    }
+
+    return {
+      message: "Server error",
+      status: 500
+    }
+  });
+
+  return {
+    message: response.message,
+    status: req.status
+  }
 }

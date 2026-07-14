@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v70.0:**
+  1. Seccion CRUD para los proyectos creados
+
 - **Indev v69.0:**
   1. Fix dentro de Docker. 🐛
   2. Mejoras dentro del script de rewrite. ⚒️
