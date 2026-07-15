@@ -21,46 +21,49 @@ export default function ProductPage() {
         <SmoothProvider />
 
         <section
-        className="w-full relative flex flex-col items-center justify-center overflow-hidden px-10 min-h-120">
-          <p
-          className="text-6xl font-black tracking-wide w-full text-start animate-blurred-fade-in animate-duration-700">
-            Build for developers <br />
-            Designed for projects <br />
-            Powered by <span className="text-main">AI</span> <br />
-          </p>
-          <p
-          className="w-full text-start pt-2 animate-blurred-fade-in animate-duration-700">
-            A closer look at the ideas, philosophy and people behind NexZero.
-          </p>
-
+        className="w-full relative flex flex-col gap-5 md:flex-row items-center justify-center overflow-hidden px-10 min-h-100">
           <div
-          className="w-100 gap-3 mr-auto mt-5 mb-30 grid grid-cols-2 text-center">
-            <Link
-            href="/register"
-            className="w-full py-2 text-sm rounded-sm bg-main duration-400 hover:brightness-75 cursor-pointer outline-none animate-fade-in-up animate-delay-100">
-              Start building
-            </Link>
-            <Link
-            href="/pricing"
-            className="w-full py-2 text-sm rounded-sm border border-neutral-800 duration-400 hover:bg-neutral-800 cursor-pointer outline-none animate-fade-in-up animate-delay-200">
-              Look pricing
-            </Link>
+          className="w-full flex items-center justify-center flex-col gap-5">
+            <p
+            className="text-6xl font-black tracking-wide w-full text-start animate-blurred-fade-in animate-duration-700">
+              Build for developers <br />
+              Designed for projects <br />
+              Powered by <span className="text-main">AI</span> <br />
+            </p>
+            <p
+            className="w-full text-start animate-blurred-fade-in animate-duration-700">
+              A closer look at the ideas, philosophy and people behind NexZero.
+            </p>
+
+            <div
+            className="w-100 gap-3 mr-auto grid grid-cols-2 text-center">
+              <Link
+              href="/register"
+              className="w-full py-2 text-sm rounded-sm bg-main duration-400 hover:brightness-75 cursor-pointer outline-none animate-fade-in-up animate-delay-100">
+                Start building
+              </Link>
+              <Link
+              href="/pricing"
+              className="w-full py-2 text-sm rounded-sm border border-neutral-800 duration-400 hover:bg-neutral-800 cursor-pointer outline-none animate-fade-in-up animate-delay-200">
+                Look pricing
+              </Link>
+            </div>
           </div>
 
           <div
-          className="aspect-square w-60 block absolute right-5 animate-fade-in-left animate-duration-700">
+          className="w-full md:w-70 flex items-center justify-center h-full">
             <Image
             src="/logos/logo.svg"
             alt="NexZero logo"
             width={800}
             height={800}
             loading="lazy"
-            className="animate-rotate-90 -rotate-90 animate-duration-600 animate-ease-in-out" />
+            className="animate-fade-in-left animate-duration-600 animate-ease-in-out aspect-square max-w-70" />
           </div>
         </section>
 
         <p
-        className="text-5xl font-bold tracking-wide text-center animate-fade-in-up">
+        className="text-5xl font-bold tracking-wide text-center animate-fade-in-up mt-30">
           Our vision <br />
         </p>
         <span

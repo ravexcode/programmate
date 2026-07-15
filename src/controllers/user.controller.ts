@@ -5,8 +5,6 @@ type GetData = {
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
 
 export async function fetchProfile(data: GetData) {
-  console.log(data.token);
-
   const req = await fetch(
     `/api/users/me`,
     {

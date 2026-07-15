@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v70.1:**
+  1. Bugfix al obtener datos del usuario. 🐛
+
 - **Indev v70.0:**
   1. Seccion CRUD para los proyectos creados
 

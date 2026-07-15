@@ -17,17 +17,8 @@ import Sidebar from "@/components/ui/dashboard/sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import SnackBar from "@/components/ui/snackbar";
 import ProjectCard from "@/components/ui/project-card";
-
-//Hooks imports
-import {
-  getSessionStr,
-  deleteSessionStr
-} from "@/services/session.service";
-
-//Services imports
-import UpdateUserData from "@/services/user.service";
 
 //Types imports
 import { UserData, UserBasic } from "@/types/user.types";
@@ -40,7 +31,9 @@ import useAnimationClose from "@/hooks/useAnimationClose";
 
 //Next imports
 import { useRouter } from "next/navigation";
-import { createProject } from "@/controllers/project/main.controller";
+
+//Modules imports
+import { getUser } from "@/modules/user.module";
 
 export default function Dashboard(){
   //Next setup
@@ -82,44 +75,13 @@ export default function Dashboard(){
 
   //Gets user data
   useEffect(() => {
-    //Function to update the user data
-    async function updateFromToken(){
-      let user_data;
+    async function update() {
+      const got = await getUser(router);
 
-      //Gets the cached user
-      const cached = getCached();
-
-      //If there is a cached user, sets the user data
-      if(cached) {
-        setUser(cached);
-        user_data = cached;
-      }
-
-      //Updates the user's data
-      if(!cached) user_data = await UpdateUserData({ router });
-      //Created at to Date
-      const created_at = new Date(user_data!.created_at!);
-      //Date now
-      const now = new Date();
-
-      if(user_data && (created_at.getDay() === now.getDay() && user_data.teams?.length! <= 0)) {
-        router.push("/get-started");
-
-        return;
-      } else if(user_data) {
-        setUser(user_data);
-
-        return;
-      }
-
-      deleteSessionStr();
-      localStorage.clear();
-      window.localStorage.clear();
-      return router.push("/auth/signin");
+      setUser(got!);
     }
 
-    //Executes the function
-    updateFromToken();
+    update();
     
     //Returns success
     return;
@@ -477,7 +439,7 @@ export default function Dashboard(){
                   onClick={ async(e) => {
                     setIsReloading(true);
 
-                    await UpdateUserData({ router });
+                    await getUser(router);
                     setIsReloading(false);
                   }}>
                     <IconReload

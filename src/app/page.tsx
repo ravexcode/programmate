@@ -63,7 +63,7 @@ export default function HomePage(){
           <div
           className="w-full md:w-[50%] flex justify-center items-center mt-5 z-2 animate-fade-in-up">
             <Link
-            href="/about"
+            href="/product"
             className="bg-main rounded-full px-12 py-2 duration-200 hover:brightness-120 hover:-translate-y-0.5">
               Take a look
             </Link>

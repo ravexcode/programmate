@@ -50,7 +50,7 @@ export default function Header(){
       className="hidden md:flex gap-2 justify-center items-center">
         <OptionsButton link="/product"> Product </OptionsButton>
         <OptionsButton link="/pricing"> Pricing </OptionsButton>
-        <OptionsButton link="/about#contact"> Contact </OptionsButton>
+        <OptionsButton link="/product#contact"> Contact </OptionsButton>
       </ul>
       
       <Link

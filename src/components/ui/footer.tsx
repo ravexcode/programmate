@@ -53,9 +53,8 @@ export default function Footer() {
 
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-5 xl:mt-0 w-full xl:w-auto">
             <FooterColumn title="About">
-              <CustomLi link="/about">More info</CustomLi>
+              <CustomLi link="/product">More info</CustomLi>
               <CustomLi link="/">Home</CustomLi>
-              <CustomLi link="/about#features">Startup</CustomLi>
               <CustomLi link="/#pricing">Pricing</CustomLi>
             </FooterColumn>
 

@@ -10,14 +10,10 @@
     "push-d": "git push origin development",
     "push-p": "git push origin production",
     "opencode": "ollama launch opencode --model kavai/Caveman-Library:gemma4-e4b",
-    "docker-build": "docker build -t nexzero-docker .",
-    "docker-run": "docker run -p 7000:7000 nexzero-docker",
-    "what-docker": "docker ps",
-    "docker-kill": "docker stop nexzero-docker",
-    "docker-build --linux": "sudo docker build -t nexzero-docker .",
-    "docker-run --linux": "sudo docker run -p 7000:7000 nexzero-docker",
-    "what-docker --linux": "sudo docker ps",
-    "docker-kill --linux": "sudo docker stop nexzero-docker"
+    "docker-build": "sudo docker build -t nexzero-docker .",
+    "docker-run": "sudo docker run -p 7000:7000 nexzero-docker",
+    "what-docker": "sudo docker ps",
+    "docker-kill": "sudo docker stop nexzero-docker"
   },
   "dependencies": {
     "@openrouter/sdk": "^0.12.35",
