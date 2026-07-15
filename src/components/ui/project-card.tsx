@@ -6,7 +6,6 @@ interface Props {
   index: number;
   status: string;
   tags: Array<string>;
-  key: number;
   goToTeam: () => void
 }
 
@@ -46,13 +45,17 @@ export default function ProjectCard(props : Props) {
       <div
       className="flex gap-2 mt-auto pt-3 flex-wrap">
         {
-          props.tags && props.tags.map((tag: string, index) => (
+          props.tags && props.tags.length > 0 ? props.tags.map((tag: string, index) => (
             <div
             className="px-3 py-1 rounded-md text-xs font-light border border-main/50 bg-main/20 text-text/80 w-max cursor-default"
             key={ index }>
               {tag}
             </div>
-          ))
+          )) :
+          <p
+          className="text-neutral-600 text-sm">
+            No project tags...
+          </p>
         }
       </div>
     </section>

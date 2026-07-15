@@ -17,6 +17,7 @@ type GetData = {
 type CreateData = {
   router: AppRouterInstance;
   snackbar: React.RefObject<null>;
+  user: UserData;
   project: {
     name: string;
     description: string;

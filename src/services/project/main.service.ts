@@ -18,6 +18,7 @@ type GetData = {
 type CreateData = {
   router: AppRouterInstance;
   snackbar: React.RefObject<null>;
+  user: UserData;
   project: {
     name: string;
     description: string;
@@ -73,6 +74,7 @@ export async function createProjectService(data: CreateData) {
 
   const res = await controllers.createProjectController({
     token,
+    user: data.user,
     project: data.project
   });
 

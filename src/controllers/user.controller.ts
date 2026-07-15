@@ -38,7 +38,9 @@ export async function fetchProfile(data: GetData) {
     message: response.message,
     data: {
       user: response.user,
-      profile: response.profile
+      profile: response.profile,
+      payments: response.payments,
+      projects: response.teams
     },
     status: req.status
   }

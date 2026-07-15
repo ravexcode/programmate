@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v71.0:**
+  1. Mejora de la creación de proyectos. 🚀
+
 - **Indev v70.1:**
   1. Bugfix al obtener datos del usuario. 🐛
 

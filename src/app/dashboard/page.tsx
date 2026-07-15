@@ -25,10 +25,6 @@ import { UserData, UserBasic } from "@/types/user.types";
 import Team, { IntegrantData } from "@/types/team.types";
 import { Status } from "@/types/team.types";
 
-//Hooks imports
-import { getCached } from "@/hooks/cache.hook";
-import useAnimationClose from "@/hooks/useAnimationClose";
-
 //Next imports
 import { useRouter } from "next/navigation";
 
@@ -44,32 +40,6 @@ export default function Dashboard(){
   const [ user, setUser ] = useState<UserData>();
   //Is reloading button
   const [ isReloading, setIsReloading ] = useState<boolean>(false);
-
-  //Projects form
-  //Users searched
-  const [ searched, setSearched ] = useState<string | undefined>();
-  //Integrants
-  const [ integrants, setIntegrants ] = useState<Array<IntegrantData> | undefined>();
-  //Users found
-  const [ found, setFound ] = useState<Array<UserBasic> | undefined>();
-  //Project name
-  const [ projectName, setProjectName ] = useState<string | undefined>();
-  //Project description
-  const [ projectDescription, setProjectDescription ] = useState<string | undefined>();
-  //Loading button state
-  const [ isLoading, setIsLoading ] = useState<boolean>(false);
-  //Status selector
-  const [status, setStatus] = useState<Status>("Backlog");
-  const [isStatusOpen, setIsStatusOpen] = useState(false);
-  //Tags
-  const [ tags, setTags ] = useState<Array<string>>([]);
-  //Current tag
-  const [ currentTag, setCurrentTag ] = useState<string | null>(null);
-
-  //Containers
-  //Project creator
-  const project_creator_container : RefObject<null> = useRef(null);
-
   //Snackbar container
   const snackbar = useRef(null);
 
@@ -87,65 +57,6 @@ export default function Dashboard(){
     return;
   }, []);
 
-  //User searcher
-  const searchUsers = async() => {
-    //Fetch the api with user data
-    const res = await fetch(`/api/users/search/${searched}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-      }
-    });
-
-    //Data from res
-    const data = await res.json();
-
-    //If success sets the users
-    if(res.status === 200) {
-      setFound(data.users);
-    }
-
-    //Else, returns error
-    return;
-  }
-  
-  //Status options for project
-  const statusOptions = [
-    { value: "Backlog", label: "Backlog", color: "bg-zinc-500" },
-    { value: "Planning", label: "Planning", color: "bg-blue-400" },
-    { value: "In Progress", label: "In Progress", color: "bg-orange-400" },
-    { value: "On Hold", label: "On Hold", color: "bg-red-400" },
-    { value: "Done", label: "Done", color: "bg-purple-500" },
-  ];
-
-  const toggleCreatorContainer = () => {
-    if(!project_creator_container.current) return;
-
-    const current : HTMLElement = project_creator_container.current;
-    const classlist = current.classList;
-
-    if(classlist.contains("hidden")){
-      //Change loading state
-      setIsLoading(false);
-      //Clear all the inputs
-      setFound(undefined);
-      setSearched(undefined);
-      setIntegrants(undefined);
-      setProjectName(undefined);
-      setProjectDescription(undefined);
-
-      classlist.remove("animate-fade-out-down");
-      classlist.replace("hidden", "flex");
-
-      return;
-    };
-
-    classlist.add("animate-fade-out-down");
-    useAnimationClose(current, "fade-out-down", "hidden", "flex");
-    return;
-  }
-
   return (
     !user ? <LoadingDashboard />
       :
@@ -153,249 +64,6 @@ export default function Dashboard(){
       {/* Layout sections */}
       <SnackBar
       ref={snackbar} />
-
-      {/* Project creator form */}
-      <div
-      ref={project_creator_container}
-      className="backdrop-brightness-60 backdrop-blur w-screen h-screen fixed top-0 left-0 flex-col  items-center z-200 animate-fade-in animate-duration-200 hidden overflow-y-auto py-10"
-      onClick={toggleCreatorContainer}>
-        <CreatorForm
-        title="Create a new project"
-        action={(e) => {}}
-        hideAction={toggleCreatorContainer}
-        actionIsDisabled={ isLoading || !projectName || projectName.length < 3 || !projectDescription}>
-          <CreatorInput
-          label="Project name"
-          placeholder="My project"
-          value={projectName || ""}
-          onChange={(e) => setProjectName(e.target.value)}
-          required />
-
-          <CreatorInput
-          label="Project description"
-          placeholder="Describe your project"
-          value={projectDescription || ""}
-          onChange={(e) => setProjectDescription(e.target.value)}
-          type="textarea"
-          required />
-
-          <div className="w-full">
-          <label 
-            className="font-light w-full text-sm text-start mb-1 block"
-          >
-            Search integrants <span className="text-text/60">(by email)</span>
-          </label>
-          
-          <div className="w-full relative h-max">
-            <input
-              id="user-search"
-              type="text"
-              value={searched || ""}
-              placeholder="Press Enter to search..."
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setSearched(e.target.value);
-              }}
-              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  if (searched && searched.trim().length > 0) {
-                    searchUsers();
-                  }
-                }
-              }}
-              className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400"
-            />
-
-            <button
-              type="button"
-              className="absolute right-2 top-1/2 -translate-y-1/2 -mt-1.5 p-1 hover:bg-neutral-700 rounded-sm transition-colors"
-              onClick={() => {
-                if (!searched || searched.trim().length < 1) return;
-                searchUsers();
-              }}
-              aria-label="Search users"
-            >
-              <IconSearch
-              size={16}
-              color="white"
-              stroke={2}/>
-            </button>
-
-            {found && found.length > 0 && (
-              <section className="absolute w-full text-sm py-1 bg-zinc-900 top-full left-0 z-50 rounded-md shadow-lg border border-neutral-800 max-h-48 overflow-y-auto">
-                {found.map((data: any) => {
-                  const isAlreadyAdded = integrants?.some(i => i.email === data.email);
-                  if (data.email === user?.email || isAlreadyAdded) return null;
-
-                  return (
-                    <div
-                      key={data.id}
-                      className="w-full px-3 text-start hover:bg-neutral-800 py-2 cursor-pointer transition-colors flex flex-col"
-                      onClick={() => {
-                        setIntegrants(prev => [
-                          ...(prev ?? []), 
-                          {
-                            id: data.id,
-                            email: data.email,
-                            username: data.display_name
-                          }
-                        ]);
-                        
-                        setFound(undefined);
-                        setSearched(""); 
-                      }}
-                    >
-                      <span className="font-medium text-text/90">{data.display_name}</span>
-                      <span className="text-xs text-text/50">{data.email}</span>
-                    </div>
-                  );
-                })}
-              </section>
-            )}
-          </div>
-
-
-
-          {/* SELECTED USERS LIST */}
-          <div className="w-full rounded-sm p-3 bg-neutral-950/50 text-sm mb-2 border border-neutral-900/50">
-            <h4 className="text-text/50 text-xs mb-2 uppercase tracking-wider">Team Members</h4>
-            
-            <div className="flex flex-col gap-2">
-              {/* Current User */}
-              <div className="flex items-center justify-between text-text/80 bg-neutral-900/50 px-3 py-2 rounded-sm cursor-default">
-                <div>
-                  <span className="font-medium">{user?.name}</span>
-                  <span className="text-text/40 ml-2 text-xs">({user?.email})</span>
-                </div>
-                <span className="text-text/30 text-xs font-medium px-2 py-1 bg-neutral-800 rounded-sm">You</span>
-              </div>
-
-              {integrants && integrants.map((data) => (
-                data.email !== user?.email && (
-                  <div 
-                    key={data.id} 
-                    className="flex items-center justify-between text-text/80 bg-neutral-800/40 px-3 py-2 rounded-sm"
-                  >
-                    <div>
-                      <span className="font-medium">{data.username}</span>
-                      <span className="text-text/40 ml-2 text-xs">({data.email})</span>
-                    </div>
-                    
-                    <button
-                      onClick={() => {
-                        setIntegrants(prev => prev?.filter(i => i.id !== data.id));
-                      }}
-                      className="text-red-400/70 hover:text-red-400 text-xs font-medium px-2 py-1 hover:bg-red-400/10 rounded-sm transition-colors"
-                      aria-label={`Remove ${data.username}`}>
-                      Remove
-                    </button>
-                  </div>
-                )
-              ))}
-            </div>
-          </div>
-        </div>
-
-
-
-        {/* Team Status option */}
-        <div className="w-full flex flex-col items-start mb-2 relative">
-          <label className="font-light w-full text-sm text-start mb-1 block">
-            Project Status
-          </label>
-          
-          <button
-            type="button"
-            onClick={() => setIsStatusOpen(!isStatusOpen)}
-            className="w-full flex items-center justify-between bg-neutral-800 rounded-sm px-3 py-2 text-text/80 hover:bg-neutral-700 transition-all duration-200"
-          >
-            <div className="flex items-center gap-3">
-              <span className={`w-2 h-2 rounded-full ${
-                statusOptions.find(opt => opt.value === status)?.color || "bg-zinc-500"
-              }`} />
-              <span className="text-sm">{status}</span>
-            </div>
-            <IconAssembly
-            size={14}
-            stroke={2} />
-          </button>
-
-          {isStatusOpen && (
-            <>
-              <div className="fixed inset-0 z-10" onClick={() => setIsStatusOpen(false)} />
-              <div className="absolute top-[calc(100%+4px)] left-0 w-full bg-neutral-900 border border-neutral-800 rounded-md shadow-xl overflow-hidden z-20 animate-in fade-in zoom-in-95 duration-200">
-                <div className="p-1">
-                  {statusOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => {
-                        setStatus(option.value as Status);
-                        setIsStatusOpen(false);
-                      }}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-sm text-sm transition-all ${
-                        status === option.value 
-                        ? 'bg-neutral-800 text-white' 
-                        : 'text-text/60 hover:bg-neutral-800/50 hover:text-text/90'
-                      }`}
-                    >
-                      <span className={`w-2 h-2 rounded-full ${option.color}`} />
-                      <span className="flex-1 text-left">{option.label}</span>
-                      {status === option.value && <div className="w-1 h-1 bg-blue-500 rounded-full" />}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-
-
-        {/* Tags section */}
-        <label
-        className="font-light w-full text-start">
-          Team tags
-        </label>
-        <input
-        type="text"
-        className="w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400"
-        value={currentTag || ""}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          setCurrentTag(e.target.value)
-        }}
-        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            if (currentTag && currentTag.trim().length > 0 && !tags.includes(currentTag)) {
-              setTags(prev => prev ? [
-                ...prev,
-                currentTag
-              ] : [ currentTag ]);
-              setCurrentTag("");
-            };
-            
-            if(tags.includes(currentTag!)) {
-              setCurrentTag("");
-            }
-          }
-        }}
-        placeholder="React, TypeScript, NodeJS..."/>
-
-        { /* Current tags */ }
-        <div
-        className="flex gap-1 flex-wrap justify-start items-center mb-10 w-full">
-          { tags && tags.length > 0 && tags.map((tag, index) => (
-            <div
-            key={index}
-            className="w-max px-2 py-1 rounded-md bg-neutral-800 text-sm font-light cursor-default hover:bg-red-700 duration-400"
-            onClick={() => { setTags(tags.toSpliced(index, 1)); }}>
-              {tag}
-            </div>
-          )) }
-        </div>
-
-        </CreatorForm>
-      </div>
 
       {/* Main container */}
       {
@@ -461,7 +129,6 @@ export default function Dashboard(){
                     <button
                     className="flex items-center gap-2 bg-main px-6 py-2 text-sm font-medium text-white rounded-full transition-all duration-300 hover:bg-main/80 focus:outline-none active:scale-95 cursor-pointer"
                     onClick={() => {
-                      toggleCreatorContainer()
                     }}>
                       <IconPlus
                       color="white"
@@ -471,7 +138,7 @@ export default function Dashboard(){
                     </button>
                   </div>
 
-                  <div className={user.teams && user.teams.length >= 1 ? "grid grid-cols-1 lg:grid-cols-2 gap-6" : "flex flex-col justify-center items-center"}>
+                  <div className={user.teams && user.teams.length > 0 ? "grid grid-cols-1 lg:grid-cols-2 gap-6" : "flex flex-col justify-center items-center"}>
                     {
                       user.teams && user.teams.length >= 1 ? user.teams.map((team : Team, index: number) => (
                         <ProjectCard

@@ -7,6 +7,7 @@ type GetData = {
 };
 type CreateData = {
   token: string;
+  user: UserData;
   project: {
     name: string;
     description: string;
@@ -80,7 +81,18 @@ export async function createProjectController(data: CreateData) {
         "nexzero-api-key": API_KEY,
         "Authorization": data.token
       },
-      body: JSON.stringify(data.project)
+      body: JSON.stringify({
+        ...data.project,
+        integrants: [
+          {
+            id: data.user.id,
+            email: data.user.email,
+            username: data.user.name,
+            type: "admin",
+            avatar_url: data.user.avatar_url,
+          }
+        ]
+      })
     }
   );
 

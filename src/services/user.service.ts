@@ -28,11 +28,12 @@ export default async function getUserService(data: GetData) {
 
   const oAuthUser = req.data.user;
   const profile = req.data.profile;
+  const payments = req.data.payments;
 
   console.log(req.data);
 
-  if(profile.payments && profile.payments.length >= 1) {
-    const lastPayment = profile.payments[profile.payments.length - 1];
+  if(payments && payments.length >= 1) {
+    const lastPayment = payments[payments.length - 1];
     const expires = new Date(lastPayment.paid_at);
     expires.setDate(expires.getDate() + 30);
     const now = new Date();
@@ -45,8 +46,8 @@ export default async function getUserService(data: GetData) {
   }
   
   //Teams updater
-  if(profile.teams && profile.teams.length >= 1) {
-    teams = profile.teams;
+  if(req.data.projects && req.data.projects.length >= 1) {
+    teams = req.data.projects;
   }
 
   const username = oAuthUser.user_metareq? oAuthUser.user_metareq.data.display_name : profile.display_name;

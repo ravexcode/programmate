@@ -1,3 +1,4 @@
+import { IconAssembly } from "@tabler/icons-react";
 import { useState } from "react";
 
 interface Props {
@@ -6,6 +7,7 @@ interface Props {
   onChange: React.Dispatch<React.SetStateAction<string>>;
   options: string [];
   isRequired?: boolean;
+  bgColor?: string;
 }
 
 export default function OptionsInput(props: Props) {
@@ -26,9 +28,13 @@ export default function OptionsInput(props: Props) {
       </label>
 
       <div
-      className={"w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-1 text-text/80 border border-transparent duration-300 " + ( visible ? "bg-neutral-950/50" : "hover:border-main" ) }
+      className={"w-full flex items-center rounded-sm px-3 py-2 text-sm focus:outline-none mb-1 text-text/80 border border-transparent duration-300 " + ( visible ? "brightness-75" : "hover:border-main" ) + " " + ( props.bgColor ?? "bg-neutral-800" ) }
       onClick={() => setVisible(p => p ? false : true)}>
         { props.value }
+
+        <IconAssembly
+        size={15}
+        className="ml-auto" />
       </div>
 
       {
