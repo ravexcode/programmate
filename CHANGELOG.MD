@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v72.0:**
+  1. Eliminacion de codigo innecesario en la pagina de settings. ⚒️
+  3. Opcion para cambiar datos del usuario integrada. 🚀
+
 - **Indev v71.0.1:**
   1. Arreglo de boton para crear. ⚒️
 

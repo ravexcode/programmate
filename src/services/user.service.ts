@@ -3,16 +3,27 @@ import {
   logOut
 } from "@/services/session.service";
 
-import { fetchProfile } from "@/controllers/user.controller";
+import { fetchProfile, UpdateUserController } from "@/controllers/user.controller";
 
 import type { UserData } from "@/types/user.types";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { showSnackbar } from "@/components/ui/snackbar";
+import checkStatus from "@/utils/check-status";
 
 type GetData = {
   router: AppRouterInstance;
 }
 
-export default async function getUserService(data: GetData) {
+type UpdateData = {
+  router: AppRouterInstance;
+  updatable: {
+    name: string;
+    avatar_url: string;
+  };
+  snackbar: React.RefObject<null>;
+}
+
+export async function getUserService(data: GetData) {
   const token = getSessionStr();
   const router = data.router;
 
@@ -45,7 +56,6 @@ export default async function getUserService(data: GetData) {
     }
   }
   
-  //Teams updater
   if(req.data.projects && req.data.projects.length >= 1) {
     teams = req.data.projects;
   }
@@ -71,4 +81,24 @@ export default async function getUserService(data: GetData) {
   window.localStorage.setItem("user", JSON.stringify(user));
   window.localStorage.setItem("cached_at", now.toString());
   return user;
+}
+
+export async function updateUserService(data: UpdateData) {
+  const token = getSessionStr();
+  const router = data.router;
+
+  if(!token) return router.push("/auth/signin");
+
+  const req = await UpdateUserController({
+    token,
+    updatable: data.updatable
+  });
+
+  if(req.status === 401) return router.push("/auth/signin");
+  
+  return showSnackbar(
+    req.message,
+    checkStatus(req.status),
+    data.snackbar
+  );
 }
