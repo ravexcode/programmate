@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v71.0.1:**
+  1. Arreglo de boton para crear. ⚒️
+
 - **Indev v71.0:**
   1. Mejora de la creación de proyectos. 🚀
 

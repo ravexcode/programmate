@@ -30,6 +30,7 @@ import { useRouter } from "next/navigation";
 
 //Modules imports
 import { getUser } from "@/modules/user.module";
+import Link from "next/link";
 
 export default function Dashboard(){
   //Next setup
@@ -126,16 +127,15 @@ export default function Dashboard(){
                       Projects
                     </h3>
 
-                    <button
-                    className="flex items-center gap-2 bg-main px-6 py-2 text-sm font-medium text-white rounded-full transition-all duration-300 hover:bg-main/80 focus:outline-none active:scale-95 cursor-pointer"
-                    onClick={() => {
-                    }}>
+                    <Link
+                    className="flex items-center gap-2 bg-main px-6 py-1.5 text-sm font-medium text-white rounded-md transition-all duration-300 hover:bg-main/80 focus:outline-none active:scale-95 cursor-pointer"
+                    href="/projects/build">
                       <IconPlus
                       color="white"
                       size={16}
                       stroke={2.5}/>
                       Create new
-                    </button>
+                    </Link>
                   </div>
 
                   <div className={user.teams && user.teams.length > 0 ? "grid grid-cols-1 lg:grid-cols-2 gap-6" : "flex flex-col justify-center items-center"}>
