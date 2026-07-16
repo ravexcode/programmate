@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v73.0:**
+  1. Integracion de los modulos dentro del dashboard de proyecto. ⚒️
+
 - **Indev v72.0:**
   1. Eliminacion de codigo innecesario en la pagina de settings. ⚒️
   3. Opcion para cambiar datos del usuario integrada. 🚀

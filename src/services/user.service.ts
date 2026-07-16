@@ -80,6 +80,7 @@ export async function getUserService(data: GetData) {
 
   window.localStorage.setItem("user", JSON.stringify(user));
   window.localStorage.setItem("cached_at", now.toString());
+
   return user;
 }
 

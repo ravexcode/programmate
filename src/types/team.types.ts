@@ -68,7 +68,7 @@ export interface Card {
 export default interface Team {
   team_id: number;
   name: string;
-  status: "Backlog" | "Planning" | "In Progress" | "On Hold" | "Done"; //Valid values
+  status: "Backlog" | "Planning" | "In progress" | "On Hold" | "Done"; //Valid values
   description: string;
   integrants: Array<IntegrantData>;
   integrants_id: Array<string>;

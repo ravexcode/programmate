@@ -50,7 +50,7 @@ export default function DevsPage(){
           </h1>
           <p
           className="opacity-80 z-2">
-            Learn about API, techs used and more!
+            Learn about our project!
           </p>
 
           <MiniCode />
@@ -78,9 +78,6 @@ export default function DevsPage(){
             <IconArrowDown
             className="opacity-70" />
             <ArticleComponent  title="Database"   content="Supabase" />
-            <IconArrowDown
-            className="opacity-70" />
-            <ArticleComponent  title="Storage"    content="Supabase Auth / Realtime" />
           </article>
         </section>
 

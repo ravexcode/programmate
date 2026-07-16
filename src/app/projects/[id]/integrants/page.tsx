@@ -10,13 +10,17 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
 //Hooks imports
-import { getCached } from "@/hooks/cache.hook";
-import { deleteSessionStr, getSessionStr } from "@/services/session.service";
 import useAnimationClose from "@/hooks/useAnimationClose";
 
 //Services imports
-import getUser from "@/services/user.service";
-import getTeam from "@/services/team.service";
+import { getSessionStr } from "@/services/session.service";
+
+//Modules imports
+import { getUser } from "@/modules/user.module";
+import { getProject } from "@/modules/project/main.module";
+
+//Utils imports
+import { getMemberIndex, getUserIndex } from "@/utils/get-member-index";
 
 //Functions imports
 import { isUserAdmin, getMemberById } from "@/functions/admin";
@@ -94,63 +98,24 @@ export default function Page(){
   //Form component
   const addIntgForm = useRef(null);
 
-  //Set expanded based in localstorage
   useEffect(() => {
-    const expanded = window.localStorage.getItem("expanded");
-
-    if(expanded) return setExpanded(true);
-
-    return;
-  }, []);
-
-  useEffect(() => {
-    async function getData() {
-      let user_data : UserData;
-      const token = getSessionStr();
-
-      if(!token) return router.push("/auth/signin");
-
-      const cached = getCached();
-
-      if(!cached) {
-        const user_fetched = await getUserService({router});
-
-        if(!user_fetched) {
-          deleteSessionStr();
-          window.localStorage.clear();
-          return router.push("/auth/signin");
-        }
-
-        user_data = user_fetched;
-      } else {
-        user_data = cached;
-      }
-
-      setUser(user_data);
-
-      const team_data = await getTeam(
-        Number(params.id),
-        token,
+    async function get() {
+      const data_user = await getUser(router);
+      const data_project = await getProject({
+        router,
+        id: Number(params.id),
         snackbar
-      );
+      });
 
-      setTeam(team_data);
-      
-      const integrants = team_data.integrants;
+      if(!data_project || !data_user) return;
 
-      const user_index = integrants.findIndex(
-        (integrant : IntegrantData) => integrant.id === user?.id
-      );
-
-      if(user_index === undefined) return router.push("/dashboard");
-      
-      setCurrentRole(team_data.integrants[user_index + 1].type || "member")
+      setUser(data_user);
+      setTeam(data_project);
 
       return;
     }
 
-    getData();
-    return;
+    get();
   }, []);
 
   const save_integrant = async(e: React.SubmitEvent) => {

@@ -11,6 +11,7 @@ import { useEffect, useState, useRef } from "react";
 
 //Types imports
 import { UserData } from "@/types/user.types";
+import Team from "@/types/team.types";
 
 //Prebuild ui imports
 import TeamSidebar from "@/components/ui/dashboard/team-sidebar";
@@ -19,13 +20,9 @@ import LoadingDashboard from "@/components/screens/loading-screen";
 import BgGradient from "@/components/ui/bg-gradient";
 import DashCard from "@/components/ui/cards/dashboard";
 
-//Hooks imports
-import { getCached } from "@/hooks/cache.hook";
-
-//Services imports
-import getUserService from "@/services/user.service";
-import Team from "@/types/team.types";
-import { deleteSessionStr, getSessionStr } from "@/services/session.service";
+//Modules import
+import { getUser } from "@/modules/user.module";
+import { getProject } from "@/modules/project/main.module";
 
 import { IconCircleDot, IconUserCircle } from "@tabler/icons-react";
 
@@ -46,39 +43,18 @@ export default function TeamPage(){
   //Sets the data
   useEffect(() => {
     async function get() {
-      let user_data : UserData;
-
-      const token = getSessionStr();
-
-      if(!token) return router.push("/auth/signin");
-
-      const cached = getCached();
-
-      if(cached) {
-        user_data = cached
-      } else {
-        const fetched = await getUserService({router});
-        
-        if(!fetched) {
-          deleteSessionStr();
-          window.localStorage.clear();
-          return router.push("/auth/signin");
-        };
-
-        user_data = fetched;
-      }
-
-      setUser(user_data);
-
-      //Gets team data
-      const team = await getTeam(
-        Number(params.id),
-        token,
+      const data_user = await getUser(router);
+      const data_project = await getProject({
+        router,
+        id: Number(params.id),
         snackbar
-      );
+      });
 
-      setTeam(team);
-      
+      if(!data_project || !data_user) return;
+
+      setUser(data_user);
+      setTeam(data_project);
+  
       return;
     }
 
@@ -135,7 +111,7 @@ export default function TeamPage(){
                 <span className={"w-1.5 h-1.5 rounded-full block " + (
                   team.status === "Backlog" ? "bg-zinc-500" :
                   team.status === "Planning" ? "bg-blue-400" :
-                  team.status === "In Progress" ? "bg-orange-400" :
+                  team.status === "In progress" ? "bg-orange-400" :
                   team.status === "On Hold" ? "bg-red-400" :
                   "bg-purple-500" ) }></span>
                 { team?.status }
