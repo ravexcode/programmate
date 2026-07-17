@@ -10,7 +10,7 @@ import supabase from "@/lib/db";
 import * as Handler from "@/app/api/handlers";
 
 //DotEnv declarations
-const proyectURL = process.env.API_URL || "http://localhost:3000";
+const proyectURL = process.env.API_URL || "http://localhost:7000";
 
 //Plans
 const pro = {
@@ -20,8 +20,8 @@ const pro = {
   url_image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDl2gg4N0WhybinSClgsZD6KePMVZ0B39thQ&s"
 };
 
-const team = {
-  name: "NexZero team plan",
+const enterprise = {
+  name: "NexZero enterprise plan",
   currency: "usd",
   cost: 1000, //Dollar cents
   url_image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDl2gg4N0WhybinSClgsZD6KePMVZ0B39thQ&s"
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   try {
     //Get the payment data
     const { plan } = await req.json();
-    const token : string | undefined = (await headers()).get("Authorization")?.replace("Bearer ", "");
+    const token = (await headers()).get("Authorization");
 
     //If isn't sent we return an error
     if(!plan) return Handler.badRequestErrorHandler();
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     if(!token) return Handler.unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user data from the token
-    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //If doesn't exist returns error
     if(!user) return Handler.notFoundErrorHandler("User not found");
@@ -59,12 +59,12 @@ export async function POST(req: NextRequest) {
         image: pro.url_image,
         paid_at: new Date(), //now
       };
-    } else if(plan === "team") {
+    } else if(plan === "enterprise") {
       paymentPlan = {
-        name: team.name,
-        currency: team.currency,
-        price: team.cost,
-        image: team.url_image,
+        name: enterprise.name,
+        currency: enterprise.currency,
+        price: enterprise.cost,
+        image: enterprise.url_image,
         paid_at: new Date(), //now
       };
     } else { 

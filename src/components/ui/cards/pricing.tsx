@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { IconCheck } from "@tabler/icons-react";
 
 interface Props {
@@ -9,6 +7,8 @@ interface Props {
   type: "free" | "normal";
   benefits: string [];
   isRecomended?: boolean;
+  action?: () => void;
+  loading?: boolean;
 }
 
 export default function PricingCard(props: Props) {
@@ -34,15 +34,18 @@ export default function PricingCard(props: Props) {
 
       {
         props.type === "free" ? (
-          <Link
-          href="/auth/signin"
+          <button
+          type="button"
+          onClick={() => props.action}
           className="w-full rounded-xl border-2 border-neutral-800 p-2 text-sm mt-2 cursor-pointer duration-300 hover:bg-neutral-800 font-medium text-center">
             Start in NexZero
-          </Link>
+          </button>
         ) : (
           <button
           type="button"
-          className="w-full rounded-xl bg-main p-2 text-sm mt-2 cursor-pointer duration-300 hover:brightness-75 font-medium">
+          onClick={props.action}
+          disabled={props.loading}
+          className="w-full rounded-xl bg-main p-2 text-sm mt-2 cursor-pointer duration-300 hover:brightness-75 font-medium disabled:cursor-wait disabled:grayscale disabled:hover:brightness-100">
             Get {props.tier.toLowerCase()}
           </button>
         )

@@ -1,10 +1,28 @@
 "use client";
 
+//Next imports
+import { useRouter } from "next/navigation";
+
+//React imports
+import { useState, useEffect, useRef } from "react";
+
+//Prebuilt UI imports
 import PageLayout from "@/components/layouts/page";
-import SmoothProvider from "@/lib/components/lennis";
 import PricingCard from "@/components/ui/cards/pricing";
+import SnackBar from "@/components/ui/snackbar";
+
+//Providers imports
+import SmoothProvider from "@/lib/components/lennis";
+
+//Services imports
+import { getSessionStr } from "@/services/session.service";
+
+//Modules imports
+import { capture } from "@/modules/payments/capture.module";
 
 export default function PricingPage() {
+  const router = useRouter();
+
   const benefits = {
     free: [
       "2 project limit",
@@ -32,10 +50,26 @@ export default function PricingPage() {
       "Early access to new features",
       "Priority support",
     ]
-  }
+  };
+
+  const [ canPay, setCanPay ] = useState(false);
+  const [ loading, setLoading ] = useState(false);
+
+  const snackbar = useRef(null)
+
+  useEffect(() => {
+    const token = getSessionStr();
+
+    if(!token) return;
+
+    return setCanPay(true);
+  }, []);
 
   return (
     <PageLayout>
+      <SnackBar
+      ref={snackbar} />
+
       <main
       className="relative flex items-start justify-center">
         <SmoothProvider />
@@ -66,21 +100,60 @@ export default function PricingPage() {
             slogan="Everything you need to start"
             price={0}
             type="free"
-            benefits={benefits.free} />
+            benefits={benefits.free}
+            action={() => {
+              if(!canPay) return router.push("/auth/login");
+
+              router.push("/dashboard");
+            }} />
 
             <PricingCard
             tier="Pro"
             slogan="Unlock the full NexZero experience"
             price={8}
             type="normal"
-            benefits={benefits.pro} />
+            benefits={benefits.pro}
+            loading={loading}
+            action={async () => {
+              if(!canPay) return router.push("/auth/login");
+
+              setLoading(true);
+              const link = await capture(
+                router,
+                snackbar,
+                "pro"
+              );
+
+              console.warn(link);
+
+              if(link) return router.push(link);
+
+              setLoading(false);
+              return;
+            }} />
 
             <PricingCard
             tier="Enterprise"
             slogan="Designed for collaborative teams"
             price={14}
             type="normal"
-            benefits={benefits.enterprise} />
+            benefits={benefits.enterprise}
+            loading={loading} 
+            action={async () => {
+              if(!canPay) return router.push("/auth/login");
+
+              setLoading(true);
+              const link = await capture(
+                router,
+                snackbar,
+                "enterprise"
+              );
+
+              if(link) return router.push(link);
+
+              setLoading(false);
+              return;
+            }} />
           </div>
         </section>
         

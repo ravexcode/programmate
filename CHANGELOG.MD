@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v74.0:**
+  1. Integracion de pagos con stripe. 💰
+
 - **Indev v73.0:**
   1. Integracion de los modulos dentro del dashboard de proyecto. ⚒️
 
