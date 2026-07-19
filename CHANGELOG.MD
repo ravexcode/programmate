@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v76.1:**
+  1. Arreglo de errores pequeños. ⚒️
+
 - **Indev v76.0:**
   1. Mejora en los agentes para el codigo, conocen mas del proyecto y actuan como un hombre de las cuevas. 🤖
 

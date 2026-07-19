@@ -1,5 +1,5 @@
 interface CreatorFormProps {
-  action: (e : any) => void;
+  action: (e : React.SubmitEvent) => void;
   title: string;
   children?: React.ReactNode;
   hideAction?: () => void;
