@@ -10,6 +10,7 @@ type UpdateData = {
   router: AppRouterInstance;
   snackbar: React.RefObject<null>;
   ticket: Ticket;
+  index: number
 }
 
 type RequestData = {
@@ -69,7 +70,8 @@ export async function updateTicketService(data: UpdateData) {
   const response = await updateTicketController({
     id: data.id,
     token,
-    ticket: data.ticket
+    ticket: data.ticket,
+    index: data.index
   });
 
   showSnackbar(

@@ -10,6 +10,7 @@ type UpdateData = {
   token: string;
   ticket: Ticket;
   id: number;
+  index: number;
 }
 
 type RequestData = {
@@ -76,6 +77,7 @@ export async function updateTicketController(data: UpdateData) {
       },
       body: JSON.stringify({
         ...data.ticket,
+        index: data.index,
         teamId: data.id
       })
     }

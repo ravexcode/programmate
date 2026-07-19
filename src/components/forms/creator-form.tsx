@@ -7,6 +7,7 @@ interface CreatorFormProps {
   confirmMessage?: string;
   isDangerous?: boolean;
   disabledMessage?: string;
+  bgColor?: string;
 }
 
 export default function CreatorForm(props: CreatorFormProps) {
@@ -19,7 +20,7 @@ export default function CreatorForm(props: CreatorFormProps) {
       e.nativeEvent.stopImmediatePropagation();
       e.stopPropagation();
     }}
-    className="animate-fade-in-up w-100 bg-neutral-900 rounded-lg px-6 py-4 flex flex-col justify-center items-center my-auto text-text">
+    className={"animate-fade-in-up w-100 rounded-lg px-6 py-4 flex flex-col justify-center items-center my-auto text-text " + (props.bgColor ?? "bg-neutral-900")}>
 
       <h2
       className="text-lg w-full text-start mb-3">

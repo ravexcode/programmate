@@ -41,8 +41,6 @@ export async function getUserService(data: GetData) {
   const profile = req.data.profile;
   const payments = req.data.payments;
 
-  console.log(req.data);
-
   if(payments && payments.length >= 1) {
     const lastPayment = payments[payments.length - 1];
     const expires = new Date(lastPayment.paid_at);

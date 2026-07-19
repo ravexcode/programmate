@@ -10,6 +10,7 @@ type UpdateData = {
   router: AppRouterInstance;
   snackbar: React.RefObject<null>;
   ticket: Ticket;
+  index: number
 }
 
 type RequestData = {
