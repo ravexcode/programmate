@@ -4,12 +4,16 @@ import { showSnackbar } from "@/components/ui/snackbar";
 
 import checkStatus from "@/utils/check-status";
 
-import { createEventController, updateEventController } from "@/controllers/project/calendar.controller";
+import {
+  createEventController,
+  updateEventController,
+  deleteEventController
+} from "@/controllers/project/calendar.controller";
 
 import type { CalendarDate } from "@/types/team.types";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-type UploadData = {
+type EventData = {
   id: number;
   event: CalendarDate;
   snackbar: React.RefObject<null>;
@@ -24,44 +28,42 @@ type UpdateData = {
   router: AppRouterInstance;
 };
 
-export async function createEventService(data: UploadData) {
-  const snackbar = data.snackbar;
-  const router = data.router;
+type DeleteData = {
+  id: number;
+  index: number;
+  snackbar: React.RefObject<null>;
+  router: AppRouterInstance;
+};
 
+function handleToken(router: AppRouterInstance) {
   const token = getSessionStr();
 
-  if(!token) {
-    router.push("/auth/signup")
-    return false;
-  };
+  if (!token) {
+    router.push("/auth/signin");
+    return null;
+  }
+
+  return token;
+}
+
+export async function createEventService(data: EventData) {
+  const token = handleToken(data.router);
+  if (!token) return false;
 
   const response = await createEventController({
     id: data.id,
     content: data.event,
-    token: token
+    token
   });
 
-  showSnackbar(
-    response.message,
-    checkStatus(response.status),
-    snackbar
-  );
+  showSnackbar(response.message, checkStatus(response.status), data.snackbar);
 
-  if(response.status <= 205) return false;
-
-  return true;
+  return response.status < 205;
 }
 
 export async function updateEventService(data: UpdateData) {
-  const snackbar = data.snackbar;
-  const router = data.router;
-
-  const token = getSessionStr();
-
-  if(!token) {
-    router.push("/auth/signup")
-    return false;
-  };
+  const token = handleToken(data.router);
+  if (!token) return false;
 
   const response = await updateEventController({
     id: data.id,
@@ -70,13 +72,22 @@ export async function updateEventService(data: UpdateData) {
     token
   });
 
-  showSnackbar(
-    response.message,
-    checkStatus(response.status),
-    snackbar
-  );
+  showSnackbar(response.message, checkStatus(response.status), data.snackbar);
 
-  if(response.status <= 205) return false;
+  return response.status < 205;
+}
 
-  return true;
+export async function deleteEventService(data: DeleteData) {
+  const token = handleToken(data.router);
+  if (!token) return false;
+
+  const response = await deleteEventController({
+    id: data.id,
+    index: data.index,
+    token
+  });
+
+  showSnackbar(response.message, checkStatus(response.status), data.snackbar);
+
+  return response.status < 205;
 }

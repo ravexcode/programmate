@@ -9,8 +9,7 @@ import {
   notFoundErrorHandler,
   supabaseErrorHandler,
   unauthorizedErrorHandler,
-  errorTemplate
-} from "@api/handlers"; 
+} from "@api/handlers";
 
 //Lib imports
 import supabase from "@/lib/db";
@@ -19,46 +18,62 @@ import supabase from "@/lib/db";
 import { CalendarDate } from "@/types/team.types";
 import { ParamsType } from "@api/teams/[teamId]/params.type";
 
-export async function POST({ params }: ParamsType, req: NextRequest) {
-  try {
-    const { teamId } = await params;
-    const { event } = await req.json();
-    const token = (await headers()).get("Authorization");
-    
-    if (!teamId || event) return badRequestErrorHandler();
-    if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
+async function authenticateUser(token: string | null) {
+  if (!token) return { user: null, error: "Authorization token not inserted" };
 
-    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
+  const { data: { user }, error } = await supabase.auth.getUser(token);
 
-    if(!user) return notFoundErrorHandler("User data not found");
-    if(getUserError) return unauthorizedErrorHandler("Authorization token expired");
+  if (error) return { user: null, error: error.message };
+  if (!user) return { user: null, error: "User not found" };
 
-    const { data: team, error: getTeamError } = await supabase
+  return { user, error: null };
+}
+
+async function getTeamAndVerifyUser(teamId: string, token: string | null) {
+  const auth = await authenticateUser(token);
+
+  if (auth.error) {
+    return { team: null, user: null, error: auth.error };
+  }
+
+  const { data: team, error: getTeamError } = await supabase
     .from("teams")
     .select("*")
     .eq("team_id", teamId)
     .maybeSingle();
 
-    if(!team) return notFoundErrorHandler("Team not found");
-    if(getTeamError) return supabaseErrorHandler(getTeamError);
+  if (getTeamError) return { team: null, user: auth.user, error: getTeamError.message };
+  if (!team) return { team: null, user: auth.user, error: "Team not found" };
+  if (!team.integrants_id.includes(auth.user!.id)) {
+    return { team: null, user: auth.user, error: "You're not in the team" };
+  }
 
-    if(team.integrants_id.includes(user.id)) return unauthorizedErrorHandler("You're not in the team");
+  return { team, user: auth.user, error: null };
+}
+
+export async function POST({ params }: ParamsType, req: NextRequest) {
+  try {
+    const { teamId } = await params;
+    const { event } = await req.json();
+    const token = (await headers()).get("Authorization");
+
+    if (!teamId || !event) return badRequestErrorHandler();
+
+    const { team, error } = await getTeamAndVerifyUser(teamId, token);
+
+    if (error) return notFoundErrorHandler(error);
+    if (!team) return notFoundErrorHandler("Team not found");
 
     const { error: saveEventError } = await supabase
-    .from("teams")
-    .update({
-      calendar: [
-        ...team.calendar,
-        event
-      ]
-    })
-    .eq("team_id", teamId);
+      .from("teams")
+      .update({
+        calendar: [...team.calendar, event]
+      })
+      .eq("team_id", teamId);
 
-    if(saveEventError) return supabaseErrorHandler(saveEventError);
+    if (saveEventError) return supabaseErrorHandler(saveEventError);
 
-    return NextResponse.json({
-      message: "Event saved successfully"
-    });
+    return NextResponse.json({ message: "Event saved successfully" });
   } catch (error) {
     return serverErrorHandler(error);
   }
@@ -69,52 +84,34 @@ export async function PUT({ params }: ParamsType, req: NextRequest) {
     const { teamId } = await params;
     const { event, eventIndex } = await req.json();
     const token = (await headers()).get("Authorization");
-    
-    if (!teamId || event || eventIndex === undefined) return badRequestErrorHandler();
-    if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
-    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
+    if (!teamId || !event || eventIndex === undefined) return badRequestErrorHandler();
 
-    if(!user) return notFoundErrorHandler("User data not found");
-    if(getUserError) return unauthorizedErrorHandler("Authorization token expired");
+    const { team, error } = await getTeamAndVerifyUser(teamId, token);
 
-    const { data: team, error: getTeamError } = await supabase
-    .from("teams")
-    .select("*")
-    .eq("team_id", teamId)
-    .maybeSingle();
+    if (error) return notFoundErrorHandler(error);
+    if (!team) return notFoundErrorHandler("Team not found");
+    if (team.calendar.length < 1) {
+      return NextResponse.json(
+        { message: "The calendar has no events", error: "Confusion" },
+        { status: 409 }
+      );
+    }
 
-    if(!team) return notFoundErrorHandler("Team not found");
-    if(getTeamError) return supabaseErrorHandler(getTeamError);
-
-    if(team.integrants_id.includes(user.id)) return unauthorizedErrorHandler("You're not in the team");
-
-    if(team.calendar.length < 1) return errorTemplate(
-      "The calendar has no events",
-      "Confusion",
-      409
+    const updated = team.calendar.map((prev: CalendarDate, index: number) =>
+      index === eventIndex ? event : prev
     );
 
-    const updated = team.calendar.filter((prev: CalendarDate, index: number) => {
-      if(index !== eventIndex) return prev;
-
-      return event;
-    });
-
     const { error: updateCalendarError } = await supabase
-    .from("teams")
-    .update({
-      calendar: updated
-    })
-    .eq("team_id", teamId);
+      .from("teams")
+      .update({ calendar: updated })
+      .eq("team_id", teamId);
 
-    if(updateCalendarError) return supabaseErrorHandler(updateCalendarError);
+    if (updateCalendarError) return supabaseErrorHandler(updateCalendarError);
 
-    return NextResponse.json({
-      message: "Event updated successfully"
-    })
+    return NextResponse.json({ message: "Event updated successfully" });
   } catch (error) {
-      return serverErrorHandler(error);
+    return serverErrorHandler(error);
   }
 }
 
@@ -123,47 +120,31 @@ export async function DELETE({ params }: ParamsType, req: NextRequest) {
     const { teamId } = await params;
     const { eventIndex } = await req.json();
     const token = (await headers()).get("Authorization");
-    
+
     if (!teamId || eventIndex === undefined) return badRequestErrorHandler();
-    if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
-    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
+    const { team, error } = await getTeamAndVerifyUser(teamId, token);
 
-    if(!user) return notFoundErrorHandler("User data not found");
-    if(getUserError) return unauthorizedErrorHandler("Authorization token expired");
-
-    const { data: team, error: getTeamError } = await supabase
-    .from("teams")
-    .select("*")
-    .eq("team_id", teamId)
-    .maybeSingle();
-
-    if(!team) return notFoundErrorHandler("Team not found");
-    if(getTeamError) return supabaseErrorHandler(getTeamError);
-
-    if(team.integrants_id.includes(user.id)) return unauthorizedErrorHandler("You're not in the team");
-
-    if(team.calendar.length < 1) return errorTemplate(
-      "The calendar has no events",
-      "Confusion",
-      409
-    );
+    if (error) return notFoundErrorHandler(error);
+    if (!team) return notFoundErrorHandler("Team not found");
+    if (team.calendar.length < 1) {
+      return NextResponse.json(
+        { message: "The calendar has no events", error: "Confusion" },
+        { status: 409 }
+      );
+    }
 
     const updated = team.calendar.filter((_: CalendarDate, i: number) => i !== eventIndex);
 
     const { error: updateCalendarError } = await supabase
-    .from("teams")
-    .update({
-      calendar: updated
-    })
-    .eq("team_id", teamId);
+      .from("teams")
+      .update({ calendar: updated })
+      .eq("team_id", teamId);
 
-    if(updateCalendarError) return supabaseErrorHandler(updateCalendarError);
+    if (updateCalendarError) return supabaseErrorHandler(updateCalendarError);
 
-    return NextResponse.json({
-      message: "Event removed successfully"
-    })
+    return NextResponse.json({ message: "Event removed successfully" });
   } catch (error) {
-      return serverErrorHandler(error);
+    return serverErrorHandler(error);
   }
 }

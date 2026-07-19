@@ -3,7 +3,11 @@ import type { CalendarDate } from "@/types/team.types";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 //Services
-import { createEventService, updateEventService } from "@/services/project/calendar.service";
+import {
+  createEventService,
+  updateEventService,
+  deleteEventService
+} from "@/services/project/calendar.service";
 
 export async function createEvent(
   id: number,
@@ -11,14 +15,7 @@ export async function createEvent(
   snackbar: React.RefObject<null>,
   router: AppRouterInstance
 ) {
-  const res = await createEventService({
-    id,
-    event,
-    snackbar,
-    router
-  });
-
-  return res;
+  return await createEventService({ id, event, snackbar, router });
 }
 
 export async function updateEvent(
@@ -28,13 +25,14 @@ export async function updateEvent(
   snackbar: React.RefObject<null>,
   router: AppRouterInstance
 ) {
-  const res = await updateEventService({
-    id,
-    index,
-    content,
-    snackbar,
-    router,
-  });
+  return await updateEventService({ id, index, content, snackbar, router });
+}
 
-  return res;
+export async function deleteEvent(
+  id: number,
+  index: number,
+  snackbar: React.RefObject<null>,
+  router: AppRouterInstance
+) {
+  return await deleteEventService({ id, index, snackbar, router });
 }
