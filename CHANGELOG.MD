@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v76.0:**
+  1. Mejora en los agentes para el codigo, conocen mas del proyecto y actuan como un hombre de las cuevas. 🤖
+
 - **Indev v75.0:**
   1. MSC para crear un ticket creado. ⚒️
 
