@@ -30,18 +30,21 @@ import {
 } from "@tabler/icons-react";
 
 //Prebuilt ui imports
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
-import SideBar, { Icon } from "@/components/ui/sidebar";
+import SnackBar from "@/components/ui/snackbar";
+import TeamSideBar from "@/components/ui/dashboard/team-sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import ColumnNode from "@/components/ui/column-node";
 import ButtonControl from "@/components/ui/button-control";
 import { TableContainerNode } from "@/components/ui/table-node";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
+import MainButton from "@components/ui/buttons/main";
+import AltButton from "@components/ui/buttons/alternate";
 
 //Services imports
 import { getUser } from "@/modules/user.module";
 import { getTeam } from "@/modules/project/main.module";
+import { saveERD } from "@/modules/erd.module";
 
 //Hooks imports
 import { getSessionStr } from "@/services/session.service";
@@ -128,12 +131,6 @@ export default function Page(){
   //Components
   //Snackbar
   const snackbar = useRef(null);
-  //Table creator
-  const form = useRef(null);
-  //Table editor
-  const editor = useRef(null);
-  //Table exporter
-  const exporter = useRef(null);
 
   //Set expanded based in localstorage
   useEffect(() => {
@@ -151,9 +148,9 @@ export default function Page(){
 
       if(!token) return router.push("/auth/signin");
 
-       const user_data = await getUser({router});
+       const user_data = await getUser(router);
 
-      setUser(user_data);
+      setUser(user_data!);
 
        const team_data : Team = await getTeam(
          { id: Number(params.id), router, snackbar: snackbar }
@@ -171,64 +168,23 @@ export default function Page(){
   }, []);
 
   //Togglers
+  const [isCreatorOpen, setIsCreatorOpen] = useState(false);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isExporterOpen, setIsExporterOpen] = useState(false);
+
   const toggleCreatorForm = () => {
-    if(!form.current) return;
-
-    const current : HTMLElement = form.current;
-
-    if(current.classList.contains("hidden")) {
-      current.classList.remove("hidden");
-      current.classList.add("flex");
-      setCursor("create");
-
-      return;
-    }
-    
-    current.classList.add("hidden");
-    current.classList.remove("flex");
-    setCursor("mouse");
-
-    return;
+    setIsCreatorOpen(!isCreatorOpen);
+    setCursor(isCreatorOpen ? "mouse" : "create");
   };
 
   const toggleEditor = () => {
-    if(!editor.current) return;
-
-    const current : HTMLElement = editor.current;
-
-    if(current.classList.contains("hidden")) {
-      current.classList.remove("hidden");
-      current.classList.add("flex");
-      setCursor("edit");
-
-      return;
-    }
-    
-    current.classList.add("hidden");
-    current.classList.remove("flex");
-    setCursor("mouse");
-
-    return;
+    setIsEditorOpen(!isEditorOpen);
+    setCursor(isEditorOpen ? "mouse" : "edit");
   };
 
   const toggleExporter = () => {
-    if(!exporter.current) return;
-
-    const current : HTMLElement = exporter.current;
-
-    if(current.classList.contains("hidden")) {
-      current.classList.remove("hidden");
-      current.classList.add("flex");
-      setCursor("edit");
-
-      return;
-    }
-    
-    current.classList.add("hidden");
-    current.classList.remove("flex");
-    setCursor("mouse");
-
-    return;
+    setIsExporterOpen(!isExporterOpen);
+    setCursor(isExporterOpen ? "mouse" : "edit");
   };
 
   //Row field updater
@@ -320,39 +276,16 @@ export default function Page(){
   }, [setEdges]);
 
   //Database handler
-  const saveERD = async() => {
+  const handleSaveERD = async() => {
     setIsSaveLoading(true);
-
-    const token = getSessionStr();
-
-    if(!token) return router.push("/auth/signin");
-
-    const res = await fetch(
-      `/api/teams/${params.id}/erd`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-          "Authorization": token
-        },
-        body: JSON.stringify({
-          teamId: params.id,
-          connections: edges || [],
-          erd: nodes || []
-        })
-      }
-    );
-
-    const data = await res.json();
-
-    if(res.status !== 200) {
-      showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
-      setIsSaveLoading(false);
-      return;
-    }
+    
+    const res = await saveERD({
+      teamId: Number(params.id),
+      erd: nodes || [],
+      connections: edges || []
+    }, snackbar);
 
     setIsSaveLoading(false);
-    return;
   }
 
   //Node adder
@@ -490,17 +423,17 @@ const sql = `CREATE TABLE ${json.tableName} (
       className="bg-background grid grid-cols-[auto_1fr] min-h-screen w-screen text-text overflow-hidden">
         <SnackBar ref={snackbar} />
 
-        {/* DB Data exported */}
-        <div
-        className="w-screen h-screen fixed top-0 left-0 hidden justify-center items-start backdrop-brightness-50 backdrop-blur-xs z-10 overflow-y-auto animate-fade-in"
-        ref={exporter}
-        onClick={toggleExporter}>
-          <section
-          className="w-150 h-200 bg-neutral-900 my-10 mr-20 rounded-md px-6 py-3 flex flex-col gap-2 animate-fade-in-up"
-          onClick={(e) => {
-            e.stopPropagation();
-            e.nativeEvent.stopPropagation();
-          }}>
+         {/* DB Data exported */}
+         <div
+         className={`w-screen h-screen fixed top-0 left-0 ${isExporterOpen ? "flex" : "hidden"} justify-center items-start backdrop-brightness-50 backdrop-blur-xs z-10 overflow-y-auto animate-fade-in`}
+         onClick={toggleExporter}>
+           <section
+           className="w-150 h-200 bg-neutral-900 my-10 mr-20 rounded-md px-6 py-3 flex flex-col gap-2 animate-fade-in-up"
+           onClick={(e) => {
+             e.stopPropagation();
+             e.nativeEvent.stopPropagation();
+           }}>
+
             <div
             className="w-full flex justify-between items-center">
               <p
@@ -613,11 +546,11 @@ const sql = `CREATE TABLE ${json.tableName} (
           </section>
         </div>
 
-        {/* Table creator form */}
-        <div
-        className="w-screen h-screen fixed hidden items-start justify-center backdrop-brightness-50 backdrop-blur-xs z-10 overflow-auto py-10 animate-fade-in"
-        ref={form}
-        onClick={toggleCreatorForm}>
+         {/* Table creator form */}
+         <div
+         className={`w-screen h-screen fixed ${isCreatorOpen ? "flex" : "hidden"} items-start justify-center backdrop-brightness-50 backdrop-blur-xs z-10 overflow-auto py-10 animate-fade-in`}
+         onClick={toggleCreatorForm}>
+
 
           <CreatorForm
           title="Create a new table"
@@ -731,11 +664,11 @@ const sql = `CREATE TABLE ${json.tableName} (
 
         </div>
 
-        {/* Table editor */}
-        <div
-        className="w-screen h-screen fixed hidden items-center justify-end backdrop-brightness-50 backdrop-blur-xs z-10 overflow-hidden animate-fade-in"
-        ref={editor}
-        onClick={toggleEditor}>
+         {/* Table editor */}
+         <div
+         className={`w-screen h-screen fixed ${isEditorOpen ? "flex" : "hidden"} items-center justify-end backdrop-brightness-50 backdrop-blur-xs z-10 overflow-hidden animate-fade-in`}
+         onClick={toggleEditor}>
+
 
           <section
           className="h-full w-130 animate-fade-in-left bg-neutral-900 px-4"
@@ -887,107 +820,10 @@ const sql = `CREATE TABLE ${json.tableName} (
           </section>
 
         </div>
-
-        <SideBar
-        email={user?.email!}
-        plan={user?.plan!}
-        avatar={user?.avatar_url}
-        username={user?.name!}
-        setExpanded={(isExpanded : boolean) => {
-          setExpanded(isExpanded === true ? false : true);
-        }}>
-          {
-            expanded && (
-              <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
-                Project 
-              </span>
-            )
-          }
-
-          <Icon
-          action={`/projects/${params.id}`}
-          name="Dashboard"
-          isDisplayed={expanded}>
-            <IconAppWindow
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/integrants`}
-          name="Integrants"
-          isDisplayed={expanded}>
-            <IconUsers
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/tickets`}
-          name="Tickets"
-          isDisplayed={expanded}>
-            <IconFolder
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/chat`}
-          name="Chat"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconMessage
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/json-preview`}
-          name="JSON Preview"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconEye
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/kanban-board`}
-          name="Kanban board"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconLayoutKanban
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/calendar`}
-          name="Calendar"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconCalendar
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-          
-          <Icon
-          action={`/projects/${team.team_id}/settings`}
-          name="Project settings"
-          isDisplayed={expanded}>
-            <IconSettings
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-        </SideBar>
+        
+        <TeamSideBar
+        user={user}
+        team={team} />
 
         <ReactFlow
         nodes={nodes}
@@ -1050,24 +886,24 @@ const sql = `CREATE TABLE ${json.tableName} (
           </ButtonControl>
 
           {/* Save handler */}
-          <button
-          type="button"
-          className="h-10 w-25 rounded-sm bg-main cursor-pointer duration-400 hover:bg-main/60 font-medium tracking-wide disabled:grayscale disabled:hover:bg-main disabled:cursor-wait text-sm"
-          disabled={isSaveLoading}
-          onClick={async() => {
-            await saveERD();
-          }} >
-            Save
-          </button>
+           <MainButton
+           size="w-full"
+           isLoading={isSaveLoading}
+           action={async() => {
+             await handleSaveERD();
+           }} >
+             Save
+           </MainButton>
+
 
           {/* Export handler */}
-          <button
-          type="button"
-          className="h-10 w-25 rounded-sm bg-rose-500 cursor-pointer duration-400 hover:bg-rose-700 font-medium tracking-wide disabled:grayscale disabled:hover:bg-rose-500 disabled:cursor-wait text-sm"
-          disabled={isSaveLoading}
-          onClick={toggleExporter} >
-            Export
-          </button>
+           <AltButton
+           size="w-full"
+           isLoading={isSaveLoading}
+           action={toggleExporter} >
+             Export
+           </AltButton>
+
         </section>
         
       </div>

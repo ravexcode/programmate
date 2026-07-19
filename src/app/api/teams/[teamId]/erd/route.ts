@@ -19,7 +19,7 @@ export async function POST( req: NextRequest) {
     });
 
     //Gets the user from Supabase Auth
-    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
     if(!user) return NextResponse.json({

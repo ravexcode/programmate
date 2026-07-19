@@ -1,5 +1,9 @@
 # Indev
 
+- **Indev v80.0:**
+  1. ERD MSC integrado y creado. 🚀
+  2. Pagina de ERD UI/UX mejorados. ⚒️
+
 - **Indev v79.0:**
   1. Arreglo de errores graves, ahora toda la app es funcional
 
