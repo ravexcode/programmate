@@ -23,7 +23,7 @@ import type { UserData, ToDoList } from "@/types/user.types";
 import type Team from "@/types/team.types";
 
 //Services imports
-import getUser from "@/services/user.service";
+import { getUser } from "@/modules/user.module";
 import LoadingDashboard from "@/components/screens/loading-screen";
 
 //Icons imports
@@ -104,7 +104,8 @@ export default function ToDoListPage() {
       if(cached) {
         return setUser(cached);
       } else {
-        const user_fetched = await getUserService({router});
+                   const user_fetched = await getUser({router});
+
 
         if(!user_fetched) return router.push("/dashboard");
 
@@ -638,7 +639,8 @@ export default function ToDoListPage() {
                   const token = getSessionStr();
                   if(!token) return;
 
-                  const user_fetched = await getUserService({router});
+        const user_fetched = await getUser({router});
+
 
                   if(!user_fetched) return router.push("/dashboard");
 

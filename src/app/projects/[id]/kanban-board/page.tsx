@@ -24,8 +24,8 @@ import { deleteSessionStr, getSessionStr } from "@/services/session.service";
 import { getCached } from "@/hooks/cache.hook";
 
 //Services imports
-import getTeam from "@/services/team.service";
-import getUser from "@/services/user.service";
+import { getUser } from "@/modules/user.module";
+import { getTeam } from "@/modules/project/main.module";
 
 //Actions imports
 import { fetchTemplate } from "@/actions/template";
@@ -113,7 +113,7 @@ export default function KanBanBoard() {
       if(cached) {
         user_data = cached
       } else {
-        const fetched = await getUserService({router});
+        const fetched = await getUser({router});
         
         if(!fetched) {
           deleteSessionStr();
@@ -127,11 +127,10 @@ export default function KanBanBoard() {
       setUser(user_data);
 
       //Gets team data
-      const team = await getTeam(
-        Number(params.id),
-        token,
-        snackbar
-      );
+       const team = await getTeam(
+         { id: Number(params.id), router, snackbar: snackbar }
+       );
+
 
       setTeam(team);
       

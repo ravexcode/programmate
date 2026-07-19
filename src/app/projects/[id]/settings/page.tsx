@@ -13,8 +13,8 @@ import LoadingScreen from "@/components/screens/loading-screen";
 import TeamSideBar from "@/components/ui/dashboard/team-sidebar";
 
 //Services imports
-import getUser from "@/services/user.service";
-import getTeam from "@/services/team.service";
+import { getUser } from "@/modules/user.module";
+import { getTeam } from "@/modules/project/main.module";
 
 //Hooks imports
 import { deleteSessionStr, getSessionStr } from "@/services/session.service";
@@ -72,7 +72,7 @@ export default function SettingsPage(){
       const cached = getCached();
 
       if(!cached) {
-        const user_fetched = await getUserService({router});
+        const user_fetched = await getUser({router});
 
         if(!user_fetched) {
           deleteSessionStr();
@@ -87,11 +87,10 @@ export default function SettingsPage(){
 
       setUser(user_data);
 
-      const team = await getTeam(
-        Number(params.id),
-        token,
-        snackbar
-      );
+       const team = await getTeam(
+         { id: Number(params.id), router, snackbar: snackbar }
+       );
+
 
       if(!team) return router.push("/dashboard")
 

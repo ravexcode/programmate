@@ -12,8 +12,8 @@ import { getSessionStr } from "@/services/session.service";
 import { getCached } from "@/hooks/cache.hook";
 
 //Services
-import getUser from "@/services/user.service";
-import getTeam from "@/services/team.service";
+import { getUser } from "@/modules/user.module";
+import { getTeam } from "@/modules/project/main.module";
 
 //Lib imports
 import supabase_client from "@/lib/client/db";
@@ -81,7 +81,8 @@ export default function ChatPage() {
       if(cached) {
         setUser(cached);
       } else {
-        user_fetched = await getUserService({router});
+         user_fetched = await getUser({router});
+
         
         if(!user) return window.location.href = "/auth/signin";
 
@@ -89,11 +90,10 @@ export default function ChatPage() {
       }
 
       //Gets team data
-      const team_fetched : Team | null = await getTeam(
-        Number(params.id),
-        token,
-        snackbar
-      );
+       const team_fetched : Team | null = await getTeam(
+         { id: Number(params.id), router, snackbar: snackbar }
+       );
+
 
       const { data: chat_fetched } = await supabase_client
       .from("chats")

@@ -40,8 +40,8 @@ import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
 
 //Services imports
-import getTeam from "@/services/team.service";
-import getUser from "@/services/user.service";
+import { getUser } from "@/modules/user.module";
+import { getTeam } from "@/modules/project/main.module";
 
 //Hooks imports
 import { getSessionStr } from "@/services/session.service";
@@ -151,14 +151,14 @@ export default function Page(){
 
       if(!token) return router.push("/auth/signin");
 
-      const user_data = await getUserService({router});
+       const user_data = await getUser({router});
+
       setUser(user_data);
 
-      const team_data : Team = await getTeam(
-        Number(params.id),
-        token,
-        snackbar
-      );
+       const team_data : Team = await getTeam(
+         { id: Number(params.id), router, snackbar: snackbar }
+       );
+
 
       if(!team_data) return router.push("/dashboard");
 

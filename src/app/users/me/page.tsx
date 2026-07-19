@@ -14,7 +14,7 @@ import SideBar, { Icon } from "@/components/ui/sidebar";
 import BgGradient from "@/components/ui/bg-gradient";
 
 //Services imports
-import getUser from "@/services/user.service";
+import { getUser } from "@/modules/user.module";
 
 //React imports
 import { useEffect, useState } from "react";
@@ -58,7 +58,7 @@ export default function ProfilePage() {
       }
 
       //Updates the user's data
-      if(!cached) user_data = await getUserService({router});
+      if(!cached) user_data = await getUser({router});
       //Created at to Date
       const created_at = new Date(user_data!.created_at!);
       //Date now

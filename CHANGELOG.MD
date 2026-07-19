@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v79.0:**
+  1. Arreglo de errores graves, ahora toda la app es funcional
+
 - **Indev v78.0:**
   1. CRUD de tickets implementado.
 

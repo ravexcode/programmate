@@ -43,8 +43,8 @@ import {
 } from "@tabler/icons-react";
 
 //Services imports
-import getUser from "@/services/user.service";
-import getTeam from "@/services/team.service";
+import { getUser } from "@/modules/user.module";
+import { getTeam } from "@/modules/project/main.module";
 import { fetchTemplate } from "@/actions/template";
 import Image from "next/image";
 
@@ -101,7 +101,7 @@ export default function CalendarPage() {
       const cached = getCached();
 
       if(!cached) {
-        const user_fetched = await getUserService({router});
+        const user_fetched = await getUser({router});
 
         if(!user_fetched) {
           deleteSessionStr();
@@ -117,9 +117,7 @@ export default function CalendarPage() {
       setUser(user_data);
 
       const team = await getTeam(
-        Number(params.id),
-        token,
-        snackbar
+        { id: Number(params.id), token, snackbar: snackbar }
       );
 
       setTeam(team);

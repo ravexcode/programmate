@@ -2,12 +2,13 @@ import {
   getProjectService,
   createProjectService,
   updateProjectService,
-  deleteProjectService
+  deleteProjectService,
+  getTeamService
 } from "@/services/project/main.service";
 
 import type { UserData } from "@/types/user.types";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import type { Status } from "@/types/team.types";
+import type { Status, Team } from "@/types/team.types";
 
 type GetData = {
   router: AppRouterInstance;
@@ -64,5 +65,11 @@ export async function updateProject(data: UpdateData) {
 export async function deleteProjectControllerProject(data: DeleteData) {
   const res = await deleteProjectService(data);
 
+  return res;
+}
+
+export async function getTeam(data: { id: number; router: AppRouterInstance; snackbar: React.RefObject<null> }) {
+  const res = await getTeamService(data);
+  
   return res;
 }

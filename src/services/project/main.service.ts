@@ -7,7 +7,7 @@ import checkStatus from "@/utils/check-status";
 import { showSnackbar } from "@/components/ui/snackbar";
 
 import { UserData } from "@/types/user.types";
-import { Status } from "@/types/team.types";
+import { Status, Team } from "@/types/team.types";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 
 type GetData = {
@@ -125,4 +125,26 @@ export async function deleteProjectService(data: DeleteData) {
   )
 
   return;
+}
+
+export async function getTeamService(data: { id: number; router: AppRouterInstance; snackbar: React.RefObject<null> }) {
+  const token = getSessionStr();
+  const router = data.router;
+
+  if(!token) return router.push("/auth/signin");
+
+  const res = await controllers.getProjectController({
+    token,
+    id: data.id
+  });
+
+  showSnackbar(
+    res.message,
+    checkStatus(res.status),
+    data.snackbar
+  )
+
+  if(res.status >= 205) return router.push("/dashboard");
+
+  return res.project;
 }
