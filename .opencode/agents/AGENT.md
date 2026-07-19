@@ -12,6 +12,10 @@
 - Prefer Server Components unless client-side interactivity is required.
 - Keep components as small as possible.
 
+- Modules are at: /src/modules/*
+- Services are at: /src/services/*
+- Controllers are at: /src/controllers/*
+
 ---
 
 # Ultra Caveman

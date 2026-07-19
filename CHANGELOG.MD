@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v77.0:**
+  1. CRUD completo para tickets creado. ⚒️
+
 - **Indev v76.1:**
   1. Arreglo de errores pequeños. ⚒️
 

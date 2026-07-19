@@ -5,7 +5,26 @@ type CreateData = {
   ticket: Ticket;
 }
 
-import { createTicketController } from "@/controllers/project/ticket.controller";
+type UpdateData = {
+  id: number;
+  router: AppRouterInstance;
+  snackbar: React.RefObject<null>;
+  ticket: Ticket;
+}
+
+type RequestData = {
+  id: number;
+  index: number;
+  router: AppRouterInstance;
+  snackbar: React.RefObject<null>;
+}
+
+import {
+  createTicketController,
+  updateTicketController,
+  getTicketController,
+  deleteTicketController
+} from "@/controllers/project/ticket.controller";
 
 import { showSnackbar } from "@/components/ui/snackbar";
 
@@ -22,7 +41,7 @@ export async function createTicketService(data: CreateData) {
   const token = getSessionStr();
   const router = data.router;
 
-  if(!token) return router.push("/auth/signin");
+  if (!token) return router.push("/auth/signin");
 
   const response = await createTicketController({
     id: data.id,
@@ -36,7 +55,77 @@ export async function createTicketService(data: CreateData) {
     data.snackbar
   );
 
-  if(response.status <= 205) return null;
+  if (response.status <= 205) return null;
+
+  return true;
+}
+
+export async function updateTicketService(data: UpdateData) {
+  const token = getSessionStr();
+  const router = data.router;
+
+  if (!token) return router.push("/auth/signin");
+
+  const response = await updateTicketController({
+    id: data.id,
+    token,
+    ticket: data.ticket
+  });
+
+  showSnackbar(
+    response.message,
+    checkStatus(response.status),
+    data.snackbar
+  );
+
+  if (response.status <= 205) return null;
+
+  return true;
+}
+
+export async function getTicketService(data: RequestData) {
+  const token = getSessionStr();
+  const router = data.router;
+
+  if (!token) return router.push("/auth/signin");
+
+  const response = await getTicketController({
+    teamId: data.id,
+    index: data.index,
+    token
+  });
+
+  if (response.status >= 205) {
+    showSnackbar(
+      response.message,
+      checkStatus(response.status),
+      data.snackbar
+    );
+    return null;
+  }
+
+  return response.data;
+}
+
+export async function deleteTicketService(data: RequestData) {
+  const token = getSessionStr();
+  const router = data.router;
+
+  if (!token) return router.push("/auth/signin");
+
+  const response = await deleteTicketController({
+    teamId: data.id,
+    index: data.index,
+    token
+  });
+
+  showSnackbar(
+    response.message,
+    checkStatus(response.status),
+    data.snackbar
+  );
+
+  if (response.status <= 205) return null;
 
   return true;
 }
