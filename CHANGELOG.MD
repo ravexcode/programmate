@@ -1,5 +1,8 @@
 # Indev
 
+- **Indev v75.0:**
+  1. MSC para crear un ticket creado. ⚒️
+
 - **Indev v74.0:**
   1. Integracion de pagos con stripe. 💰
 

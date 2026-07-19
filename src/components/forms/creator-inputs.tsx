@@ -6,6 +6,7 @@ interface CreatorInputProps {
   required?: boolean,
   type?: "text" | "textarea" | "email" | "url",
   bgColor?: string;
+  disabled?: boolean;
 }
 
 export default function CreatorInput(props: CreatorInputProps) {
@@ -24,7 +25,8 @@ export default function CreatorInput(props: CreatorInputProps) {
           placeholder={props.placeholder}
           value={props.value}
           name={props.placeholder?.trim()}
-          className={"w-full rounded-sm px-3 py-2 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400 min-h-20 h-30 max-h-80 " + ( props.bgColor ?? "bg-neutral-800" )}
+          disabled={props.disabled}
+          className={"w-full rounded-sm px-3 py-2 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400 min-h-20 h-30 max-h-80 disabled:brightness-75 disabled:select-none " + ( props.bgColor ?? "bg-neutral-800" )}
           onChange={(e) => {
             props.onChange(e);
           }}/>
@@ -35,7 +37,8 @@ export default function CreatorInput(props: CreatorInputProps) {
           placeholder={props.placeholder}
           value={props.value}
           name={props.placeholder?.trim()}
-          className={"w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400 " + ( props.bgColor ?? "bg-neutral-800" )}
+          disabled={props.disabled}
+          className={"w-full rounded-sm px-3 py-2 bg-neutral-800 text-sm focus:outline-none mb-3 text-text/80 border border-transparent focus:border-main duration-400 disabled:brightness-75 disabled:select-none " + ( props.bgColor ?? "bg-neutral-800" )}
           onChange={(e) => {
             props.onChange(e);
           }}/>

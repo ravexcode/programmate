@@ -12,20 +12,14 @@ import {
 //Types setup
 //Imports
 import type { Ticket } from "@/types/team.types";
-import type { Dispatch, SetStateAction } from "react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface Props {
   content: Ticket;
   userId: string;
-  teamId: ParamValue;
   index: number;
-  setMenuIndex: Dispatch<SetStateAction<number | undefined>>;
-  setMenu: Dispatch<SetStateAction<"edit" | "delete" | undefined>>;
-  menuIndex: number | undefined;
+  teamId: ParamValue;
   router: AppRouterInstance;
-  editAction: () => void;
-  deleteAction: () => void;
 }
 
 export default function TicketCard(props: Props) {
@@ -40,72 +34,15 @@ export default function TicketCard(props: Props) {
     onClick={() => {
       props.router.push(`/projects/${props.teamId}/tickets/${props.index}`);
       return;
-    }}
-    onContextMenu={(e) => {
-      if(props.userId !== props.content.creator_id) return;
-      e.preventDefault();
-      props.setMenuIndex(prev => prev === props.index ? undefined : props.index );
     }}>
 
-      {/* Edit / Delete menu */}
-      { props.menuIndex === props.index && (
-        <div
-        className="absolute right-2 top-10 z-20 w-36 overflow-hidden rounded-lg border border-neutral-700 bg-neutral-900 shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
-
-          <button
-          onClick={(e) => {
-            e.nativeEvent.stopImmediatePropagation(); 
-            e.stopPropagation();
-            props.editAction();
-          }}
-          className="flex w-full items-center px-4 py-2.5 text-sm text-text hover:bg-neutral-800 gap-2">
-
-            <IconPencil
-            size={20}
-            color="white" />
-
-            Edit
-          </button>
-          
-          <button
-          onClick={async (e) => {
-            e.nativeEvent.stopImmediatePropagation(); 
-            e.stopPropagation();
-            props.deleteAction();
-          }}
-          className="flex w-full items-center px-4 py-2.5 text-sm text-red-400 hover:bg-red-950 gap-2 disabled:brightness-80 disabled:cursor-wait">
-
-            <IconTrash
-            size={20}
-            stroke={1} />
-
-            Delete
-          </button>
-        </div>
-      )}
-
-      {/* Title and menu toggler */}
+      {/* Title */}
       <div
       className="w-full flex justify-between items-center">
         <p
         className="text-lg font-medium tracking-wide">
           {props.content.title.length > 30 ? wrappedTitle : props.content.title}
         </p>
-
-        {
-          props.userId === props.content.creator_id &&
-            <button
-            type="button"
-            className="p-2 rounded-full hover:bg-neutral-800 cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              e.nativeEvent.stopPropagation();
-              props.setMenuIndex(prev => prev === props.index ? undefined : props.index);
-            }}>
-              <IconDotsVertical
-              size={20} />
-            </button>
-        }
       </div>
 
       <p>
