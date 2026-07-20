@@ -1,3 +1,5 @@
+- **0.81.1:** Find de python agregado para encontrar keys
+
 - **v0.81.0:**
   1. Refactor completo dentro de la seccion de to do. ⚒️
 
