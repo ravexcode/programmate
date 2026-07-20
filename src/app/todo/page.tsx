@@ -5,10 +5,9 @@
 import { useRouter } from "next/navigation";
 
 //React imports
-import { useEffect, useState, useRef, cache } from "react";
+import { useEffect, useState, useRef } from "react";
 
 //Hooks imports
-import { getCached } from "@/hooks/cache.hook";
 import { getSessionStr } from "@/services/session.service";
 import useAnimationClose from "@/hooks/useAnimationClose";
 
@@ -24,6 +23,7 @@ import type Team from "@/types/team.types";
 
 //Services imports
 import { getUser } from "@/modules/user.module";
+import { createTodo, updateTodo, deleteTodo } from "@/modules/todo.module";
 import LoadingDashboard from "@/components/screens/loading-screen";
 
 //Icons imports
@@ -33,7 +33,6 @@ import {
   IconReload,
   IconTrash
 } from "@tabler/icons-react";
-import { fetchTemplate } from "@/actions/template";
 import MainButton from "@/components/ui/buttons/main";
 
 export default function ToDoListPage() {
@@ -98,19 +97,12 @@ export default function ToDoListPage() {
       const token = getSessionStr();
 
       if(!token) return router.push("/auth/signin");
-
-      const cached = getCached();
-      
-      if(cached) {
-        return setUser(cached);
-      } else {
-                   const user_fetched = await getUser({router});
+      const user_fetched = await getUser(router);
 
 
-        if(!user_fetched) return router.push("/dashboard");
+      if(!user_fetched) return router.push("/dashboard");
 
-        return setUser(user_fetched);
-      }
+      return setUser(user_fetched);
     }
 
     get();
@@ -123,42 +115,19 @@ export default function ToDoListPage() {
     //Set button to loading
     setIsLoading(true);
     
-    //Sets the list data
-    const new_list = {
+    const result = await createTodo(router, snackbar, {
       list_title: newListName,
       list_description: newListDescription,
       tags
-    };
-
-    //Gets the token
-    const token = getSessionStr();
-
-    if(!token) return window.location.href = "/auth/signin";
-
-    //Creates the new list
-    const res = await fetch("/api/todos", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-        "Authorization": token,
-      },
-      body: JSON.stringify(new_list)
     });
 
-    //Gets data from response
-    const data = await res.json();
-
-    if(res.status === 200) {
+    if(result.success && result.list) {
       //Updates the user data
       setUser(prev => prev ? {
         ...prev,
         to_do_list: [
           ...(prev.to_do_list ?? []),
-          {
-            title: new_list.list_title,
-            description: new_list.list_description
-          }
+          result.list
         ]
       } : prev);
 
@@ -175,10 +144,6 @@ export default function ToDoListPage() {
       return;
     }
     
-    //Verifies if there's an error
-    if(data.error) {
-      showSnackbar(data.message, "critic", snackbar);
-    }
     //Cancels loading status
     setIsLoading(false);
   };
@@ -245,47 +210,21 @@ export default function ToDoListPage() {
     //Set button to loading
     setEditorIsLoading(true);
 
-
-    //Gets the token
-    const token = getSessionStr();
-
-    if(!token) return window.location.href = "/auth/signin";
-
-    const content = {
+    const result = await updateTodo(router, snackbar, {
+      list_index: listIndex!,
       title: listName,
       description: listDescription,
       tags: listTags
-    }
-
-    //Creates the new list
-    const res = await fetch("/api/todos", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-        "Authorization": token,
-      },
-      body: JSON.stringify({
-        list_index: listIndex,
-        content: content
-      })
     });
 
-    //Gets data from response
-    const data = await res.json();
-
-    if(res.status === 200) {
+    if(result.success && result.list) {
       //Updates the user data
       setUser(prev => prev ? {
       ...prev,
       to_do_list: prev.to_do_list?.map((list, i) => {
         if (i !== listIndex) return list;
 
-        return {
-          title: listName,
-          description: listDescription,
-          tags: listTags
-        };
+        return result.list!;
       }) ?? []
     } : prev);
 
@@ -303,12 +242,8 @@ export default function ToDoListPage() {
       return;
     }
     
-    //Verifies if there's an error
-    if(data.error) {
-      showSnackbar(data.message, "critic", snackbar);
-    }
     //Cancels loading status
-    setIsLoading(false);
+    setEditorIsLoading(false);
   }
 
   const toggleWarn = () => {
@@ -331,18 +266,17 @@ export default function ToDoListPage() {
 
   const handleDeleteList = async() => {
     if(currentIndex === undefined || !user) return;
-    const token = getSessionStr();
-
-    if(!token) return router.push("/auth/signin");
-
+    
     setDeleteDisabled(true);
     toggleWarn();
 
+    //Optimistic update
     setUser(prev => prev ? {
       ...prev,
       to_do_list: (prev.to_do_list || []).filter((_, index) => index !== currentIndex)
     } : user);
 
+    //Update cache
     const new_cache : UserData = {
       ...user,
       to_do_list: (user.to_do_list || []).filter((_, index) => index !== currentIndex)
@@ -350,17 +284,7 @@ export default function ToDoListPage() {
 
     window.localStorage.setItem("user", JSON.stringify(new_cache));
 
-    await fetchTemplate(
-      "/api/todos",
-      "DELETE",
-      snackbar,
-      {
-        "Authorization": token
-      },
-      JSON.stringify({
-        list_index: currentIndex
-      })
-    );
+    await deleteTodo(router, snackbar, currentIndex);
 
     setDeleteDisabled(false);
   }
@@ -639,7 +563,7 @@ export default function ToDoListPage() {
                   const token = getSessionStr();
                   if(!token) return;
 
-        const user_fetched = await getUser({router});
+        const user_fetched = await getUser(router);
 
 
                   if(!user_fetched) return router.push("/dashboard");
