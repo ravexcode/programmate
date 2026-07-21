@@ -7,7 +7,7 @@ import checkStatus from "@/utils/check-status";
 import { showSnackbar } from "@/components/ui/snackbar";
 
 import { UserData } from "@/types/user.types";
-import { Status, Team } from "@/types/team.types";
+import { Status } from "@/types/team.types";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 
 type GetData = {

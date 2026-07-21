@@ -8,7 +8,7 @@ import {
 
 import type { UserData } from "@/types/user.types";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import type { Status, Team } from "@/types/team.types";
+import type { Status } from "@/types/team.types";
 
 type GetData = {
   router: AppRouterInstance;

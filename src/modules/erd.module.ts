@@ -5,6 +5,6 @@ export async function saveERD(payload: {
     teamId: string | number;
     erd: Node[];
     connections: Edge[];
-}, snackbarRef: any) {
+}, snackbarRef: React.RefObject<null>) {
     return await saveERDService(payload, snackbarRef);
 }

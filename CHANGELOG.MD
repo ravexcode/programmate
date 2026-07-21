@@ -1,3 +1,5 @@
+- **0.83.0:** Arreglo de errores de lint en services y modules
+
 - **0.82.0:** Arreglo de errores de lint en las routes
 
 - **0.81.1:** Find de python agregado para encontrar keys

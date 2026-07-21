@@ -7,7 +7,7 @@ export async function saveERDService(payload: {
     teamId: string | number;
     erd: Node[];
     connections: Edge[];
-}, snackbarRef: any) {
+}, snackbarRef: React.RefObject<null>) {
     const token = getSessionStr();
 
     if (!token) {
