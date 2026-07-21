@@ -56,13 +56,13 @@ export default function GetStarted() {
       //Date now
       const now = new Date();
 
-      if(created_at.getDay() !== now.getDay() || user.teams?.length! > 0) {
+      if(created_at.getDay() !== now.getDay() || (user.teams?.length ?? 0) > 0) {
         return window.location.href = "dashboard";
       }
     }
 
     validator();
-  }, []);
+  }, [router]);
 
   //Handlers for arrays
   const addTag = () => {

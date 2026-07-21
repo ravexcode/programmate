@@ -58,7 +58,7 @@ function highlightText(text: string): ReactNode[] {
   return parts;
 }
 
-export default function CodeText({ text = '', className = '', language = 'tsx' }: CodeTextProps) {
+export default function CodeText({ text = '', className = '' }: CodeTextProps) {
   const lines = text.split('\n');
 
   return (

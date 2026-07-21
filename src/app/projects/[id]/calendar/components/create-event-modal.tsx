@@ -7,7 +7,7 @@ import CreatorInput from "@/components/forms/creator-inputs";
 import DateInput from "@/components/forms/date-input";
 import OptionsInput from "@/components/forms/options-input";
 
-import useAnimationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/hooks/useAnimationClose";
 
 import type { CalendarDate, CalendarDateColors, CalendarDateType } from "@/types/team.types";
 
@@ -29,7 +29,7 @@ const EVENT_COLORS: CalendarDateColors[] = [
   "red", "violet", "purple", "rose", "neutral",
 ];
 
-export default function CreateEventModal({ onSubmit, onClose }: Props) {
+export default function CreateEventModal({ onSubmit }: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
   const [title, setTitle] = useState("");
@@ -42,7 +42,7 @@ export default function CreateEventModal({ onSubmit, onClose }: Props) {
     if (!ref.current) return;
 
     ref.current.classList.add("animate-fade-out-down");
-    useAnimationClose(ref.current, "fade-out-down", "hidden", "flex");
+    animationClose(ref.current, "fade-out-down", "hidden", "flex");
   }
 
   function handleSubmit(e: React.FormEvent) {

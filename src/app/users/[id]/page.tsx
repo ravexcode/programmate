@@ -26,7 +26,7 @@ export default function ProfilePage() {
   const router = useRouter();
 
   //User data
-  const [user, setUser] = useState<UserData | any>(null);
+  const [user, setUser] = useState<UserData | null>(null);
   //Not found status
   const [ notFound, setNotFound ] = useState(false);
 
@@ -78,6 +78,7 @@ export default function ProfilePage() {
     }
 
     getUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     user ? (

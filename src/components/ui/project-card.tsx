@@ -10,8 +10,6 @@ interface Props {
 }
 
 export default function ProjectCard(props : Props) {
-  const example = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo libero accusamus repellat tenetur delectus provident saepe, ab neque recusandae architecto distinctio consequuntur perspiciatis rem eveniet vero adipisci quam aperiam rerum";
-
   return (
     <section
     onClick={() => {

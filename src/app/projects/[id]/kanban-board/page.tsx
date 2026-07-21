@@ -37,7 +37,6 @@ import {
   IconDatabase,
   IconEye,
   IconFolder,
-  IconLayoutKanban,
   IconMessage,
   IconSettings,
   IconUsers
@@ -58,7 +57,10 @@ export default function KanBanBoard() {
   //User data
   const [ user, setUser ] = useState<UserData>();
   //Sidebar expanded
-  const [ expanded, setExpanded ] = useState<boolean>(false);
+  const [ expanded, setExpanded ] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return !!window.localStorage.getItem("expanded");
+  });
   //Team data
   const [ team, setTeam ] = useState<Team>();
   //Saver button status
@@ -89,15 +91,6 @@ export default function KanBanBoard() {
       return newTeam;
     })
   };
-
-  //Sidebar status
-  useEffect(() => {
-    const expanded = window.localStorage.getItem("expanded");
-
-    if(expanded) return setExpanded(true);
-
-    return;
-  }, []);
 
   //Sets the data
   useEffect(() => {
@@ -138,6 +131,7 @@ export default function KanBanBoard() {
     }
 
     get();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSave = async() => {
@@ -170,10 +164,10 @@ export default function KanBanBoard() {
         ref={snackbar} />
 
         <SideBar
-        email={user?.email!}
-        plan={user?.plan!}
+        email={user.email}
+        plan={user.plan}
         avatar={user?.avatar_url}
-        username={user?.name!}
+        username={user.name}
         setExpanded={(isExpanded : boolean) => {
           setExpanded(isExpanded === true ? false : true);
         }}>

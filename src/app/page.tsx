@@ -6,32 +6,28 @@ import { useRef, lazy, Suspense } from "react";
 
 //Next imports
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 //Prebuilt ui imports
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 import LandingGradient from "@/components/ui/gradients/landing";
 import SmoothProvider from "@/lib/components/lennis";
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import SnackBar from "@/components/ui/snackbar";
 import FeatureCard from "@/components/ui/cards/feature";
 
 //Hooks imports
 import { IconBrain, IconCalendar, IconLayoutKanban, IconTable } from "@tabler/icons-react";
 
+//Lazy loading
+//Carousel consumes many resources because it renders images
+const TechCarousel = lazy(() => import("@/components/ui/carousel/techs"));
+const ProvCarousel = lazy(() => import("@/components/ui/carousel/providers"));
+//Mini dashboard has too many components/animations
+const MiniDashboard = lazy(() => import("@components/ui/mini-dashboard/main"));
+
 //Landing page
 export default function HomePage(){
-  //NextJS Setup
-  const router = useRouter();
-
   const snackbar = useRef(null);
-
-  //Lazy loading
-  //Carousel consumes many resources because it renders images
-  const TechCarousel = lazy(() => import("@/components/ui/carousel/techs"));
-  const ProvCarousel = lazy(() => import("@/components/ui/carousel/providers"));
-  //Mini dashboard has too many components/animations
-  const MiniDashboard = lazy(() => import("@components/ui/mini-dashboard/main"));
 
   return (
     <div className="bg-background min-h-dvh animate-fade-in">

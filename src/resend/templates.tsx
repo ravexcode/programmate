@@ -28,7 +28,7 @@ export function RequestTemplate({
           marginBottom: "24px",
         }}
       >
-        You've received a new project request
+        You&apos;ve received a new project request
       </h2>
 
       <p style={{ marginBottom: "16px", lineHeight: "1.6" }}>
@@ -46,7 +46,7 @@ export function RequestTemplate({
       >
         To accept the request, click the button below.
         <br />
-        If you're not interested, you can safely ignore this email.
+        If you&apos;re not interested, you can safely ignore this email.
       </p>
 
       <a
@@ -89,17 +89,17 @@ export function LoginWarn(props : LoginWarnProps){
     className="w-150 px-6 py-10 rounded-xl bg-neutral-900 text-text text-center">
       <h2
       className="font-semibold tracking-wide text-xl">
-        You've logged in at: { props.logged_in.toLocaleTimeString() }
+        You&apos;ve logged in at: { props.logged_in.toLocaleTimeString() }
       </h2>
 
       <p
       className="mt-5">
-        Hello {props.username.toLowerCase()}, you've logged in NexZero..
+        Hello {props.username.toLowerCase()}, you&apos;ve logged in NexZero..
       </p>
 
       <p
       className="mt-2 mb-10">
-        If it wasn't you, we recommend changing your password now!
+        If it wasn&apos;t you, we recommend changing your password now!
       </p>
       
       <footer

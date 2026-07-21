@@ -1,6 +1,5 @@
 //React imports
 import { IconBrandGithubFilled, IconBrandGitlab, IconBrandGoogleFilled, IconZoomCancel } from "@tabler/icons-react";
-import { useState } from "react";
 
 export default function ProviderButton(props: {
   provider: string;
@@ -21,8 +20,6 @@ export default function ProviderButton(props: {
       props.toggler(true);
 
     } else if(res.status !== 200) {
-
-      const data = await res.json();
 
     } else {
 

@@ -11,18 +11,14 @@ import { useState, useEffect, useRef } from "react";
 //Hooks imports
 import { getSessionStr } from "@/services/session.service";
 import { getCached } from "@/hooks/cache.hook";
-import useAnimationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/hooks/useAnimationClose";
 
 //Prebuilt UI imports
 import LoadingScreen from "@/components/screens/loading-screen";
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
-
-//Services imports
-import getUser from "@/services/user.service";
+import SnackBar from "@/components/ui/snackbar";
 
 //Types imports
 import { UserData } from "@/types/user.types";
-import { Provider } from "@/types/user.types";
 
 //Icons imports
 import {
@@ -44,9 +40,6 @@ export default function AgentsPage() {
 
   //Chat statuses
   const [ currentMessage, setCurrentMessage ] = useState("");
-  const [ providers, setProviders ] = useState<Provider []>([]);
-  const [ currentProvider, setCurrentProvider ] = useState("");
-  const [ currentModel, setCurrentModel ] = useState("");
 
   const messages = [
     {
@@ -83,7 +76,7 @@ export default function AgentsPage() {
 
     get();
     return;
-  }, []);
+  }, [router]);
 
   const toggleProfileSettings = () => {
     if(!profileSettings.current) return;
@@ -101,7 +94,7 @@ export default function AgentsPage() {
     };
 
     classlist.add("animate-fade-out-up");
-    useAnimationClose(current, "fade-out-up", "hidden", "flex");
+    animationClose(current, "fade-out-up", "hidden", "flex");
     return;
   }
 
@@ -121,7 +114,7 @@ export default function AgentsPage() {
     };
 
     classlist.add("animate-fade-out-down");
-    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    animationClose(current, "fade-out-down", "hidden", "flex");
     return;
   }
 
@@ -137,7 +130,7 @@ export default function AgentsPage() {
           if(classlist.contains("flex")){
             setProfileDisabled(prev => prev ? false : true);
             classlist.add("animate-fade-out-up");
-            useAnimationClose(current, "fade-out-up", "hidden", "flex");
+            animationClose(current, "fade-out-up", "hidden", "flex");
 
             return;
           };
@@ -177,7 +170,7 @@ export default function AgentsPage() {
               stroke={1} />
               <p
               className="text-xl">
-                You don't have models at this moment
+                You don&apos;t have models at this moment
               </p>
               <p>
                 Try adding a new one

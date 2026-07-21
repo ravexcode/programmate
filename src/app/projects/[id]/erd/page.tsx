@@ -9,24 +9,15 @@ import { useParams, useRouter } from "next/navigation";
 
 //Icons imports
 import {
-  IconAppWindow,
-  IconCalendar,
   IconCheck,
   IconCopy,
-  IconDatabase,
   IconDatabaseEdit,
   IconDatabaseMinus,
   IconDatabaseOff,
   IconDatabasePlus,
-  IconEye,
-  IconFolder,
   IconHandStop,
-  IconLayoutKanban,
-  IconMessage,
   IconMouse,
-  IconSettings,
   IconTrash,
-  IconUsers
 } from "@tabler/icons-react";
 
 //Prebuilt ui imports
@@ -103,8 +94,6 @@ export default function Page(){
   const [ user, setUser ] = useState<UserData>();
   //Team
   const [ team, setTeam ] = useState<Team>();
-  //Sidebar expanded
-  const [ expanded, setExpanded ] = useState<boolean>(false);
   //React flow draggable
   const [ cursor, setCursor ] = useState<"drag" | "mouse" | "create" | "edit">("drag");
   //Save button loading
@@ -132,15 +121,6 @@ export default function Page(){
   //Snackbar
   const snackbar = useRef(null);
 
-  //Set expanded based in localstorage
-  useEffect(() => {
-    const expanded = window.localStorage.getItem("expanded");
-
-    if(expanded) return setExpanded(true);
-
-    return;
-  }, []);
-
   //Data fetching
   useEffect(() => {
     async function fetchData(){
@@ -165,6 +145,7 @@ export default function Page(){
     }
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //Togglers
@@ -219,8 +200,7 @@ export default function Page(){
 
     //Asigns the key for all columns
     for (let l_i = 0; l_i < newRows.length; l_i++) {
-      const row = newRows[l_i];
-      row.key = `row-${newName}-${l_i}`;
+      const row = { ...newRows[l_i], key: `row-${newName}-${l_i}` };
 
       rows.push(row);
     }
@@ -279,7 +259,7 @@ export default function Page(){
   const handleSaveERD = async() => {
     setIsSaveLoading(true);
     
-    const res = await saveERD({
+    await saveERD({
       teamId: Number(params.id),
       erd: nodes || [],
       connections: edges || []
@@ -798,7 +778,7 @@ const sql = `CREATE TABLE ${json.tableName} (
                   stroke={1} />
                   <p
                   className="text-xl font-medium tracking-wide mt-2">
-                    You don't have tables yet
+                    You don&apos;t have tables yet
                   </p>
                   <p
                   className="text-neutral-400">

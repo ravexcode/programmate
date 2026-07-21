@@ -28,7 +28,7 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 
-import useAnimationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/hooks/useAnimationClose";
 
 //Types setup
 //Imports
@@ -74,6 +74,7 @@ export default function TicketPage(){
     }
 
     get();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const impOptions = ["Low" , "Medium" , "High"];
@@ -85,7 +86,7 @@ export default function TicketPage(){
 
     if(current.classList.contains("hidden")) {
       current.classList.add("animate-fade-out-down");
-      useAnimationClose(
+      animationClose(
         current,
         "fade-out-down",
         "hidden",

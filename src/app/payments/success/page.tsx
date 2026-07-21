@@ -2,6 +2,7 @@
 
 //Containers import
 import PageLayout from "@/components/layouts/page";
+import Image from "next/image";
 
 export default function SuccessPayment() {
   return (
@@ -14,9 +15,11 @@ export default function SuccessPayment() {
 
           <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-ultramarine-900/20">
             <div className="absolute inset-0 rounded-full bg-ultramarine-300/50 blur-xl animate-pulse" />
-            <img 
+            <Image 
               src="/icons/party.svg" 
               alt="Icon made by StreamlineHQ"
+              width={48}
+              height={48}
               className="relative z-2 aspect-square w-12 drop-shadow-md"
             />
           </div>
@@ -27,7 +30,7 @@ export default function SuccessPayment() {
           </h1>
           <p
           className="font-semibold">
-            We've sent you an email
+            We&apos;ve sent you an email
           </p>
           
           <a

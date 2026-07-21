@@ -10,10 +10,9 @@ import SideBar from "@/components/ui/sidebar";
 import ActionButton from "@/components/ui/action-button";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import SnackBar from "@/components/ui/snackbar";
-import SmoothProvider from "@/lib/components/lennis";
 
 //Hooks imports
-import useAnimationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/hooks/useAnimationClose";
 
 //React imports
 import { useEffect, useRef, useState } from "react";
@@ -29,7 +28,6 @@ import {
   IconPencil,
   IconSparkles,
   IconTrash,
-  IconUserCircle,
   IconUserCog,
   IconZoomMoney
 } from "@tabler/icons-react";
@@ -42,7 +40,6 @@ import {
 //Modules imports
 import {
   getUser,
-  updateUser
 } from "@/modules/user.module";
 
 export default function ConfigurationPage(){
@@ -52,8 +49,6 @@ export default function ConfigurationPage(){
   //State handlers
   //User data
   const [ user, setUserData ] = useState<UserData>();
-  //Is loading state
-  const [ loading, setLoading ] = useState<boolean>(false);
 
   //Confirmation card
   const confirmationCard = useRef(null);
@@ -69,6 +64,7 @@ export default function ConfigurationPage(){
     }
 
     get();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleConfirmation = () => {
@@ -85,7 +81,7 @@ export default function ConfigurationPage(){
     };
 
     classlist.add("animate-fade-out-down");
-    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    animationClose(current, "fade-out-down", "hidden", "flex");
     return;
   }
 
@@ -94,10 +90,10 @@ export default function ConfigurationPage(){
     className="grid grid-cols-[auto_1fr] bg-background relative animate-fade-in h-screen text-text overflow-hidden">
       <SnackBar ref={snackbar} />
       <SideBar
-      email={user?.email!}
-      plan={user?.plan!}
+      email={user.email}
+      plan={user.plan}
       avatar={user?.avatar_url}
-      username={user?.name!}/>
+      username={user.name}/>
 
       <div
       className="w-screen h-screen z-10 backdrop-blur backdrop-brightness-75 items-center justify-center fixed animate-fade-in-up hidden">

@@ -44,7 +44,7 @@ export default function OAuthCallback(){
       saveSession(access_token);
       return router.push("/dashboard");
     }, 2000);
-  }, []);
+  }, [router]);
 
   return (
     <div className="bg-background min-h-screen grid grid-rows-[auto_1fr_auto]">
@@ -73,7 +73,7 @@ export default function OAuthCallback(){
           </p>
           <p
           className="mt-5 w-80">
-            You will be redirected to the app, if there's an error report us it!
+            You will be redirected to the app, if there&apos;s an error report us it!
           </p>
 
         </section>

@@ -59,6 +59,7 @@ export default function TeamPage(){
     }
 
     get();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   return (

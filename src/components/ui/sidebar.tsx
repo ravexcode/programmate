@@ -1,5 +1,5 @@
 //React imports
-import { ReactNode, useState, useEffect, useRef, memo } from "react";
+import { ReactNode, useState, useRef, memo } from "react";
 
 //Next imports
 import Link from "next/link";
@@ -20,7 +20,7 @@ import {
 } from "@tabler/icons-react";
 
 //Hooks imports
-import useAnimationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/hooks/useAnimationClose";
 
 //Icon interface
 export interface IconProps {
@@ -34,13 +34,6 @@ export interface IconProps {
 
 //Icon button component
 export function Icon(props : IconProps) {
-  const [ , setIs ] = useState(false);
-
-  useEffect(() => {
-    const is = window.innerWidth <= 640;
-    setIs(is);
-  }, []);
-
   return (
     <Link
     href={props.action}
@@ -63,24 +56,13 @@ interface SideBarProps {
 function SideBar(props: SideBarProps) {
   const router = useRouter();
 
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return !!window.localStorage.getItem("expanded");
+  });
   const [ settingsVisible, changeSettingsVisibility ] = useState(false);
-  const [ is, setIs ] = useState(false);
 
   const userSettings = useRef(null);
-
-  useEffect(() => {
-    const is = window.innerWidth <= 640;
-    setIs(is);
-  }, []);
-
-  useEffect(() => {
-    const expanded = window.localStorage.getItem("expanded");
-
-    if(expanded) return setExpanded(true);
-
-    return;
-  }, []);
 
   const toggleSettings = () => {
     if(!userSettings.current) return;
@@ -99,7 +81,7 @@ function SideBar(props: SideBarProps) {
     };
 
     classlist.add("animate-fade-out-down");
-    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    animationClose(current, "fade-out-down", "hidden", "flex");
     return;
   }
   
@@ -145,9 +127,13 @@ function SideBar(props: SideBarProps) {
         type="button"
           onClick={() => {
             setExpanded(prev => !prev)
-            props.setExpanded && props.setExpanded(expanded);
-            if(!expanded) return window.localStorage.setItem("expanded", "expanded");
-            return window.localStorage.removeItem("expanded");
+            if(!expanded) {
+              if(props.setExpanded) props.setExpanded(expanded);
+              window.localStorage.setItem("expanded", "expanded");
+              return;
+            }
+            if(props.setExpanded) props.setExpanded(expanded);
+            window.localStorage.removeItem("expanded");
           }}
           className="flex justify-start items-center gap-2 p-2 rounded-lg hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-800 w-full">
           <IconLayoutSidebar

@@ -1,9 +1,6 @@
 //Client page
 "use client";
 
-//Next router
-import { useRouter } from "next/navigation";
-
 //Prebuilt ui imports
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
@@ -13,7 +10,6 @@ import MainButton from "@/components/ui/buttons/main";
 import { IconMail } from "@tabler/icons-react";
 
 export default function AuthSuccess(){
-  const router = useRouter();
 
   return (
     <div className="bg-background min-h-screen grid grid-rows-[auto_1fr_auto] text-zinc-50">

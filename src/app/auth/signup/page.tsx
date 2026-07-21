@@ -44,7 +44,7 @@ export default function RegisterPage() {
   //Verifies session status
   useEffect(() => {
     if(verifyModule()) return router.push("/dashboard");
-  }, []);
+  }, [router]);
 
 
   return (
@@ -155,7 +155,7 @@ export default function RegisterPage() {
           <div
           className="w-100 max-w-[95dvw] text-text flex flex-col justify-center z-2 animate-fade-in-up text-center tracking-wide">
             <p>
-              Don't have an account {" "}
+              Don&apos;t have an account {" "}
                <Link
                href="/auth/signin"
                className="text-sky-600 duration-200 hover:text-blue-400">

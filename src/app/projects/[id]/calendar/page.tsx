@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import SnackBar from "@/components/ui/snackbar";
 import LoadingScreen from "@/components/screens/loading-screen";
 
 import CalendarSidebar from "./components/calendar-sidebar";
@@ -72,7 +72,7 @@ export default function CalendarPage() {
     }
 
     fetchData();
-  }, []);
+  }, [params.id, router]);
 
   function handleMonthChange(newMonth: number, newYear: number) {
     setMonthNumber(newMonth);

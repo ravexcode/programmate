@@ -32,7 +32,7 @@ export default function CreatorForm(props: CreatorFormProps) {
       <div className="flex w-full justify-end items-center gap-4">
         <button type="button"
         onClick={() => {
-          props.hideAction && props.hideAction();
+          if (props.hideAction) props.hideAction();
         }}
         className="px-4 py-1 rounded-md bg-neutral-800 duration-200 hover:brightness-80 cursor-pointer">
           Cancel

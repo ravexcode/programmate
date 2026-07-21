@@ -11,7 +11,7 @@ export default function InConstruction() {
 
       <p
       className="text-xl tracking-wide text-center font-medium">
-        We're sorry <br />
+        We&apos;re sorry <br />
         <span
         className="text-lg font-light">
           This page is currently in construction

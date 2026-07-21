@@ -77,8 +77,8 @@ export default function ProductPage() {
         </p>
         <span
         className="text-center text-neutral-200 animate-fade-in-up animate-delay-200 mt-2 mb-20 w-150">
-          AI isn't an add-on.
-          It's part of the <span className="text-blue-500">workflow</span>
+          AI isn&apos;t an add-on.
+          It&apos;s part of the <span className="text-blue-500">workflow</span>
         </span>
 
         <p
@@ -114,7 +114,7 @@ export default function ProductPage() {
 
             <p
             className="text-start font-medium italic text-neutral-200 text-lg select-none">
-              "Every line of code, every interface and every decision is crafted with long-term quality in mind."
+              &quot;Every line of code, every interface and every decision is crafted with long-term quality in mind.&quot;
             </p>
           </div>
 

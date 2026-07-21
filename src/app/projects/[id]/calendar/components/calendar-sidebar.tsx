@@ -21,11 +21,6 @@ type Props = {
   onOpenCreator: () => void;
 };
 
-const MONTHS: Months[] = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
-
 export default function CalendarSidebar({
   teamName,
   monthName,

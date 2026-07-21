@@ -4,7 +4,7 @@
 import { useRouter } from "next/navigation";
 
 //React imports
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 
 //Prebuilt UI imports
 import PageLayout from "@/components/layouts/page";
@@ -52,18 +52,13 @@ export default function PricingPage() {
     ]
   };
 
-  const [ canPay, setCanPay ] = useState(false);
+  const [ canPay ] = useState(() => {
+    const token = getSessionStr();
+    return !!token;
+  });
   const [ loading, setLoading ] = useState(false);
 
   const snackbar = useRef(null)
-
-  useEffect(() => {
-    const token = getSessionStr();
-
-    if(!token) return;
-
-    return setCanPay(true);
-  }, []);
 
   return (
     <PageLayout>

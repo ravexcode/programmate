@@ -3,7 +3,7 @@ import { NodeProps, Node } from '@xyflow/react';
 
 
 //Props type
-type TableContainerNodeProps = NodeProps<Node<any>>;
+type TableContainerNodeProps = NodeProps<Node<Record<string, unknown>>>;
 
 type Column = {
   name: string;

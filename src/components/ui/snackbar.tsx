@@ -1,5 +1,5 @@
 //Hooks imports
-import useAnimationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/hooks/useAnimationClose";
 
 export default function SnackBar({ ref } : { ref :React.RefObject<null> }) {
   return (
@@ -37,7 +37,7 @@ export function showSnackbar(
 
   function hideSnackbar() {
     current.classList.add("animate-fade-out-down");
-    useAnimationClose(
+    animationClose(
       current,
       "fade-out-down",
       "block",

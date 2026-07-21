@@ -4,26 +4,21 @@
 //Table icons imports
 import {
   IconPlus,
-  IconSearch,
-  IconReload, 
-  IconAssembly
+  IconReload
 } from "@tabler/icons-react";
 
 //React imports
-import { useEffect, useState, useRef, RefObject } from "react";
+import { useEffect, useState, useRef } from "react";
 
 //Components imports
 import Sidebar from "@/components/ui/dashboard/sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
-import CreatorForm from "@/components/forms/creator-form";
-import CreatorInput from "@/components/forms/creator-inputs";
 import SnackBar from "@/components/ui/snackbar";
 import ProjectCard from "@/components/ui/project-card";
 
 //Types imports
-import { UserData, UserBasic } from "@/types/user.types";
-import Team, { IntegrantData } from "@/types/team.types";
-import { Status } from "@/types/team.types";
+import { UserData } from "@/types/user.types";
+import Team from "@/types/team.types";
 
 //Next imports
 import { useRouter } from "next/navigation";
@@ -56,7 +51,7 @@ export default function Dashboard(){
     
     //Returns success
     return;
-  }, []);
+  }, [router]);
 
   return (
     !user ? <LoadingDashboard />
@@ -105,7 +100,7 @@ export default function Dashboard(){
                   <button
                   className="text-sm py-2 px-6 border border-neutral-800 rounded-full cursor-pointer duration-300 hover:border-neutral-700 h-max w-max flex gap-2 my-auto disabled:hover:brightness-80 disabled:hover:bg-transparent disabled:hover:scale-100 disabled:brightness-80 disabled:cursor-wait"
                   disabled={isReloading}
-                  onClick={ async(e) => {
+                  onClick={ async() => {
                     setIsReloading(true);
 
                     await getUser(router);

@@ -4,10 +4,10 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 //React imports
-import { memo, useState, useEffect, useRef } from "react";
+import { memo, useState, useRef } from "react";
 
 //Hooks imports
-import useAnimationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/hooks/useAnimationClose";
 
 //Prebuilt UI imports
 import Icon from "./icon";
@@ -35,18 +35,13 @@ import {
 function SideBar(props: Props) {
   const router = useRouter();
 
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return !!window.localStorage.getItem("expanded");
+  });
   const [ settingsVisible, changeSettingsVisibility ] = useState(false);
 
   const userSettings = useRef(null);
-
-  useEffect(() => {
-    const expanded = window.localStorage.getItem("expanded");
-
-    if(expanded) return setExpanded(true);
-
-    return;
-  }, []);
 
   const toggleSettings = () => {
     if(!userSettings.current) return;
@@ -65,7 +60,7 @@ function SideBar(props: Props) {
     };
 
     classlist.add("animate-fade-out-down");
-    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    animationClose(current, "fade-out-down", "hidden", "flex");
     return;
   }
 

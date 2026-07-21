@@ -1,18 +1,19 @@
+import { forwardRef } from "react";
+
 interface Props {
   onSubmit: (e: React.SubmitEvent<HTMLFormElement>) => void;
-  ref?: React.Ref<HTMLFormElement>;
   title: string;
   children: React.ReactNode;
   disponible: boolean;
   submitText: string;
 }
 
-export default function AuthForm(props: Props){
+const AuthForm = forwardRef<HTMLFormElement, Props>((props, ref) => {
   return (
     <form
     className="flex flex-col justify-start items-center px-6 py-3 max-w-120 text-text w-full z-2 animate-fade-in-up overflow-hidden"
     onSubmit={props.onSubmit}
-    ref={props.ref}>
+    ref={ref}>
       <h2
       className="text-3xl font-medium tracking-wider">
         {props.title}
@@ -31,4 +32,8 @@ export default function AuthForm(props: Props){
       </button>
     </form>
   )
-}
+});
+
+AuthForm.displayName = "AuthForm";
+
+export default AuthForm;

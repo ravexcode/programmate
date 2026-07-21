@@ -9,13 +9,13 @@ import { useEffect, useState, useRef } from "react";
 
 //Hooks imports
 import { getSessionStr } from "@/services/session.service";
-import useAnimationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/hooks/useAnimationClose";
 
 //Components imports
 import SideBar, { Icon } from "@/components/ui/sidebar";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import SnackBar from "@/components/ui/snackbar";
 
 //Types imports
 import type { UserData, ToDoList } from "@/types/user.types";
@@ -106,6 +106,7 @@ export default function ToDoListPage() {
     }
 
     get();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //Function to handle project creation
@@ -165,7 +166,7 @@ export default function ToDoListPage() {
     };
 
     classlist.add("animate-fade-out-down");
-    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    animationClose(current, "fade-out-down", "hidden", "flex");
     return;
   }
   
@@ -183,7 +184,7 @@ export default function ToDoListPage() {
     };
 
     classlist.add("animate-fade-out-down");
-    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    animationClose(current, "fade-out-down", "hidden", "flex");
     return;
   }
 
@@ -260,7 +261,7 @@ export default function ToDoListPage() {
     };
 
     classlist.add("animate-fade-out-down");
-    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    animationClose(current, "fade-out-down", "hidden", "flex");
     return;
   }
 
@@ -558,7 +559,7 @@ export default function ToDoListPage() {
                 <button
                 className="text-sm py-2 px-6 border border-neutral-900 rounded-full cursor-pointer duration-300 hover:border-neutral-800 h-max w-max flex gap-2 my-auto disabled:hover:brightness-80 disabled:hover:bg-transparent disabled:hover:scale-100 disabled:brightness-80 disabled:cursor-wait"
                 disabled={isReloading}
-                onClick={ async(e) => {
+                onClick={ async() => {
                   setIsReloading(true);
                   const token = getSessionStr();
                   if(!token) return;

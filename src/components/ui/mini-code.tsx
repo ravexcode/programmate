@@ -5,7 +5,7 @@ import { useState } from "react";
 import CodeText from "../containers/code";
 
 export default function MiniCode() {
-  const [ ex, setEx ] = useState(`//Next imports
+  const [ ex ] = useState(`//Next imports
 import { NextResponse } from "next/server";
 
 //Types imports

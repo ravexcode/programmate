@@ -8,7 +8,6 @@ import Footer from "@/components/ui/footer";
 import SmoothProvider from "@/lib/components/lennis";
 
 //React imports
-import ReactMarkdown from "react-markdown";
 
 export default function TOSPage() {
   return (

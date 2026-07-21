@@ -9,7 +9,6 @@ interface Props {
 
 export default function List(props: Props) {
   const [isDraggingOver, setIsDraggingOver] = useState(false);
-  const [dragPosition, setDragPosition] = useState<number | null>(null);
 
   return (
     <section
@@ -43,12 +42,10 @@ export default function List(props: Props) {
       }}
       onDragLeave={() => {
         setIsDraggingOver(false);
-        setDragPosition(null);
       }}
       onDrop={(e) => {
         e.preventDefault();
         setIsDraggingOver(false);
-        setDragPosition(null);
         const sourceList = e.dataTransfer.getData("sourceList");
         const id = e.dataTransfer.getData("id");
 

@@ -10,7 +10,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
 //Hooks imports
-import useAnimationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/hooks/useAnimationClose";
 
 //Services imports
 import { getSessionStr } from "@/services/session.service";
@@ -18,9 +18,6 @@ import { getSessionStr } from "@/services/session.service";
 //Modules imports
 import { getUser } from "@/modules/user.module";
 import { getProject } from "@/modules/project/main.module";
-
-//Utils imports
-import { getMemberIndex, getUserIndex } from "@/utils/get-member-index";
 
 //Functions imports
 import { isUserAdmin, getMemberById } from "@/functions/admin";
@@ -84,7 +81,7 @@ export default function Page(){
   }> | undefined>();
   //Searcher status
   const [ searchStatus, setSearchStatus ] = useState<"not-searched" | "not-found" | "searching">("not-searched");
-  const [ currentRole, setCurrentRole ] = useState("member");
+  const [ currentRole ] = useState("member");
 
   //Confirmation dialog states
   const [ confirmationOpen, setConfirmationOpen ] = useState<boolean>(false);
@@ -116,6 +113,7 @@ export default function Page(){
     }
 
     get();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const save_integrant = async(e: React.SubmitEvent) => {
@@ -172,7 +170,7 @@ export default function Page(){
     };
 
     classlist.add("animate-fade-out-down");
-    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    animationClose(current, "fade-out-down", "hidden", "flex");
     return;
   }
 
@@ -465,10 +463,10 @@ export default function Page(){
         </section>
 
         <SideBar
-        email={user?.email!}
-        plan={user?.plan!}
+        email={user.email}
+        plan={user.plan}
         avatar={user?.avatar_url}
-        username={user?.name!}
+        username={user.name}
         setExpanded={(isExpanded : boolean) => {
           setExpanded(isExpanded === true ? false : true);
         }}>

@@ -2,7 +2,7 @@
 import { NodeProps, Node, Handle, Position } from '@xyflow/react';
 
 //Props type
-type JNProps = NodeProps<Node<any>>;
+type JNProps = NodeProps<Node<Record<string, unknown>>>;
 
 export function JsonNode({ data }: JNProps) {
   return (

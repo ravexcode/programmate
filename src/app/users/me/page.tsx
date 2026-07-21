@@ -6,7 +6,7 @@ import Image from "next/image";
 
 //Hooks imports
 import { getCached } from "@/hooks/cache.hook";
-import { useDeleteCookie, getSessionStr } from "@/services/session.service";
+import { deleteSessionStr, getSessionStr } from "@/services/session.service";
 
 //Prebuilt UI imports
 import LoadingScreen from "@/components/screens/loading-screen";
@@ -60,11 +60,11 @@ export default function ProfilePage() {
       //Updates the user's data
       if(!cached) user_data = await getUser({router});
       //Created at to Date
-      const created_at = new Date(user_data!.created_at!);
+      const created_at = new Date(user_data!.created_at ?? "");
       //Date now
       const now = new Date();
 
-      if(user_data && (created_at.getDay() === now.getDay() && user_data.teams?.length! <= 0)) {
+      if(user_data && (created_at.getDay() === now.getDay() && (user_data.teams?.length ?? 0) <= 0)) {
         router.push("/get-started");
 
         return;
@@ -74,7 +74,7 @@ export default function ProfilePage() {
         return;
       }
 
-      useDeleteCookie("token");
+      deleteSessionStr();
       localStorage.clear();
       window.localStorage.clear();
       return router.push("/auth/signin");
@@ -85,7 +85,7 @@ export default function ProfilePage() {
     
     //Returns success
     return;
-  }, []);
+  }, [router]);
   return (
     user ? (
       <div

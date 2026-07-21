@@ -38,7 +38,7 @@ export default function CalendarDayEvents({
           <p className="text-lg">No events for this day</p>
         </div>
       ) : (
-        filtered.map((calEvent, index) => {
+        filtered.map((calEvent) => {
           const realIndex = events.indexOf(calEvent);
 
           return (

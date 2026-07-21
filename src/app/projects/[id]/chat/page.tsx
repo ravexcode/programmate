@@ -20,7 +20,7 @@ import supabase_client from "@/lib/client/db";
 import { ClientEncrypt, ClientDecrypt } from "@/lib/client/crypto";
 
 //Prebuild UI Imports
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import SnackBar from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 
 //Icons imports
@@ -42,7 +42,7 @@ export default function ChatPage() {
 
   //States handlers
   //Messages
-  const [ messages, setMessages ] = useState<any>();
+  const [ messages, setMessages ] = useState<Array<ChatMessage> | undefined>();
   //Message to be sent
   const [ messageToSend, setMessageToSend ] = useState("");
   //Team integrants
@@ -50,7 +50,7 @@ export default function ChatPage() {
   //User data
   const [ user, setUser ] = useState<UserData>();
   //Team data
-  const [ team, setTeam ] = useState<Team>()
+  const [ team ] = useState<Team>()
 
   //Ref containers
   //Messages container
@@ -115,7 +115,7 @@ export default function ChatPage() {
     };
 
     setAllData();
-  }, []);
+  }, [params.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   //Realtime handler
   useEffect(() => {
@@ -131,8 +131,7 @@ export default function ChatPage() {
           table: 'chats',
           filter: `team_id=eq.${Number(params.id)}`
         },
-        (payload: any) => {
-          const newMessage = payload.new;
+        (payload: {new: ChatMessage}) => {
 
           setMessages((prev : Array<ChatMessage>) => {
             const exists = prev.some(
@@ -236,7 +235,7 @@ export default function ChatPage() {
                 <Image
                 height={50}
                 width={50}
-                src={integrant?.avatar_url!}
+                src={integrant?.avatar_url ?? ""}
                 alt="Profile icon"
                 className="rounded-full w-7 h-7" />
 
@@ -256,7 +255,7 @@ export default function ChatPage() {
             <Image
             height={50}
             width={50}
-            src={user?.avatar_url!}
+            src={user?.avatar_url ?? ""}
             alt="Profile icon"
             className="rounded-full w-7 h-7" />
 

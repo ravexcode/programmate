@@ -4,9 +4,6 @@ import { ParamValue } from "next/dist/server/request/params";
 //Icons imports
 import {
   IconCircleFilled,
-  IconDotsVertical,
-  IconPencil,
-  IconTrash
 } from "@tabler/icons-react";
 
 //Types setup

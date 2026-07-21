@@ -1,11 +1,12 @@
 //Next imports
 import Link from "next/link";
+import Image from "next/image";
 
 //Services imports
 import { getSessionStr } from "@/services/session.service";
 
 //React imports
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 function OptionsButton(props: {
   link: string,
@@ -24,25 +25,19 @@ function OptionsButton(props: {
 }
 
 export default function Header(){
-  const [ isSignedIn, setIsSignedIn ] = useState(false);
-
-  useEffect(() => {
-    const token = getSessionStr();
-
-    if(token) {
-      setIsSignedIn(true);
-      return;
-    }
-
-    return;
-  }, [])
+  const [ isSignedIn ] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return !!getSessionStr();
+  });
 
   return (
     <header
     className="text-zinc-50 flex justify-between items-center p-4 border-b border-neutral-800 text-sm sticky top-0 animate-slide-in-top z-10 backdrop-blur-xl bg-black/40 h-max">
       <Link href="/"
       className="duration-400 hover:brightness-150 relative">
-        <img src="/logos/large.svg" alt="Logo large made by RavexCode"
+        <Image src="/logos/large.svg" alt="Logo large made by RavexCode"
+        width={100}
+        height={24}
         className="h-6"/>
       </Link>
 

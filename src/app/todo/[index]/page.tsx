@@ -21,7 +21,6 @@ import { UserData, Task, ToDoList } from "@/types/user.types";
 import UpdateUserData from "@/services/user.service";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import { IconArrowLeft, IconCheck, IconTrash } from "@tabler/icons-react";
-import AltButton from "@/components/ui/buttons/alternate";
 
 export default function ToDoListPage() {
   //Next settings
@@ -72,6 +71,7 @@ export default function ToDoListPage() {
     }
 
     GetData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSaveToDoList = async() => {

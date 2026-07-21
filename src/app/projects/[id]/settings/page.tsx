@@ -21,7 +21,7 @@ import { deleteSessionStr, getSessionStr } from "@/services/session.service";
 
 //Types imports
 import { UserData } from "@/types/user.types";
-import Team from "@/types/team.types";
+import Team, { type Status } from "@/types/team.types";
 import { getCached } from "@/hooks/cache.hook";
 
 //Icons imports
@@ -33,11 +33,11 @@ import {
 } from "@tabler/icons-react";
 import MainButton from "@/components/ui/buttons/main";
 import HazardButton from "@/components/ui/buttons/hazard";
-import useAnimationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/hooks/useAnimationClose";
 
 //Actions imports
 import { fetchTemplate } from "@/actions/template";
-import { updateProject, deleteProject } from "@/controllers/project/main.controller";
+import { updateProject } from "@/controllers/project/main.controller";
 
 export default function SettingsPage(){
   //Next setup
@@ -47,7 +47,6 @@ export default function SettingsPage(){
   //Data states
   const [ user, setUser ] = useState<UserData>();
   const [ team, setTeam ] = useState<Team>();
-  const [ expanded, setExpanded ] = useState(false);
   const [ isStatusOpen, setIsStatusOpen ] = useState(false);
   const [ isLoading, setIsLoading ] = useState(false);
   const [ currentTag, setCurrentTag ] = useState("");
@@ -104,6 +103,7 @@ export default function SettingsPage(){
     }
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   //Status options for project
@@ -114,38 +114,6 @@ export default function SettingsPage(){
     { value: "On Hold", label: "On Hold", color: "bg-red-400" },
     { value: "Done", label: "Done", color: "bg-purple-500" },
   ];
-
-  const handleUpdateTeam = async(e: React.SubmitEvent) => {
-    e.preventDefault();
-    e.nativeEvent.preventDefault();
-
-    if(!team) return;
-
-    const token = getSessionStr();
-
-    if(!token) return router.push("/auth/signin");
-
-    setIsLoading(true);
-
-    await fetchTemplate(
-      "/api/teams",
-      "PUT",
-      snackbar,
-      {
-        "Authorization": token
-      },
-      JSON.stringify({
-        teamId: params.id,
-        newName: team.name,
-        newDescription: team.description,
-        newTags: team.tags,
-        newStatus: team.status
-      })
-    );
-
-    setIsLoading(false);
-    setPrevTeam(team);
-  }
 
   const warnTexts = [
     "Are you shure to you want to leave from this team?",
@@ -167,7 +135,7 @@ export default function SettingsPage(){
     };
 
     classlist.add("animate-fade-out-down");
-    useAnimationClose(current, "fade-out-down", "hidden", "flex");
+    animationClose(current, "fade-out-down", "hidden", "flex");
     return;
   };
 
@@ -249,7 +217,7 @@ export default function SettingsPage(){
                 <div
                 className="flex flex-col gap-1 w-full items-start justify-center px-10">
                   <label>
-                    Set "{team.name.toLowerCase()}" to confirm team elimination
+                    Set &quot;{team.name.toLowerCase()}&quot; to confirm team elimination
                   </label>
                   <input
                   type="text"
@@ -400,7 +368,7 @@ export default function SettingsPage(){
                             setTeam(
                               prev => prev ? {
                                 ...prev,
-                                status: (option.value as any)
+                                status: option.value as Status
                               } : team
                             );
                             setIsStatusOpen(false);
