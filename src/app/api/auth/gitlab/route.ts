@@ -1,5 +1,5 @@
 //Next imports
-import { type NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 //Lib imports
 import supabase from "@/lib/db";
@@ -8,7 +8,7 @@ import supabase from "@/lib/db";
 //Handlers imports
 import * as Handler from "@/app/api/handlers";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     //Saves the API_URL
     const api_url = process.env.API_URL || "http://localhost:7000";

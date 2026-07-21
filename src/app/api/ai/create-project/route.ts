@@ -12,8 +12,8 @@ type PostBody = {
     status: string;
     tags: string [];
     integrants_id: string [];
-    erd: any [];
-    kanban: any [];
+    erd: Record<string, unknown> [];
+    kanban: Record<string, unknown> [];
   }
 }
 

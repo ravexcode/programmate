@@ -55,11 +55,11 @@ export async function POST(req: NextRequest) {
         .emails
         .send({
           from: 'NexZero <noreply@ravexcode.com>',
-          to: event.data.object.metadata?.email!,
+          to: event.data.object.metadata?.email ?? "",
           subject: "Request recivied",
           react: PaymentTemplate({
-            amount: Number(event.data.object.metadata!.payment),
-            recipt_link: event.data.object.invoice!.toString(),
+            amount: Number(event.data.object.metadata?.payment ?? 0),
+            recipt_link: event.data.object.invoice?.toString() ?? "",
             orderId: event.data.object.id
           })
         });

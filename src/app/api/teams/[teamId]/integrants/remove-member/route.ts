@@ -55,7 +55,7 @@ export async function DELETE(
     if(getTeamError) return supabaseErrorHandler(getTeamError);
 
     //Verifies if the user is admin in the team
-    const userIntegrant = team.integrants?.find((int: any) => int.id === user.id);
+    const userIntegrant = team.integrants?.find((int: {id: string; type: string}) => int.id === user.id);
     if(!userIntegrant || userIntegrant.type !== "admin") {
       return unauthorizedErrorHandler("You don't have permission to remove members");
     }
@@ -66,7 +66,7 @@ export async function DELETE(
     }
 
     //Finds the member to delete
-    const memberIndex = team.integrants?.findIndex((int: any) => int.id === member_id);
+    const memberIndex = team.integrants?.findIndex((int: {id: string}) => int.id === member_id);
     
     if(memberIndex === -1 || memberIndex === undefined) {
       return notFoundErrorHandler("Member not found in team");
@@ -79,7 +79,7 @@ export async function DELETE(
     }
 
     //Removes the member
-    const updatedIntegrants = team.integrants.filter((int: any, idx: number) => idx !== memberIndex);
+    const updatedIntegrants = team.integrants.filter((int: Record<string, unknown>, idx: number) => idx !== memberIndex);
     const updatedIntegrantsId = team.integrants_id.filter((id: string, idx: number) => idx !== memberIndex);
 
     const { error: updateError } = await supabase

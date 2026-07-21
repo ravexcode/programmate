@@ -8,7 +8,6 @@ import {
   badRequestErrorHandler,
   notFoundErrorHandler,
   supabaseErrorHandler,
-  unauthorizedErrorHandler,
 } from "@api/handlers";
 
 //Lib imports

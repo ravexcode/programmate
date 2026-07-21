@@ -57,7 +57,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ team
     //Const for decrypted
     const decrypted_tickets : Array<Ticket> | null = [];
     //Team tickets decrypts for all
-    team.tickets && team.tickets.forEach(( ticket: Ticket ) => {
+    if(team.tickets) team.tickets.forEach(( ticket: Ticket ) => {
       //Decrypts the ticket
       ticket.message = Decrypt(ticket.message);
 

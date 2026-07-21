@@ -1,5 +1,5 @@
 //Next imports
-import { type NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 
 //Lib imports
@@ -9,7 +9,7 @@ import { Decrypt } from "@/functions/crypto";
 //Handlers imports
 import * as Handler from "@/app/api/handlers";
 
-export async function GET( req: NextRequest ) {
+export async function GET() {
   try {
     //Gets the user token
     const token = (await headers()).get("Authorization");

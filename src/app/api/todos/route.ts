@@ -175,7 +175,7 @@ export async function DELETE(req: NextRequest) {
     if(getProfileError) return Handlers.supabaseErrorHandler(getProfileError);
 
     //Deletes the list
-    const updated_list = profile.to_do_list.filter((_: any, i: number) => i !== list_index);
+    const updated_list = profile.to_do_list.filter((_: Record<string, unknown>, i: number) => i !== list_index);
 
     //Uploads the updated list
     const { error: deleteListError } = await supabase

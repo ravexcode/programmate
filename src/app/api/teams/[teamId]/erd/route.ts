@@ -85,10 +85,11 @@ export async function POST( req: NextRequest) {
     return NextResponse.json({
       message: "ERD updated successfully"
     })
-  } catch(e: any) {
+  } catch(e: unknown) {
+    const message = e instanceof Error ? e.message : "Unknown error";
     return NextResponse.json({
       message: "An error has happened in the server",
-      error: e.message
+      error: message
     }, {
       status: 500
     });

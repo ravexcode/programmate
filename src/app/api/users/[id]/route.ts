@@ -40,14 +40,14 @@ export async function GET(
     .select("*")
     .contains( "integrants_id", [ id ] );
 
-    if( teams?.length! < 1 && getTeamsError ) return supabaseErrorHandler(getTeamsError)
+    if( teams !== null && teams !== undefined && teams.length < 1 && getTeamsError ) return supabaseErrorHandler(getTeamsError)
 
     const { data: payments, error: getPaymentsError } = await supabase
     .from("payments")
     .select("*")
     .eq("user_id", id);
 
-    if( payments?.length! < 1 && getPaymentsError ) return supabaseErrorHandler(getPaymentsError)
+    if( payments !== null && payments !== undefined && payments.length < 1 && getPaymentsError ) return supabaseErrorHandler(getPaymentsError)
 
     return NextResponse.json({
       message: "User data got",

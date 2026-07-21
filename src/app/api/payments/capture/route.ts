@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
       mode: "payment",
       metadata : {
         //Sends the data from the user
-        email: user?.email!,
+        email: user?.email ?? "",
         user_id: user?.id,
         payment: (paymentPlan.price).toString(),
         plan

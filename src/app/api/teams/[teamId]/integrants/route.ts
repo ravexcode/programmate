@@ -135,7 +135,7 @@ export async function DELETE(
     if(!team?.integrants_id.includes(user.id)) return unauthorizedErrorHandler("You're not in the team");
 
     //Check if user is admin
-    const currentUserIntegrant = team.integrants.find((integrant: any) => integrant.id === user.id);
+    const currentUserIntegrant = team.integrants.find((integrant: {id: string; type: string}) => integrant.id === user.id);
     
     if(!currentUserIntegrant || currentUserIntegrant.type !== "admin") return NextResponse.json({
       message: "You don't have permission to delete integrants",
@@ -145,7 +145,7 @@ export async function DELETE(
     });
 
     //Filter out the integrant to delete
-    const updatedIntegrants = team.integrants.filter((integrant: any) => integrant.id !== id);
+    const updatedIntegrants = team.integrants.filter((integrant: {id: string}) => integrant.id !== id);
 
     //Save in the team
     const { error: saveIntegrantError } = await supabase

@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
       name,
       description,
       integrants: integrants,
-      integrants_id: integrants.map((integrant: any) => integrant.id),
+      integrants_id: integrants.map((integrant: {id: string}) => integrant.id),
       created_at: new Date(),
       tags,
       kanban_board: {
@@ -83,11 +83,12 @@ export async function POST(req: NextRequest) {
       message: "Team created successfully",
       team: newTeam
     })
-  } catch(e: any) {
+  } catch(e: unknown) {
+    const message = e instanceof Error ? e.message : "Unknown error";
     //Server errors
     return NextResponse.json({
       message: "An error has happened in the server",
-      error: e.message
+      error: message
     }, {
       status: 500
     });

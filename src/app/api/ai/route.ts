@@ -1,5 +1,5 @@
 //Next imports
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 
 //Handlers imports
@@ -10,7 +10,7 @@ import {
   unauthorizedErrorHandler
 } from "@api/handlers"
 
-export async function GET( req: NextRequest ){
+export async function GET(){
   try {
     const headers_list = await headers();
     const provider_api_key = headers_list.get("provider-api-key");
@@ -71,7 +71,6 @@ export async function GET( req: NextRequest ){
         });
 
         if(claude_res.ok) {
-          const data = await claude_res.json();
           return NextResponse.json({
             message: "Claude AI Api key validated"
           })

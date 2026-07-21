@@ -1,5 +1,5 @@
 //Next imports
-import { type NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 
 //Lib imports
@@ -11,7 +11,7 @@ import * as Handlers from "@api/handlers";
 //Types imports
 import { UserBasic } from "@/types/user.types";
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE() {
   try {
     //Gets the user Auth token
     const token = (await headers()).get("Authorization");

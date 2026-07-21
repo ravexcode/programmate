@@ -38,11 +38,12 @@ export async function GET(
       message: "Users gotten",
       users
     })
-  } catch(e: any) {
+  } catch(e: unknown) {
+    const message = e instanceof Error ? e.message : "Unknown error";
     //Error handler
     return NextResponse.json({
       message: "Error inside in the server",
-      error: e.message
+      error: message
     }, {
       status: 500
     });
