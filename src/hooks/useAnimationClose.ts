@@ -1,4 +1,4 @@
-export default function useAnimationClose(
+export default function animationClose(
   component: HTMLElement,
   animation_name: string,
   class_to_add: string,

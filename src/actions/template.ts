@@ -4,7 +4,7 @@ export async function fetchTemplate(
   url: string,
   method: string,
   snackbar: React.RefObject<null>,
-  headers?: any,
+  headers?: Record<string, string>,
   body?: string,
 ) {
   try {

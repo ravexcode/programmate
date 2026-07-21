@@ -1,4 +1,4 @@
-import { getSessionStr, logOut } from "@/services/session.service";
+import { getSessionStr } from "@/services/session.service";
 import { createTodo, updateTodo, deleteTodo } from "@/controllers/todo.controller";
 import { showSnackbar } from "@/components/ui/snackbar";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";

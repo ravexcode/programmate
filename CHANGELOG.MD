@@ -1,3 +1,7 @@
+- **0.84.1:** Arreglo de erroes menores
+
+- **0.84.0:** Arreglo de errores de lint en paginas
+
 - **0.83.0:** Arreglo de errores de lint en services y modules
 
 - **0.82.0:** Arreglo de errores de lint en las routes
