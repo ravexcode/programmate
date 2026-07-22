@@ -4,26 +4,29 @@
 //Prebuilt ui imports
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import SnackBar from "@/components/ui/snackbar";
 
 //Next imports
 import Link from "next/link";
 import { getSessionStr, deleteSessionStr } from "@/services/session.service";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 //React imports
 import { useState, useEffect, useRef } from "react";
 
-//Services imports
-import UpdateUserData from "@/services/user.service";
+//Types imports
 import { UserData } from "@/types/user.types";
+
+//Modules imports
+import { getUser } from "@/modules/user.module";
+import { addIntegrant } from "@/modules/project/integrants.module";
 
 export default function AcceptRequestPage(){
   const params = useParams();
+  const router = useRouter();
 
   const [ isDisabled, setIsDisabled ] = useState<boolean>(true);
   const [ user, setUser ] = useState<UserData>();
-  const [ authToken, setAuthToken ] = useState<string>("");
 
   const snackbar = useRef(null);
 
@@ -33,8 +36,7 @@ export default function AcceptRequestPage(){
 
       if(!token) return window.location.href = "/auth/signin";
 
-      setAuthToken(token);
-      const user_data = await UpdateUserData(token);
+      const user_data = await getUser(router);
       
       if(!user_data){
         deleteSessionStr();
@@ -42,41 +44,32 @@ export default function AcceptRequestPage(){
         window.location.href = "/auth/signin";
       }
 
-      setUser(user_data)
+      setUser(user_data!)
       setIsDisabled(false);
     }
 
     getData();
-  }, []);
+  }, [router]);
 
   const handleSaveInTheTeam = async() => {
-    const res = await fetch(
-      `/api/teams/${params.id}/integrants`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-          "Authorization": authToken
-        },
-        body: JSON.stringify({
-          id: user?.id,
-          email: user?.email,
-          username: user?.name,
-          type: "member",
-          avatar_url: user?.avatar_url
-        })
-      }
-    );
+    if(!user) return;
 
-    const data = await res.json();
+    const success = await addIntegrant({
+      id: Number(params.id),
+      member: {
+        id: user.id,
+        email: user.email,
+        username: user.name,
+        type: "member",
+        avatar_url: user.avatar_url
+      },
+      router,
+      snackbar
+    });
 
-    if(res.status === 200) {
+    if(success) {
       window.location.href = `/teams/${params.id}`;
-      return;
     }
-
-    showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
-    return;
   }
 
   return (

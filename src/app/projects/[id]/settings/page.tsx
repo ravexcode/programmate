@@ -35,9 +35,9 @@ import MainButton from "@/components/ui/buttons/main";
 import HazardButton from "@/components/ui/buttons/hazard";
 import animationClose from "@/hooks/useAnimationClose";
 
-//Actions imports
-import { fetchTemplate } from "@/actions/template";
-import { updateProject } from "@/controllers/project/main.controller";
+//Modules imports
+import { updateProject, deleteProjectControllerProject } from "@/modules/project/main.module";
+import { removeMember } from "@/modules/project/integrants.module";
 
 export default function SettingsPage(){
   //Next setup
@@ -71,7 +71,7 @@ export default function SettingsPage(){
       const cached = getCached();
 
       if(!cached) {
-        const user_fetched = await getUser({router});
+        const user_fetched = await getUser(router);
 
         if(!user_fetched) {
           deleteSessionStr();
@@ -140,19 +140,13 @@ export default function SettingsPage(){
   };
 
   const handleDeleteTeam = async() => {
-    const token = getSessionStr();
     setIsLoading(true);
 
-    if(!token) return;
-
-    await fetchTemplate(
-      `/api/teams/${params.id}`,
-      "DELETE",
-      snackbar,
-      {
-        "Authorization": token,
-      }
-    );
+    await deleteProjectControllerProject({
+      router,
+      id: Number(params.id),
+      snackbar
+    });
 
     router.push("/dashboard");
   }
@@ -160,22 +154,14 @@ export default function SettingsPage(){
   const handleLeave = async() => {
     if(!user) return;
 
-    const token = getSessionStr();
     setIsLoading(true);
 
-    if(!token) return;
-
-    await fetchTemplate(
-      `/api/teams/${params.id}/integrants/remove-member`,
-      "DELETE",
-      snackbar,
-      {
-        "Authorization": token,
-      },
-      JSON.stringify({
-        member_id: user.id
-      })
-    );
+    await removeMember({
+      id: Number(params.id),
+      memberId: user.id,
+      router,
+      snackbar
+    });
 
     router.push("/dashboard");
   }
@@ -272,13 +258,17 @@ export default function SettingsPage(){
           className="w-full max-w-200 rounded-md p-4 z-2 flex flex-col items-start justify-start gap-4 animate-fade-in-up animate-duration-300"
           onSubmit={async(e) => {
             setIsLoading(true);
-            await updateProject(
-              e,
-              team,
+            await updateProject({
+              router,
               snackbar,
-              user,
-              router
-            )
+              project: {
+                id: team.team_id,
+                name: team.name,
+                description: team.description,
+                status: team.status as Status,
+                tags: team.tags || [],
+              }
+            })
             .finally(() => setPrevTeam(team));
             setIsLoading(false);
           }}>

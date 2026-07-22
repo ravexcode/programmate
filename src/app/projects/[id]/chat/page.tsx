@@ -4,7 +4,7 @@
 import { useRef, useEffect , useState} from "react";
 
 //Next imports
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
 //Hooks imports
@@ -39,6 +39,7 @@ import Image from "next/image";
 export default function ChatPage() {
   //Params
   const params = useParams();
+  const router = useRouter();
 
   //States handlers
   //Messages
@@ -81,7 +82,7 @@ export default function ChatPage() {
       if(cached) {
         setUser(cached);
       } else {
-         user_fetched = await getUser({router});
+         user_fetched = await getUser(router);
 
         
         if(!user) return window.location.href = "/auth/signin";

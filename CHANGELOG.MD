@@ -1,3 +1,5 @@
+- **0.86.0:** Refactor completo dentro de la pagina de proyectos
+
 - **0.85.0:** Refactor completo dentro de get started.
 
 - **0.84.1:** Arreglo de erroes menores

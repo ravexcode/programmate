@@ -12,12 +12,10 @@ import { useEffect, useState, useRef } from "react";
 //Hooks imports
 import animationClose from "@/hooks/useAnimationClose";
 
-//Services imports
-import { getSessionStr } from "@/services/session.service";
-
 //Modules imports
 import { getUser } from "@/modules/user.module";
 import { getProject } from "@/modules/project/main.module";
+import { requestIntegrant, changeRole, removeMember, searchUsers } from "@/modules/project/integrants.module";
 
 //Functions imports
 import { isUserAdmin, getMemberById } from "@/functions/admin";
@@ -25,7 +23,7 @@ import { isUserAdmin, getMemberById } from "@/functions/admin";
 //Prebuilt ui imports
 import SideBar, { Icon } from "@/components/ui/sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import SnackBar from "@/components/ui/snackbar";
 import ConfirmationCard from "@/components/ui/confirmation-card";
 import CreatorForm from "@/components/forms/creator-form";
 import MainButton from "@/components/ui/buttons/main";
@@ -116,44 +114,25 @@ export default function Page(){
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const save_integrant = async(e: React.SubmitEvent) => {
+  const save_integrant = async(e: React.FormEvent) => {
     if(!added) return;
 
+    e.preventDefault();
     setFormDisabled(true);
 
-    added.forEach(async (added) => {
-      e.preventDefault();
-
-      const token = getSessionStr();
-
-      if(!token) return router.push("/auth/signin");
-
-      const res = await fetch(`/api/teams/${params.id}/integrants/request`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-          "Authorization": token
-        },
-        body: JSON.stringify({
-          requested_email: added.email
-        })
+    for(const item of added) {
+      await requestIntegrant({
+        id: Number(params.id),
+        reqEmail: item.email,
+        router,
+        snackbar
       });
-
-      const data = await res.json();
-
-      if(res.status !== 200) {
-        showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
-        return;
-      }
-
-      showSnackbar(data.message, "valid", snackbar);
-      return;
-    });
+    }
 
     toggleForm();
     setFound(undefined);
     setAdded(undefined);
+    setFormDisabled(false);
   }
 
   const toggleForm = () => {
@@ -176,9 +155,7 @@ export default function Page(){
 
   //Change member role
   const changeMemberRole = async(memberId: string, currentRole: string) => {
-    const token = getSessionStr();
     if(!team) return;
-    if(!token) return router.push("/auth/signin");
 
     // Constants
     const integrants = team.integrants;
@@ -189,7 +166,7 @@ export default function Page(){
 
     if(user_index === undefined) return router.push("/dashboard");
 
-    if(integrants[user_index].type !== "admin") return showSnackbar("You can't do this", "warn", snackbar);
+    if(integrants[user_index].type !== "admin") return;
 
     const newRole = currentRole === "admin" ? "member" : "admin";
 
@@ -202,36 +179,20 @@ export default function Page(){
 
   //Confirm role change
   const confirmRoleChange = async() => {
-    const token = getSessionStr();
-    if(!token) return router.push("/auth/signin");
+    if(!team) return;
 
     setIsProcessing(true);
 
-    const res = await fetch(`/api/teams/${params.id}/integrants/change-role`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-        "Authorization": token
-      },
-      body: JSON.stringify({
-        member_id: confirmationMemberId,
-        new_role: confirmationNewRole
-      })
+    const success = await changeRole({
+      id: Number(params.id),
+      memberId: confirmationMemberId,
+      newRole: confirmationNewRole,
+      router,
+      snackbar
     });
 
-    const data = await res.json();
-
-    if(res.status !== 200) {
-      showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
-      setIsProcessing(false);
-      return;
-    }
-
-    showSnackbar(data.message, "valid", snackbar);
-    
-    // Update local state
-    if(team && team.integrants) {
+    if(success) {
+      // Update local state
       setTeam({
         ...team,
         integrants: team.integrants.map((member: IntegrantData) =>
@@ -247,9 +208,7 @@ export default function Page(){
   //Delete member from team
   const deleteMember = async(memberId: string) => {
     if(!team) return;
-    if(!isUserAdmin(team, user?.id)) {
-      return showSnackbar("You don't have permission to do this", "warn", snackbar);
-    }
+    if(!isUserAdmin(team, user?.id)) return;
 
     // Open confirmation dialog
     setConfirmationMemberId(memberId);
@@ -259,35 +218,19 @@ export default function Page(){
 
   //Confirm member deletion
   const confirmMemberDeletion = async() => {
-    const token = getSessionStr();
-    if(!token) return router.push("/auth/signin");
+    if(!team) return;
 
     setIsProcessing(true);
 
-    const res = await fetch(`/api/teams/${params.id}/integrants/remove-member`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-        "Authorization": token
-      },
-      body: JSON.stringify({
-        member_id: confirmationMemberId
-      })
+    const success = await removeMember({
+      id: Number(params.id),
+      memberId: confirmationMemberId,
+      router,
+      snackbar
     });
 
-    const data = await res.json();
-
-    if(res.status !== 200) {
-      showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar);
-      setIsProcessing(false);
-      return;
-    }
-
-    showSnackbar(data.message, "valid", snackbar);
-    
-    // Update local state
-    if(team && team.integrants) {
+    if(success) {
+      // Update local state
       setTeam({
         ...team,
         integrants: team.integrants.filter((member: IntegrantData) => member.id !== confirmationMemberId)
@@ -299,31 +242,22 @@ export default function Page(){
   }
 
   //User searcher
-  const searchUsers = async() => {
+  const searchUsersHandler = async() => {
     setSearchStatus("searching");
 
     if(!searched || searched.length < 1) {
       setSearchStatus("not-searched")
     }
 
-    //Fetch the api with user data
-    const res = await fetch(`/api/users/search/${searched}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-      }
+    const users = await searchUsers({
+      query: searched,
+      snackbar
     });
 
-    //Data from res
-    const data = await res.json();
-
-    //If success sets the users
-    if(res.status === 200) {
-      setFound(data.users);
+    if(users.length > 0) {
+      setFound(users);
     }
 
-    //Else, returns error
     setSearchStatus("not-found");
     return;
   }
@@ -344,7 +278,7 @@ export default function Page(){
             : `Are you sure you want to change this member's role to ${confirmationNewRole}?`
         }
         actionType={confirmationAction}
-        memberName={getMemberById(team, confirmationMemberId)?.username || "Unknown"}
+        memberName={(getMemberById(team, confirmationMemberId) as IntegrantData | undefined)?.username || "Unknown"}
         newRole={confirmationAction === "role-change" ? confirmationNewRole : undefined}
         onConfirm={confirmationAction === "delete" ? confirmMemberDeletion : confirmRoleChange}
         onCancel={() => setConfirmationOpen(false)}
@@ -375,7 +309,7 @@ export default function Page(){
             value={searched}
             onKeyDown={(e) => {
               if(e.key === "Enter" && e.ctrlKey && searched) {
-                searchUsers();
+                searchUsersHandler();
               }
             }}
             className="w-full text-sm rounded-md bg-neutral-800 p-2 mt-1 border border-transparent outline-none duration-300 focus:border-main hover:bg-neutral-800/50 focus:hover:bg-neutral-800"

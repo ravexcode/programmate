@@ -106,7 +106,7 @@ export default function KanBanBoard() {
       if(cached) {
         user_data = cached
       } else {
-        const fetched = await getUser({router});
+        const fetched = await getUser(router);
         
         if(!fetched) {
           deleteSessionStr();
