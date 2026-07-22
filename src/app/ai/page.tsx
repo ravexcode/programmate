@@ -16,6 +16,7 @@ import animationClose from "@/hooks/useAnimationClose";
 //Prebuilt UI imports
 import LoadingScreen from "@/components/screens/loading-screen";
 import SnackBar from "@/components/ui/snackbar";
+import MainButton from "@/components/ui/buttons/main";
 
 //Types imports
 import { UserData } from "@/types/user.types";
@@ -30,7 +31,8 @@ import {
   IconSettings,
   IconUserCircle
 } from "@tabler/icons-react";
-import MainButton from "@/components/ui/buttons/main";
+
+import { getUser } from "@/modules/user.module";
 
 export default function AgentsPage() {
   const router = useRouter();
@@ -67,7 +69,7 @@ export default function AgentsPage() {
 
       if(cached) return setUser(cached);
       
-      const fetched = await getUserService({router});
+      const fetched = await getUser(router);
 
       if(!fetched) return router.push("/auth/signin");
 

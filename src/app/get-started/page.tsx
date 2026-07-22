@@ -2,14 +2,17 @@
 "use client";
 
 //Prebuilt ui imports
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import SnackBar from "@/components/ui/snackbar";
 
 //React imports
 import { useState, KeyboardEvent, useRef, useEffect } from "react";
 
 //Services imports
 import { getSessionStr } from "@/services/session.service";
-import UpdateUserData from "@/services/user.service";
+
+//Modules import
+import { getUser } from "@/modules/user.module";
+import { createProject } from "@/modules/project/main.module";
 
 //Next import
 import { useRouter } from "next/navigation";
@@ -28,10 +31,6 @@ export default function GetStarted() {
   const [tags, setTags] = useState<string[]>([]);
   const [status, setStatus] = useState<string>("Planning");
 
-  //Integrants state
-  const [emailInput, setEmailInput] = useState<string>("");
-  const [integrants, setIntegrants] = useState<Array<string>>([]);
-
   //Form state
   const [ disabled, setDisabled ] = useState<boolean>(false);
   
@@ -39,7 +38,7 @@ export default function GetStarted() {
   const snackbar = useRef(null);
 
   //Constants
-  const screens = 6;
+  const screens = 5;
 
   useEffect(() => {
     async function validator(){
@@ -47,7 +46,7 @@ export default function GetStarted() {
 
       if(!token) return window.location.href = "/auth/signin";
 
-      const user = await UpdateUserData({ router });
+      const user = await getUser(router);
 
       if(!user) return router.push("/");
       
@@ -76,17 +75,6 @@ export default function GetStarted() {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-  const addEmail = () => {
-    if (emailInput.trim().length > 0 && !integrants.includes(emailInput.trim())) {
-      setIntegrants([...integrants, emailInput.trim()]);
-      setEmailInput("");
-    }
-  };
-
-  const removeEmail = (emailToRemove: string) => {
-    setIntegrants(integrants.filter(email => email !== emailToRemove));
-  };
-
   const statusOptions = [
     { value: "Backlog", label: "Backlog", color: "bg-zinc-500" },
     { value: "Planning", label: "Planning", color: "bg-blue-400" },
@@ -98,163 +86,34 @@ export default function GetStarted() {
   // Estado para controlar si el dropdown está abierto
   const [isStatusOpen, setIsStatusOpen] = useState(false);
 
-  //Project creator
-  const createProject = async() => {
-    //Id isn't cached gets the data
-    const token = getSessionStr();
-
-    if(!token) {
-      //If hasn't token returns to log in form
-      window.location.href = "/auth/signin";
-    };
-
-    const user = JSON.parse(localStorage.getItem("user")!);
-
-    //Only the current user as admin
-    const found = [{
-      id: user.id,
-      email: user.email,
-      username: user.name,
-      type: "admin"
-    }];
-
-    const integrants_id : Array<string> = [];
-
-    found.forEach(integrant => {
-      integrants_id.push(integrant.id);
-    })
-
-    const newProject = {
-      name: newProjectName,
-      description: newProjectDescription,
-      integrants: found,
-      integrants_id: integrants_id,
-      tags: tags,
-      status: status
-    }
-
-    //Fetchs to api
-    const res = await fetch("/api/teams", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-        "Authorization": token!,
-      },
-      body: JSON.stringify(newProject)
-    });
-
-    //Handles the response
-    const data = await res.json();
-
-    //If success, returns the data
-    if(res.status === 200) {
-      //Returns success with the team data
-      return { success: true, team: data.team };
-    }
-
-    //Else, returns error
-    showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar)
-    return { success: false, team: null };
-  }
-
-  //Send invitations to the emails inserted
-  const sendInvitations = async(teamId: string | number) => {
-    const token = getSessionStr();
-
-    if(!token) {
-      window.location.href = "/auth/signin";
-      return;
-    }
-
-    //Get current user email
-    const user = JSON.parse(localStorage.getItem("user")!);
-    const currentUserEmail = user.email;
-
-    //Send invitation to each email
-    for (const email of integrants) {
-      try {
-        //Check if user is trying to invite themselves
-        if(email === currentUserEmail) {
-          showSnackbar("You can't invite yourself", "warn", snackbar)
-          continue;
-        }
-
-        //First, verify if the user exists
-        const searchRes = await fetch(`/api/users/search/${email}`, {
-          method: "GET",
-          headers: {
-            "Content-type": "application/json",
-            "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!
-          }
-        });
-
-        const searchData = await searchRes.json();
-
-        //If user doesn't exist, show error
-        if(searchRes.status !== 200 || !searchData.users || searchData.users.length === 0) {
-          showSnackbar("User don't found", "warn", snackbar)
-          continue;
-        }
-
-        //Send the invitation
-        const res = await fetch(`/api/teams/${teamId}/integrants/request`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-            "Authorization": token,
-          },
-          body: JSON.stringify({
-            requested_email: email
-          })
-        });
-
-        //Handles the response
-        const data = await res.json();
-
-        //If success, show success message
-        if(res.status === 200) {
-          showSnackbar("Invitation sent!", "valid", snackbar);
-        }
-        //Else, show error
-        else {
-          showSnackbar(data.message, (res.status >= 500 ? "critic" : "warn"), snackbar)
-        }
-      } catch(e: unknown) {
-        if(e instanceof Error) {
-          showSnackbar(e.message, "critic", snackbar);
-        }
-        
-        showSnackbar("Server error", "critic", snackbar);
-        return;
-      }
-    }
-  }
-
   //Function when users press "launch"
   const handleCreateProject = async() => {
     //Disable button during process
     setDisabled(true);
 
-    //Create the project
-    const result = await createProject();
+    const user = JSON.parse(localStorage.getItem("user")!);
 
-    if(!result.success || !result.team) {
+    //Create the project using module
+    const result = await createProject({
+      router,
+      snackbar,
+      user,
+      project: {
+        name: newProjectName,
+        description: newProjectDescription,
+        user,
+        tags,
+        status: status as "Backlog" | "Planning" | "In progress" | "On Hold" | "Done",
+      }
+    });
+
+    if(!result) {
       setDisabled(false);
       return;
     }
 
-    const teamId = result.team.team_id;
-
-    //Send invitations to all emails
-    if(integrants.length > 0) {
-      await sendInvitations(teamId);
-    }
-
     //If all is ok sets the data in cache
-    const user = JSON.parse(localStorage.getItem("user")!);
-    user.teams.push(result.team);
+    user.teams.push(result);
     window.localStorage.setItem("user", JSON.stringify(user));
 
     setDisabled(false);
@@ -278,7 +137,6 @@ export default function GetStarted() {
              screenSelected === 2 ? "top-1/2 left-1/2 -translate-x-1/2 w-300" :
              screenSelected === 3 ? "-top-1/2 left-1/2 -translate-x-1/2 w-250" :
              screenSelected === 4 ? "top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-200" :
-             screenSelected === 5 ? "top-1/4 right-1/4 w-300" :
              "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200")
           }
         />
@@ -482,71 +340,13 @@ export default function GetStarted() {
             disabled={newProjectName.trim().length <= 0}
             onClick={() => setScreenSelected(5)}
           >
-            Continue
-          </button>
-        </div>
-      </section>
-
-      {/* Screen 5: Integrants */}
-      <section className={"flex-col justify-center items-center w-full min-h-screen animate-fade-in-up px-6 py-2 relative z-10 " + (screenSelected === 5 ? "flex" : "hidden")}>
-        <h1 className="text-3xl xl:text-5xl font-medium tracking-tight text-text mb-12 text-center">
-          Invite your team
-        </h1>
-
-        <div className="flex flex-col w-full max-w-xl gap-4">
-          <div className="flex w-full gap-3">
-            <input
-              type="email"
-              value={emailInput}
-              onChange={(e) => setEmailInput(e.target.value)}
-              onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => { if (e.key === 'Enter') addEmail(); }}
-              placeholder="colleague@company.com"
-              className="flex-1 bg-[#121212] border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all duration-300"
-            />
-            <button 
-              onClick={addEmail}
-              className="px-6 py-3 bg-main hover:brightness-80 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-[0_0_15px_rgba(79,70,229,0.2)] cursor-pointer"
-            >
-              Invite
-            </button>
-          </div>
-          
-          <div className="flex flex-col w-full gap-2 mt-4 text-left">
-            {integrants.length === 0 && <span className="text-sm text-zinc-600 text-center py-4">No team members added yet.</span>}
-            {integrants.map((email, idx) => (
-              <div key={idx} className="flex justify-between items-center bg-[#121212] px-4 py-3 rounded-lg border border-white/5">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-linear-to-br from-main to-blue-950 flex items-center justify-center text-xs font-bold text-white">
-                    {email.charAt(0).toUpperCase()}
-                  </div>
-                  <span className="text-sm font-medium text-zinc-300">{email}</span>
-                </div>
-                <button onClick={() => removeEmail(email)} className="text-xs font-medium text-zinc-500 hover:text-red-400 transition-colors">
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex gap-4 mt-12">
-          <button
-            className="text-sm font-medium px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer"
-            onClick={() => setScreenSelected(4)}
-          >
-            Back
-          </button>
-          <button
-            className="text-sm font-medium px-6 py-2.5 rounded-full bg-main text-text hover:brightness-80 cursor-pointer transition-all duration-200 disabled:opacity-50 disabled:hover:bg-white disabled:cursor-not-allowed shadow-[0_0_15px_rgba(255,255,255,0.05)]"
-            onClick={() => setScreenSelected(6)}
-          >
             Review your proyect
           </button>
         </div>
       </section>
 
-      {/* Screen 6: Finished Summary */}
-      <section className={"flex-col justify-center items-center w-full min-h-screen animate-fade-in-up px-6 py-2 relative z-10 " + (screenSelected === 6 ? "flex" : "hidden")}>
+      {/* Screen 5: Review & Launch */}
+      <section className={"flex-col justify-center items-center w-full min-h-screen animate-fade-in-up px-6 py-2 relative z-10 " + (screenSelected === 5 ? "flex" : "hidden")}>
         <div className="w-full max-w-2xl">
           <h1 className="text-3xl xl:text-5xl font-medium tracking-tight text-text mb-8 text-center">
             Ready to launch
@@ -565,29 +365,14 @@ export default function GetStarted() {
               {newProjectDescription}
             </p>
 
-            <div className="grid grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-4">Labels</h3>
-                <div className="flex flex-wrap gap-2">
-                  {tags.length > 0 ? tags.map((tag, i) => (
-                    <span key={i} className="text-xs font-medium bg-white/5 border border-white/10 text-zinc-300 px-2.5 py-1 rounded-md">
-                      {tag}
-                    </span>
-                  )) : <span className="text-xs text-zinc-600">No labels applied</span>}
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-4">Team ({integrants.length})</h3>
-                <div className="space-y-2">
-                  {integrants.length > 0 ? integrants.map((member, i) => (
-                    <div key={i} className="text-sm font-medium text-zinc-300 truncate flex items-center gap-2">
-                       <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px] text-white">
-                        {member.charAt(0).toUpperCase()}
-                      </span>
-                      {member}
-                    </div>
-                  )) : <span className="text-xs text-zinc-600">Just you</span>}
-                </div>
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-4">Labels</h3>
+              <div className="flex flex-wrap gap-2">
+                {tags.length > 0 ? tags.map((tag, i) => (
+                  <span key={i} className="text-xs font-medium bg-white/5 border border-white/10 text-zinc-300 px-2.5 py-1 rounded-md">
+                    {tag}
+                  </span>
+                )) : <span className="text-xs text-zinc-600">No labels applied</span>}
               </div>
             </div>
           </div>
@@ -596,7 +381,7 @@ export default function GetStarted() {
             <button
               className="text-sm font-medium px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer disabled:hover:bg-white/5 disabled:hover:text-zinc-300 disabled:brightness-70 disabled:grayscale disabled:cursor-wait"
               disabled={disabled}
-              onClick={() => setScreenSelected(5)}
+              onClick={() => setScreenSelected(4)}
             >
               Go Back
             </button>
