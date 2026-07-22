@@ -2,7 +2,24 @@
 "use client";
 
 //React imports
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+
+//DnD imports
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 //Next imports
 import { useParams, useRouter } from "next/navigation";
@@ -15,6 +32,7 @@ import {
   IconDatabaseMinus,
   IconDatabaseOff,
   IconDatabasePlus,
+  IconGripVertical,
   IconHandStop,
   IconMouse,
   IconTrash,
@@ -82,6 +100,70 @@ export interface Column {
 const ROW_HEIGHT = 36;
 const HEADER_HEIGHT = 38;
 
+//Sortable column row — extracted outside Page to avoid re-creation
+type SortableColumnRowProps = {
+  column: Column;
+  column_index: number;
+  table_id: string;
+  updateColumn: (tableId: string, columnKey: string, field: "name" | "type", value: string) => void;
+  removeColumn: (tableId: string, columnKey: string) => void;
+};
+
+function SortableColumnRow({ column, column_index, table_id, updateColumn, removeColumn }: SortableColumnRowProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: `${table_id}-col-${column.key}` });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex gap-2 items-end justify-center">
+      <button
+        type="button"
+        className="cursor-grab active:cursor-grabbing p-1 text-neutral-500 hover:text-neutral-300"
+        {...attributes}
+        {...listeners}>
+        <IconGripVertical size={16} />
+      </button>
+
+      <div className="flex flex-col items-center justify-center gap-1">
+        <label className="text-sm tracking-wide font-medium w-full text-start uppercase">
+          Value
+        </label>
+        <input
+          type="text"
+          defaultValue={column.name}
+          onChange={(e) => updateColumn(table_id, column.key, "name", e.target.value)}
+          className="bg-neutral-900/50 p-2 rounded-md outline-none border border-transparent duration-400 focus:border-main" />
+      </div>
+
+      <div className="flex flex-col items-center justify-center gap-1">
+        <label className="text-sm tracking-wide font-medium w-full text-start uppercase">
+          Type
+        </label>
+        <input
+          type="text"
+          defaultValue={column.type}
+          onChange={(e) => updateColumn(table_id, column.key, "type", e.target.value)}
+          className="bg-neutral-900/50 p-2 rounded-md outline-none border border-transparent duration-400 focus:border-main" />
+      </div>
+
+      <button
+        type="button"
+        className="bg-neutral-900/50 flex items-center justify-center p-2 rounded-md cursor-pointer duration-400 border border-transparent outline-none hover:border-main focus:border-main"
+        onClick={() => removeColumn(table_id, column.key)}>
+        <IconTrash color="red" />
+      </button>
+    </div>
+  );
+}
+
 export default function Page(){
   //Next router data
   //Params
@@ -102,6 +184,9 @@ export default function Page(){
   //React flow states
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+
+  //DnD sensors
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   //Export values
   const [ sqlValue, setsqlValue ] = useState("");
@@ -312,49 +397,82 @@ export default function Page(){
   }
 
   //Node remover
-  const removeColumn = (table: Node, column_index: number) => {
-    //Deletes node container
-    setNodes((prev) =>
-      prev.map((node) => {
-        if (node.id !== table.id) return node
+  const removeColumn = (tableId: string, columnKey: string) => {
+    setNodes((prev) => {
+      const tableNode = prev.find((n) => n.id === tableId);
+      if (!tableNode) return prev;
 
+      const columns = tableNode.data.columns as Column[];
+      const removedIndex = columns.findIndex((c) => c.key === columnKey);
+      if (removedIndex === -1) return prev;
+
+      //Filter column from table data
+      const updated = prev.map((node) => {
+        if (node.id !== tableId) return node;
         return {
           ...node,
           data: {
             ...node.data,
-            columns: (node.data.columns as Column[]).filter((_, index) =>
-              index !== column_index
-            )
-          }
+            columns: columns.filter((c) => c.key !== columnKey),
+          },
+        };
+      });
+
+      //Reposition remaining columnHandle nodes
+      let rowIndex = 0;
+      return updated.map((node) => {
+        if (node.parentId === `${tableNode.data.tableName}-table` && node.type === "columnHandle") {
+          const pos = { x: 0, y: HEADER_HEIGHT + ROW_HEIGHT * rowIndex };
+          rowIndex++;
+          return { ...node, position: pos };
         }
+        return node;
+      });
+    });
+  };
+
+  //Column field updater
+  const updateColumn = (tableId: string, columnKey: string, field: "name" | "type", value: string) => {
+    setNodes((prev) =>
+      prev.map((node) => {
+        if (node.id !== tableId) return node;
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            columns: (node.data.columns as Column[]).map((col) =>
+              col.key === columnKey ? { ...col, [field]: value } : col
+            ),
+          },
+        };
       })
     );
+  };
 
-    //Removes the connector node
+  //Column reorder — also repositions columnHandle nodes on canvas
+  const reorderColumns = (tableId: string, oldIndex: number, newIndex: number) => {
     setNodes((prev) => {
-        const filtered_nodes = prev.filter((_, index) => column_index !== index);
+      const tableNode = prev.find((n) => n.id === tableId);
+      if (!tableNode) return prev;
 
-        let rowIndex = 0;
+      const columns = tableNode.data.columns as Column[];
+      const reordered = arrayMove(columns, oldIndex, newIndex);
 
-        return filtered_nodes.map((node) => {
-          if(node.parentId === `${table.data.tableName}-table` && node.type === "columnHandle") {
-            const updatedNode = {
-              ...node,
-              position: {
-                x: 0,
-                y: HEADER_HEIGHT + (ROW_HEIGHT * rowIndex)
-              }
-            };
-            rowIndex++;
-
-            return updatedNode;
-          }
-
-          return node;
-        })
-      }
-    );
-  }
+      //Update table data + reposition connector nodes
+      let rowIndex = 0;
+      return prev.map((node) => {
+        if (node.id === tableId) {
+          return { ...node, data: { ...node.data, columns: reordered } };
+        }
+        if (node.parentId === `${tableNode.data.tableName}-table` && node.type === "columnHandle") {
+          const pos = { x: 0, y: HEADER_HEIGHT + ROW_HEIGHT * rowIndex };
+          rowIndex++;
+          return { ...node, position: pos };
+        }
+        return node;
+      });
+    });
+  };
 
   //Table "translator"
   //SQL
@@ -644,14 +762,14 @@ const sql = `CREATE TABLE ${json.tableName} (
 
         </div>
 
-         {/* Table editor */}
+         {/* ERD editor */}
          <div
          className={`w-screen h-screen fixed ${isEditorOpen ? "flex" : "hidden"} items-center justify-end backdrop-brightness-50 backdrop-blur-xs z-10 overflow-hidden animate-fade-in`}
          onClick={toggleEditor}>
 
 
           <section
-          className="h-full w-130 animate-fade-in-left bg-neutral-900 px-4"
+          className="h-full w-150 animate-fade-in-left bg-neutral-900 px-4 overflow-auto"
           onClick={(e) => {
             e.nativeEvent.stopPropagation();
             e.stopPropagation();
@@ -671,95 +789,40 @@ const sql = `CREATE TABLE ${json.tableName} (
 
                     <IconDatabaseMinus
                     size={20}
-                    color="red" />
+                    color="red"
+                    className="cursor-pointer" />
                   </div>
 
-                  {
-                    table.data.columns as Column[] && (table.data.columns as Column[]).map((column: Column, column_index) =>
-                      <div
-                      className="flex gap-2 items-end justify-center"
-                      key={column_index}>
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={(event: DragEndEvent) => {
+                      const { active, over } = event;
+                      if (!over || active.id === over.id) return;
 
-                        <div
-                        className="flex flex-col items-center justify-center gap-1">
-                          <label
-                          className="text-sm tracking-wide font-medium w-full text-start uppercase">
-                            Value
-                          </label>
-                          <input
-                          type="text"
-                          defaultValue={column.name}
-                          onChange={(e) => {
-                            setNodes((prev) =>
-                              prev.map((node) => {
-                                if (node.id !== table.id) return node
-
-                                return {
-                                  ...node,
-                                  data: {
-                                    ...node.data,
-                                    columns: (node.data.columns as Column[]).map((col) =>
-                                      col.key === column.key
-                                        ? {
-                                            ...col,
-                                            name: e.target.value
-                                          }
-                                        : col
-                                    )
-                                  }
-                                }
-                              })
-                            )
-                          }}
-                          className="bg-neutral-900/50 p-2 rounded-md outline-none border border-transparent duration-400 focus:border-main" />
-                        </div>
-                        
-                        <div
-                        className="flex flex-col items-center justify-center gap-1">
-                          <label
-                          className="text-sm tracking-wide font-medium w-full text-start uppercase">
-                            Type
-                          </label>
-                          <input
-                          type="text"
-                          defaultValue={column.type}
-                          onChange={(e) => {
-                            setNodes((prev) =>
-                              prev.map((node) => {
-                                if (node.id !== table.id) return node
-
-                                return {
-                                  ...node,
-                                  data: {
-                                    ...node.data,
-                                    columns: (node.data.columns as Column[]).map((col) =>
-                                      col.key === column.key
-                                        ? {
-                                            ...col,
-                                            type: e.target.value
-                                          }
-                                        : col
-                                    )
-                                  }
-                                }
-                              })
-                            )
-                          }}
-                          className="bg-neutral-900/50 p-2 rounded-md outline-none border border-transparent duration-400 focus:border-main" />
-                        </div>
-
-                        <button
-                        type="button"
-                        className="bg-neutral-900/50 flex items-center justify-center p-2 rounded-md cursor-pointer duration-400 border border-transparent outline-none hover:border-main focus:border-main"
-                        onClick={() => {
-                          removeColumn(table, column_index);
-                        }}>
-                          <IconTrash
-                          color="red" />
-                        </button>
-                      </div>
-                    )
-                  }
+                      const columns = table.data.columns as Column[];
+                      const activeIndex = columns.findIndex((c) => `${table.id}-col-${c.key}` === active.id);
+                      const overIndex = columns.findIndex((c) => `${table.id}-col-${c.key}` === over.id);
+                      if (activeIndex !== -1 && overIndex !== -1) {
+                        reorderColumns(table.id, activeIndex, overIndex);
+                      }
+                    }}>
+                    <SortableContext
+                      items={(table.data.columns as Column[]).map((c) => `${table.id}-col-${c.key}`)}
+                      strategy={verticalListSortingStrategy}>
+                      {
+                        (table.data.columns as Column[]).map((column: Column, column_index: number) =>
+                          <SortableColumnRow
+                            key={column.key}
+                            column={column}
+                            column_index={column_index}
+                            table_id={table.id}
+                            updateColumn={updateColumn}
+                            removeColumn={removeColumn} />
+                        )
+                      }
+                    </SortableContext>
+                  </DndContext>
 
                   <button
                   type="button"

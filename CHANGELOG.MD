@@ -1,3 +1,5 @@
+- **0.87.0:** DND agregado a ERD.
+
 - **0.86.0:** Refactor completo dentro de la pagina de proyectos
 
 - **0.85.0:** Refactor completo dentro de get started.
