@@ -1,3 +1,5 @@
+- **0.88.1:** Arreglo de error en Header (React Hydratation).
+
 - **0.88.0:** Seccion para verificar proveedor de IA creada
 
 - **0.87.0:** DND agregado a ERD.

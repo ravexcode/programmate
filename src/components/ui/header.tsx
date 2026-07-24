@@ -6,7 +6,7 @@ import Image from "next/image";
 import { getSessionStr } from "@/services/session.service";
 
 //React imports
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function OptionsButton(props: {
   link: string,
@@ -25,10 +25,12 @@ function OptionsButton(props: {
 }
 
 export default function Header(){
-  const [ isSignedIn ] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return !!getSessionStr();
-  });
+  const [ signed, setSigned ] = useState<boolean>();
+
+  useEffect(() => {
+    const token = getSessionStr();
+    setSigned(token ? true : false);
+  }, []);
 
   return (
     <header
@@ -49,9 +51,9 @@ export default function Header(){
       </ul>
       
       <Link
-      href={isSignedIn ? "/dashboard" : "/auth/signup"}
+      href={signed ? "/dashboard" : "/auth/signup"}
       className="bg-main hover:bg-main/80 duration-400 py-2 w-30 text-center text-sm tracking-wide rounded-md">
-        {isSignedIn ? "Dashboard" : "Get started"}
+        {signed ? "Dashboard" : "Get started"}
       </Link>
     </header>
   )
