@@ -1,3 +1,5 @@
+- **0.88.0:** Seccion para verificar proveedor de IA creada
+
 - **0.87.0:** DND agregado a ERD.
 
 - **0.86.0:** Refactor completo dentro de la pagina de proyectos
