@@ -3,7 +3,7 @@ import {
   logOut
 } from "@/services/session.service";
 
-import { fetchProfile, UpdateUserController } from "@/controllers/user.controller";
+import { fetchProfile, UpdateUserController, updateAiProvidersController } from "@/controllers/user.controller";
 
 import type { UserData } from "@/types/user.types";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -71,7 +71,7 @@ export async function getUserService(data: GetData) {
     "created_at": profile.created_at,
     "last_sign_in": oAuthUser.last_sign_in_at,
     "avatar_url": profile.avatar_url,
-    "ai": profile.ai_providers
+    "ai": profile.ai
   }
 
   const now = new Date();
@@ -100,4 +100,37 @@ export async function updateUserService(data: UpdateData) {
     checkStatus(req.status),
     data.snackbar
   );
+}
+
+type UpdateAiProvidersData = {
+  router: AppRouterInstance;
+  ai_providers: Array<{
+    name: string;
+    api_key: string;
+    models: string[];
+    url?: string;
+  }>;
+  snackbar: React.RefObject<null>;
+}
+
+export async function updateAiProvidersService(data: UpdateAiProvidersData) {
+  const token = getSessionStr();
+  const router = data.router;
+
+  if(!token) return router.push("/auth/signin");
+
+  const req = await updateAiProvidersController({
+    token,
+    ai_providers: data.ai_providers
+  });
+
+  if(req.status === 401) return router.push("/auth/signin");
+
+  showSnackbar(
+    req.message,
+    checkStatus(req.status),
+    data.snackbar
+  );
+
+  return req.status < 205;
 }

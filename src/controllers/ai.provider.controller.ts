@@ -5,6 +5,8 @@ export type ProviderConfig = {
   headers?: Record<string, string>;
   method?: "GET" | "POST";
   body?: Record<string, unknown>;
+  requiresApiKey?: boolean;
+  requiresCustomUrl?: boolean;
 };
 
 const PROVIDERS: Record<string, ProviderConfig> = {
@@ -62,6 +64,22 @@ const PROVIDERS: Record<string, ProviderConfig> = {
       messages: [{ role: "user", content: "Ping" }],
     },
   },
+  ollama: {
+    name: "Ollama",
+    validateUrl: "http://localhost:11434/api/tags",
+    modelsUrl: "http://localhost:11434/api/tags",
+    method: "GET",
+    requiresApiKey: false,
+    requiresCustomUrl: true,
+  },
+  other: {
+    name: "Other (OpenAI-compatible)",
+    validateUrl: "",
+    modelsUrl: "",
+    method: "GET",
+    requiresApiKey: false,
+    requiresCustomUrl: true,
+  },
 };
 
 export async function validateProviderController(
@@ -86,10 +104,23 @@ export async function validateProviderController(
     };
   }
 
+  if (provider.requiresCustomUrl && !customUrl) {
+    return {
+      status: 400,
+      message: `Custom URL is required for ${provider.name}`,
+      provider: provider.name,
+    };
+  }
+
+  const needsAuth = provider.requiresApiKey !== false;
+
   const headers: Record<string, string> = {
-    "Authorization": `Bearer ${apiKey}`,
     ...provider.headers,
   };
+
+  if (needsAuth) {
+    headers["Authorization"] = `Bearer ${apiKey}`;
+  }
 
   if (provider.name === "Google AI") {
     headers["X-Goog-Api-Key"] = apiKey;
@@ -113,7 +144,9 @@ export async function validateProviderController(
     if (!validateRes.ok) {
       return {
         status: validateRes.status,
-        message: `${provider.name} API key validation failed`,
+        message: needsAuth
+          ? `${provider.name} API key validation failed`
+          : `Failed to connect to ${provider.name}`,
         provider: provider.name,
       };
     }
@@ -121,7 +154,11 @@ export async function validateProviderController(
     let models: string[] = [];
     
     if (modelsUrl) {
-      const modelsRes = await fetch(modelsUrl, {
+      const resolvedModelsUrl = customUrl
+        ? `${customUrl.replace(/\/+$/, "")}${new URL(provider.modelsUrl!).pathname}`
+        : modelsUrl;
+
+      const modelsRes = await fetch(resolvedModelsUrl, {
         method: "GET",
         headers,
       });
@@ -137,6 +174,8 @@ export async function validateProviderController(
           models = data.data?.map((m: { id: string }) => m.id) || [];
         } else if (provider.name === "Minimax") {
           models = data.data?.map((m: { id: string }) => m.id) || [];
+        } else if (provider.name === "Ollama") {
+          models = data.models?.map((m: { name: string }) => m.name) || [];
         } else {
           models = data.models?.map((m: { name: string }) => m.name) || 
                    data.data?.map((m: { id: string }) => m.id) || [];
@@ -146,14 +185,17 @@ export async function validateProviderController(
 
     return {
       status: 200,
-      message: `${provider.name} API key validated`,
+      message: needsAuth
+        ? `${provider.name} API key validated`
+        : `${provider.name} connected successfully`,
       provider: provider.name,
       models,
+      url: customUrl,
     };
   } catch (error) {
     return {
       status: 500,
-      message: error instanceof Error ? error.message : "Provider validation error",
+      message: error instanceof Error ? error.message : `Failed to connect to ${provider.name}`,
       provider: provider.name,
     };
   }

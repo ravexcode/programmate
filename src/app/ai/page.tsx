@@ -8,53 +8,50 @@ import Image from "next/image";
 //React imports
 import { useState, useEffect, useRef, useCallback } from "react";
 
-//Hooks imports
-import { getSessionStr } from "@/services/session.service";
-import { getCached } from "@/hooks/cache.hook";
-import animationClose from "@/hooks/useAnimationClose";
-
 //Prebuilt UI imports
 import LoadingScreen from "@/components/screens/loading-screen";
 import SnackBar from "@/components/ui/snackbar";
-import MainButton from "@/components/ui/buttons/main";
 import AltButton from "@/components/ui/buttons/alternate";
-import Card from "@/components/ui/card";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
 import OptionsInput from "@/components/forms/options-input";
+import Models from "@/components/ui/ai/models";
 
 //Modules imports
 import { validateProvider } from "@/modules/ai.provider.module";
-import { getUser } from "@/modules/user.module";
+import { getUser, updateAiProviders } from "@/modules/user.module";
 
 //Types imports
-import { UserData } from "@/types/user.types";
+import { UserData, Provider } from "@/types/user.types";
 
 //Icons imports
 import {
   IconArrowLeft,
-  IconArrowsMoveVertical,
   IconChevronDown,
-  IconCloudOff,
-  IconPlus,
   IconSettings,
   IconSend,
   IconSparkles,
   IconUserCircle,
+  IconCloudOff
 } from "@tabler/icons-react";
+import MainButton from "@/components/ui/buttons/main";
 
 type ProviderOption = {
   key: string;
   name: string;
+  requiresApiKey: boolean;
+  requiresCustomUrl: boolean;
 };
 
 const PROVIDERS: ProviderOption[] = [
-  { key: "google", name: "Google AI" },
-  { key: "claude", name: "Claude" },
-  { key: "openai", name: "OpenAI" },
-  { key: "codex", name: "Codex" },
-  { key: "minimax", name: "Minimax" },
-  { key: "claude-code", name: "Claude Code" },
+  { key: "google", name: "Google AI", requiresApiKey: true, requiresCustomUrl: false },
+  { key: "claude", name: "Claude", requiresApiKey: true, requiresCustomUrl: false },
+  { key: "openai", name: "OpenAI", requiresApiKey: true, requiresCustomUrl: false },
+  { key: "codex", name: "Codex", requiresApiKey: true, requiresCustomUrl: false },
+  { key: "minimax", name: "Minimax", requiresApiKey: true, requiresCustomUrl: false },
+  { key: "claude-code", name: "Claude Code", requiresApiKey: true, requiresCustomUrl: false },
+  { key: "ollama", name: "Ollama", requiresApiKey: false, requiresCustomUrl: true },
+  { key: "other", name: "Other (OpenAI-compatible)", requiresApiKey: false, requiresCustomUrl: true },
 ];
 
 type Message = {
@@ -66,129 +63,101 @@ export default function AgentsPage() {
   const router = useRouter();
 
   const [user, setUser] = useState<UserData>();
-  const [profileDisabled, setProfileDisabled] = useState(false);
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentMessage, setCurrentMessage] = useState("");
 
-  const [provider, setProvider] = useState<string>("");
-  const [model, setModel] = useState<string>("");
+  const [provider, setProvider] = useState("");
+  const [model, setModel] = useState("");
   const [availableModels, setAvailableModels] = useState<string[]>([]);
   const [isLoadingProvider, setIsLoadingProvider] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
   const [showProviderForm, setShowProviderForm] = useState(false);
   const [showModelMenu, setShowModelMenu] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  const profileSettings = useRef(null);
-  const modelMenu = useRef(null);
+  const [apiKey, setApiKey] = useState("");
+  const [customUrl, setCustomUrl] = useState("");
+  const [connectedUrl, setConnectedUrl] = useState("");
+
+  const [savedProviders, setSavedProviders] = useState<Provider[]>([]);
+
+  const selectedProviderConfig = PROVIDERS.find((p) => p.key === provider);
+
   const snackbar = useRef(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function get() {
-      const token = getSessionStr();
+      const data = await getUser(router);
 
-      if (!token) return router.push("/auth/signin");
+      if(!data) return router.push("/dashboard");
 
-      const cached = getCached();
-
-      if (cached) {
-        setUser(cached);
-        return;
-      }
-
-      const fetched = await getUser(router);
-
-      if (!fetched) return router.push("/auth/signin");
-
-      return setUser(fetched);
+      console.warn(data);
+      
+      setUser(data);
+      setSavedProviders(data.ai || []);
     }
 
     get();
-    return;
-  }, [router]);
+  }, []);
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
-  const toggleProfileSettings = () => {
-    if (!profileSettings.current) return;
-
-    const current: HTMLElement = profileSettings.current;
-    const classlist = current.classList;
-
-    setProfileDisabled((prev) => (prev ? false : true));
-
-    if (classlist.contains("hidden")) {
-      classlist.remove("animate-fade-out-up");
-      classlist.replace("hidden", "flex");
-      return;
-    }
-
-    classlist.add("animate-fade-out-up");
-    animationClose(current, "fade-out-up", "hidden", "flex");
-    return;
-  };
-
-  const toggleModelMenu = () => {
-    if (!modelMenu.current) return;
-
-    const current: HTMLElement = modelMenu.current;
-    const classlist = current.classList;
-
-    setProfileDisabled((prev) => (prev ? false : true));
-
-    if (classlist.contains("hidden")) {
-      classlist.remove("animate-fade-out-down");
-      classlist.replace("hidden", "flex");
-      return;
-    }
-
-    classlist.add("animate-fade-out-down");
-    animationClose(current, "fade-out-down", "hidden", "flex");
-    return;
-  };
-
-  const handleProviderSelect = (providerName: string) => {
-    const found = PROVIDERS.find((p) => p.name === providerName);
-    setProvider(found ? found.key : providerName);
-  };
 
   const handleProviderSubmit = useCallback(
     async (e: React.SubmitEvent) => {
       e.preventDefault();
-      e.nativeEvent.preventDefault();
 
-      const form = e.currentTarget as HTMLFormElement;
-      const formData = new FormData(form);
-      const providerName = formData.get("provider") as string;
-      const apiKey = formData.get("apiKey") as string;
-      const customUrl = (formData.get("customUrl") as string) || undefined;
+      if (!provider) return;
 
-      if (!providerName || !apiKey) return;
+      const needsKey = selectedProviderConfig?.requiresApiKey !== false;
+      const keyValue = needsKey ? apiKey : "";
 
       setIsLoadingProvider(true);
 
       const result = await validateProvider(
-        providerName,
-        apiKey,
-        customUrl,
+        provider,
+        keyValue,
+        customUrl || undefined,
         snackbar
       );
 
       setIsLoadingProvider(false);
 
       if (result.success && result.models) {
-        setProvider(result.provider || providerName);
+        const providerName = result.provider || provider;
+
+        const newProvider: Provider = {
+          name: providerName,
+          api_key: keyValue,
+          models: result.models,
+          url: result.url || "",
+        };
+
+        const updated = [
+          ...savedProviders.filter((p) => p.name !== providerName),
+          newProvider,
+        ];
+
+        setSavedProviders(updated);
+        setProvider(providerName);
         setAvailableModels(result.models);
+        setConnectedUrl(result.url || "");
         setShowProviderForm(false);
+        setApiKey("");
+        setCustomUrl("");
+
+        if (user) {
+          setUser({ ...user, ai: updated });
+
+          await updateAiProviders(router, updated, snackbar);
+        }
       }
     },
-    []
+    [provider, apiKey, customUrl, selectedProviderConfig, savedProviders, user, router]
   );
 
   const handleSendMessage = useCallback(async () => {
@@ -203,7 +172,6 @@ export default function AgentsPage() {
     setCurrentMessage("");
     setIsSending(true);
 
-    // Simulated AI response — replace with actual API call
     setTimeout(() => {
       const aiMessage: Message = {
         role: "ai",
@@ -215,163 +183,134 @@ export default function AgentsPage() {
     }, 1000);
   }, [currentMessage, provider, model]);
 
-  const handleModelSelect = (selectedModel: string) => {
+  const handleModelSelect = (selectedModel: string, selectedProvider: string) => {
     setModel(selectedModel);
+    setProvider(selectedProvider)
     setShowModelMenu(false);
   };
 
-  return user ? (
+  if (!user) return <LoadingScreen />;
+
+  return (
     <div
       className="h-screen bg-background text-zinc-50 flex flex-col overflow-hidden"
       onClick={() => {
-        if (profileSettings.current) {
-          const current: HTMLElement = profileSettings.current;
-          const classlist = current.classList;
-
-          if (classlist.contains("flex")) {
-            setProfileDisabled((prev) => (prev ? false : true));
-            classlist.add("animate-fade-out-up");
-            animationClose(current, "fade-out-up", "hidden", "flex");
-            return;
-          }
-        }
+        if (showProfileMenu) setShowProfileMenu(false);
       }}
     >
       <SnackBar ref={snackbar} />
 
       {/* Model / Provider menu */}
-      <div
-        className="w-screen h-screen fixed inset-0 backdrop-blur backdrop-brightness-80 z-10 hidden flex-col animate-fade-in-up animate-duration-200 items-center justify-center"
-        ref={modelMenu}
-        onClick={toggleModelMenu}
-      >
-        <section
-          onClick={(e) => {
-            e.preventDefault();
-            e.nativeEvent.preventDefault();
-          }}
-          className="w-full max-w-250 rounded-sm bg-neutral-950 border border-neutral-800 flex flex-col p-4 max-h-[80vh] overflow-y-auto"
+      {showModelMenu && (
+        <div
+          className="w-screen h-screen fixed inset-0 backdrop-blur backdrop-brightness-80 z-10 flex flex-col animate-fade-in-up animate-duration-200 items-center justify-center"
+          onClick={() => setShowModelMenu(false)}
         >
-          <div className="flex items-center justify-between border-b border-neutral-800 pb-5">
-            <p className="text-lg font-medium tracking-wide">Select provider & model</p>
-            <AltButton size="w-25" action={toggleModelMenu}>Close</AltButton>
-          </div>
-
-          {/* Current provider & model */}
-          {provider && model ? (
-            <div className="py-4 flex flex-col gap-3">
-              <Card title="Current configuration">
-                <div className="flex gap-3 items-center">
-                  <IconSparkles size={18} className="text-main" />
-                  <span className="font-medium">{provider}</span>
-                  <span className="text-xs opacity-60">→</span>
-                  <span className="text-sm opacity-80">{model}</span>
-                </div>
-              </Card>
-
-              {/* Available models for this provider */}
-              {availableModels.length > 0 && (
-                <Card title="Available models">
-                  <div className="flex flex-col gap-1 w-full">
-                    {availableModels.map((m) => (
-                      <button
-                        key={m}
-                        type="button"
-                        onClick={() => handleModelSelect(m)}
-                        className={`w-full text-left px-3 py-2 rounded-sm text-sm duration-200 flex items-center gap-2 ${
-                          model === m
-                            ? "bg-main/20 text-main border border-main/30"
-                            : "bg-neutral-900 hover:bg-neutral-800 border border-transparent"
-                        }`}
-                      >
-                        {m}
-                        {model === m && (
-                          <span className="ml-auto text-xs text-main">active</span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </Card>
-              )}
-
-              <button
-                type="button"
-                onClick={() => setShowProviderForm(true)}
-                className="w-full flex gap-2 items-center justify-center py-2 px-4 rounded-sm bg-neutral-900 hover:bg-neutral-800 duration-300 text-sm cursor-pointer border border-neutral-800"
-              >
-                <IconPlus size={16} />
-                Change provider
-              </button>
+          <section
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-250 rounded-sm bg-neutral-950 border border-neutral-800 flex flex-col p-4 max-h-[80vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between border-b border-neutral-800 pb-5">
+              <p className="text-lg font-medium tracking-wide">Select provider & model</p>
+              <AltButton size="w-25" action={() => setShowModelMenu(false)}>Close</AltButton>
             </div>
-          ) : (
-            <div className="py-15 flex flex-col gap-1 items-center justify-center font-light text-neutral-200">
-              <IconCloudOff size={40} stroke={1} />
-              <p className="text-xl">No provider connected</p>
-              <p className="text-sm text-center">
-                Connect an AI provider with your API key to start chatting
-              </p>
-              <MainButton
-                size="w-full mt-3"
+
+            {
+              savedProviders .length > 0 ?
+              <div
+              className="w-full flex items-center justify-center flex-col gap-1">
+                {
+                  savedProviders.map((prov, i) =>
+                    <Models
+                    key={i}
+                    name={prov.name}
+                    models={prov.models}
+                    url={prov.url}
+                    onSelect={handleModelSelect} />
+                  )
+                }
+              </div>
+              :
+              <div
+              className="w-full flex flex-col gap-2 items-center justify-center p-5 py-10 font-light text-neutral-300">
+                <IconCloudOff
+                size={60}
+                stroke={0.5} />
+
+                <p
+                className="text-xl">
+                  Providers not connected
+                </p>
+
+                <MainButton
+                size="w-60"
+                className="font-normal text-zinc-50"
                 action={() => {
                   setShowProviderForm(true);
-                  toggleModelMenu();
-                }}
-              >
-                Add a provider
-              </MainButton>
-            </div>
-          )}
-        </section>
-      </div>
+                  setShowModelMenu(false);
+                }}>
+                  Connect a new provider
+                </MainButton>
+              </div>
+            }
+          </section>
+        </div>
+      )}
 
       {/* Provider setup form modal */}
       {showProviderForm && (
         <div
-          className="w-screen h-screen fixed inset-0 backdrop-blur backdrop-brightness-75 z-10 flex-col animate-fade-in-up animate-duration-200 items-center justify-center"
+          className="w-screen h-screen fixed inset-0 backdrop-blur backdrop-brightness-75 z-10 flex flex-col animate-fade-in-up animate-duration-200 items-center justify-center"
           onClick={() => setShowProviderForm(false)}
         >
-          <section
-            onClick={(e) => {
-              e.preventDefault();
-              e.nativeEvent.preventDefault();
-            }}
-            className="w-full max-w-250 rounded-sm bg-neutral-950 border border-neutral-800 flex flex-col p-4"
+          <CreatorForm
+            title="Add AI Provider"
+            action={handleProviderSubmit}
+            hideAction={() => setShowProviderForm(false)}
+            confirmMessage="Connect provider"
+            isDangerous={false}
+            disabledMessage={isLoadingProvider ? "Validating..." : undefined}
+            actionIsDisabled={isLoadingProvider}
           >
-            <CreatorForm
-              title="Add AI Provider"
-              action={handleProviderSubmit}
-              hideAction={() => setShowProviderForm(false)}
-              confirmMessage="Connect provider"
-              isDangerous={false}
-              disabledMessage={isLoadingProvider ? "Validating..." : undefined}
-              actionIsDisabled={isLoadingProvider}
-            >
-              <OptionsInput
-                label="Provider"
-                value={provider}
-                options={[]}
-                onChange={setProvider}
-                isRequired
-              />
+            <OptionsInput
+              label="Provider"
+              value={selectedProviderConfig?.name ?? provider}
+              options={PROVIDERS.map((p) => p.name)}
+              onChange={(name) => {
+                const found = PROVIDERS.find((p) => p.name === name);
+                if (found) {
+                  setProvider(found.key);
+                  setApiKey("");
+                  setCustomUrl("");
+                }
+              }}
+              isRequired
+            />
 
+            {selectedProviderConfig?.requiresApiKey !== false && (
               <CreatorInput
                 label="API Key"
-                value=""
-                onChange={(_e) => {}}
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
                 required
                 type="text"
                 placeholder="sk-..."
               />
+            )}
 
-              <CreatorInput
-                label="Custom URL (optional)"
-                value=""
-                onChange={(_e) => {}}
-                type="url"
-                placeholder="https://api.example.com/v1"
-              />
-            </CreatorForm>
-          </section>
+            <CreatorInput
+              label={selectedProviderConfig?.requiresCustomUrl ? "Server URL" : "Custom URL (optional)"}
+              value={customUrl}
+              onChange={(e) => setCustomUrl(e.target.value)}
+              required={selectedProviderConfig?.requiresCustomUrl === true}
+              type="url"
+              placeholder={
+                selectedProviderConfig?.key === "ollama"
+                  ? "http://localhost:11434"
+                  : "https://api.example.com/v1"
+              }
+            />
+          </CreatorForm>
         </div>
       )}
 
@@ -380,7 +319,7 @@ export default function AgentsPage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex gap-2 py-2 px-4 rounded-md duration-300 cursor-pointer hover:bg-neutral-800 items-center justify-center"
+          className="flex gap-2 py-2 px-4 rounded-sm duration-300 cursor-pointer hover:bg-neutral-800 items-center justify-center"
         >
           <IconArrowLeft size={15} />
           Go back
@@ -390,8 +329,8 @@ export default function AgentsPage() {
           {/* Provider & model selector */}
           <button
             type="button"
-            onClick={toggleModelMenu}
-            className="rounded-md hover:bg-neutral-800 h-full outline-none flex gap-2 items-center justify-center py-2 px-4 w-full max-w-max cursor-pointer duration-400 text-sm"
+            onClick={() => setShowModelMenu(true)}
+            className="rounded-sm hover:bg-neutral-800 h-full outline-none flex gap-2 items-center justify-center py-2 px-4 w-full max-w-max cursor-pointer duration-400 text-sm"
           >
             {provider && model ? (
               <>
@@ -406,65 +345,62 @@ export default function AgentsPage() {
           </button>
 
           {/* Profile settings */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              e.nativeEvent.stopPropagation();
-              toggleProfileSettings();
-            }}
-            className={
-              "duration-400 cursor-pointer rounded-sm py-2 px-4 flex items-center justify-center gap-2 text-sm relative " +
-              (profileDisabled ? "bg-neutral-800" : "hover:bg-neutral-800")
-            }
-          >
-            {user.avatar_url ? (
-              <Image
-                src={user.avatar_url!}
-                alt={user.name + " profile picture"}
-                height={250}
-                width={250}
-                preload
-                loading="eager"
-                className="rounded-full w-6"
-              />
-            ) : (
-              <IconUserCircle size={20} />
-            )}
-            {user.name}
-            <IconArrowsMoveVertical size={14} className="ml-1" />
-
-            <section
-              className="absolute top-1/1 bg-neutral-900 p-2 w-full rounded-b-md animate-fade-in-down hidden flex-col animate-duration-300"
-              ref={profileSettings}
+          <div className="relative">
+            <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                e.nativeEvent.stopPropagation();
+                setShowProfileMenu((prev) => !prev);
               }}
+              className={
+                "duration-400 cursor-pointer rounded-sm py-2 px-4 flex items-center justify-center gap-2 text-sm " +
+                (showProfileMenu ? "bg-neutral-800" : "hover:bg-neutral-800")
+              }
             >
-              <Link
-                href="/settings"
-                className="w-full flex gap-1 justify-start items-center hover:bg-neutral-700 px-2 py-1"
+              {user.avatar_url ? (
+                <Image
+                  src={user.avatar_url}
+                  alt={user.name + " profile picture"}
+                  height={250}
+                  width={250}
+                  loading="eager"
+                  className="rounded-full w-6"
+                />
+              ) : (
+                <IconUserCircle size={20} />
+              )}
+              {user.name}
+            </button>
+
+            {showProfileMenu && (
+              <section
+                className="absolute top-full right-0 bg-neutral-900 border border-neutral-800 p-2 w-45 rounded-sm animate-fade-in-down animate-duration-200 flex flex-col z-20"
+                onClick={(e) => e.stopPropagation()}
               >
-                <IconSettings size={18} />
-                Settings
-              </Link>
-              <Link
-                href="/user/billing"
-                className="w-full flex gap-1 justify-start items-center hover:bg-neutral-700 px-2 py-1"
-              >
-                <IconSettings size={18} />
-                Billing
-              </Link>
-              <Link
-                href="/users/me"
-                className="w-full flex gap-1 justify-start items-center hover:bg-neutral-700 px-2 py-1"
-              >
-                <IconUserCircle size={18} />
-                My profile
-              </Link>
-            </section>
-          </button>
+                <Link
+                  href="/settings"
+                  className="w-full flex gap-2 items-center hover:bg-neutral-700 px-2 py-1.5 rounded-sm text-sm"
+                >
+                  <IconSettings size={16} />
+                  Settings
+                </Link>
+                <Link
+                  href="/user/billing"
+                  className="w-full flex gap-2 items-center hover:bg-neutral-700 px-2 py-1.5 rounded-sm text-sm"
+                >
+                  <IconSettings size={16} />
+                  Billing
+                </Link>
+                <Link
+                  href="/users/me"
+                  className="w-full flex gap-2 items-center hover:bg-neutral-700 px-2 py-1.5 rounded-sm text-sm"
+                >
+                  <IconUserCircle size={16} />
+                  My profile
+                </Link>
+              </section>
+            )}
+          </div>
         </div>
       </header>
 
@@ -519,14 +455,12 @@ export default function AgentsPage() {
           type="button"
           onClick={handleSendMessage}
           disabled={!provider || !model || isSending || !currentMessage.trim()}
-          className="rounded-md bg-main hover:brightness-80 duration-300 h-full outline-none flex gap-1 items-center justify-center py-2 px-4 w-full max-w-max cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed text-sm"
+          className="rounded-sm bg-main hover:brightness-80 duration-300 h-full outline-none flex gap-1 items-center justify-center py-2 px-4 w-full max-w-max cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed text-sm"
         >
           <IconSend size={18} />
           Send
         </button>
       </footer>
     </div>
-  ) : (
-    <LoadingScreen />
   );
 }

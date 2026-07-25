@@ -1,6 +1,7 @@
 import {
   getUserService,
-  updateUserService
+  updateUserService,
+  updateAiProvidersService
 } from "@/services/user.service";
 
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -19,4 +20,21 @@ export async function updateUser(router: AppRouterInstance, updatable: { name: s
   })
 
   return data;
+}
+
+export async function updateAiProviders(
+  router: AppRouterInstance,
+  ai_providers: Array<{
+    name: string;
+    api_key: string;
+    models: string[];
+    url?: string;
+  }>,
+  snackbar: React.RefObject<null>
+) {
+  return updateAiProvidersService({
+    router,
+    ai_providers,
+    snackbar
+  });
 }

@@ -5,7 +5,8 @@ import Team from "./team.types";
 export interface Provider {
   name: string;
   api_key: string;
-  models: string [];
+  models: string[];
+  url?: string;
 }
 
 export interface Task {

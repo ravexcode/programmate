@@ -9,10 +9,10 @@ export default function Card(props: {
       className="text-xl text-sky-600 w-full">
         {props.title}
       </h2>
-      <p
+      <div
       className="w-full font-light">
         {props.children}
-      </p>
+      </div>
     </section>
   )
 }

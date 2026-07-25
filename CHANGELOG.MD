@@ -1,3 +1,5 @@
+- **0.91.0:** Pagina de IA actualizada, aun en pruebas.
+
 - **0.90.0:** Arreglo grande de errores
 
 - **0.89.0:** Pagina de IA creada y en pruebas
