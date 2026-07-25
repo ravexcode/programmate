@@ -20,7 +20,7 @@ export async function DELETE() {
     if(!token) return Handlers.unauthorizedErrorHandler("Access token not provided");
 
     //Gets the user data from token
-    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     if(!user || !user.id) return Handlers.unauthorizedErrorHandler("Invalid access token");
 

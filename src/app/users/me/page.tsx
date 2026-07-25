@@ -58,7 +58,7 @@ export default function ProfilePage() {
       }
 
       //Updates the user's data
-      if(!cached) user_data = await getUser({router});
+      if(!cached) user_data = await getUser(router);
       //Created at to Date
       const created_at = new Date(user_data!.created_at ?? "");
       //Date now
@@ -193,7 +193,7 @@ export default function ProfilePage() {
                             backgroundColor: (
                               team.status === "Backlog" ? "gray" :
                               team.status === "Planning" ? "sky" :
-                              team.status === "In Progress" ? "orange" :
+                              team.status === "In progress" ? "orange" :
                               team.status === "On Hold" ? "red" :
                               "violet"
                             )

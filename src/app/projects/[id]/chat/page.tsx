@@ -43,7 +43,7 @@ export default function ChatPage() {
 
   //States handlers
   //Messages
-  const [ messages, setMessages ] = useState<Array<ChatMessage> | undefined>();
+  const [ messages, setMessages ] = useState<Array<ChatMessage>>([]);
   //Message to be sent
   const [ messageToSend, setMessageToSend ] = useState("");
   //Team integrants
@@ -85,7 +85,7 @@ export default function ChatPage() {
          user_fetched = await getUser(router);
 
         
-        if(!user) return window.location.href = "/auth/signin";
+        if(!user_fetched) return window.location.href = "/auth/signin";
 
         setUser(user_fetched);
       }

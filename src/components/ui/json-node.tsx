@@ -14,7 +14,7 @@ export function JsonNode({ data }: JNProps) {
         className="bg-neutral-700! w-2! h-2! border-neutral-700! pointer-events-auto"
       />
 
-      {data.content}
+      {String(data.content)}
 
       <Handle
         type="source"

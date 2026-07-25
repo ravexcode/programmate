@@ -1,53 +1,60 @@
-import {
-  getSessionStr
-} from "@/services/session.service";
-
+import { getSessionStr } from "@/services/session.service";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-type Data = {
-  provider_url?: string;
-  provider_api_key: string;
+type VerifyPayload = {
   provider_name: string;
-  router: AppRouterInstance;
-}
+  provider_api_key: string;
+  provider_url?: string;
+};
 
-export async function verifyProvider(data: Data) {
+type VerifyResponse = {
+  message: string;
+  error: boolean;
+  status: number;
+  provider?: string;
+  models?: string[];
+  url?: string;
+};
+
+export async function verifyProvider(
+  data: VerifyPayload,
+  router: AppRouterInstance
+): Promise<VerifyResponse> {
   const token = getSessionStr();
-  const router = data.router;
 
-  if(!token) return router.push("/auth/signin");
-
-  const req = await fetch(
-    "/api/ai/provider",
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-        "Authorization": token,
-        "provider-api-key": data.provider_api_key,
-        "provider": data.provider_name,
-        "custom_url": data.provider_url || ""
-      }
-    }
-  );
-
-  const response = await req.json().catch((e) => {
-    if (e instanceof Error) {
-      return {
-        message: e.message,
-        error: true,
-      };
-    }
-
+  if (!token) {
+    router.push("/auth/signin");
     return {
-      message: "Server error",
+      message: "Session expired",
       error: true,
+      status: 401,
     };
+  }
+
+  const req = await fetch("/api/ai/provider", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY ?? "",
+      Authorization: token,
+      "provider-api-key": data.provider_api_key,
+      provider: data.provider_name,
+      "custom-url": data.provider_url ?? "",
+    },
   });
+
+  const response: VerifyResponse = await req.json().catch((e) => ({
+    message: e instanceof Error ? e.message : "Server error",
+    error: true,
+    status: 500,
+  }));
 
   return {
     message: response.message,
-    error: response.error,
+    error: response.error ?? req.status >= 400,
     status: req.status,
+    provider: response.provider,
+    models: response.models,
+    url: response.url,
   };
 }

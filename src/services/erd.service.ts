@@ -27,7 +27,7 @@ export async function saveERDService(payload: {
         };
     }
 
-    showSnackbar("ERD updated successfully", "success", snackbarRef);
+    showSnackbar("ERD updated successfully", "valid", snackbarRef);
     
     return {
         success: true,

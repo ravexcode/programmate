@@ -71,7 +71,8 @@ export default function ProfilePage() {
         created_at: user_fetched.created_at,
         avatar_url: user_fetched.avatar_url,
         plan,
-        teams: data.teams
+        teams: data.teams,
+        ai: []
       }
 
       setUser(user_processed);
@@ -137,7 +138,7 @@ export default function ProfilePage() {
 
               <p
               className="text-neutral-400 w-full text-sm">
-                Created at: {(new Date(user.created_at)).toDateString()} <br />
+                Created at: {(new Date(user.created_at ?? "")).toDateString()} <br />
                 UUID: {user.id}
               </p>
             </article>
@@ -167,7 +168,7 @@ export default function ProfilePage() {
                             backgroundColor: (
                               team.status === "Backlog" ? "gray" :
                               team.status === "Planning" ? "sky" :
-                              team.status === "In Progress" ? "orange" :
+                              team.status === "In progress" ? "orange" :
                               team.status === "On Hold" ? "red" :
                               "violet"
                             )

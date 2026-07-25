@@ -1,3 +1,7 @@
+- **0.90.0:** Arreglo grande de errores
+
+- **0.89.0:** Pagina de IA creada y en pruebas
+
 - **0.88.1:** Arreglo de error en Header (React Hydratation).
 
 - **0.88.0:** Seccion para verificar proveedor de IA creada

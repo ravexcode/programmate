@@ -1,7 +1,5 @@
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 
 export default function RedirectionPage() {
-  const router = useRouter();
-
-  return router.push("/auth/signin");
+  redirect("/auth/signin");
 }

@@ -15,14 +15,14 @@ export function TableContainerNode({ data }: TableContainerNodeProps) {
     <div className="w-65 rounded-sm border bg-neutral-900 border-neutral-700 shadow-xl overflow-hidden text-sm font-sans text-text">
 
       <div className="bg-neutral-950 px-4 py-2.5 font-medium tracking-wide border-b border-neutral-700 text-center uppercase">
-        {data.tableName}
+        {String(data.tableName)}
       </div>
 
       <table className="w-full">
         <tbody>
           {/* Colmuns render */}
 
-          {data.columns.map((col : Column, index: number) => (
+          {(data.columns as Column[]).map((col : Column, index: number) => (
             <tr
             key={`${data.tableName}-${index}`}
             className="h-9 border-b border-neutral-700 last:border-0 hover:bg-neutral-900">

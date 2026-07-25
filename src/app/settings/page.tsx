@@ -85,6 +85,8 @@ export default function ConfigurationPage(){
     return;
   }
 
+  if (!user) return <LoadingDashboard />;
+
   return (
     <div
     className="grid grid-cols-[auto_1fr] bg-background relative animate-fade-in h-screen text-text overflow-hidden">

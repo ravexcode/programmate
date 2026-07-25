@@ -18,7 +18,7 @@ import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import { UserData, Task, ToDoList } from "@/types/user.types";
 
 //Services imports
-import UpdateUserData from "@/services/user.service";
+import { getUser } from "@/modules/user.module";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import { IconArrowLeft, IconCheck, IconTrash } from "@tabler/icons-react";
 
@@ -56,7 +56,7 @@ export default function ToDoListPage() {
       if(!token) return router.push('/auth/signin');
 
       //Sets data if there's no data cached
-      const user_data = await UpdateUserData(token);
+      const user_data = await getUser(router);
 
       if(!user_data) return router.push("/");
 

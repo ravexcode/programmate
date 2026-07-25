@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     if(!token) return Handlers.unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user's data
-    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
     if(!user) return Handlers.notFoundErrorHandler("Account not found");
@@ -91,7 +91,7 @@ export async function PUT(req: NextRequest) {
     if(!token) return Handlers.unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user's data
-    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
     if(!user) return Handlers.notFoundErrorHandler("Account not found");
@@ -156,7 +156,7 @@ export async function DELETE(req: NextRequest) {
     if(!token) return Handlers.unauthorizedErrorHandler("Authorization token not inserted");
 
     //Gets the user's data
-    const { data: { user }, error: getUserError } = await supabase.auth.getUserService({router});
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser(token);
 
     //Verifies if the user has been returned
     if(!user) return Handlers.notFoundErrorHandler("Account not found");

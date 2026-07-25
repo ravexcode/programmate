@@ -71,7 +71,7 @@ export async function getUserService(data: GetData) {
     "created_at": profile.created_at,
     "last_sign_in": oAuthUser.last_sign_in_at,
     "avatar_url": profile.avatar_url,
-    "ai_providers": profile.ai_providers
+    "ai": profile.ai_providers
   }
 
   const now = new Date();
