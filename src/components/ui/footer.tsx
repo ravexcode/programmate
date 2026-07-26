@@ -7,6 +7,7 @@ function CustomLi({ link, children }: { link: string; children: React.ReactNode 
     <li>
       <Link
         href={link}
+        prefetch={false}
         className="text-sm md:text-base tracking-wide text-gray-400 duration-200 hover:text-blue-500">
         {children}
       </Link>
@@ -35,7 +36,7 @@ export default function Footer() {
         <div className="flex flex-col gap-12 xl:flex-row xl:justify-between">
           
           <div className="flex flex-col items-start">
-            <Link href="/" className="hover:opacity-80 transition-opacity">
+            <Link href="/" prefetch={false} className="hover:opacity-80 transition-opacity">
               <Image
                 src="/logos/white_gradient.svg"
                 alt="NexZero logo"
@@ -75,7 +76,7 @@ export default function Footer() {
             <FooterColumn title="Support">
               <CustomLi link="/support/bugs"> Report a bug </CustomLi>
               <CustomLi link="/support/suggestions"> Make a sugestion </CustomLi>
-              <CustomLi link="/suppor/tickets"> Request a ticket </CustomLi>
+              <CustomLi link="/support/tickets"> Request a ticket </CustomLi>
             </FooterColumn>
 
             <FooterColumn title="Legal">

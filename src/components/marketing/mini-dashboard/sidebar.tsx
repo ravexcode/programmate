@@ -5,7 +5,6 @@ interface Props {
 }
 
 //Next imports
-import Image from "next/image";
 
 //Button comp
 function Button(props: {
@@ -36,13 +35,9 @@ export default function MiniDashboardSidebar(props: Props) {
   return (
     <aside
     className="flex flex-col gap-2 items-center justify-start bg-neutral-950 w-70 py-3 px-2">
-      <Image
+      <img
       src="/logos/large.svg"
       alt="NexZero logo"
-      width={400}
-      height={400}
-      preload
-      loading="eager"
       className="h-4 mb-2" />
       <div
       className="flex gap-1 w-full items-center justify-start p-2 text-xs duration-300 hover:bg-main/60 rounded-md cursor-pointer">
@@ -70,13 +65,9 @@ export default function MiniDashboardSidebar(props: Props) {
 
       <div
       className="mt-auto flex gap-2 w-full items-center justify-start p-2 text-xs duration-300 hover:bg-main/60 rounded-md cursor-pointer">
-        <Image
+        <img
         src="/logos/logo.svg"
         alt="NexZero logo"
-        width={100}
-        height={100}
-        preload
-        loading="eager"
         className="aspect-square rounded-full w-6" />
 
         <p
