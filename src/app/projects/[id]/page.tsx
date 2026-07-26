@@ -14,11 +14,11 @@ import { UserData } from "@/types/user.types";
 import Team from "@/types/team.types";
 
 //Prebuild ui imports
-import TeamSidebar from "@/components/ui/dashboard/team-sidebar";
+import TeamSidebar from "@/components/dashboard/team-sidebar";
 import SnackBar from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import BgGradient from "@/components/ui/bg-gradient";
-import DashCard from "@/components/ui/cards/dashboard";
+import DashCard from "@/components/dashboard/dash-card";
 
 //Modules import
 import { getUser } from "@/modules/user.module";

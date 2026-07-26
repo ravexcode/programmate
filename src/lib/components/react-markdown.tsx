@@ -17,42 +17,42 @@ export default function ReactMarkdown(props: Props){
 
       h1: (props) => (
         <h1
-          className="text-2xl font-bold text-white mb-4"
+          className="text-2xl font-bold text-white"
           {...props}
         />
       ),
 
       h2: (props) => (
         <h2
-          className="text-xl font-semibold text-white mt-6 mb-3"
+          className="text-xl font-semibold text-white mt-6"
           {...props}
         />
       ),
 
       h3: (props) => (
         <h3
-          className="text-lg font-medium text-white mt-5 mb-2"
+          className="text-lg font-medium text-white mt-5"
           {...props}
         />
       ),
 
       p: (props) => (
         <p
-          className="text-neutral-300 leading-relaxed mb-3"
+          className="text-neutral-300 leading-relaxed"
           {...props}
         />
       ),
 
       ul: (props) => (
         <ul
-          className="list-disc pl-6 space-y-1 text-neutral-300 mb-4"
+          className="list-disc pl-6 space-y-1 text-neutral-300"
           {...props}
         />
       ),
 
       ol: (props) => (
         <ol
-          className="list-decimal pl-6 space-y-1 text-neutral-300 mb-4"
+          className="list-decimal pl-6 space-y-1 text-neutral-300"
           {...props}
         />
       ),
@@ -80,7 +80,7 @@ export default function ReactMarkdown(props: Props){
 
       pre: (props) => (
         <pre
-          className="bg-neutral-900 border border-neutral-800 rounded-lg p-4 overflow-x-auto mb-4"
+          className="bg-neutral-900 border border-neutral-800 rounded-lg p-4 overflow-x-auto"
           {...props}
         />
       ),

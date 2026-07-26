@@ -16,8 +16,8 @@ import SnackBar from "@/components/ui/snackbar";
 import LoadingScreen from "@/components/screens/loading-screen";
 
 //Board components imports
-import Card from "@components/ui/kanban/card";
-import List from "@/components/ui/kanban/list";
+import Card from "@components/projects/kanban/card";
+import List from "@/components/projects/kanban/list";
 
 //Hooks imports
 import { deleteSessionStr, getSessionStr } from "@/services/session.service";

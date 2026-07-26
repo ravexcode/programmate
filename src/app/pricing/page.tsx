@@ -8,7 +8,7 @@ import { useState, useRef } from "react";
 
 //Prebuilt UI imports
 import PageLayout from "@/components/layouts/page";
-import PricingCard from "@/components/ui/cards/pricing";
+import PricingCard from "@/components/marketing/pricing-card";
 import SnackBar from "@/components/ui/snackbar";
 
 //Providers imports

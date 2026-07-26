@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 //Containers imports
-import CodeText from "../containers/code";
+import CodeText from "../ui/code-text";
 
 export default function MiniCode() {
   const [ ex ] = useState(`//Next imports

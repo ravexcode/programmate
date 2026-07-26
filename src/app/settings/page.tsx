@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 //Prebuilt components
 import SideBar from "@/components/ui/sidebar";
-import ActionButton from "@/components/ui/action-button";
+import ActionButton from "@/components/settings/action-button";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import SnackBar from "@/components/ui/snackbar";
 

@@ -10,7 +10,7 @@ import { useEffect, useState, useRef } from "react";
 import BgGradient from "@/components/ui/bg-gradient";
 import SnackBar from "@/components/ui/snackbar";
 import LoadingScreen from "@/components/screens/loading-screen";
-import TeamSideBar from "@/components/ui/dashboard/team-sidebar";
+import TeamSideBar from "@/components/dashboard/team-sidebar";
 
 //Services imports
 import { getUser } from "@/modules/user.module";

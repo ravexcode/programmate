@@ -11,10 +11,10 @@ import {
 import { useEffect, useState, useRef } from "react";
 
 //Components imports
-import Sidebar from "@/components/ui/dashboard/sidebar";
+import Sidebar from "@/components/dashboard/sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import SnackBar from "@/components/ui/snackbar";
-import ProjectCard from "@/components/ui/project-card";
+import ProjectCard from "@/components/dashboard/project-card";
 
 //Types imports
 import { UserData } from "@/types/user.types";

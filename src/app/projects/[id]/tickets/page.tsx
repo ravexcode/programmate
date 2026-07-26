@@ -11,10 +11,10 @@ import { useRouter } from "next/navigation";
 //Prebuild UI imports
 import SnackBar from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
-import TeamSidebar from "@/components/ui/dashboard/team-sidebar";
+import TeamSidebar from "@/components/dashboard/team-sidebar";
 import MainButton from "@/components/ui/buttons/main";
 import BgGradient from "@/components/ui/bg-gradient";
-import TicketCard from "@/components/ui/ticket-card";
+import TicketCard from "@/components/projects/ticket-card";
 
 //Types imports
 import { UserData } from "@/types/user.types";

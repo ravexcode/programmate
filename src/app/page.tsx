@@ -10,20 +10,20 @@ import Link from "next/link";
 //Prebuilt ui imports
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
-import LandingGradient from "@/components/ui/gradients/landing";
+import LandingGradient from "@/components/marketing/gradients/landing";
 import SmoothProvider from "@/lib/components/lennis";
 import SnackBar from "@/components/ui/snackbar";
-import FeatureCard from "@/components/ui/cards/feature";
+import FeatureCard from "@/components/marketing/feature-card";
 
 //Hooks imports
 import { IconBrain, IconCalendar, IconLayoutKanban, IconTable } from "@tabler/icons-react";
 
 //Lazy loading
 //Carousel consumes many resources because it renders images
-const TechCarousel = lazy(() => import("@/components/ui/carousel/techs"));
-const ProvCarousel = lazy(() => import("@/components/ui/carousel/providers"));
+const TechCarousel = lazy(() => import("@/components/marketing/carousel/techs"));
+const ProvCarousel = lazy(() => import("@/components/marketing/carousel/providers"));
 //Mini dashboard has too many components/animations
-const MiniDashboard = lazy(() => import("@components/ui/mini-dashboard/main"));
+const MiniDashboard = lazy(() => import("@/components/marketing/mini-dashboard/main"));
 
 //Landing page
 export default function HomePage(){

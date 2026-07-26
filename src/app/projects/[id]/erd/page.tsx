@@ -40,11 +40,11 @@ import {
 
 //Prebuilt ui imports
 import SnackBar from "@/components/ui/snackbar";
-import TeamSideBar from "@/components/ui/dashboard/team-sidebar";
+import TeamSideBar from "@/components/dashboard/team-sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
-import ColumnNode from "@/components/ui/column-node";
-import ButtonControl from "@/components/ui/button-control";
-import { TableContainerNode } from "@/components/ui/table-node";
+import ColumnNode from "@/components/projects/erd/column-node";
+import ButtonControl from "@/components/projects/erd/button-control";
+import { TableContainerNode } from "@/components/projects/erd/table-node";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
 import MainButton from "@components/ui/buttons/main";

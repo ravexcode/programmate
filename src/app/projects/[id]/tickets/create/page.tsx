@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 //Prebuild UI imports
 import SnackBar from "@/components/ui/snackbar";
 import LoadingDashboard from "@/components/screens/loading-screen";
-import TeamSidebar from "@/components/ui/dashboard/team-sidebar";
+import TeamSidebar from "@/components/dashboard/team-sidebar";
 import CreatorInput from "@/components/forms/creator-inputs";
 import OptionsInput from "@/components/forms/options-input";
 import MainButton from "@/components/ui/buttons/main";

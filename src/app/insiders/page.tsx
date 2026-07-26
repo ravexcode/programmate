@@ -4,8 +4,8 @@
 //Prebuilt ui components
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
-import LandingGradient from "@/components/ui/gradients/landing";
-import MiniCode from "@/components/ui/mini-code";
+import LandingGradient from "@/components/marketing/gradients/landing";
+import MiniCode from "@/components/marketing/mini-code";
 
 //Hooks imports
 import SmoothProvider from "@/lib/components/lennis";

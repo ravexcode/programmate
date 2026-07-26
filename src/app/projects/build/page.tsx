@@ -8,10 +8,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 //Prebuilt UI imports
-import SideBar from "@/components/ui/dashboard/sidebar";
+import SideBar from "@/components/dashboard/sidebar";
 import CreatorInput from "@/components/forms/creator-inputs";
 import SnackBar from "@/components/ui/snackbar";
-import ProjectCard from "@/components/ui/project-card";
+import ProjectCard from "@/components/dashboard/project-card";
 import LoadingScreen from "@/components/screens/loading-screen";
 import OptionsInput from "@/components/forms/options-input";
 

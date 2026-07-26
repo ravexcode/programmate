@@ -1,3 +1,5 @@
+- **0.92.0:** Pagina de IA iniciada de cero y mejor organizacion de la carpeta components
+
 - **0.91.0:** Pagina de IA actualizada, aun en pruebas.
 
 - **0.90.0:** Arreglo grande de errores

@@ -10,9 +10,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 //Prebuilt ui components
-import AuthForm from "@/components/forms/auth";
-import { Input, PasswordInput } from "@/components/forms/inputs";
-import ProviderButton from "@/components/forms/provider-buttons";
+import AuthForm from "@/components/auth/auth-form";
+import { Input, PasswordInput } from "@/components/auth/inputs";
+import ProviderButton from "@/components/auth/provider-buttons";
 import Footer from "@/components/ui/footer";
 import SnackBar from "@/components/ui/snackbar";
 
