@@ -1,3 +1,5 @@
+- **INESTABLE! 0.98.0:** Pagina de chat semifuncional.
+
 - **0.97.0:** Ahora las sessiones se muestran en el sidebar
 
 - **0.96.0:** Pagina de proveedores de IA terminada
