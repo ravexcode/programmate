@@ -1,5 +1,6 @@
 //Imports
 
+import { AiChatSession } from "./ai.types";
 import Team from "./team.types";
 
 export interface Provider {
@@ -37,6 +38,7 @@ export interface UserData {
   last_sign_in?: string,
   avatar_url?: string,
   ai: Provider [],
+  ai_sessions?: AiChatSession [];
 }
 
 //User basic data (for example teammates)

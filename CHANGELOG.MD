@@ -1,3 +1,5 @@
+- **0.96.0:** Avances en la pagina de IA
+
 - **0.95.0:** Diseñode la pagina de ai iniciado
 
 - **0.94.0:** Skills.sh integrado
