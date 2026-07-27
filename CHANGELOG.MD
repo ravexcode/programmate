@@ -1,3 +1,5 @@
+- **0.98.0:** Pagina de AI terminada
+
 - **INESTABLE! 0.98.0:** Pagina de chat semifuncional.
 
 - **0.97.0:** Ahora las sessiones se muestran en el sidebar

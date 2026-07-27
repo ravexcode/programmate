@@ -7,6 +7,10 @@ import Link from "next/link";
 
 import { getUser } from "@/modules/user.module";
 import { createSession, addMessage } from "@/modules/ai.session.module";
+import {
+  buildChatRequest,
+  parseChatResponse,
+} from "@/controllers/ai.chat.controller";
 
 import LoadingScreen from "@/components/screens/loading-screen";
 import AiLayout from "@/components/ai/layout";
@@ -69,7 +73,7 @@ export default function AiPage() {
 
   const [session, setSession] = useState<AiChatSession>();
 
-  const [ gIndex, setGIndex ] = useState(0);
+  const [gIndex, setGIndex] = useState(0);
 
   const flatModels = user ? flattenModels(user) : [];
 
@@ -132,7 +136,7 @@ export default function AiPage() {
     e.preventDefault();
     if (!input.trim() || isSending || !user) return;
     if (!selectedModel) {
-      console.warn("[AI] No model selected. Aborting send.");
+      console.warn("[Chat] No model selected. Aborting.");
       showSnackbar("Select a model first", "warn", snackbarRef);
       return;
     }
@@ -141,46 +145,37 @@ export default function AiPage() {
     setInput("");
     setIsSending(true);
 
-    console.warn("[AI] Starting send process...");
-    console.warn("[AI] Content:", content);
-    console.warn("[AI] Model:", selectedModel.displayName);
-    if (!session) {
-      console.warn("[AI] No active session. Creating new session...");
+    console.warn("[Chat] Starting send process...");
+    console.warn("[Chat] Content:", content);
+    console.warn("[Chat] Model:", selectedModel.displayName);
 
-      const title =
-        content.length > 40 ? content.slice(0, 40) + "..." : content;
+    // 1. Create session
+    console.warn("[Chat] Creating session...");
 
-      const createResult = await createSession(
-        router,
-        title,
-        selectedModel.providerKey,
-        selectedModel.model,
-        snackbarRef
-      );
+    const title = content.length > 40 ? content.slice(0, 40) + "..." : content;
 
-      console.warn("[AI] Session create result:", createResult.success);
+    const createResult = await createSession(
+      router,
+      title,
+      selectedModel.providerKey,
+      selectedModel.model,
+      snackbarRef
+    );
 
-      if (!createResult.success || !createResult.data) {
-        console.warn("[AI] Session creation failed. Aborting.");
-        setIsSending(false);
-        showSnackbar("Failed to create session", "critic", snackbarRef);
-        return;
-      }
-
-      console.warn("[AI] Session created:", createResult.data.id);
-      setSession(createResult.data);
-    }
-    
-    const targetSessionId = session?.id;
-    if (!targetSessionId) {
-      console.warn("[AI] No session ID available. Aborting.");
+    if (!createResult.success || !createResult.data) {
+      console.warn("[Chat] Session creation failed.");
       setIsSending(false);
+      showSnackbar("Failed to create session", "critic", snackbarRef);
       return;
     }
 
-    console.warn("[AI] Adding user message to session:", targetSessionId);
+    const targetSessionId = createResult.data.id;
+    console.warn("[Chat] Session created:", targetSessionId);
 
-    const messageResult = await addMessage(
+    // 2. Save user message
+    console.warn("[Chat] Saving user message...");
+
+    const userResult = await addMessage(
       router,
       targetSessionId,
       "user",
@@ -188,31 +183,105 @@ export default function AiPage() {
       snackbarRef
     );
 
-    console.warn("[AI] Message add result:", messageResult.success);
-
-    if (!messageResult.success || !messageResult.data) {
-      console.warn("[AI] Failed to add message. Aborting.");
+    if (!userResult.success || !userResult.data) {
+      console.warn("[Chat] Failed to save user message.");
       setIsSending(false);
       return;
     }
 
-    console.warn("[AI] Message saved. Updated session:", messageResult.data.id);
-    setSession(messageResult.data);
+    console.warn("[Chat] User message saved.");
 
-    console.warn("[AI] Building AI request...");
+    // 3. Find provider config
+    console.warn("[Chat] Looking for provider:", selectedModel.providerKey);
 
-    const aiRequestBody = {
-      session_id: targetSessionId,
+    const providerConfig = user.ai.find(
+      (p) => p.name === selectedModel.providerKey
+    );
+
+    if (!providerConfig) {
+      console.warn("[Chat] Provider not found:", selectedModel.providerKey);
+      showSnackbar("Provider not found", "critic", snackbarRef);
+      setIsSending(false);
+      return;
+    }
+
+    console.warn("[Chat] Provider found. Key:", providerConfig.name);
+
+    // 4. Build AI request
+    const chatMessages = userResult.data.messages.map((m) => ({
+      role: m.sent_by as "user" | "assistant",
+      content: m.content,
+    }));
+
+    const chatRequest = buildChatRequest({
       provider: selectedModel.providerKey,
       model: selectedModel.model,
-      messages: messageResult.data.messages.map((m) => ({
-        role: m.sent_by,
-        content: m.content,
-      })),
-    };
+      messages: chatMessages,
+      apiKey: providerConfig.api_key,
+      url: providerConfig.url,
+    });
 
-    console.warn("[AI] Request body:", JSON.stringify(aiRequestBody, null, 2));
-    console.warn("[AI] Send process complete. Awaiting AI response (not yet implemented).");
+    if (!chatRequest) {
+      console.warn(
+        "[Chat] Could not build request for provider:",
+        selectedModel.providerKey
+      );
+      showSnackbar("Unsupported provider", "critic", snackbarRef);
+      setIsSending(false);
+      return;
+    }
+
+    console.warn("[Chat] Request built. URL:", chatRequest.url);
+
+    // 5. Call external AI
+    console.warn("[Chat] Calling AI...");
+
+    const aiRes = await fetch(chatRequest.url, chatRequest.options);
+
+    console.warn("[Chat] AI response status:", aiRes.status);
+
+    if (!aiRes.ok) {
+      const errorBody = await aiRes.text().catch(() => "Unknown error");
+      console.warn("[Chat] AI error:", errorBody);
+      showSnackbar("AI request failed", "critic", snackbarRef);
+      setIsSending(false);
+      return;
+    }
+
+    const aiData = await aiRes.json();
+    const aiContent = parseChatResponse(selectedModel.providerKey, aiData);
+
+    if (!aiContent) {
+      console.warn("[Chat] Could not parse AI response.");
+      showSnackbar("Empty AI response", "warn", snackbarRef);
+      setIsSending(false);
+      return;
+    }
+
+    console.warn("[Chat] AI response received. Length:", aiContent.length);
+
+    // 6. Save assistant message
+    console.warn("[Chat] Saving assistant message...");
+
+    const assistantResult = await addMessage(
+      router,
+      targetSessionId,
+      "assistant",
+      aiContent,
+      snackbarRef
+    );
+
+    if (!assistantResult.success || !assistantResult.data) {
+      console.warn("[Chat] Failed to save assistant message.");
+      setIsSending(false);
+      return;
+    }
+
+    console.warn("[Chat] Assistant message saved.");
+
+    // 7. Redirect to session
+    console.warn("[Chat] Redirecting to session:", targetSessionId);
+    router.push(`/ai/${targetSessionId}`);
 
     setIsSending(false);
   };
@@ -241,7 +310,9 @@ export default function AiPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={
-                flatModels.length > 0 ? "Ask me anything" : "Connect a provider first"
+                flatModels.length > 0
+                  ? "Ask me anything"
+                  : "Connect a provider first"
               }
               className="w-full outline-none"
               disabled={isSending || flatModels.length === 0}
@@ -280,7 +351,7 @@ export default function AiPage() {
                         onClick={() => {
                           setSelectedModel(m);
                           setShowModelPicker(false);
-                          console.warn("[AI] Model selected:", m.displayName);
+                          console.warn("[Chat] Model selected:", m.displayName);
                         }}
                         className={
                           "w-full text-left px-3 py-2 duration-200 flex items-center justify-between " +
