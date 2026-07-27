@@ -1,3 +1,5 @@
+- **0.94.0:** Skills.sh integrado
+
 - **0.93.0:** Optimizacion de codigo.
 
 - **0.92.0:** Pagina de IA iniciada de cero y mejor organizacion de la carpeta components
