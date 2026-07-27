@@ -1,3 +1,5 @@
+- **0.95.0:** Diseñode la pagina de ai iniciado
+
 - **0.94.0:** Skills.sh integrado
 
 - **0.93.0:** Optimizacion de codigo.
