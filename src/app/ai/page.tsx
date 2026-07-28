@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 import { getUser } from "@/modules/user.module";
-import { createSession, addMessage } from "@/modules/ai.session.module";
+import {
+  createSession,
+  addMessage,
+} from "@/modules/ai.session.module";
 import {
   buildChatRequest,
   parseChatResponse,
@@ -26,7 +29,7 @@ import {
 } from "@tabler/icons-react";
 
 import type { UserData } from "@/types/user.types";
-import type { AiChatSession } from "@/types/ai.types";
+import type { AiChatSession, AiChatMessage } from "@/types/ai.types";
 
 interface FlatModel {
   providerKey: string;
@@ -58,9 +61,14 @@ function flattenModels(user: UserData): FlatModel[] {
   return models;
 }
 
-export default function AiPage() {
+interface Props {
+  initialSession?: AiChatSession;
+}
+
+export default function AiPage({ initialSession }: Props) {
   const router = useRouter();
   const snackbarRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [user, setUser] = useState<UserData>();
   const [input, setInput] = useState("");
@@ -71,12 +79,13 @@ export default function AiPage() {
   const [selectedModel, setSelectedModel] = useState<FlatModel | null>(null);
   const modelPickerRef = useRef<HTMLDivElement>(null);
 
-  const [session, setSession] = useState<AiChatSession>();
+  const [session, setSession] = useState<AiChatSession | undefined>(initialSession);
 
   const [gIndex, setGIndex] = useState(0);
 
   const flatModels = user ? flattenModels(user) : [];
 
+  // Load user
   useEffect(() => {
     const get = async () => {
       const data = await getUser(router);
@@ -105,6 +114,10 @@ export default function AiPage() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [session?.messages]);
+
   const greetings: string[] = [
     "Hello, User! What are we building today?",
     "Welcome back, User! Ready to create something amazing?",
@@ -132,11 +145,17 @@ export default function AiPage() {
     setGIndex(rng(greetings.length));
   }, []);
 
+  const resetChat = useCallback(() => {
+    setSession(undefined);
+    setInput("");
+    setIsSending(false);
+    router.push("/ai");
+  }, [router]);
+
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isSending || !user) return;
     if (!selectedModel) {
-      console.warn("[Chat] No model selected. Aborting.");
       showSnackbar("Select a model first", "warn", snackbarRef);
       return;
     }
@@ -145,36 +164,51 @@ export default function AiPage() {
     setInput("");
     setIsSending(true);
 
-    console.warn("[Chat] Starting send process...");
-    console.warn("[Chat] Content:", content);
-    console.warn("[Chat] Model:", selectedModel.displayName);
+    // 1. Create session (first message)
+    let targetSessionId: string;
+    let targetSession: AiChatSession;
 
-    // 1. Create session
-    console.warn("[Chat] Creating session...");
+    if (!session) {
+      const title = content.length > 40 ? content.slice(0, 40) + "..." : content;
 
-    const title = content.length > 40 ? content.slice(0, 40) + "..." : content;
+      const createResult = await createSession(
+        router,
+        title,
+        selectedModel.providerKey,
+        selectedModel.model,
+        snackbarRef
+      );
 
-    const createResult = await createSession(
-      router,
-      title,
-      selectedModel.providerKey,
-      selectedModel.model,
-      snackbarRef
-    );
+      if (!createResult.success || !createResult.data) {
+        setIsSending(false);
+        showSnackbar("Failed to create session", "critic", snackbarRef);
+        return;
+      }
 
-    if (!createResult.success || !createResult.data) {
-      console.warn("[Chat] Session creation failed.");
-      setIsSending(false);
-      showSnackbar("Failed to create session", "critic", snackbarRef);
-      return;
+      targetSessionId = createResult.data.id;
+      targetSession = createResult.data;
+
+      // Optimistic update: show session immediately
+      setSession(targetSession);
+      router.push(`/ai/${targetSessionId}`, { scroll: false });
+    } else {
+      targetSessionId = session.id;
+      targetSession = session;
+
+      // Optimistic update: show user message
+      const userMessage: AiChatMessage = {
+        id: crypto.randomUUID(),
+        session_id: session.id,
+        sent_by: "user",
+        content,
+        created_at: new Date().toISOString(),
+      };
+      setSession((prev) =>
+        prev ? { ...prev, messages: [...prev.messages, userMessage] } : prev
+      );
     }
 
-    const targetSessionId = createResult.data.id;
-    console.warn("[Chat] Session created:", targetSessionId);
-
     // 2. Save user message
-    console.warn("[Chat] Saving user message...");
-
     const userResult = await addMessage(
       router,
       targetSessionId,
@@ -184,28 +218,22 @@ export default function AiPage() {
     );
 
     if (!userResult.success || !userResult.data) {
-      console.warn("[Chat] Failed to save user message.");
       setIsSending(false);
       return;
     }
 
-    console.warn("[Chat] User message saved.");
+    setSession(userResult.data);
 
     // 3. Find provider config
-    console.warn("[Chat] Looking for provider:", selectedModel.providerKey);
-
     const providerConfig = user.ai.find(
       (p) => p.name === selectedModel.providerKey
     );
 
     if (!providerConfig) {
-      console.warn("[Chat] Provider not found:", selectedModel.providerKey);
       showSnackbar("Provider not found", "critic", snackbarRef);
       setIsSending(false);
       return;
     }
-
-    console.warn("[Chat] Provider found. Key:", providerConfig.name);
 
     // 4. Build AI request
     const chatMessages = userResult.data.messages.map((m) => ({
@@ -222,27 +250,15 @@ export default function AiPage() {
     });
 
     if (!chatRequest) {
-      console.warn(
-        "[Chat] Could not build request for provider:",
-        selectedModel.providerKey
-      );
       showSnackbar("Unsupported provider", "critic", snackbarRef);
       setIsSending(false);
       return;
     }
 
-    console.warn("[Chat] Request built. URL:", chatRequest.url);
-
     // 5. Call external AI
-    console.warn("[Chat] Calling AI...");
-
     const aiRes = await fetch(chatRequest.url, chatRequest.options);
 
-    console.warn("[Chat] AI response status:", aiRes.status);
-
     if (!aiRes.ok) {
-      const errorBody = await aiRes.text().catch(() => "Unknown error");
-      console.warn("[Chat] AI error:", errorBody);
       showSnackbar("AI request failed", "critic", snackbarRef);
       setIsSending(false);
       return;
@@ -252,17 +268,12 @@ export default function AiPage() {
     const aiContent = parseChatResponse(selectedModel.providerKey, aiData);
 
     if (!aiContent) {
-      console.warn("[Chat] Could not parse AI response.");
       showSnackbar("Empty AI response", "warn", snackbarRef);
       setIsSending(false);
       return;
     }
 
-    console.warn("[Chat] AI response received. Length:", aiContent.length);
-
     // 6. Save assistant message
-    console.warn("[Chat] Saving assistant message...");
-
     const assistantResult = await addMessage(
       router,
       targetSessionId,
@@ -272,118 +283,166 @@ export default function AiPage() {
     );
 
     if (!assistantResult.success || !assistantResult.data) {
-      console.warn("[Chat] Failed to save assistant message.");
       setIsSending(false);
       return;
     }
 
-    console.warn("[Chat] Assistant message saved.");
-
-    // 7. Redirect to session
-    console.warn("[Chat] Redirecting to session:", targetSessionId);
-    router.push(`/ai/${targetSessionId}`);
-
+    setSession(assistantResult.data);
     setIsSending(false);
   };
 
   if (!user) return <LoadingScreen />;
 
   return (
-    <AiLayout user={user} router={router}>
+    <AiLayout user={user} router={router} onNewChat={resetChat}>
       <SnackBar ref={snackbarRef} />
 
       <main className="w-full flex flex-col items-center justify-center max-w-350 mx-auto p-5">
-        <section className="h-full w-full flex flex-col items-center justify-end">
-          {session ? (
-            <div></div>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-4xl font-light text-neutral-400 cursor-default select-none animate-fade-in-up">
-              {greetings[gIndex].replace("User", user.name)}
-            </div>
-          )}
-        </section>
-
-        <section className="w-full p-3 px-5 rounded-xl border border-neutral-900 bg-neutral-950 flex flex-col gap-2 animate-fade-in-up">
-          <form onSubmit={handleSend} className="w-full flex gap-3">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={
-                flatModels.length > 0
-                  ? "Ask me anything"
-                  : "Connect a provider first"
-              }
-              className="w-full outline-none"
-              disabled={isSending || flatModels.length === 0}
-            />
-
-            <button
-              type="submit"
-              disabled={isSending || !input.trim() || flatModels.length === 0}
-              className="bg-main rounded-full aspect-square block hover:brightness-75 duration-300 cursor-pointer p-2 disabled:grayscale disabled:cursor-not-allowed">
-              <IconArrowUp size={20} />
-            </button>
-          </form>
-
-          {/* Model selector + providers link */}
-          <div className="w-full flex items-center justify-between text-sm font-light py-1">
-            {flatModels.length > 0 ? (
-              <div ref={modelPickerRef} className="relative">
-                <button
-                  type="button"
-                  onClick={() => setShowModelPicker((p) => !p)}
-                  className="flex items-center gap-1.5 cursor-pointer transition duration-200 py-1.5 px-4 rounded-sm hover:bg-neutral-800">
-                  <span>
-                    {selectedModel
-                      ? selectedModel.displayName
-                      : "Select model"}
-                  </span>
-                  <IconAssembly size={13} />
-                </button>
-
-                {showModelPicker && (
-                  <div className="absolute bottom-full left-0 mb-1 rounded-md border border-neutral-800 bg-neutral-900 text-sm flex flex-col w-72 max-h-60 overflow-y-auto z-20">
-                    {flatModels.map((m) => (
-                      <button
-                        key={m.displayName}
-                        type="button"
-                        onClick={() => {
-                          setSelectedModel(m);
-                          setShowModelPicker(false);
-                          console.warn("[Chat] Model selected:", m.displayName);
-                        }}
-                        className={
-                          "w-full text-left px-3 py-2 duration-200 flex items-center justify-between " +
-                          (selectedModel?.displayName === m.displayName
-                            ? "bg-neutral-800 text-main"
-                            : "hover:bg-neutral-800")
-                        }>
-                        <span className="truncate">{m.displayName}</span>
-                        {selectedModel?.displayName === m.displayName && (
-                          <span className="w-2 h-2 rounded-full bg-main shrink-0 ml-2" />
-                        )}
-                      </button>
-                    ))}
+        {session ? (
+          <>
+            <section className="h-full w-full flex flex-col items-end overflow-y-auto max-h-[70vh] gap-3 py-4">
+              {session.messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={
+                    "w-full flex " +
+                    (msg.sent_by === "user" ? "justify-end" : "justify-start")
+                  }>
+                  <div
+                    className={
+                      "w-max max-w-250 rounded-xl px-4 py-2 " +
+                      (msg.sent_by === "user"
+                        && "bg-main text-white px-6")
+                    }>
+                    {msg.content}
                   </div>
-                )}
-              </div>
-            ) : (
-              <Link
-                href="/ai/providers"
-                className="flex items-center gap-1.5 cursor-pointer hover:text-main transition duration-200 px-1 py-0.5 rounded-sm hover:bg-neutral-800">
-                <IconCloudCog size={15} />
-                <span>Connect a provider</span>
-              </Link>
-            )}
+                </div>
+              ))}
 
-            <Link
-              href="/ai/providers"
-              className="text-neutral-500 hover:text-neutral-300 transition duration-200 px-1 py-0.5 rounded-sm hover:bg-neutral-800">
-              Providers
-            </Link>
-          </div>
-        </section>
+              {isSending && (
+                <div className="w-full flex justify-start">
+                  <div className="bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-2 text-sm text-neutral-400">
+                    Thinking...
+                  </div>
+                </div>
+              )}
+
+              <div ref={messagesEndRef} />
+            </section>
+
+            <section className="w-full mt-auto p-3 px-5 rounded-xl border border-neutral-900 bg-neutral-950 flex flex-col gap-2 animate-fade-in-up">
+              <form onSubmit={handleSend} className="w-full flex gap-3">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask me anything"
+                  className="w-full outline-none"
+                  disabled={isSending}
+                />
+
+                <button
+                  type="submit"
+                  disabled={isSending || !input.trim()}
+                  className="bg-main rounded-full aspect-square block hover:brightness-75 duration-300 cursor-pointer p-2 disabled:grayscale disabled:cursor-not-allowed">
+                  <IconArrowUp size={20} />
+                </button>
+              </form>
+
+              <div className="w-full cursor-default text-sm font-light py-1">
+                {session.provider} / {session.model}
+              </div>
+            </section>
+          </>
+        ) : (
+          <>
+            <section className="h-full w-full flex flex-col items-center justify-center">
+              <div className="flex flex-col items-center justify-center h-full text-4xl font-light text-neutral-400 cursor-default select-none animate-fade-in-up">
+                {greetings[gIndex].replace("User", user.name)}
+              </div>
+            </section>
+
+            <section className="w-full p-3 px-5 rounded-xl border border-neutral-900 bg-neutral-950 flex flex-col gap-2 animate-fade-in-up">
+              <form onSubmit={handleSend} className="w-full flex gap-3">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder={
+                    flatModels.length > 0
+                      ? "Ask me anything"
+                      : "Connect a provider first"
+                  }
+                  className="w-full outline-none"
+                  disabled={isSending || flatModels.length === 0}
+                />
+
+                <button
+                  type="submit"
+                  disabled={isSending || !input.trim() || flatModels.length === 0}
+                  className="bg-main rounded-full aspect-square block hover:brightness-75 duration-300 cursor-pointer p-2 disabled:grayscale disabled:cursor-not-allowed">
+                  <IconArrowUp size={20} />
+                </button>
+              </form>
+
+              <div className="w-full flex items-center justify-between text-sm font-light py-1">
+                {flatModels.length > 0 ? (
+                  <div ref={modelPickerRef} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setShowModelPicker((p) => !p)}
+                      className="flex items-center gap-1.5 cursor-pointer transition duration-200 py-1.5 px-4 rounded-sm hover:bg-neutral-800">
+                      <span>
+                        {selectedModel
+                          ? selectedModel.displayName
+                          : "Select model"}
+                      </span>
+                      <IconAssembly size={13} />
+                    </button>
+
+                    {showModelPicker && (
+                      <div className="absolute bottom-full left-0 mb-1 rounded-md border border-neutral-800 bg-neutral-900 text-sm flex flex-col w-72 max-h-60 overflow-y-auto z-20">
+                        {flatModels.map((m) => (
+                          <button
+                            key={m.displayName}
+                            type="button"
+                            onClick={() => {
+                              setSelectedModel(m);
+                              setShowModelPicker(false);
+                            }}
+                            className={
+                              "w-full text-left px-3 py-2 duration-200 flex items-center justify-between " +
+                              (selectedModel?.displayName === m.displayName
+                                ? "bg-neutral-800 text-main"
+                                : "hover:bg-neutral-800")
+                            }>
+                            <span className="truncate">{m.displayName}</span>
+                            {selectedModel?.displayName === m.displayName && (
+                              <span className="w-2 h-2 rounded-full bg-main shrink-0 ml-2" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    href="/ai/providers"
+                    className="flex items-center gap-1.5 cursor-pointer hover:text-main transition duration-200 px-1 py-0.5 rounded-sm hover:bg-neutral-800">
+                    <IconCloudCog size={15} />
+                    <span>Connect a provider</span>
+                  </Link>
+                )}
+
+                <Link
+                  href="/ai/providers"
+                  className="text-neutral-500 hover:text-neutral-300 transition duration-200 px-1 py-0.5 rounded-sm hover:bg-neutral-800">
+                  Providers
+                </Link>
+              </div>
+            </section>
+          </>
+        )}
       </main>
     </AiLayout>
   );

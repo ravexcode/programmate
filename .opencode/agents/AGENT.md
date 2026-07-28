@@ -16,6 +16,7 @@
 - Services are at: /src/services/*
 - Controllers are at: /src/controllers/*
 
+- Always use pnpm
 ---
 
 # Ultra Caveman

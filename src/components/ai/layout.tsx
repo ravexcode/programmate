@@ -7,7 +7,8 @@ import AiSidebar from "./sidebar";
 interface Props {
   user: UserData;
   children?: ReactNode
-  router: AppRouterInstance
+  router: AppRouterInstance;
+  onNewChat?: () => void;
 }
 
 export default function AiLayout(props: Props) {
@@ -16,7 +17,8 @@ export default function AiLayout(props: Props) {
     className="min-h-screen grid grid-cols-[auto_1fr]">
       <AiSidebar
       user={props.user}
-      router={props.router} />
+      router={props.router}
+      onNewChat={props.onNewChat} />
 
       {props.children}
 

@@ -24,11 +24,12 @@ import animationClose from "@/hooks/useAnimationClose";
 import Icon from "../dashboard/icon";
 import { deleteSession } from "@/modules/ai.session.module";
 import { getUser } from "@/modules/user.module";
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import SnackBar from "@/components/ui/snackbar";
 
 interface Props {
   user: UserData;
   router: AppRouterInstance;
+  onNewChat?: () => void;
 }
 
 export default function AiSidebar(props: Props) {
@@ -70,8 +71,20 @@ export default function AiSidebar(props: Props) {
     if (success) {
       const refreshed = await getUser(router);
       if (refreshed && pathname === `/ai/${sessionId}`) {
-        router.push("/ai");
+        if (props.onNewChat) {
+          props.onNewChat();
+        } else {
+          router.push("/ai");
+        }
       }
+    }
+  };
+
+  const handleNewChat = () => {
+    if (props.onNewChat) {
+      props.onNewChat();
+    } else {
+      router.push("/ai");
     }
   };
 
@@ -145,9 +158,22 @@ export default function AiSidebar(props: Props) {
           <span className="w-full px-2 animate-fade-in-right"> Sessions </span>
         )}
 
-        {props.user.ai_sessions && props.user.ai_sessions.length > 0 ? (
+        <button
+          type="button"
+          onClick={handleNewChat}
+          className={
+            "flex items-center gap-1.5 p-2 rounded-sm hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-200 w-full " +
+            (expanded ? "justify-start" : "justify-center")
+          }>
+          <IconMessageChatbot size={18} stroke={2} color="white" />
+          {expanded && (
+            <span className="text-sm animate-fade-in-right"> New Chat </span>
+          )}
+        </button>
+
+        {props.user.ai_sessions && props.user.ai_sessions.length > 0 &&
           props.user.ai_sessions.map((session) => {
-            const isActive = pathname === `/ai/${session.id}`;
+            const isActive = pathname === `/ai/${session.id}` || pathname === `/ai`;
 
             return (
               <div
@@ -183,16 +209,7 @@ export default function AiSidebar(props: Props) {
                 )}
               </div>
             );
-          })
-        ) : (
-          <Icon action="/ai" name="New chat" isDisplayed={expanded}>
-            <IconMessageChatbot size={18} stroke={2} color="white" />
-          </Icon>
-        )}
-
-        <Icon action="/todo" name="To Do lists" isDisplayed={expanded}>
-          <IconChecklist size={18} stroke={2} color="white" />
-        </Icon>
+          })}
 
         <div className="ml-auto sm:ml-0 mt-auto flex flex-row sm:flex-col items-center justify-center sm:justify-end gap-1 sm:pb-3">
           <div

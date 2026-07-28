@@ -1,3 +1,5 @@
+- **0.99.0:** Actualizacion de la pagina de la IA.
+
 - **0.98.0:** Pagina de AI terminada
 
 - **INESTABLE! 0.98.0:** Pagina de chat semifuncional.

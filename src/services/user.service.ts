@@ -66,12 +66,12 @@ export async function getUserService(data: GetData) {
     "name": username,
     "plan": plan,
     "teams": teams,
-    "ai_chat": profile.ai_chat,
     "to_do_list": profile.to_do_list,
     "created_at": profile.created_at,
     "last_sign_in": oAuthUser.last_sign_in_at,
     "avatar_url": profile.avatar_url,
-    "ai": profile.ai
+    "ai": profile.ai,
+    "ai_sessions": profile.ai_sessions
   }
 
   const now = new Date();
