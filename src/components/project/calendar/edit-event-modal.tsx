@@ -9,9 +9,14 @@ import OptionsInput from "@/components/forms/options-input";
 
 import animationClose from "@/hooks/useAnimationClose";
 
-import type { CalendarDate, CalendarDateColors, CalendarDateType } from "@/types/team.types";
+import type {
+  CalendarDate,
+  CalendarDateColors,
+  CalendarDateType,
+} from "@/types/team.types";
 
 type Props = {
+  event: CalendarDate;
   onSubmit: (event: CalendarDate) => void;
   onClose: () => void;
 };
@@ -25,37 +30,53 @@ const EVENT_TYPES: CalendarDateType[] = [
 ];
 
 const EVENT_COLORS: CalendarDateColors[] = [
-  "blue", "cyan", "teal", "yellow", "orange",
-  "red", "violet", "purple", "rose", "neutral",
+  "blue",
+  "cyan",
+  "teal",
+  "yellow",
+  "orange",
+  "red",
+  "violet",
+  "purple",
+  "rose",
+  "neutral",
 ];
 
-export default function CreateEventModal({ onSubmit }: Props) {
+function formatDate(date: Date): string {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+export default function EditEventModal({ event, onSubmit, onClose }: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState((new Date()).toISOString().split("T")[0]);
-  const [type, setType] = useState<CalendarDateType>("deadline");
-  const [color, setColor] = useState<CalendarDateColors>("blue");
+  const [title, setTitle] = useState(event.title);
+  const [description, setDescription] = useState(event.description);
+  const [date, setDate] = useState(formatDate(event.date));
+  const [type, setType] = useState<CalendarDateType>(event.type);
+  const [color, setColor] = useState<CalendarDateColors>(event.color);
 
   function handleClose() {
     if (!ref.current) return;
 
     ref.current.classList.add("animate-fade-out-down");
     animationClose(ref.current, "fade-out-down", "hidden", "flex");
+    onClose();
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     onSubmit({
+      ...event,
       title,
       description,
       date: new Date(date),
       type,
       color,
-      creatorId: "",
-      creator: { id: "", email: "", username: "" },
     });
 
     handleClose();
@@ -64,14 +85,15 @@ export default function CreateEventModal({ onSubmit }: Props) {
   return (
     <div
       ref={ref}
-      className="fixed hidden items-start justify-center p-10 z-10 backdrop-blur backdrop-brightness-50 w-screen h-screen animate-fade-in-up animate-duration-300"
+      className="fixed flex items-start justify-center p-10 z-10 backdrop-blur backdrop-brightness-50 w-screen h-screen animate-fade-in-up animate-duration-300"
       onClick={(e) => {
         if (e.target === ref.current) handleClose();
       }}
     >
       <CreatorForm
         action={handleSubmit}
-        title="Create a new event"
+        title="Edit event"
+        confirmMessage="Update"
         actionIsDisabled={!title || !date}
         disabledMessage="Set title and date"
         hideAction={handleClose}

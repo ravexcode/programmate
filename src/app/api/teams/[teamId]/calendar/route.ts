@@ -15,7 +15,6 @@ import supabase from "@/lib/db";
 
 //Types imports
 import { CalendarDate } from "@/types/team.types";
-import { ParamsType } from "@api/teams/[teamId]/params.type";
 
 async function authenticateUser(token: string | null) {
   if (!token) return { user: null, error: "Authorization token not inserted" };
@@ -50,7 +49,10 @@ async function getTeamAndVerifyUser(teamId: string, token: string | null) {
   return { team, user: auth.user, error: null };
 }
 
-export async function POST({ params }: ParamsType, req: NextRequest) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ teamId: string }> },
+) {
   try {
     const { teamId } = await params;
     const { event } = await req.json();
@@ -66,7 +68,7 @@ export async function POST({ params }: ParamsType, req: NextRequest) {
     const { error: saveEventError } = await supabase
       .from("teams")
       .update({
-        calendar: [...team.calendar, event]
+        calendar: [...team.calendar || [], event]
       })
       .eq("team_id", teamId);
 
@@ -78,7 +80,10 @@ export async function POST({ params }: ParamsType, req: NextRequest) {
   }
 }
 
-export async function PUT({ params }: ParamsType, req: NextRequest) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ teamId: string }> },
+) {
   try {
     const { teamId } = await params;
     const { event, eventIndex } = await req.json();
@@ -114,7 +119,10 @@ export async function PUT({ params }: ParamsType, req: NextRequest) {
   }
 }
 
-export async function DELETE({ params }: ParamsType, req: NextRequest) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ teamId: string }> },
+) {
   try {
     const { teamId } = await params;
     const { eventIndex } = await req.json();

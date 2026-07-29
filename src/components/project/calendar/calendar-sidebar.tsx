@@ -7,7 +7,8 @@ import CalendarMiniGrid from "./calendar-mini-grid";
 
 import { IconArrowLeft, IconArrowRight, IconPlus } from "@tabler/icons-react";
 
-import type { Months } from "../page";
+import type { Months } from "./calendar";
+import type { CalendarDate } from "@/types/team.types";
 
 type Props = {
   teamName: string;
@@ -15,6 +16,7 @@ type Props = {
   monthNumber: number;
   year: number;
   selectedDate: Date;
+  events: CalendarDate[];
   onMonthChange: (month: number, year: number) => void;
   onToday: () => void;
   onSelectDate: (date: Date) => void;
@@ -27,6 +29,7 @@ export default function CalendarSidebar({
   monthNumber,
   year,
   selectedDate,
+  events,
   onMonthChange,
   onToday,
   onSelectDate,
@@ -107,6 +110,7 @@ export default function CalendarSidebar({
         monthNumber={monthNumber}
         monthName={monthName}
         selectedDate={selectedDate}
+        events={events}
         onSelect={onSelectDate}
       />
     </aside>

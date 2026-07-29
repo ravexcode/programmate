@@ -1,7 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { IconCircleFilled, IconUserCircle, IconTrash } from "@tabler/icons-react";
+import {
+  IconEdit,
+  IconTrash,
+  IconUserCircle,
+} from "@tabler/icons-react";
+
 import HazardButton from "@/components/ui/buttons/hazard";
 
 import type { CalendarDate } from "@/types/team.types";
@@ -9,7 +14,8 @@ import type { CalendarDate } from "@/types/team.types";
 type Props = {
   event: CalendarDate;
   index: number;
-  onDelete: (index: number) => void;
+  onEdit: (event: CalendarDate, index: number) => void;
+  onDelete: (event: CalendarDate, index: number) => void;
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -20,14 +26,18 @@ const TYPE_LABELS: Record<string, string> = {
   "target-start": "Target Start",
 };
 
-export default function CalendarEventCard({ event, index, onDelete }: Props) {
+export default function CalendarEventCard({
+  event,
+  index,
+  onEdit,
+  onDelete,
+}: Props) {
   return (
-    <section className="w-full rounded-sm bg-neutral-900 border border-neutral-800 p-4 my-2 animate-fade-in-down animate-duration-200">
+    <section className="w-full rounded-sm bg-neutral-950 border border-neutral-800 p-4 animate-fade-in-down animate-duration-200 hover:border-neutral-700 duration-300">
       <div className="w-full flex gap-3 items-start">
-        <IconCircleFilled
-          size={14}
-          color={event.color}
-          className="mt-1 shrink-0"
+        <div
+          className="w-1 h-12 rounded-full shrink-0 mt-0.5"
+          style={{ backgroundColor: event.color }}
         />
 
         <div className="flex flex-col w-full gap-1">
@@ -36,13 +46,20 @@ export default function CalendarEventCard({ event, index, onDelete }: Props) {
               {event.title}
             </p>
 
-            <span className="text-xs px-2 py-0.5 rounded-sm bg-neutral-800 text-neutral-400 shrink-0">
+            <span
+              className="text-xs px-2 py-0.5 rounded-sm shrink-0"
+              style={{
+                backgroundColor: `${event.color}20`,
+                color: event.color,
+                borderColor: `${event.color}40`,
+              }}
+            >
               {TYPE_LABELS[event.type] ?? event.type}
             </span>
           </div>
 
           {event.description && (
-            <p className="text-sm text-start opacity-70">
+            <p className="text-sm text-start opacity-70 line-clamp-2">
               {event.description}
             </p>
           )}
@@ -68,12 +85,19 @@ export default function CalendarEventCard({ event, index, onDelete }: Props) {
           </span>
         </div>
 
-        <HazardButton
-          size="p-1.5"
-          action={() => onDelete(index)}
-        >
-          <IconTrash size={14} />
-        </HazardButton>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => onEdit(event, index)}
+            className="p-1.5 rounded-sm bg-neutral-800 hover:bg-neutral-700 duration-300 cursor-pointer text-neutral-400 hover:text-text"
+          >
+            <IconEdit size={14} />
+          </button>
+
+          <HazardButton size="p-1.5" action={() => onDelete(event, index)}>
+            <IconTrash size={14} />
+          </HazardButton>
+        </div>
       </div>
     </section>
   );
