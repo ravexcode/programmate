@@ -120,7 +120,6 @@ export async function POST(req: NextRequest) {
       checkout_link: session.url
     });
   } catch(e: unknown) {
-    console.error(e);
     return Handler.serverErrorHandler(e);
   }
 }

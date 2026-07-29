@@ -216,7 +216,6 @@ export async function chatCompletionController(data: {
 
   const response = await req.json().catch((e) => {
     if (e instanceof Error) {
-      console.error("Chat request failed:", e.cause);
       return { message: e.message, status: req.status };
     }
     return { message: "Server error", status: 500 };

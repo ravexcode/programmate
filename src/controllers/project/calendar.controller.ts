@@ -41,8 +41,6 @@ export async function createEventController(data: UploadData) {
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Error while creating a event:", e.cause);
-
       return {
         message: e.message,
         status: req.status
@@ -81,8 +79,6 @@ export async function updateEventController(data: UpdateData) {
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Error while updating a event:", e.cause);
-
       return {
         message: e.message,
         status: req.status
@@ -120,8 +116,6 @@ export async function deleteEventController(data: DeleteData) {
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Error while deleting a event:", e.cause);
-
       return {
         message: e.message,
         status: req.status

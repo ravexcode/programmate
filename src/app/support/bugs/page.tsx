@@ -68,8 +68,6 @@ export default function BugReportsPage() {
       if(error instanceof Error) {
         return showSnackbar(error.message, "critic", snackbar);
       }
-
-      console.error(error);
       return showSnackbar("Server error", "critic", snackbar);
     } finally {
       const interval = setInterval(returnToHome, 2000);

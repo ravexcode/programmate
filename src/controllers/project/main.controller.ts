@@ -50,8 +50,6 @@ export async function getProjectController(data: GetData) {
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Server error: ", e.cause);
-
       return {
         message: e.message,
         status: req.status
@@ -99,8 +97,6 @@ export async function createProjectController(data: CreateData) {
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Server error: ", e.cause);
-
       return {
         message: e.message,
         status: req.status
@@ -137,8 +133,6 @@ export async function updateProjectController(data: UpdateData) {
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Server error: ", e.cause);
-
       return {
         message: e.message,
         status: req.status
@@ -173,8 +167,6 @@ export async function deleteProjectController(data: DeleteData) {
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Server error: ", e.cause);
-
       return {
         message: e.message,
         status: req.status

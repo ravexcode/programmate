@@ -80,7 +80,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ message: "Success" });
   } catch(e: unknown) {
-    console.error(e);
     return Handler.serverErrorHandler(e);
   }
 }

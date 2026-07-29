@@ -47,8 +47,6 @@ export async function fetchTemplate(
       );
       return;
     };
-
-    console.error(e);
     showSnackbar(
       "Server error",
       "critic",

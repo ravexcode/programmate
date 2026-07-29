@@ -21,7 +21,6 @@ export async function requestIntegrantController(data: { id: number; token: stri
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Error requesting integrant:", e.cause);
 
       return {
         message: e.message,
@@ -61,7 +60,6 @@ export async function changeRoleController(data: { id: number; token: string; me
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Error changing role:", e.cause);
 
       return {
         message: e.message,
@@ -100,7 +98,6 @@ export async function removeMemberController(data: { id: number; token: string; 
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Error removing member:", e.cause);
 
       return {
         message: e.message,
@@ -137,7 +134,6 @@ export async function addIntegrantController(data: { id: number; token: string; 
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Error adding integrant:", e.cause);
 
       return {
         message: e.message,
@@ -172,7 +168,6 @@ export async function searchUsersController(data: { query: string }) {
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Error searching users:", e.cause);
 
       return {
         message: e.message,

@@ -38,7 +38,6 @@ export async function fetchProfile(data: GetData) {
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Error getting user data:", e.cause);
 
       return {
         message: e.message,
@@ -81,7 +80,6 @@ export async function UpdateUserController(data: UpdateData) {
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Server error:", e.cause);
 
       return {
         message: e.message,
@@ -118,7 +116,6 @@ export async function updateAiProvidersController(data: UpdateAiProvidersData) {
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Server error:", e.cause);
 
       return {
         message: e.message,

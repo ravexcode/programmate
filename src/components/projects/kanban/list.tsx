@@ -48,9 +48,6 @@ export default function List(props: Props) {
         setIsDraggingOver(false);
         const sourceList = e.dataTransfer.getData("sourceList");
         const id = e.dataTransfer.getData("id");
-
-        console.log(sourceList, id);
-
         props.onDrop?.(sourceList, id);
       }}>
         { props.children }

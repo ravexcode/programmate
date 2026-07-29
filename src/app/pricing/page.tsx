@@ -119,8 +119,6 @@ export default function PricingPage() {
                 "pro"
               );
 
-              console.warn(link);
-
               if(link) return router.push(link);
 
               setLoading(false);

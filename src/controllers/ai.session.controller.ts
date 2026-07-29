@@ -47,7 +47,6 @@ export async function createSessionController(data: CreateSessionData): Promise<
 
   const response = await req.json().catch((e) => {
     if (e instanceof Error) {
-      console.error("Error creating session:", e.cause);
       return { message: e.message, status: req.status };
     }
     return { message: "Server error", status: 500 };
@@ -76,7 +75,6 @@ export async function listSessionsController(token: string): Promise<{
 
   const response = await req.json().catch((e) => {
     if (e instanceof Error) {
-      console.error("Error listing sessions:", e.cause);
       return { message: e.message, status: req.status };
     }
     return { message: "Server error", status: 500 };
@@ -105,7 +103,6 @@ export async function getSessionController(data: GetSessionData): Promise<{
 
   const response = await req.json().catch((e) => {
     if (e instanceof Error) {
-      console.error("Error getting session:", e.cause);
       return { message: e.message, status: req.status };
     }
     return { message: "Server error", status: 500 };
@@ -133,7 +130,6 @@ export async function deleteSessionController(data: DeleteSessionData): Promise<
 
   const response = await req.json().catch((e) => {
     if (e instanceof Error) {
-      console.error("Error deleting session:", e.cause);
       return { message: e.message, status: req.status };
     }
     return { message: "Server error", status: 500 };
@@ -165,7 +161,6 @@ export async function addMessageController(data: AddMessageData): Promise<{
 
   const response = await req.json().catch((e) => {
     if (e instanceof Error) {
-      console.error("Error adding message:", e.cause);
       return { message: e.message, status: req.status };
     }
     return { message: "Server error", status: 500 };

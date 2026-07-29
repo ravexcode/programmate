@@ -25,7 +25,6 @@ async function handleResponse(req: Response) {
   const response = await req.json()
     .catch((e) => {
       if (e instanceof Error) {
-        console.error("Server error: ", e.cause);
         return {
           message: e.message,
           status: req.status

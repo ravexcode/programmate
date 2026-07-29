@@ -24,8 +24,6 @@ export async function captureController(data: CaptureData) {
   const response = await req.json()
   .catch((e) => {
     if(e instanceof Error) {
-      console.error("Server error:", e.cause);
-
       return {
         message: e.message,
         status: req.status
@@ -39,9 +37,6 @@ export async function captureController(data: CaptureData) {
   });
 
   if(req.status >= 205) {
-    console.error("Expected error:", response);
-    console.error("Current status:", req);
-    
     return {
       message: response.message,
       status: req.status

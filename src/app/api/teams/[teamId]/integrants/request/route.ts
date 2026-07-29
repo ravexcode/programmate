@@ -115,8 +115,6 @@ export async function POST(req: NextRequest, { params }: ParamsType) {
     //Success response
     return NextResponse.json({ message: "Request sent successfully!" });
   } catch(e: unknown) {
-    console.error(e);
-
     serverErrorHandler(e);
   }
 }
