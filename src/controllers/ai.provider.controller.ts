@@ -1,3 +1,5 @@
+import { validateProviderRequest, listProviderModelsRequest } from "@/client/ai-provider";
+
 export type ProviderConfig = {
   name: string;
   validateUrl: string;
@@ -135,11 +137,12 @@ export async function validateProviderController(
   const modelsUrl = provider.modelsUrl;
 
   try {
-    const validateRes = await fetch(validateUrl, {
-      method: provider.method || "GET",
+    const validateRes = await validateProviderRequest(
+      validateUrl,
+      provider.method || "GET",
       headers,
-      body: provider.body ? JSON.stringify(provider.body) : undefined,
-    });
+      provider.body ? JSON.stringify(provider.body) : undefined
+    );
 
     if (!validateRes.ok) {
       return {
@@ -158,10 +161,7 @@ export async function validateProviderController(
         ? `${customUrl.replace(/\/+$/, "")}${new URL(provider.modelsUrl!).pathname}`
         : modelsUrl;
 
-      const modelsRes = await fetch(resolvedModelsUrl, {
-        method: "GET",
-        headers,
-      });
+      const modelsRes = await listProviderModelsRequest(resolvedModelsUrl, headers);
       
       if (modelsRes.ok) {
         const data = await modelsRes.json();

@@ -13,7 +13,8 @@ import {
 import {
   buildChatRequest,
   parseChatResponse,
-} from "@/controllers/ai.chat.controller";
+} from "@/utils/ai-chat";
+import { sendChatRequest } from "@/client/ai";
 
 import LoadingScreen from "@/components/screens/loading-screen";
 import AiLayout from "@/components/ai/layout";
@@ -256,7 +257,7 @@ export default function AiPage({ initialSession }: Props) {
     }
 
     // 5. Call external AI
-    const aiRes = await fetch(chatRequest.url, chatRequest.options);
+    const aiRes = await sendChatRequest(chatRequest.url, chatRequest.options);
 
     if (!aiRes.ok) {
       showSnackbar("AI request failed", "critic", snackbarRef);

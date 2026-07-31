@@ -13,7 +13,8 @@ import BgGradient from "@/components/ui/bg-gradient";
 import { useEffect, useRef, useState } from "react";
 
 //Actions imports
-import { fetchTemplate } from "@/utils/api";
+import { fetchPublicProfileRequest } from "@/client/user";
+import { showSnackbar } from "@/components/ui/snackbar";
 
 //Types imports
 import type { UserData } from "@/types/user.types";
@@ -39,13 +40,13 @@ export default function ProfilePage() {
   //Gets user data
   useEffect(() => {
     async function getUser() {
-      const data = await fetchTemplate(
-        `/api/users/${params.id}`,
-        "GET",
-        snackbar
-      );
+      const res = await fetchPublicProfileRequest(String(params.id));
+      const data = res.data;
 
-      if(!data) return setNotFound(true);
+      if(res.status !== 200 || !data.user) {
+        showSnackbar(data.message || "User not found", (res.status >= 500 ? "critic" : "warn"), snackbar);
+        return setNotFound(true);
+      }
 
       const user_fetched = data.user;
 

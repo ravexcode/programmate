@@ -2,6 +2,8 @@ import animationClose from "@/utils/animation-close";
 
 import { getUser } from "@/modules/user.module";
 
+import { apiFetch } from "@/utils/http";
+
 import type { UserData } from "@/types/user.types";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { Dispatch, SetStateAction } from "react";
@@ -56,4 +58,41 @@ export function useGetData(
 
     get();
   }, []);
+}
+
+//-------- AI transport --------
+
+export async function sendChatRequest(
+  url: string,
+  options: RequestInit
+) {
+  return fetch(url, options);
+}
+
+type ChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+};
+
+export async function chatCompletionRequest(data: {
+  token: string;
+  provider: string;
+  model: string;
+  messages: ChatMessage[];
+}) {
+  const res = await apiFetch("/api/ai/chat", {
+    method: "POST",
+    token: data.token,
+    body: {
+      provider: data.provider,
+      model: data.model,
+      messages: data.messages,
+    },
+  });
+
+  return {
+    message: res.data.message,
+    content: res.data.content,
+    status: res.status,
+  };
 }

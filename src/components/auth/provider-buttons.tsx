@@ -1,5 +1,6 @@
 //React imports
 import { IconBrandGithubFilled, IconBrandGitlab, IconBrandGoogleFilled, IconZoomCancel } from "@tabler/icons-react";
+import { oauthRedirectRequest } from "@/client/auth";
 
 export default function ProviderButton(props: {
   provider: string;
@@ -8,24 +9,15 @@ export default function ProviderButton(props: {
 }) {
   const goToProviderAuth = async() => {
     props.toggler(false);
-    const res = await fetch(`/api/auth/${props.provider.toLowerCase()}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-      }
-    });
+    const res = await oauthRedirectRequest(props.provider);
 
-    if(!res) {
+    if(res.status !== 200) {
       props.toggler(true);
-
-    } else if(res.status !== 200) {
-
-    } else {
-
-      const data = await res.json();
-      window.location.href = data.url;
+      return;
     }
+
+    const data = res.data;
+    window.location.href = data.url;
   }
 
   return (

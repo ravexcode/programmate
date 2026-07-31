@@ -1,4 +1,11 @@
-import type { Status} from "@/types/team.types";
+import {
+  getProjectRequest,
+  createProjectRequest,
+  updateProjectRequest,
+  deleteProjectRequest,
+} from "@/client/project";
+
+import type { Status } from "@/types/team.types";
 import type { UserData } from "@/types/user.types";
 
 type GetData = {
@@ -31,156 +38,52 @@ type DeleteData = {
   id: number;
 }
 
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
-
 //-------- Main functions --------
 export async function getProjectController(data: GetData) {
-  const req = await fetch(
-    `/api/teams/${data.id}`,
-    {
-      "method": "GET",
-      "headers": {
-        "Content-Type": "application/json",
-        "nexzero-api-key": API_KEY,
-        "Authorization": data.token
-      }
-    }
-  );
-
-  const response = await req.json()
-  .catch((e) => {
-    if(e instanceof Error) {
-      return {
-        message: e.message,
-        status: req.status
-      }
-    }
-
-    return {
-      message: "Server error",
-      status: 500
-    }
-  });
+  const req = await getProjectRequest(data.token, data.id);
 
   return {
-    message: response.message,
-    project: response.team,
+    message: req.data.message,
+    project: req.data.team,
     status: req.status
   }
 }
 
 export async function createProjectController(data: CreateData) {
-  const req = await fetch(
-    "/api/teams",
-    {
-      "method": "POST",
-      "headers": {
-        "Content-Type": "application/json",
-        "nexzero-api-key": API_KEY,
-        "Authorization": data.token
-      },
-      body: JSON.stringify({
-        ...data.project,
-        integrants: [
-          {
-            id: data.user.id,
-            email: data.user.email,
-            username: data.user.name,
-            type: "admin",
-            avatar_url: data.user.avatar_url,
-          }
-        ]
-      })
-    }
-  );
-
-  const response = await req.json()
-  .catch((e) => {
-    if(e instanceof Error) {
-      return {
-        message: e.message,
-        status: req.status
+  const req = await createProjectRequest(data.token, {
+    ...data.project,
+    integrants: [
+      {
+        id: data.user.id,
+        email: data.user.email,
+        username: data.user.name,
+        type: "admin",
+        avatar_url: data.user.avatar_url,
       }
-    }
-
-    return {
-      message: "Server error",
-      status: 500
-    }
+    ]
   });
 
   return {
-    message: response.message,
-    project: response.team,
+    message: req.data.message,
+    project: req.data.team,
     status: req.status
   }
 }
 
 export async function updateProjectController(data: UpdateData) {
-  const req = await fetch(
-    "/api/teams",
-    {
-      "method": "PUT",
-      "headers": {
-        "Content-Type": "application/json",
-        "nexzero-api-key": API_KEY,
-        "Authorization": data.token
-      },
-      body: JSON.stringify(data.project)
-    }
-  );
-
-  const response = await req.json()
-  .catch((e) => {
-    if(e instanceof Error) {
-      return {
-        message: e.message,
-        status: req.status
-      }
-    }
-
-    return {
-      message: "Server error",
-      status: 500
-    }
-  });
+  const req = await updateProjectRequest(data.token, data.project);
 
   return {
-    message: response.message,
+    message: req.data.message,
     status: req.status
   }
 }
 
 export async function deleteProjectController(data: DeleteData) {
-  const req = await fetch(
-    `/api/teams/${data.id}`,
-    {
-      "method": "DELETE",
-      "headers": {
-        "Content-Type": "application/json",
-        "nexzero-api-key": API_KEY,
-        "Authorization": data.token
-      }
-    }
-  );
-
-  const response = await req.json()
-  .catch((e) => {
-    if(e instanceof Error) {
-      return {
-        message: e.message,
-        status: req.status
-      }
-    }
-
-    return {
-      message: "Server error",
-      status: 500
-    }
-  });
+  const req = await deleteProjectRequest(data.token, data.id);
 
   return {
-    message: response.message,
+    message: req.data.message,
     status: req.status
   }
 }

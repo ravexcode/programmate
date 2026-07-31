@@ -12,7 +12,7 @@ import { UserData } from "@/types/user.types";
 
 //Prebuild ui imports
 import SideBar, { Icon } from "@/components/ui/sidebar";
-import SnackBar from "@/components/ui/snackbar";
+import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import LoadingScreen from "@/components/screens/loading-screen";
 
 //Board components imports
@@ -28,7 +28,8 @@ import { getUser } from "@/modules/user.module";
 import { getTeam } from "@/modules/project/main.module";
 
 //Actions imports
-import { fetchTemplate } from "@/utils/api";
+import { saveKanbanRequest } from "@/client/project";
+import checkStatus from "@/utils/check-status";
 
 //Icons imports
 import {
@@ -142,17 +143,12 @@ export default function KanBanBoard() {
     if(!token) return router.push("/auth/signin");
 
     setIsLoading(true);
-    await fetchTemplate(
-      `/api/teams/${team.team_id}/kanban`,
-      "POST",
-      snackbar,
-      {
-        "Authorization": token
-      },
-      JSON.stringify({
-        kanban_data: team.kanban_board
-      })
-    )
+    const res = await saveKanbanRequest(
+      token,
+      team.team_id,
+      team.kanban_board
+    );
+    showSnackbar(res.data.message, checkStatus(res.status), snackbar);
     setIsLoading(false);
   }
 

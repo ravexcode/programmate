@@ -10,6 +10,9 @@ import { useEffect, useState, useRef } from "react";
 //Hooks imports
 import { getSessionStr } from "@/services/session.service";
 
+//Client imports
+import { saveTasksRequest } from "@/client/todo";
+
 //Components imports
 import SideBar from "@/components/ui/sidebar";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
@@ -81,23 +84,13 @@ export default function ToDoListPage() {
 
     if(!token) return router.push("/auth/signin");
 
-    const res = await fetch(
-      `/api/todos`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json",
-          "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-          "Authorization": token
-        },
-        body: JSON.stringify({
-          tasks,
-          list_index: params.index,
-        })
-      }
+    const res = await saveTasksRequest(
+      token,
+      Number(params.index),
+      tasks || []
     );
 
-    const data = await res.json();
+    const data = res.data;
 
     if(res.status === 200) {
       showSnackbar(data.message, "valid", snackbar);

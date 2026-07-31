@@ -1,3 +1,9 @@
+import {
+  fetchProfileRequest,
+  updateUserRequest,
+  updateAiProvidersRequest,
+} from "@/client/user";
+
 type GetData = {
   token: string;
 }
@@ -20,117 +26,35 @@ type UpdateAiProvidersData = {
   }>;
 }
 
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
-
 export async function fetchProfile(data: GetData) {
-  const req = await fetch(
-    `/api/users/me`,
-    {
-      "method": "GET",
-      "headers": {
-        "Content-Type": "application/json",
-        "nexzero-api-key": API_KEY,
-        "Authorization": data.token
-      },
-    }
-  );
-
-  const response = await req.json()
-  .catch((e) => {
-    if(e instanceof Error) {
-
-      return {
-        message: e.message,
-        status: req.status
-      }
-    }
-
-    return {
-      message: "Server error",
-      status: 500
-    }
-  });
+  const req = await fetchProfileRequest(data.token);
 
   return {
-    message: response.message,
+    message: req.data.message,
     data: {
-      user: response.user,
-      profile: response.profile,
-      payments: response.payments,
-      projects: response.teams
+      user: req.data.user,
+      profile: req.data.profile,
+      payments: req.data.payments,
+      projects: req.data.teams
     },
     status: req.status
   }
 }
 
 export async function UpdateUserController(data: UpdateData) {
-  const req = await fetch(
-    `/api/users/update`,
-    {
-      "method": "POST",
-      "headers": {
-        "Content-Type": "application/json",
-        "nexzero-api-key": API_KEY,
-        "Authorization": data.token
-      },
-      body: JSON.stringify(data.updatable)
-    }
-  );
-
-  const response = await req.json()
-  .catch((e) => {
-    if(e instanceof Error) {
-
-      return {
-        message: e.message,
-        status: req.status
-      }
-    }
-
-    return {
-      message: "Server error",
-      status: 500
-    }
-  });
+  const req = await updateUserRequest(data.token, data.updatable);
 
   return {
-    message: response.message,
+    message: req.data.message,
     status: req.status
   }
 }
 
 export async function updateAiProvidersController(data: UpdateAiProvidersData) {
-  const req = await fetch(
-    `/api/users/update`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "nexzero-api-key": API_KEY,
-        "Authorization": data.token
-      },
-      body: JSON.stringify({ ai: data.ai_providers })
-    }
-  );
-
-  const response = await req.json()
-  .catch((e) => {
-    if(e instanceof Error) {
-
-      return {
-        message: e.message,
-        status: req.status
-      }
-    }
-
-    return {
-      message: "Server error",
-      status: 500
-    }
-  });
+  const req = await updateAiProvidersRequest(data.token, data.ai_providers);
 
   return {
-    message: response.message,
+    message: req.data.message,
     status: req.status
   }
 }

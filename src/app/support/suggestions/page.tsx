@@ -14,6 +14,9 @@ import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import CreatorInput from "@/components/forms/creator-inputs";
 import MainButton from "@/components/ui/buttons/main";
 
+//Client imports
+import { submitSuggestionRequest } from "@/client/support";
+
 export default function SuggestionsPage() {
   //Next setup
   const router = useRouter();
@@ -34,20 +37,13 @@ export default function SuggestionsPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/support/suggestions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!
-        },
-        body: JSON.stringify({
-          title,
-          description,
-          email: email || "",
-        }),
+      const response = await submitSuggestionRequest({
+        title,
+        description,
+        email: email || "",
       });
 
-      const data = await response.json();
+      const data = response.data;
 
       if (response.status !== 201) {
         showSnackbar(data.message, (response.status >= 500 ? "critic" : "warn"), snackbar);

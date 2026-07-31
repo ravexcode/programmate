@@ -1,3 +1,10 @@
+import {
+  createTicketRequest,
+  updateTicketRequest,
+  getTicketRequest,
+  deleteTicketRequest,
+} from "@/client/ticket";
+
 import type { Ticket } from "@/types/team.types";
 
 type CreateData = {
@@ -19,98 +26,49 @@ type RequestData = {
   index?: number;
 }
 
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
-
-async function handleResponse(req: Response) {
-  const response = await req.json()
-    .catch((e) => {
-      if (e instanceof Error) {
-        return {
-          message: e.message,
-          status: req.status
-        }
-      }
-
-      return {
-        message: "Server error",
-        status: 500
-      }
-    });
+export async function createTicketController(data: CreateData) {
+  const req = await createTicketRequest(data.token, {
+    id: data.id,
+    ticket: data.ticket,
+  });
 
   return {
-    message: response.message,
+    message: req.data.message,
     status: req.status,
-    data: response.data || response
+    data: req.data.data || req.data
   }
 }
 
-export async function createTicketController(data: CreateData) {
-  const req = await fetch(
-    `/api/teams/${data.id}/tickets`,
-    {
-      "method": "POST",
-      "headers": {
-        "Content-Type": "application/json",
-        "nexzero-api-key": API_KEY,
-        "Authorization": data.token
-      },
-      body: JSON.stringify({
-        ...data.ticket,
-        teamId: data.id
-      })
-    }
-  );
-
-  return handleResponse(req);
-}
-
 export async function updateTicketController(data: UpdateData) {
-  const req = await fetch(
-    `/api/teams/${data.id}/tickets`,
-    {
-      "method": "PUT",
-      "headers": {
-        "Content-Type": "application/json",
-        "nexzero-api-key": API_KEY,
-        "Authorization": data.token
-      },
-      body: JSON.stringify({
-        ...data.ticket,
-        index: data.index,
-        teamId: data.id
-      })
-    }
-  );
+  const req = await updateTicketRequest(data.token, {
+    id: data.id,
+    index: data.index,
+    ticket: data.ticket,
+  });
 
-  return handleResponse(req);
+  return {
+    message: req.data.message,
+    status: req.status,
+    data: req.data.data || req.data
+  }
 }
 
 export async function getTicketController(data: RequestData) {
-  const req = await fetch(
-    `/api/teams/${data.teamId}/tickets/${data.index}`,
-    {
-      "method": "GET",
-      "headers": {
-        "nexzero-api-key": API_KEY,
-        "Authorization": data.token
-      }
-    }
-  );
+  const req = await getTicketRequest(data.token, data.teamId, data.index);
 
-  return handleResponse(req);
+  return {
+    message: req.data.message,
+    status: req.status,
+    data: req.data.data || req.data
+  }
 }
 
 export async function deleteTicketController(data: RequestData) {
-  const req = await fetch(
-    `/api/teams/${data.teamId}/tickets/${data.index}`,
-    {
-      "method": "DELETE",
-      "headers": {
-        "nexzero-api-key": API_KEY,
-        "Authorization": data.token
-      }
-    }
-  );
+  const req = await deleteTicketRequest(data.token, data.teamId, data.index);
 
-  return handleResponse(req);
+  return {
+    message: req.data.message,
+    status: req.status,
+    data: req.data.data || req.data
+  }
 }

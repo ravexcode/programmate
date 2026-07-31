@@ -1,6 +1,13 @@
 //Types
 import type { CalendarDate } from "@/types/team.types";
 
+//Client
+import {
+  createEventRequest,
+  updateEventRequest,
+  deleteEventRequest,
+} from "@/client/calendar";
+
 type UploadData = {
   id: number;
   content: CalendarDate;
@@ -20,116 +27,29 @@ type DeleteData = {
   token: string;
 }
 
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
-
 export async function createEventController(data: UploadData) {
-  const req = await fetch(
-    `/api/teams/${data.id}/calendar`,
-    {
-      "method": "POST",
-      "headers": {
-        "Content-Type": "application/json",
-        "nexzero-api-key": API_KEY,
-        "Authorization": data.token
-      },
-      body: JSON.stringify({
-        event: data.content
-      })
-    }
-  );
-
-  const response = await req.json()
-  .catch((e) => {
-    if(e instanceof Error) {
-      return {
-        message: e.message,
-        status: req.status
-      }
-    }
-
-    return {
-      message: "Server error",
-      status: 500
-    }
-  });
+  const req = await createEventRequest(data.token, data.id, data.content);
 
   return {
-    message: response.message,
-    status: response.status
+    message: req.data.message,
+    status: req.data.status
   }
 }
 
 export async function updateEventController(data: UpdateData) {
-  const req = await fetch(
-    `/api/teams/${data.id}/calendar`,
-    {
-      "method": "PUT",
-      "headers": {
-        "Content-Type": "application/json",
-        "nexzero-api-key": API_KEY,
-        "Authorization": data.token
-      },
-      body: JSON.stringify({
-        event: data.content,
-        eventIndex: data.index
-      })
-    }
-  );
-
-  const response = await req.json()
-  .catch((e) => {
-    if(e instanceof Error) {
-      return {
-        message: e.message,
-        status: req.status
-      }
-    }
-
-    return {
-      message: "Server error",
-      status: 500
-    }
-  });
+  const req = await updateEventRequest(data.token, data.id, data.index, data.content);
 
   return {
-    message: response.message,
-    status: response.status
+    message: req.data.message,
+    status: req.data.status
   }
 }
 
 export async function deleteEventController(data: DeleteData) {
-  const req = await fetch(
-    `/api/teams/${data.id}/calendar`,
-    {
-      "method": "DELETE",
-      "headers": {
-        "Content-Type": "application/json",
-        "nexzero-api-key": API_KEY,
-        "Authorization": data.token
-      },
-      "body": JSON.stringify({
-        eventIndex: data.index
-      })
-    }
-  );
-
-  const response = await req.json()
-  .catch((e) => {
-    if(e instanceof Error) {
-      return {
-        message: e.message,
-        status: req.status
-      }
-    }
-
-    return {
-      message: "Server error",
-      status: 500
-    }
-  });
+  const req = await deleteEventRequest(data.token, data.id, data.index);
 
   return {
-    message: response.message,
-    status: response.status
+    message: req.data.message,
+    status: req.data.status
   }
 }

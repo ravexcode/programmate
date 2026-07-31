@@ -1,3 +1,4 @@
+import { signInRequest, signUpRequest } from "@/client/auth";
 import { getSessionStr } from "@/services/session.service";
 
 type SignInCredentials = {
@@ -17,43 +18,23 @@ type AuthResponse = {
   token?: string;
 };
 
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
-
 export async function signInController(credentials: SignInCredentials): Promise<AuthResponse> {
-  const res = await fetch("/api/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "nexzero-api-key": API_KEY,
-    },
-    body: JSON.stringify(credentials),
-  });
-
-  const data = await res.json().catch(() => ({ message: "Server error", status: res.status }));
+  const res = await signInRequest(credentials);
 
   return {
     status: res.status,
-    message: data.message,
-    token: data.token,
+    message: res.data.message,
+    token: res.data.token,
   };
 }
 
 export async function signUpController(credentials: SignUpCredentials): Promise<AuthResponse> {
-  const res = await fetch("/api/auth/register", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "nexzero-api-key": API_KEY,
-    },
-    body: JSON.stringify(credentials),
-  });
-
-  const data = await res.json().catch(() => ({ message: "Server error", status: res.status }));
+  const res = await signUpRequest(credentials);
 
   return {
     status: res.status,
-    message: data.message,
-    token: data.token,
+    message: res.data.message,
+    token: res.data.token,
   };
 }
 

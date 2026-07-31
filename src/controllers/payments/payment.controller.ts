@@ -1,51 +1,23 @@
+import { captureRequest } from "@/client/payment";
+
 type CaptureData = {
   plan: "pro" | "enterprise";
   token: string;
 }
 
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
-
 export async function captureController(data: CaptureData) {
-  const req = await fetch(
-    "/api/payments/capture",
-    {
-      "method": "POST",
-      "headers": {
-        "Content-Type": "application/json",
-        "nexzero-api-key": API_KEY,
-        "Authorization": data.token
-      },
-      body: JSON.stringify({
-        plan: data.plan
-      })
-    }
-  );
-
-  const response = await req.json()
-  .catch((e) => {
-    if(e instanceof Error) {
-      return {
-        message: e.message,
-        status: req.status
-      }
-    }
-
-    return {
-      message: "Server error",
-      status: 500
-    }
-  });
+  const req = await captureRequest(data.token, data.plan);
 
   if(req.status >= 205) {
     return {
-      message: response.message,
+      message: req.data.message,
       status: req.status
     };
   }
 
   return {
-    message: response.message,
+    message: req.data.message,
     status: req.status,
-    link: response.checkout_link
+    link: req.data.checkout_link
   }
 }

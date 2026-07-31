@@ -1,5 +1,3 @@
-import type { AiChatMessage } from "@/types/ai.types";
-
 type ChatMessage = {
   role: "user" | "assistant";
   content: string;
@@ -16,12 +14,6 @@ type ChatRequestInput = {
 type ChatRequest = {
   url: string;
   options: RequestInit;
-};
-
-type ChatResponse = {
-  status: number;
-  message: string;
-  content?: string;
 };
 
 /**
@@ -187,43 +179,4 @@ export function parseChatResponse(
     default:
       return null;
   }
-}
-
-/**
- * Client-side controller: calls our /api/ai/chat server route.
- */
-export async function chatCompletionController(data: {
-  token: string;
-  provider: string;
-  model: string;
-  messages: ChatMessage[];
-}): Promise<ChatResponse> {
-  const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
-
-  const req = await fetch("/api/ai/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "nexzero-api-key": API_KEY,
-      Authorization: data.token,
-    },
-    body: JSON.stringify({
-      provider: data.provider,
-      model: data.model,
-      messages: data.messages,
-    }),
-  });
-
-  const response = await req.json().catch((e) => {
-    if (e instanceof Error) {
-      return { message: e.message, status: req.status };
-    }
-    return { message: "Server error", status: 500 };
-  });
-
-  return {
-    message: response.message,
-    content: response.content,
-    status: req.status,
-  };
 }

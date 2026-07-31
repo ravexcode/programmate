@@ -14,6 +14,9 @@ import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import CreatorInput from "@/components/forms/creator-inputs";
 import MainButton from "@/components/ui/buttons/main";
 
+//Client imports
+import { submitBugRequest } from "@/client/support";
+
 export default function BugReportsPage() {
   //Next setup
   const router = useRouter();
@@ -38,24 +41,17 @@ export default function BugReportsPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/support/bugs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "nexzero-api-key": process.env.NEXT_PUBLIC_API_KEY!
-        },
-        body: JSON.stringify({
-          title,
-          description,
-          steps,
-          version,
-          email: email || "",
-          screenshot_url: screenUrl || "",
-          error_date: errorDate
-        }),
+      const response = await submitBugRequest({
+        title,
+        description,
+        steps,
+        version,
+        email: email || "",
+        screenshot_url: screenUrl || "",
+        error_date: errorDate
       });
 
-      const data = await response.json();
+      const data = response.data;
 
       if (response.status !== 201) {
         showSnackbar(data.message, (response.status >= 500 ? "critic" : "warn"), snackbar);

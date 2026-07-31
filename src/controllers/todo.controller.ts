@@ -1,4 +1,8 @@
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
+import {
+  createTodoRequest,
+  updateTodoRequest,
+  deleteTodoRequest,
+} from "@/client/todo";
 
 type CreateTodoData = {
   token: string;
@@ -21,110 +25,42 @@ type DeleteTodoData = {
 };
 
 export async function createTodo(data: CreateTodoData) {
-  const req = await fetch("/api/todos", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "nexzero-api-key": API_KEY,
-      "Authorization": data.token,
-    },
-    body: JSON.stringify({
-      list_title: data.list_title,
-      list_description: data.list_description,
-      tags: data.tags,
-    }),
-  });
-
-  const response = await req.json().catch((e) => {
-    if (e instanceof Error) {
-      return {
-        message: e.message,
-        error: true,
-      };
-    }
-
-    return {
-      message: "Server error",
-      error: true,
-    };
+  const req = await createTodoRequest(data.token, {
+    list_title: data.list_title,
+    list_description: data.list_description,
+    tags: data.tags,
   });
 
   return {
-    message: response.message,
-    error: response.error,
+    message: req.data.message,
+    error: req.data.error,
     status: req.status,
   };
 }
 
 export async function updateTodo(data: UpdateTodoData) {
-  const req = await fetch("/api/todos", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "nexzero-api-key": API_KEY,
-      "Authorization": data.token,
+  const req = await updateTodoRequest(data.token, {
+    list_index: data.list_index,
+    content: {
+      title: data.title,
+      description: data.description,
+      tags: data.tags,
     },
-    body: JSON.stringify({
-      list_index: data.list_index,
-      content: {
-        title: data.title,
-        description: data.description,
-        tags: data.tags,
-      },
-    }),
-  });
-
-  const response = await req.json().catch((e) => {
-    if (e instanceof Error) {
-      return {
-        message: e.message,
-        error: true,
-      };
-    }
-
-    return {
-      message: "Server error",
-      error: true,
-    };
   });
 
   return {
-    message: response.message,
-    error: response.error,
+    message: req.data.message,
+    error: req.data.error,
     status: req.status,
   };
 }
 
 export async function deleteTodo(data: DeleteTodoData) {
-  const req = await fetch("/api/todos", {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "nexzero-api-key": API_KEY,
-      "Authorization": data.token,
-    },
-    body: JSON.stringify({
-      list_index: data.list_index,
-    }),
-  });
-
-  const response = await req.json().catch((e) => {
-    if (e instanceof Error) {
-      return {
-        message: e.message,
-        error: true,
-      };
-    }
-
-    return {
-      message: "Server error",
-      error: true,
-    };
-  });
+  const req = await deleteTodoRequest(data.token, data.list_index);
 
   return {
-    message: response.message,
-    error: response.error,
+    message: req.data.message,
+    error: req.data.error,
     status: req.status,
   };
 }

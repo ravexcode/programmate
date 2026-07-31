@@ -1,3 +1,5 @@
+- **0.104.0:** Reorganizacion en la seccion de clientes, eliminando el modelo msc para cliente y dejandolo solamente para servidor
+
 - **0.103.0:** Reorganizacion de carpetas dentro del proyecto. Carpertas:
   1. /src/hooks/
   2. /src/functions/
