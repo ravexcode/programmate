@@ -11,7 +11,7 @@ import {
 } from "@api/handlers";
 
 //Lib imports
-import supabase from "@/lib/db";
+import supabase from "@/lib/server/db";
 
 //Types imports
 import { CalendarDate } from "@/types/team.types";

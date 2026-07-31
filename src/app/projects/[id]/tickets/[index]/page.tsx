@@ -11,7 +11,7 @@ import { useState, useRef, useEffect } from "react";
 //Prebuilt ui imports
 import SnackBar from "@/components/ui/snackbar";
 import LoadingScreen from "@/components/screens/loading-screen";
-import ReactMarkdown from "@/lib/components/react-markdown";
+import ReactMarkdown from "@/components/ui/react-markdown";
 
 //Modules imports
 import { getUser } from "@/modules/user.module";

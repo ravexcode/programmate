@@ -8,7 +8,7 @@ import LandingGradient from "@/components/marketing/gradients/landing";
 import MiniCode from "@/components/marketing/mini-code";
 
 //Hooks imports
-import SmoothProvider from "@/lib/components/lennis";
+import SmoothProvider from "@/components/ui/smooth-provider";
 
 //Icons imports
 import { IconArrowDown } from "@tabler/icons-react";

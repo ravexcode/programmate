@@ -1,5 +1,5 @@
 //Lib imports
-import supabase from "@/lib/db";
+import supabase from "@/lib/server/db";
 
 import { serverErrorHandler, badRequestErrorHandler } from "@/app/api/handlers";
 

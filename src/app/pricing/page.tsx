@@ -12,7 +12,7 @@ import PricingCard from "@/components/marketing/pricing-card";
 import SnackBar from "@/components/ui/snackbar";
 
 //Providers imports
-import SmoothProvider from "@/lib/components/lennis";
+import SmoothProvider from "@/components/ui/smooth-provider";
 
 //Services imports
 import { getSessionStr } from "@/services/session.service";

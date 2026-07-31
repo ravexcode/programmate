@@ -1,7 +1,7 @@
 //Lib imports
-import { stripe } from "@/lib/stripe";
-import supabase from "@/lib/db";
-import { resend } from "@/lib/resend";
+import { stripe } from "@/lib/server/stripe";
+import supabase from "@/lib/server/db";
+import { resend } from "@/lib/server/resend";
 import { PaymentTemplate } from "@/resend/templates";
 
 //Next imports

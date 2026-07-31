@@ -11,7 +11,7 @@ import Link from "next/link";
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 import LandingGradient from "@/components/marketing/gradients/landing";
-import SmoothProvider from "@/lib/components/lennis";
+import SmoothProvider from "@/components/ui/smooth-provider";
 import SnackBar from "@/components/ui/snackbar";
 import FeatureCard from "@/components/marketing/feature-card";
 

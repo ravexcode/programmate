@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 
 //Lib imports
-import supabase from "@/lib/db";
+import supabase from "@/lib/server/db";
 
 //Functions imports
 import { Decrypt } from "@/functions/crypto";

@@ -3,8 +3,8 @@ import { type NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 
 //Lib imports
-import { stripe } from "@/lib/stripe";
-import supabase from "@/lib/db";
+import { stripe } from "@/lib/server/stripe";
+import supabase from "@/lib/server/db";
 
 //Handlers imports
 import * as Handler from "@/app/api/handlers";

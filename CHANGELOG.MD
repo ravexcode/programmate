@@ -1,3 +1,5 @@
+- **0.102.0:** Lib reorganization
+
 - **0.101.0:** Pagina de calendario con logica y semifuncional
 
 - **0.100.0:** Mensajes de consola eliminados

@@ -7,7 +7,7 @@ import Link from "next/link";
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 
-import SmoothProvider from "@/lib/components/lennis";
+import SmoothProvider from "@/components/ui/smooth-provider";
 import Image from "next/image";
 
 export default function ProductPage() {

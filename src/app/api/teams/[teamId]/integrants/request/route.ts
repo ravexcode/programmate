@@ -3,8 +3,8 @@ import { type NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 
 //Lib imports
-import supabase from "@/lib/db";
-import { resend } from "@/lib/resend";
+import supabase from "@/lib/server/db";
+import { resend } from "@/lib/server/resend";
 
 //Resend templates
 import { RequestTemplate } from "@/resend/templates";

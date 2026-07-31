@@ -5,7 +5,7 @@ import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 
 //Scroll hook provider
-import SmoothProvider from "@/lib/components/lennis";
+import SmoothProvider from "@/components/ui/smooth-provider";
 
 //React imports
 

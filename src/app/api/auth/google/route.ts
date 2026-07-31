@@ -1,5 +1,5 @@
 //lib imports
-import supabase from "@/lib/db";
+import supabase from "@/lib/server/db";
 import { NextResponse } from "next/server";
 
 import * as Handler from "@/app/api/handlers";

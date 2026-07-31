@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 
 //Lib imports
-import supabase from "@/lib/db";
+import supabase from "@/lib/server/db";
 
 
 //Handlers imports

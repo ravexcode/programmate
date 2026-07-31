@@ -9,7 +9,7 @@ import { useState, useRef } from "react";
 //Components imports
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
-import SmoothProvider from "@/lib/components/lennis";
+import SmoothProvider from "@/components/ui/smooth-provider";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import CreatorInput from "@/components/forms/creator-inputs";
 import MainButton from "@/components/ui/buttons/main";

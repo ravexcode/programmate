@@ -1,5 +1,5 @@
 //Lib imports
-import supabase from "@/lib/db";
+import supabase from "@/lib/server/db";
 
 //NextJS imports
 import { type NextRequest, NextResponse } from "next/server";

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 
 import * as Handler from "@/app/api/handlers";
-import supabase from "@/lib/db";
+import supabase from "@/lib/server/db";
 
 export async function GET() {
   try {

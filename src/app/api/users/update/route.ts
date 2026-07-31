@@ -10,7 +10,7 @@ import {
   supabaseErrorHandler,
   unauthorizedErrorHandler
 } from "@api/handlers";
-import supabase from "@/lib/db";
+import supabase from "@/lib/server/db";
 import { Encrypt } from "@/functions/crypto";
 
 export async function PUT(req: NextRequest) {
