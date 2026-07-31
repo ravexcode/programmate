@@ -2,7 +2,7 @@
 import { stripe } from "@/lib/server/stripe";
 import supabase from "@/lib/server/db";
 import { resend } from "@/lib/server/resend";
-import { PaymentTemplate } from "@/resend/templates";
+import { PaymentTemplate } from "@/lib/server/email-templates";
 
 //Next imports
 import { NextRequest, NextResponse } from "next/server";

@@ -12,7 +12,7 @@ import LoadingDashboard from "@/components/screens/loading-screen";
 import SnackBar from "@/components/ui/snackbar";
 
 //Hooks imports
-import animationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/utils/animation-close";
 
 //React imports
 import { useEffect, useRef, useState } from "react";

@@ -13,7 +13,7 @@ import BgGradient from "@/components/ui/bg-gradient";
 import { useEffect, useRef, useState } from "react";
 
 //Actions imports
-import { fetchTemplate } from "@/actions/template";
+import { fetchTemplate } from "@/utils/api";
 
 //Types imports
 import type { UserData } from "@/types/user.types";

@@ -11,7 +11,7 @@ import {
   unauthorizedErrorHandler
 } from "@api/handlers";
 import supabase from "@/lib/server/db";
-import { Encrypt } from "@/functions/crypto";
+import { Encrypt } from "@/lib/server/crypto";
 
 export async function PUT(req: NextRequest) {
   try {

@@ -1,4 +1,10 @@
-- **0.102.0:** Lib reorganization
+- **0.103.0:** Reorganizacion de carpetas dentro del proyecto. Carpertas:
+  1. /src/hooks/
+  2. /src/functions/
+  3. /src/resend/
+  4. /src/actions/
+
+- **0.102.0:** Reorganizacion de la carpeta lib
 
 - **0.101.0:** Pagina de calendario con logica y semifuncional
 

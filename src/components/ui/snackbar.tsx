@@ -1,5 +1,5 @@
 //Hooks imports
-import animationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/utils/animation-close";
 
 export default function SnackBar({ ref } : { ref :React.RefObject<null> }) {
   return (

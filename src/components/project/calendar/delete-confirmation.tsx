@@ -7,7 +7,7 @@ import AltButton from "@/components/ui/buttons/alternate";
 
 import { IconAlertTriangle } from "@tabler/icons-react";
 
-import animationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/utils/animation-close";
 
 type Props = {
   title: string;

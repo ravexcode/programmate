@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 //Hooks imports
-import { getCached } from "@/hooks/cache.hook";
+import { getCached } from "@/utils/cache";
 import { deleteSessionStr, getSessionStr } from "@/services/session.service";
 
 //Prebuilt UI imports

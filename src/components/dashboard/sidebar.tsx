@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { memo, useState, useRef } from "react";
 
 //Hooks imports
-import animationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/utils/animation-close";
 
 //Prebuilt UI imports
 import Icon from "./icon";

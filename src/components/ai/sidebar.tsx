@@ -20,7 +20,7 @@ import {
   IconUserCircle,
 } from "@tabler/icons-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import animationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/utils/animation-close";
 import Icon from "../dashboard/icon";
 import { deleteSession } from "@/modules/ai.session.module";
 import { getUser } from "@/modules/user.module";

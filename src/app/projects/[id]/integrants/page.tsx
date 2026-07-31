@@ -10,7 +10,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
 //Hooks imports
-import animationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/utils/animation-close";
 
 //Modules imports
 import { getUser } from "@/modules/user.module";
@@ -18,7 +18,7 @@ import { getProject } from "@/modules/project/main.module";
 import { requestIntegrant, changeRole, removeMember, searchUsers } from "@/modules/project/integrants.module";
 
 //Functions imports
-import { isUserAdmin, getMemberById } from "@/functions/admin";
+import { isUserAdmin, getMemberById } from "@/utils/team-admin";
 
 //Prebuilt ui imports
 import SideBar, { Icon } from "@/components/ui/sidebar";

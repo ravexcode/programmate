@@ -78,38 +78,6 @@ export function RequestTemplate({
   );
 }
 
-export interface LoginWarnProps {
-  username: string;
-  logged_in: Date
-}
-
-export function LoginWarn(props : LoginWarnProps){
-  return (
-    <div
-    className="w-150 px-6 py-10 rounded-xl bg-neutral-900 text-text text-center">
-      <h2
-      className="font-semibold tracking-wide text-xl">
-        You&apos;ve logged in at: { props.logged_in.toLocaleTimeString() }
-      </h2>
-
-      <p
-      className="mt-5">
-        Hello {props.username.toLowerCase()}, you&apos;ve logged in NexZero..
-      </p>
-
-      <p
-      className="mt-2 mb-10">
-        If it wasn&apos;t you, we recommend changing your password now!
-      </p>
-      
-      <footer
-      className="opacity-80 mt-10 text-sm font-light">
-        NexZero - 2026
-      </footer>
-    </div>
-  )
-}
-
 interface PaymentTemplateProps {
   recipt_link: string;
   amount?: number;

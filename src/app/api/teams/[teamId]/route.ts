@@ -5,7 +5,7 @@ import supabase from "@/lib/server/db";
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { Ticket } from "@/types/team.types";
-import { Decrypt } from "@/functions/crypto";
+import { Decrypt } from "@/lib/server/crypto";
 
 //Handlers imports
 import {

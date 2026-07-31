@@ -9,7 +9,7 @@ import { useEffect, useState, useRef } from "react";
 
 //Hooks imports
 import { getSessionStr } from "@/services/session.service";
-import animationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/utils/animation-close";
 
 //Components imports
 import SideBar, { Icon } from "@/components/ui/sidebar";

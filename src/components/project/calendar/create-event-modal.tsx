@@ -7,7 +7,7 @@ import CreatorInput from "@/components/forms/creator-inputs";
 import DateInput from "@/components/forms/date-input";
 import OptionsInput from "@/components/forms/options-input";
 
-import animationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/utils/animation-close";
 
 import type {
   CalendarDate,

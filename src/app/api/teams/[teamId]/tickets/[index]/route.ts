@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 import supabase from "@/lib/server/db";
 
 //Functions imports
-import { Decrypt } from "@/functions/crypto";
+import { Decrypt } from "@/lib/server/crypto";
 
 //Handlers imports
 import {

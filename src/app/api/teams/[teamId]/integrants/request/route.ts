@@ -7,7 +7,7 @@ import supabase from "@/lib/server/db";
 import { resend } from "@/lib/server/resend";
 
 //Resend templates
-import { RequestTemplate } from "@/resend/templates";
+import { RequestTemplate } from "@/lib/server/email-templates";
 
 //Types imports
 import { ParamsType } from "@/app/api/teams/[teamId]/params.type";

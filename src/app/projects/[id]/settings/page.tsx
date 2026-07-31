@@ -22,7 +22,7 @@ import { deleteSessionStr, getSessionStr } from "@/services/session.service";
 //Types imports
 import { UserData } from "@/types/user.types";
 import Team, { type Status } from "@/types/team.types";
-import { getCached } from "@/hooks/cache.hook";
+import { getCached } from "@/utils/cache";
 
 //Icons imports
 import {
@@ -33,7 +33,7 @@ import {
 } from "@tabler/icons-react";
 import MainButton from "@/components/ui/buttons/main";
 import HazardButton from "@/components/ui/buttons/hazard";
-import animationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/utils/animation-close";
 
 //Modules imports
 import { updateProject, deleteProjectControllerProject } from "@/modules/project/main.module";

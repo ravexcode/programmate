@@ -21,14 +21,14 @@ import List from "@/components/projects/kanban/list";
 
 //Hooks imports
 import { deleteSessionStr, getSessionStr } from "@/services/session.service";
-import { getCached } from "@/hooks/cache.hook";
+import { getCached } from "@/utils/cache";
 
 //Services imports
 import { getUser } from "@/modules/user.module";
 import { getTeam } from "@/modules/project/main.module";
 
 //Actions imports
-import { fetchTemplate } from "@/actions/template";
+import { fetchTemplate } from "@/utils/api";
 
 //Icons imports
 import {

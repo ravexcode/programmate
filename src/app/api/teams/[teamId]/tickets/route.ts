@@ -7,7 +7,7 @@ import { headers } from "next/headers";
 
 //Types
 import { Ticket } from "@/types/team.types";
-import { Encrypt } from "@/functions/crypto";
+import { Encrypt } from "@/lib/server/crypto";
 
 //Handlers
 import {

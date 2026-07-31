@@ -13,7 +13,7 @@ import EditEventModal from "./edit-event-modal";
 import DeleteConfirmation from "./delete-confirmation";
 
 import { deleteSessionStr, getSessionStr } from "@/services/session.service";
-import { getCached } from "@/hooks/cache.hook";
+import { getCached } from "@/utils/cache";
 import { getUser } from "@/modules/user.module";
 import { getTeam } from "@/modules/project/main.module";
 import {

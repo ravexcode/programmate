@@ -20,7 +20,7 @@ import {
 } from "@tabler/icons-react";
 
 //Hooks imports
-import animationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/utils/animation-close";
 
 //Icon interface
 export interface IconProps {

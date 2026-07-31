@@ -28,7 +28,7 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 
-import animationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/utils/animation-close";
 
 //Types setup
 //Imports

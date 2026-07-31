@@ -1,4 +1,4 @@
-import animationClose from "@/hooks/useAnimationClose";
+import animationClose from "@/utils/animation-close";
 
 import { getUser } from "@/modules/user.module";
 
