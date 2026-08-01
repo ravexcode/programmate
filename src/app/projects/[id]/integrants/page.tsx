@@ -21,7 +21,7 @@ import { requestIntegrant, changeRole, removeMember, searchUsers } from "@/modul
 import { isUserAdmin, getMemberById } from "@/utils/team-admin";
 
 //Prebuilt ui imports
-import SideBar, { Icon } from "@/components/ui/sidebar";
+import TeamSideBar from "@/components/dashboard/team-sidebar";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import SnackBar from "@/components/ui/snackbar";
 import ConfirmationCard from "@/components/ui/confirmation-card";
@@ -30,19 +30,11 @@ import MainButton from "@/components/ui/buttons/main";
 
 //Icons imports
 import {
-  IconCalendar,
-  IconDatabase,
-  IconEye,
-  IconFolder,
-  IconLayoutKanban,
-  IconMessage,
   IconUsers,
   IconUserPlus,
   IconTrash,
   IconShieldCheck,
   IconShield,
-  IconAppWindow,
-  IconSettings,
   IconUserCircle
 } from "@tabler/icons-react";
 
@@ -59,8 +51,6 @@ export default function Page(){
   //States handler
   //User data
   const [ user, setUser ] = useState<UserData>();
-  //Sidebar expanded
-  const [ expanded, setExpanded ] = useState<boolean>(false);
   //Team data
   const [ team, setTeam ] = useState<Team | null>(null);
   //Form toggler
@@ -396,107 +386,9 @@ export default function Page(){
 
         </section>
 
-        <SideBar
-        email={user.email}
-        plan={user.plan}
-        avatar={user?.avatar_url}
-        username={user.name}
-        setExpanded={(isExpanded : boolean) => {
-          setExpanded(isExpanded === true ? false : true);
-        }}>
-          {
-            expanded && (
-              <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
-                Project 
-              </span>
-            )
-          }
-
-          <Icon
-          action={`/projects/${params.id}`}
-          name="Dashboard"
-          isDisplayed={expanded}>
-            <IconAppWindow
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/tickets`}
-          name="Tickets"
-          isDisplayed={expanded}>
-            <IconFolder
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/erd`}
-          name="ERD Creator"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconDatabase
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/chat`}
-          name="Chat"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconMessage
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/json-preview`}
-          name="JSON Preview"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconEye
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/kanban-board`}
-          name="Kanban board"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconLayoutKanban
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/calendar`}
-          name="Calendar"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconCalendar
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/settings`}
-          name="Project settings"
-          isDisplayed={expanded}>
-            <IconSettings
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-        </SideBar>
+        <TeamSideBar
+        user={user}
+        team={team} />
 
         <main
         className="w-full h-screen overflow-w-hidden overflow-y-auto py-5 px-18 bg-background relative flex flex-col justify-start items-start">

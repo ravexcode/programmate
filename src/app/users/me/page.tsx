@@ -10,7 +10,7 @@ import { deleteSessionStr, getSessionStr } from "@/services/session.service";
 
 //Prebuilt UI imports
 import LoadingScreen from "@/components/screens/loading-screen";
-import SideBar, { Icon } from "@/components/ui/sidebar";
+import SideBar from "@/components/dashboard/sidebar";
 import BgGradient from "@/components/ui/bg-gradient";
 
 //Services imports
@@ -21,7 +21,6 @@ import { useEffect, useState } from "react";
 
 //Types imports
 import type { UserData } from "@/types/user.types";
-import Team from "@/types/team.types";
 import { IconUserCircle } from "@tabler/icons-react";
 
 export default function ProfilePage() {
@@ -29,7 +28,6 @@ export default function ProfilePage() {
 
   //User data
   const [user, setUser] = useState<UserData | null>(null);
-  const [ expanded, setExpanded ] = useState<boolean>(false);
 
   //Constraints
   const cardClasses = "w-full rounded-md bg-neutral-950 border border-neutral-800 p-4 flex gap-2 duration-300 hover:border-main items-center z-2 animate-fade-in-up animate-duration-500";
@@ -91,33 +89,7 @@ export default function ProfilePage() {
       <div
       className="w-full bg-background grid grid-cols-[auto_1fr] h-screen">
         <SideBar
-        email={user?.email}
-        avatar={user.avatar_url}
-        plan={user.plan}
-        username={user.name}
-        setExpanded={(isExpanded : boolean) => {
-          setExpanded(isExpanded === true ? false : true);
-        }}>
-          {
-            expanded && (
-              <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
-                Projects
-              </span>
-            )
-          }
-
-          {
-            user.teams && user.teams.length > 0 && user.teams.map((team: Team, index) => 
-              <Icon
-              action={`/projects/${team.team_id}`}
-              name={team.name}
-              isDisplayed={expanded}
-              key={index}>
-                <></>
-              </Icon>
-            )
-          }
-        </SideBar>
+        user={user} />
 
         <main
         className="w-full min-h-max h-full px-2 py-10 relative animate-fade-in animate-duration-250">

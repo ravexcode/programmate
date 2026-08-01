@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 //Prebuilt components
-import SideBar from "@/components/ui/sidebar";
+import SideBar from "@/components/dashboard/sidebar";
 import ActionButton from "@/components/settings/action-button";
 import LoadingDashboard from "@/components/screens/loading-screen";
 import SnackBar from "@/components/ui/snackbar";
@@ -92,10 +92,7 @@ export default function ConfigurationPage(){
     className="grid grid-cols-[auto_1fr] bg-background relative animate-fade-in h-screen text-text overflow-hidden">
       <SnackBar ref={snackbar} />
       <SideBar
-      email={user.email}
-      plan={user.plan}
-      avatar={user?.avatar_url}
-      username={user.name}/>
+      user={user} />
 
       <div
       className="w-screen h-screen z-10 backdrop-blur backdrop-brightness-75 items-center justify-center fixed animate-fade-in-up hidden">

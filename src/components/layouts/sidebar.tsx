@@ -1,59 +1,35 @@
-//React imports
-import { ReactNode, useState, useRef, memo } from "react";
+"use client";
 
 //Next imports
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-//Icons imports
-import {
-  IconArrowsMoveVertical,
-  IconBolt,
-  IconChecklist,
-  IconLayoutDashboard,
-  IconLayoutSidebar,
-  IconReceipt2,
-  IconSettings,
-  IconSparkles,
-  IconUserCircle
-} from "@tabler/icons-react";
+//React imports
+import { memo, useState, useRef } from "react";
 
 //Hooks imports
 import animationClose from "@/utils/animation-close";
 
-//Icon interface
-export interface IconProps {
-  action: string;
-  name: string;
-  isDisplayed: boolean;
-  children: ReactNode;
-  disabled?: boolean;
-  key?: number | string;
+//Types imports
+import type { UserData } from "@/types/user.types";
+
+//Icons imports
+import {
+  IconArrowsMoveVertical,
+  IconBolt,
+  IconLayoutSidebar,
+  IconReceipt2,
+  IconSettings,
+  IconUserCircle
+} from "@tabler/icons-react";
+
+interface SidebarLayoutProps {
+  user: UserData;
+  children: (expanded: boolean) => React.ReactNode;
 }
 
-//Icon button component
-export function Icon(props : IconProps) {
-  return (
-    <Link
-    href={props.action}
-    className={"flex justify-start items-center gap-2 p-2 rounded-lg hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-400 w-full " + (props.disabled && "grayscale brightness-50 pointer-events-none ")}>
-      {props.children}
-      {props.isDisplayed && <span className="text-sm animate-fade-in-right"> {props.name} </span>}
-    </Link>
-  )
-}
-
-interface SideBarProps {
-  email: string;
-  plan: string;
-  username: string;
-  children?: ReactNode;
-  setExpanded?: (expanded : boolean) => void;
-  avatar?: string;
-}
-
-function SideBar(props: SideBarProps) {
+function SidebarLayout({ user, children }: SidebarLayoutProps) {
   const router = useRouter();
 
   const [expanded, setExpanded] = useState(() => {
@@ -63,6 +39,17 @@ function SideBar(props: SideBarProps) {
   const [ settingsVisible, changeSettingsVisibility ] = useState(false);
 
   const userSettings = useRef(null);
+
+  const toggleExpanded = () => {
+    setExpanded(prev => {
+      const next = !prev;
+
+      if(next) window.localStorage.setItem("expanded", "expanded");
+      else window.localStorage.removeItem("expanded");
+
+      return next;
+    });
+  };
 
   const toggleSettings = () => {
     if(!userSettings.current) return;
@@ -84,7 +71,7 @@ function SideBar(props: SideBarProps) {
     animationClose(current, "fade-out-down", "hidden", "flex");
     return;
   }
-  
+
   return (
     <aside
       className={`text-xs md:text-sm scrollbar-hide h-full items-center justify-start bg-neutral-950 text-text transition-all duration-400 flex flex-col animate-fade-in overflow-x-auto sm:overflow-y-auto overflow-hidden
@@ -97,7 +84,7 @@ function SideBar(props: SideBarProps) {
         href="/"
         className="duration-300 hover:scale-105 hover:brightness-120 p-3">
           {
-            expanded ? 
+            expanded ?
               <Image
               src="/logos/large.svg"
               alt="Logo made by RavexCode"
@@ -118,26 +105,16 @@ function SideBar(props: SideBarProps) {
           }
         </Link>
       </div>
-      
 
       {/* Toggler */}
       <div className="px-3 hidden sm:flex w-full">
 
         <button
         type="button"
-          onClick={() => {
-            setExpanded(prev => !prev)
-            if(!expanded) {
-              if(props.setExpanded) props.setExpanded(expanded);
-              window.localStorage.setItem("expanded", "expanded");
-              return;
-            }
-            if(props.setExpanded) props.setExpanded(expanded);
-            window.localStorage.removeItem("expanded");
-          }}
-          className="flex justify-start items-center gap-2 p-2 rounded-lg hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-800 w-full">
+          onClick={toggleExpanded}
+          className={"flex items-center gap-1.5 p-2 rounded-sm hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-200 w-full " + (expanded ? "justify-start" : "justify-center")}>
           <IconLayoutSidebar
-          size={23}
+          size={18}
           stroke={2}
           color="white" />
 
@@ -149,77 +126,45 @@ function SideBar(props: SideBarProps) {
 
       {/* Items */}
       <nav className="flex flex-row sm:flex-col gap-1 sm:px-3 w-auto sm:w-full h-full duration-400 items-center justify-center">
-
-        <Icon
-        action="/dashboard"
-        name="Dashboard"
-        isDisplayed={expanded}>
-          <IconLayoutDashboard
-          size={23}
-          stroke={2}
-          color="white" />
-        </Icon>
-
-        { expanded && ( <span className="w-full text-base font-bold p-2 animate-fade-in-right"> User </span> ) }
-
-        <Icon
-        action="/todo"
-        name="To Do lists"
-        isDisplayed={expanded} >
-          <IconChecklist
-          size={23}
-          stroke={2}
-          color="white" />
-        </Icon>
-
-        <Icon
-        action="/ai"
-        name="NexZero AI"
-        isDisplayed={expanded} >
-          <IconSparkles
-          size={23}
-          stroke={1.5}
-          color="white" />
-        </Icon>
-
         {
-          props.children
+          children(expanded)
         }
 
         <div
         className="ml-auto sm:ml-0 mt-auto flex flex-row sm:flex-col items-center justify-center sm:justify-end gap-1 sm:pb-3">
           {
-            (props.plan === "Free" || props.plan === "Pro") && expanded ? (
-              <Link
-              href="/#pricing"
-              className="w-full rounded-xl border border-neutral-800 p-2 bg-neutral-900 animate-fade-in-right sm:mt-10">
-                <div className="w-full flex items-center gap-1 sm:pt-1">
+            (user.plan === "Free" || user.plan === "Pro") ?
+              expanded ? (
+                <Link
+                href="/pricing"
+                className="w-full rounded-xl border border-neutral-800 p-2 bg-neutral-900 animate-fade-in-right sm:mt-10">
+                  <div className="w-full flex items-center gap-1 sm:pt-1">
+                    <IconBolt
+                    size={18}
+                    stroke={2}
+                    color="#2b5ffb"/>
+                    <p className="font-semibold text-wrap text-center bg-linear-to-r from-blue-600 via-sky-500 to-blue-200 w-max bg-clip-text text-transparent text-lg"> Upgrade your plan </p>
+                  </div>
+                  <p className="text-neutral-200 font-light text-sm pb-2 px-1">
+                    Upgrade your projects workflow with a monthly subscription
+                  </p>
+                  <button
+                  className="bg-main rounded-md w-full px-2 py-1 cursor-pointer text-center duration-400 hover:brightness-80 shadow-lg shadow-blue-800/30">
+                    Look pricing
+                  </button>
+                </Link>
+              ) : (
+                <Link
+                href="/pricing"
+                className="flex justify-start items-center gap-2 p-2 rounded-lg hover:bg-blue-900 duration-400 border-transparent">
                   <IconBolt
-                  size={23}
+                  size={18}
                   stroke={2}
-                  color="#2b5ffb"/>
-                  <p className="font-semibold text-wrap text-center bg-linear-to-r from-blue-600 via-sky-500 to-blue-200 w-max bg-clip-text text-transparent text-lg"> Upgrade your plan </p>
-                </div>
-                <p className="text-neutral-200 font-light text-sm pb-2 px-1">
-                  Upgrade your projects workflow with a monhtly subscription
-                </p>
-                <button
-                className="bg-main rounded-md w-full px-2 py-1 cursor-pointer text-center duration-400 hover:brightness-80 shadow-lg shadow-blue-800/30">
-                  Look pricing
-                </button>
-              </Link>
-            ) : (
-              <Link
-              href="/#pricing"
-              className="flex justify-start items-center gap-2 p-2 rounded-lg hover:bg-blue-900 duration-400 border-transparent">
-                <IconBolt
-                size={23}
-                stroke={2}
-                color="white" />
-              </Link>
-            )
+                  color="white" />
+                </Link>
+              )
+            : null
           }
-
 
           <div
           className={"flex justify-start items-center gap-2 p-1 md:p-2 rounded-lg cursor-pointer transition focus:outline-none duration-400 relative " + (expanded ? "w-46 md:w-60" : "w-full") + (settingsVisible  ? "" : " hover:bg-blue-900")}
@@ -231,10 +176,10 @@ function SideBar(props: SideBarProps) {
             }
           }}>
             {
-              props.avatar ? (
+              user.avatar_url ? (
                 <Image
-                src={props.avatar}
-                alt={props.username + "avatar"}
+                src={user.avatar_url}
+                alt={user.name + "avatar"}
                 width={50}
                 height={50}
                 className="rounded-full w-6 aspect-square"
@@ -252,8 +197,8 @@ function SideBar(props: SideBarProps) {
               className="w-full flex gap-2 h-full items-center justify-center">
                 <div
                 className="w-full flex flex-col items-start">
-                  <p className="text-sm animate-fade-in-right"> {props.username} </p>
-                  <p className="text-xs text-neutral-400 animate-fade-in-right"> {props.email} </p>
+                  <p className="text-sm animate-fade-in-right"> {user.name} </p>
+                  <p className="text-xs text-neutral-400 animate-fade-in-right"> {user.email} </p>
                 </div>
 
                 <IconArrowsMoveVertical
@@ -265,7 +210,7 @@ function SideBar(props: SideBarProps) {
             )}
 
             <section
-            className="absolute w-full py-2 bg-neutral-950 border border-neutral-800 rounded-md left-0 bottom-1/1 z-5 hidden flex-col animate-fade-in-up animate-duration-300"
+            className="absolute w-full py-2 bg-neutral-950 border border-neutral-800 rounded-md left-0 bottom-full z-10 hidden flex-col animate-fade-in-up animate-duration-300"
             ref={userSettings}>
               <Link
               href="/settings"
@@ -293,7 +238,8 @@ function SideBar(props: SideBarProps) {
         </div>
       </nav>
     </aside>
-  );
+  )
 }
 
-export default memo(SideBar);
+//Optimization
+export default memo(SidebarLayout)

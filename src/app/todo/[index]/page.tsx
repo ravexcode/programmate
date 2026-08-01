@@ -14,7 +14,7 @@ import { getSessionStr } from "@/services/session.service";
 import { saveTasksRequest } from "@/client/todo";
 
 //Components imports
-import SideBar from "@/components/ui/sidebar";
+import SideBar from "@/components/dashboard/sidebar";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 
 //Types imports
@@ -110,10 +110,7 @@ export default function ToDoListPage() {
       <div
       className="h-screen bg-background grid grid-cols-[auto_1fr] text-text overflow-hidden">
           <SideBar
-          email={user?.email}
-          avatar={user.avatar_url}
-          plan={user.plan}
-          username={user.name}/>
+          user={user} />
           <SnackBar
           ref={snackbar}/>
 

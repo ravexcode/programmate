@@ -12,14 +12,13 @@ import { getSessionStr } from "@/services/session.service";
 import animationClose from "@/utils/animation-close";
 
 //Components imports
-import SideBar, { Icon } from "@/components/ui/sidebar";
+import SideBar from "@/components/dashboard/sidebar";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
 import SnackBar from "@/components/ui/snackbar";
 
 //Types imports
 import type { UserData, ToDoList } from "@/types/user.types";
-import type Team from "@/types/team.types";
 
 //Services imports
 import { getUser } from "@/modules/user.module";
@@ -50,8 +49,6 @@ export default function ToDoListPage() {
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
   //List options state
   const [ openMenuIndex, setOpenMenuIndex ] = useState<number | null>(null);
-  //Sidebar expanded
-  const [ expanded, setExpanded ] = useState<boolean>(false);
 
   //Tags
   const [ currentTag, setCurrentTag ] = useState<string>("");
@@ -316,33 +313,7 @@ export default function ToDoListPage() {
       { user ? (
         <>
           <SideBar
-          email={user?.email}
-          avatar={user.avatar_url}
-          plan={user.plan}
-          username={user.name}
-          setExpanded={(isExpanded : boolean) => {
-            setExpanded(isExpanded === true ? false : true);
-          }}>
-            {
-              expanded && (
-                <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
-                  Projects
-                </span>
-              )
-            }
-
-            {
-              user.teams && user.teams.length > 0 && user.teams.map((team: Team, index) => 
-                <Icon
-                action={`/projects/${team.team_id}`}
-                name={team.name}
-                isDisplayed={expanded}
-                key={index}>
-                  <></>
-                </Icon>
-              )
-            }
-          </SideBar>
+          user={user} />
           <SnackBar
           ref={snackbar}/>
 

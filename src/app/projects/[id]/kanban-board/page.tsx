@@ -11,7 +11,7 @@ import { useEffect, useState, useRef } from "react";
 import { UserData } from "@/types/user.types";
 
 //Prebuild ui imports
-import SideBar, { Icon } from "@/components/ui/sidebar";
+import TeamSideBar from "@/components/dashboard/team-sidebar";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
 import LoadingScreen from "@/components/screens/loading-screen";
 
@@ -31,18 +31,6 @@ import { getTeam } from "@/modules/project/main.module";
 import { saveKanbanRequest } from "@/client/project";
 import checkStatus from "@/utils/check-status";
 
-//Icons imports
-import {
-  IconAppWindow,
-  IconCalendar,
-  IconDatabase,
-  IconEye,
-  IconFolder,
-  IconMessage,
-  IconSettings,
-  IconUsers
-} from "@tabler/icons-react";
-
 //Types imports
 import Team from "@/types/team.types";
 
@@ -57,11 +45,6 @@ export default function KanBanBoard() {
   //States handler
   //User data
   const [ user, setUser ] = useState<UserData>();
-  //Sidebar expanded
-  const [ expanded, setExpanded ] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return !!window.localStorage.getItem("expanded");
-  });
   //Team data
   const [ team, setTeam ] = useState<Team>();
   //Saver button status
@@ -159,106 +142,9 @@ export default function KanBanBoard() {
         <SnackBar
         ref={snackbar} />
 
-        <SideBar
-        email={user.email}
-        plan={user.plan}
-        avatar={user?.avatar_url}
-        username={user.name}
-        setExpanded={(isExpanded : boolean) => {
-          setExpanded(isExpanded === true ? false : true);
-        }}>
-          {
-            expanded && (
-              <span className="w-full text-base font-bold p-2 mt-5 animate-fade-in-right">
-                Project 
-              </span>
-            )
-          }
-
-          <Icon
-          action={`/projects/${params.id}`}
-          name="Dashboard"
-          isDisplayed={expanded}>
-            <IconAppWindow
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/integrants`}
-          name="Integrants"
-          isDisplayed={expanded}>
-            <IconUsers
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/tickets`}
-          name="Tickets"
-          isDisplayed={expanded}>
-            <IconFolder
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/erd`}
-          name="ERD Creator"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconDatabase
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/chat`}
-          name="Chat"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconMessage
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/json-preview`}
-          name="JSON Preview"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconEye
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/calendar`}
-          name="Calendar"
-          isDisplayed={expanded}
-          disabled={ user?.plan === "Free" }>
-            <IconCalendar
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-
-          <Icon
-          action={`/projects/${team.team_id}/settings`}
-          name="Project settings"
-          isDisplayed={expanded}>
-            <IconSettings
-            size={23}
-            stroke={2}
-            color="white"/>
-          </Icon>
-        </SideBar>
+        <TeamSideBar
+        user={user}
+        team={team} />
 
         <main
         className="min-h-screen">
