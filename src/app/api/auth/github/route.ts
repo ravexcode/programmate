@@ -11,7 +11,7 @@ import * as Handler from "@/app/api/handlers";
 export async function GET() {
   try {
     //Saves the API_URL
-    const callback_url = process.env.IS_PRODUCTION ? "https://demo.nexzero.ravexcode.com/oauth/callback" : "http://localhost:7000/oauth/callback";
+    const callback_url = process.env.IS_PRODUCTION ? "https://nex0.ravexcode.com/oauth/callback" : "http://localhost:7000/oauth/callback";
 
     //signs with google 
     const { data, error } = await supabase.auth.signInWithOAuth({
