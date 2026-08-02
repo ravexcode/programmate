@@ -25,10 +25,20 @@ export function deleteSessionStr() {
 }
 
 export function saveSession(token: string) {
-  const date = new Date();
-  date.setTime(date.getTime() + (3 * 24 * 60 * 60 * 1000));
-  const expires = "; expires=" + date.toUTCString();
-  document.cookie = "token=" + token + expires + "; path=/; secure";
+  const expires = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+
+  const cookie = [
+    `token=${encodeURIComponent(token)}`,
+    `Expires=${expires.toUTCString()}`,
+    "Path=/",
+    "Secure",
+    "SameSite=Lax"
+  ].join("; ");
+
+  console.log("Cookie: " + cookie);
+  console.log("Token: " + token);
+
+  document.cookie = cookie;
 }
 
 export function logOut(router: AppRouterInstance) {
