@@ -2,7 +2,7 @@
 "use client";
 
 //React imports
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 
 //DnD imports
 import {
@@ -17,7 +17,6 @@ import {
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
-  arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
@@ -50,18 +49,24 @@ import CreatorInput from "@/components/forms/creator-inputs";
 import MainButton from "@components/ui/buttons/main";
 import AltButton from "@components/ui/buttons/alternate";
 
-//Services imports
-import { getUser } from "@/modules/user.module";
-import { getTeam } from "@/modules/project/main.module";
-import { saveERD } from "@/modules/erd.module";
-
-//Hooks imports
-import { getSessionStr } from "@/services/session.service";
+//Client imports
+import {
+  loadErdPage,
+  buildTableNodes,
+  appendColumn,
+  removeColumnNode,
+  updateColumnField,
+  reorderColumnNodes,
+  translateToSQL,
+  translateToJson,
+  translateAll,
+  saveErdData,
+  type Column,
+} from "@/client/projects/erd";
 
 //Types imports
-import { type UserData } from "@/types/user.types";
-import Team from "@/types/team.types";
-import { ParentNode } from "@/types/table.types";
+import type { UserData } from "@/types/user.types";
+import type Team from "@/types/team.types";
 
 //React flow imports
 import {
@@ -91,25 +96,15 @@ const defaultEdgeOptions = {
   className: 'stroke-amber-500 stroke-2',
 };
 
-//Colums type
-export interface Column {
-  key: string;
-  name: string;
-  type: string;
-}
-const ROW_HEIGHT = 36;
-const HEADER_HEIGHT = 38;
-
 //Sortable column row — extracted outside Page to avoid re-creation
 type SortableColumnRowProps = {
   column: Column;
-  column_index: number;
   table_id: string;
   updateColumn: (tableId: string, columnKey: string, field: "name" | "type", value: string) => void;
   removeColumn: (tableId: string, columnKey: string) => void;
 };
 
-function SortableColumnRow({ column, column_index, table_id, updateColumn, removeColumn }: SortableColumnRowProps) {
+function SortableColumnRow({ column, table_id, updateColumn, removeColumn }: SortableColumnRowProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: `${table_id}-col-${column.key}` });
 
@@ -189,7 +184,7 @@ export default function Page(){
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   //Export values
-  const [ sqlValue, setsqlValue ] = useState("");
+  const [ sqlValue, setSqlValue ] = useState("");
   const [ jsonValue, setJsonValue ] = useState("");
 
   //Copy button success
@@ -209,24 +204,14 @@ export default function Page(){
   //Data fetching
   useEffect(() => {
     async function fetchData(){
-      const token = getSessionStr();
+      const data = await loadErdPage(Number(params.id), router, snackbar);
 
-      if(!token) return router.push("/auth/signin");
+      if(!data) return;
 
-       const user_data = await getUser(router);
-
-      setUser(user_data!);
-
-       const team_data : Team = await getTeam(
-         { id: Number(params.id), router, snackbar: snackbar }
-       );
-
-
-      if(!team_data) return router.push("/dashboard");
-
-      setTeam(team_data)
-      setNodes(team_data.ERD || []);
-      setEdges(team_data.ERD_connections || []);
+      setUser(data.user);
+      setTeam(data.team);
+      setNodes(data.nodes);
+      setEdges(data.edges);
     }
 
     fetchData();
@@ -259,75 +244,27 @@ export default function Page(){
     value?: string,
     type?: string
   ) => {
-    //Duplicate the value
-    const rows_duplied = [... newRows];
-
-    //Sets value
-    rows_duplied[index].name = value || "";
-
-    //Sets type
-    rows_duplied[index].type = type || "";
-
-    //Updates
-    setNewRows(rows_duplied);
+    setNewRows(prev =>
+      prev.map((row, i) =>
+        i === index ? {
+          ...row,
+          name: value || "",
+          type: type || "",
+        } : row
+      )
+    );
   };
 
   //Table creator
-  const createNewTable = (e: React.SubmitEvent) => {
+  const createNewTable = (e: React.FormEvent) => {
     e.preventDefault();
 
     if(!newName || !newRows || newRows.length < 1) return;
 
-    //Nodes
-    const table_nodes : Array<Node> = [];
-    //Rows
-    const rows : Column[] = [];
+    const table_nodes = buildTableNodes(newName, newRows);
 
-    //Asigns the key for all columns
-    for (let l_i = 0; l_i < newRows.length; l_i++) {
-      const row = { ...newRows[l_i], key: `row-${newName}-${l_i}` };
-
-      rows.push(row);
-    }
-
-    //Creates the table
-    const newTable : ParentNode = {
-      id: `${newName}-table`,
-      type: "tableContainer",
-      position: {
-        x: 0,
-        y: 0
-      },
-      data: {
-        tableName: newName,
-        columns: rows
-      }
-    }
-
-    table_nodes.push(newTable);
-
-    //Creates the nodes
-    for (let index = 0; index < newRows.length; index++) {
-      const newNode: Node = {
-        id: `col-${newName}-${index + 1}`,
-        type: "columnHandle",
-        parentId: `${newName}-table`,
-        extent: "parent",
-        position: {
-          x: 0,
-          y: HEADER_HEIGHT + (ROW_HEIGHT * index)
-        },
-        draggable: false,
-        data: {}
-      }
-
-      table_nodes.push(newNode);
-    }
-
-    //Saves the nodes
     setNodes((prevNodes) => [...prevNodes, ...table_nodes]);
 
-    //Clears the data
     setNewRows([]);
     setNewName("");
     toggleCreatorForm();
@@ -335,7 +272,7 @@ export default function Page(){
 
   //Connection handler
   const onConnect = useCallback((connection: Connection) => {
-    setEdges((prevEdges) => 
+    setEdges((prevEdges) =>
       addEdge(connection, prevEdges)
     );
   }, [setEdges]);
@@ -343,177 +280,51 @@ export default function Page(){
   //Database handler
   const handleSaveERD = async() => {
     setIsSaveLoading(true);
-    
-    await saveERD({
-      teamId: Number(params.id),
-      erd: nodes || [],
-      connections: edges || []
-    }, snackbar);
+
+    await saveErdData(Number(params.id), nodes, edges, snackbar);
 
     setIsSaveLoading(false);
   }
 
   //Node adder
   const addNewNode = (table : Node) => {
-    //Adds the row values
-    setNodes((prev) =>
-      prev.map((node) => {
-        if (node.id !== table.id) return node
-
-        return {
-          ...node,
-          data: {
-            ...node.data,
-            columns: [
-              ...(node.data.columns as Column[]) || [], {
-                key: `row-${table.data.tableName}-${(table.data.columns as Column []).length + 1}`,
-                name: "",
-                type: ""
-              }
-            ]
-          }
-        }
-      })
-    );
-
-    //Adds the connector node
-    setNodes((prev) => [
-      ...prev || [],
-      {
-        id: `col-${table.data.tableName}-${(table.data.columns as Column[]).length + 1}`,
-        type: "columnHandle",
-        parentId: `${table.data.tableName}-table`,
-        extent: "parent",
-        position: {
-          x: 0,
-          y: HEADER_HEIGHT + (ROW_HEIGHT * (table.data.columns as Column[]).length)
-        },
-        draggable: false,
-        data: {}
-      }
-    ]);
-
+    setNodes((prev) => appendColumn(prev, table));
     return;
   }
 
   //Node remover
   const removeColumn = (tableId: string, columnKey: string) => {
-    setNodes((prev) => {
-      const tableNode = prev.find((n) => n.id === tableId);
-      if (!tableNode) return prev;
-
-      const columns = tableNode.data.columns as Column[];
-      const removedIndex = columns.findIndex((c) => c.key === columnKey);
-      if (removedIndex === -1) return prev;
-
-      //Filter column from table data
-      const updated = prev.map((node) => {
-        if (node.id !== tableId) return node;
-        return {
-          ...node,
-          data: {
-            ...node.data,
-            columns: columns.filter((c) => c.key !== columnKey),
-          },
-        };
-      });
-
-      //Reposition remaining columnHandle nodes
-      let rowIndex = 0;
-      return updated.map((node) => {
-        if (node.parentId === `${tableNode.data.tableName}-table` && node.type === "columnHandle") {
-          const pos = { x: 0, y: HEADER_HEIGHT + ROW_HEIGHT * rowIndex };
-          rowIndex++;
-          return { ...node, position: pos };
-        }
-        return node;
-      });
-    });
+    setNodes((prev) => removeColumnNode(prev, tableId, columnKey));
   };
 
   //Column field updater
   const updateColumn = (tableId: string, columnKey: string, field: "name" | "type", value: string) => {
-    setNodes((prev) =>
-      prev.map((node) => {
-        if (node.id !== tableId) return node;
-        return {
-          ...node,
-          data: {
-            ...node.data,
-            columns: (node.data.columns as Column[]).map((col) =>
-              col.key === columnKey ? { ...col, [field]: value } : col
-            ),
-          },
-        };
-      })
-    );
+    setNodes((prev) => updateColumnField(prev, tableId, columnKey, field, value));
   };
 
   //Column reorder — also repositions columnHandle nodes on canvas
   const reorderColumns = (tableId: string, oldIndex: number, newIndex: number) => {
-    setNodes((prev) => {
-      const tableNode = prev.find((n) => n.id === tableId);
-      if (!tableNode) return prev;
-
-      const columns = tableNode.data.columns as Column[];
-      const reordered = arrayMove(columns, oldIndex, newIndex);
-
-      //Update table data + reposition connector nodes
-      let rowIndex = 0;
-      return prev.map((node) => {
-        if (node.id === tableId) {
-          return { ...node, data: { ...node.data, columns: reordered } };
-        }
-        if (node.parentId === `${tableNode.data.tableName}-table` && node.type === "columnHandle") {
-          const pos = { x: 0, y: HEADER_HEIGHT + ROW_HEIGHT * rowIndex };
-          rowIndex++;
-          return { ...node, position: pos };
-        }
-        return node;
-      });
-    });
+    setNodes((prev) => reorderColumnNodes(prev, tableId, oldIndex, newIndex));
   };
-
-  //Table "translator"
-  //SQL
-  const translateToSQL = (json: {
-    tableName: string,
-    columns: Column[]
-  }) => {
-    const columns = json.columns
-    .map(col => `${col.name.toLowerCase()} ${col.type.toUpperCase()}`)
-    .join(",\n    ")
-
-const sql = `CREATE TABLE ${json.tableName} (
-    ${columns}
-);`;
-
-    return sql;
-  }
-  //Json (yep, it needs to be translated)
-  const translateToJson = (json: {
-    tableName: string,
-    columns: Column[]
-  }) => {
-    const exportJson = JSON.stringify(
-      {
-        name: json.tableName,
-        columns: json.columns.map(col => ({
-          name: col.name,
-          type: col.type
-        }))
-      },
-      null,
-      2
-    )
-
-    return exportJson
-  }
 
   //Tables filtered
   const tableNodes = nodes.filter(
     (node) => node.type === "tableContainer"
   )
+
+  const copySql = async() => {
+    const value = sqlValue || translateAll(tableNodes, translateToSQL);
+    await navigator.clipboard.writeText(value);
+    setSqlCopied(true);
+    setTimeout(() => setSqlCopied(false), 1000);
+  }
+
+  const copyJson = async() => {
+    const value = jsonValue || translateAll(tableNodes, translateToJson);
+    await navigator.clipboard.writeText(value);
+    setJsonCopied(true);
+    setTimeout(() => setJsonCopied(false), 1000);
+  }
 
   return (
     team && user ? (
@@ -543,23 +354,7 @@ const sql = `CREATE TABLE ${json.tableName} (
               type="button"
               className="p-2 rounded-full duration-200 hover:bg-black cursor-pointer w-10 aspect-square flex items-center justify-center"
               title="Copy as SQL"
-              onClick={() => {
-                setSqlCopied(true);
-
-                if(sqlValue) {
-                  navigator.clipboard.writeText(sqlValue)
-                  setInterval(() => {
-                    setSqlCopied(false);
-                  }, 1000);
-                  return;
-                }
-
-                navigator.clipboard.writeText((tableNodes.map(table => translateToSQL(table.data as { tableName: string, columns: Column[] }))).toString());
-                setInterval(() => {
-                  setSqlCopied(false);
-                }, 1000);
-                return;
-              }}>
+              onClick={copySql}>
                 {
                   sqlCopied ? (
                     <IconCheck
@@ -575,15 +370,15 @@ const sql = `CREATE TABLE ${json.tableName} (
             </div>
 
             <textarea
-            value={sqlValue || tableNodes.map(table => translateToSQL(table.data as { tableName: string, columns: Column[] }))}
+            value={sqlValue || translateAll(tableNodes, translateToSQL)}
             onChange={(e) => {
-              setsqlValue(e.target.value);
+              setSqlValue(e.target.value);
             }}
             className="w-full min-h-max h-full bg-neutral-950/50 rounded-md outline-none p-3">
-              
+
             </textarea>
           </section>
-          
+
           <section
           className="w-150 h-200 bg-neutral-900 my-10 mr-20 rounded-md px-6 py-3 animate-fade-in-up"
           onClick={(e) => {
@@ -597,28 +392,12 @@ const sql = `CREATE TABLE ${json.tableName} (
                 JSON
               </p>
 
-              
+
               <button
               type="button"
               className="p-2 rounded-full duration-200 hover:bg-black cursor-pointer w-10 aspect-square flex items-center justify-center"
-              title="Copy as SQL"
-              onClick={() => {
-                setJsonCopied(true);
-
-                if(jsonValue) {
-                  navigator.clipboard.writeText(jsonValue);
-                  setInterval(() => {
-                    setJsonCopied(false);
-                  }, 1000);
-                  return;
-                }
-
-                navigator.clipboard.writeText((tableNodes.map(table => translateToJson(table.data as { tableName: string, columns: Column[] }))).toString());
-                setInterval(() => {
-                  setJsonCopied(false);
-                }, 1000);
-                return;
-              }}>
+              title="Copy as JSON"
+              onClick={copyJson}>
                 {
                   jsonCopied ? (
                     <IconCheck
@@ -634,12 +413,12 @@ const sql = `CREATE TABLE ${json.tableName} (
             </div>
 
             <textarea
-            value={jsonValue || tableNodes.map(table => translateToJson(table.data as { tableName: string, columns: Column[] }))}
+            value={jsonValue || translateAll(tableNodes, translateToJson)}
             onChange={(e) => {
               setJsonValue(e.target.value);
             }}
             className="w-full min-h-max h-full bg-neutral-950/50 rounded-md outline-none p-3">
-              
+
             </textarea>
           </section>
         </div>
@@ -689,7 +468,7 @@ const sql = `CREATE TABLE ${json.tableName} (
                     <button
                     type="button"
                     onClick={() => {
-                      setNewRows(prev => 
+                      setNewRows(prev =>
                         prev.filter((_, _index) =>
                           _index !== index
                         )
@@ -739,7 +518,7 @@ const sql = `CREATE TABLE ${json.tableName} (
                   </div>
 
                 </section>
-              ) 
+              )
             }
 
             <button
@@ -811,11 +590,10 @@ const sql = `CREATE TABLE ${json.tableName} (
                       items={(table.data.columns as Column[]).map((c) => `${table.id}-col-${c.key}`)}
                       strategy={verticalListSortingStrategy}>
                       {
-                        (table.data.columns as Column[]).map((column: Column, column_index: number) =>
+                        (table.data.columns as Column[]).map((column: Column) =>
                           <SortableColumnRow
                             key={column.key}
                             column={column}
-                            column_index={column_index}
                             table_id={table.id}
                             updateColumn={updateColumn}
                             removeColumn={removeColumn} />
@@ -863,7 +641,7 @@ const sql = `CREATE TABLE ${json.tableName} (
           </section>
 
         </div>
-        
+
         <TeamSideBar
         user={user}
         team={team} />
@@ -942,13 +720,12 @@ const sql = `CREATE TABLE ${json.tableName} (
           {/* Export handler */}
            <AltButton
            size="w-full"
-           isLoading={isSaveLoading}
            action={toggleExporter} >
              Export
            </AltButton>
 
         </section>
-        
+
       </div>
     ) : (
       <LoadingDashboard />

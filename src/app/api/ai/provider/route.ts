@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { validateProviderController, listProvidersController } from "@/controllers/ai.provider.controller";
 
@@ -18,7 +18,7 @@ export async function GET() {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const headers_list = await headers();
     const token = headers_list.get("Authorization");

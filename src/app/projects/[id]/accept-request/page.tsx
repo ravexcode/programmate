@@ -8,18 +8,16 @@ import SnackBar from "@/components/ui/snackbar";
 
 //Next imports
 import Link from "next/link";
-import { getSessionStr, deleteSessionStr } from "@/services/session.service";
 import { useParams, useRouter } from "next/navigation";
 
 //React imports
 import { useState, useEffect, useRef } from "react";
 
 //Types imports
-import { UserData } from "@/types/user.types";
+import type { UserData } from "@/types/user.types";
 
-//Modules imports
-import { getUser } from "@/modules/user.module";
-import { addIntegrant } from "@/modules/project/integrants.module";
+//Client imports
+import { loadAcceptRequestPage, acceptTeamInvite } from "@/client/projects/accept-request";
 
 export default function AcceptRequestPage(){
   const params = useParams();
@@ -32,19 +30,11 @@ export default function AcceptRequestPage(){
 
   useEffect(() => {
     async function getData(){
-      const token = getSessionStr();
+      const user_data = await loadAcceptRequestPage(router);
 
-      if(!token) return window.location.href = "/auth/signin";
+      if(!user_data) return router.push("/auth/signin");
 
-      const user_data = await getUser(router);
-      
-      if(!user_data){
-        deleteSessionStr();
-        window.localStorage.clear();
-        window.location.href = "/auth/signin";
-      }
-
-      setUser(user_data!)
+      setUser(user_data);
       setIsDisabled(false);
     }
 
@@ -54,21 +44,10 @@ export default function AcceptRequestPage(){
   const handleSaveInTheTeam = async() => {
     if(!user) return;
 
-    const success = await addIntegrant({
-      id: Number(params.id),
-      member: {
-        id: user.id,
-        email: user.email,
-        username: user.name,
-        type: "member",
-        avatar_url: user.avatar_url
-      },
-      router,
-      snackbar
-    });
+    const success = await acceptTeamInvite(Number(params.id), user, router, snackbar);
 
     if(success) {
-      window.location.href = `/teams/${params.id}`;
+      router.push(`/projects/${params.id}`);
     }
   }
 
@@ -82,11 +61,11 @@ export default function AcceptRequestPage(){
       className="w-full flex items-center justify-center py-20">
         <section
         className="bg-neutral-900 rounded-xl border border-neutral-700 px-5 py-3 text-lg font-medium tracking-wide text-center animate-fade-in-up w-max">
-          Are You shure to that you wanna join to the team?
+          Are you sure you want to join the team?
 
           <p
           className="mt-2  font-normal tracking-normal text-sm opacity-80">
-            You can leave anytime what you want
+            You can leave anytime
           </p>
 
           <div
@@ -96,7 +75,7 @@ export default function AcceptRequestPage(){
             className="w-full rounded-md duration-300 bg-neutral-800/80 hover:bg-neutral-700 p-2">
               Cancel
             </Link>
-            
+
             <button
             className="w-full rounded-md bg-main cursor-pointer duration-300 hover:bg-main/80 disabled:hover:bg-main disabled:grayscale disabled:cursor-wait p-2"
             onClick={async() => {

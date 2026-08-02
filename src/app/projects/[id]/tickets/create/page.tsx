@@ -5,8 +5,7 @@
 import { useEffect, useRef, useState } from "react";
 
 //Next imports
-import { useParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 //Prebuild UI imports
 import SnackBar from "@/components/ui/snackbar";
@@ -20,13 +19,17 @@ import MainButton from "@/components/ui/buttons/main";
 import { IconArrowLeft } from "@tabler/icons-react";
 
 //Types imports
-import { UserData } from "@/types/user.types";
-import Team, { Ticket } from "@/types/team.types";
+import type { UserData } from "@/types/user.types";
+import type Team from "@/types/team.types";
+import type { Ticket } from "@/types/team.types";
 
-//Modules imports
-import { getUser } from "@/modules/user.module";
-import { getProject } from "@/modules/project/main.module";
-import { createTicket } from "@/modules/project/ticket.module";
+//Client imports
+import {
+  loadCreateTicketPage,
+  createEmptyTicket,
+  submitNewTicket,
+  IMPORTANCE_OPTIONS,
+} from "@/client/projects/create-ticket";
 
 export default function TicketsTeamPage(){
   //NextJS Setup
@@ -48,15 +51,12 @@ export default function TicketsTeamPage(){
 
   useEffect(() => {
     async function fetchData() {
-      const data_user = await getUser(router);
-      const data_project = await getProject({
-        router,
-        id: Number(params.id),
-        snackbar
-      });
+      const data = await loadCreateTicketPage(Number(params.id), router, snackbar);
 
-      setUser(data_user!);
-      setTeam(data_project);
+      if(!data) return;
+
+      setUser(data.user);
+      setTeam(data.team);
 
       return;
     }
@@ -65,20 +65,8 @@ export default function TicketsTeamPage(){
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const impOptions = ["Low" , "Medium" , "High"];
-
   const [ importance, setImportance ] = useState("Low");
-
-  const defaultTicket : Ticket = {
-    creator: "",
-    creator_id: "",
-    to: "",
-    title: "",
-    message: "",
-    importance: importance as "Low"
-  }
-
-  const [ ticket, setTicket ] = useState<Ticket>(defaultTicket);
+  const [ ticket, setTicket ] = useState<Ticket>(() => createEmptyTicket("Low"));
 
   return (
     team && user ? (
@@ -89,7 +77,7 @@ export default function TicketsTeamPage(){
         <TeamSidebar
         user={user}
         team={team} />
-        
+
         <main
         className="w-full flex flex-col items-center p-10">
 
@@ -97,6 +85,7 @@ export default function TicketsTeamPage(){
           className="w-full max-w-130 mb-10">
             <button
             type="button"
+            onClick={() => router.back()}
             className="flex items-center justify-center gap-1 font-medium text-neutral-200 duration-300 hover:bg-neutral-800 cursor-pointer px-5 py-2 rounded-md">
               <IconArrowLeft
               size={20} />
@@ -110,17 +99,14 @@ export default function TicketsTeamPage(){
             e.preventDefault();
 
             setLoading(true);
-            await createTicket({
+            await submitNewTicket(
+              Number(params.id),
+              ticket,
+              importance,
+              user,
               router,
-              snackbar,
-              ticket: {
-                ...ticket,
-                importance: importance as "Low" | "Medium" | "High",
-                creator: user.name,
-                creator_id: user.id
-              },
-              id: Number(params.id)
-            });
+              snackbar
+            );
             setLoading(false);
           }}>
             <p
@@ -132,7 +118,7 @@ export default function TicketsTeamPage(){
             label="Set issue title"
             placeholder="e.g. Create database policy"
             value={ticket.title}
-            onChange={(e) => [
+            onChange={(e) => {
               setTicket(prev =>
                 prev ?
                   {
@@ -141,7 +127,7 @@ export default function TicketsTeamPage(){
                   } :
                 ticket
               )
-            ]}
+            }}
             bgColor="bg-neutral-900"
             required />
 
@@ -150,7 +136,7 @@ export default function TicketsTeamPage(){
             type="textarea"
             placeholder="e.g. # Creating db policy..."
             value={ticket.message}
-            onChange={(e) => [
+            onChange={(e) => {
               setTicket(prev =>
                 prev ?
                   {
@@ -159,7 +145,7 @@ export default function TicketsTeamPage(){
                   } :
                 ticket
               )
-            ]}
+            }}
             bgColor="bg-neutral-900"
             required />
 
@@ -174,7 +160,7 @@ export default function TicketsTeamPage(){
             label="Set the user destinated"
             placeholder="e.g. Jhon Doe"
             value={ticket.to}
-            onChange={(e) => [
+            onChange={(e) => {
               setTicket(prev =>
                 prev ?
                   {
@@ -183,14 +169,14 @@ export default function TicketsTeamPage(){
                   } :
                 ticket
               )
-            ]}
+            }}
             bgColor="bg-neutral-900"
             required />
-          
+
             <OptionsInput
             label="Set importance"
             value={importance as string}
-            options={impOptions}
+            options={IMPORTANCE_OPTIONS}
             onChange={setImportance}
             bgColor="bg-neutral-900" />
 

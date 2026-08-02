@@ -5,7 +5,9 @@ WORKDIR /app
 
 # Copy package manifests to leverage Docker caching
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN corepack enable
+RUN npm i -g pnpm
+RUN pnpm install
 
 # Stage 2: Build the application
 FROM node:26-alpine AS builder
@@ -16,8 +18,9 @@ COPY . .
 # Set environment variables for production build optimization
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-
-RUN npm run build
+RUN corepack enable
+RUN npm i -g pnpm
+RUN pnpm build
 
 # Stage 3: Runner environment
 FROM node:26-alpine AS runner

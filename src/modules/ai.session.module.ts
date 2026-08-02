@@ -7,7 +7,6 @@ import {
 } from "@/services/ai.session.service";
 
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import type { AiChatSession } from "@/types/ai.types";
 
 export async function createSession(
   router: AppRouterInstance,

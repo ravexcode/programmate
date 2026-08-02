@@ -15,30 +15,28 @@ import ProjectCard from "@/components/dashboard/project-card";
 import LoadingScreen from "@/components/screens/loading-screen";
 import OptionsInput from "@/components/forms/options-input";
 
-//Modules imports
-import { createProject } from "@/modules/project/main.module";
-import { getUser } from "@/modules/user.module";
-
 //Types imports
 import type { UserData } from "@/types/user.types";
-import type { Status } from "@/types/team.types";
+
+//Client imports
+import {
+  loadBuildPage,
+  createEmptyProject,
+  addTag,
+  removeTag,
+  submitProject,
+  BUILD_STATUS_OPTIONS,
+  type BuildProject,
+} from "@/client/projects/build";
 
 //Icons imports
 import { IconArrowLeft } from "@tabler/icons-react";
-
-type Project = {
-  name: string;
-  description: string;
-  user: UserData;
-  tags: string [];
-  status: Status;
-};
 
 export default function CreatorPage() {
   const router = useRouter();
 
   const [ user, setUser ] = useState<UserData>();
-  const [ project, setProject ] = useState<Project>();
+  const [ project, setProject ] = useState<BuildProject>();
 
   const [ loading, setLoading ] = useState(false);
 
@@ -46,7 +44,7 @@ export default function CreatorPage() {
   const [ tag, setTag ] = useState("");
 
   const snackbar = useRef(null);
-  
+
   const disabled = (
     !project ||
     !project.name ||
@@ -55,28 +53,17 @@ export default function CreatorPage() {
 
   useEffect(() => {
     async function fetch() {
-      const data = await getUser(router);
+      const data = await loadBuildPage(router);
 
-      setUser(data!);
-      setProject({
-        name: "",
-        description: "",
-        user: data!,
-        tags: [],
-        status: status as Status
-      })
+      if(!data) return;
+
+      setUser(data);
+      setProject(createEmptyProject(data));
     }
 
     fetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const options: Status [] = [
-    "Backlog",
-    "Planning",
-    "In progress",
-    "On Hold",
-    "Done",
-  ];
 
   return (
     !user || !project ?
@@ -116,17 +103,17 @@ export default function CreatorPage() {
           onSubmit={async(e) => {
             e.preventDefault();
             setLoading(true);
-            const data = await createProject({
+            const data = await submitProject(
               router,
               snackbar,
               user,
-              project: {
+              {
                 ...project,
-                status: status as Status
+                status: status as BuildProject["status"]
               }
-            });
+            );
 
-            if(data.team_id) return router.push(`/projects/${data.team_id}`);
+            if(data?.team_id) return router.push(`/projects/${data.team_id}`);
             setLoading(false);
           }}>
             <p
@@ -168,7 +155,7 @@ export default function CreatorPage() {
             label="Set current project status"
             value={status}
             onChange={setStatus}
-            options={options}
+            options={BUILD_STATUS_OPTIONS}
             bgColor="bg-neutral-900" />
 
             <label
@@ -189,10 +176,7 @@ export default function CreatorPage() {
                 if (exists) return;
                 setProject((prev) => {
                   if (!prev) return prev;
-                  return {
-                    ...prev,
-                    tags: [...(prev.tags || []), cleanTag]
-                  };
+                  return addTag(prev, cleanTag);
                 });
                 setTag("");
               }
@@ -209,10 +193,7 @@ export default function CreatorPage() {
                   className="px-3 py-1 rounded-md text-xs font-light border border-main/50 bg-main/20 text-text/80 w-max cursor-default hover:bg-red-950/50 hover:border-red-600"
                   onClick={() => {
                     setProject(
-                      prev => prev ? {
-                        ...prev,
-                        tags: prev.tags.filter((_, ind) => ind !== i)
-                        } : project
+                      prev => prev ? removeTag(prev, i) : project
                     );
                   }}>
                     {t}
@@ -227,9 +208,9 @@ export default function CreatorPage() {
             className={"w-full p-2 text-sm bg-main mt-5 rounded-md hover:brightness-75 duration-300 cursor-pointer disabled:hover:brightness-100 disabled:bg-neutral-600 " + ( loading ? "disabled:cursor-wait" : "disabled:cursor-not-allowed" )}>
               Create
             </button>
-            
+
             {
-              disabled && 
+              disabled &&
                 <p
                 className="w-full text-red-500 text-sm text-center mt-2 font-medium tracking-wide">
                   Please set a name for your project

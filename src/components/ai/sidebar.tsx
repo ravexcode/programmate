@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +9,6 @@ import { usePathname } from "next/navigation";
 import { UserData } from "@/types/user.types";
 import {
   IconArrowsMoveVertical,
-  IconChecklist,
   IconCloudCog,
   IconLayoutDashboard,
   IconLayoutSidebar,
@@ -32,17 +31,29 @@ interface Props {
   onNewChat?: () => void;
 }
 
+function subscribeExpanded(callback: () => void) {
+  window.addEventListener("expanded-change", callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    window.removeEventListener("expanded-change", callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+
+function getExpandedSnapshot() {
+  return window.localStorage.getItem("expanded") === "expanded";
+}
+
 export default function AiSidebar(props: Props) {
   const router = props.router;
   const pathname = usePathname();
   const snackbarRef = useRef(null);
 
-  const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    const isExpanded = window.localStorage.getItem("expanded");
-    setExpanded(!!isExpanded);
-  }, []);
+  const expanded = useSyncExternalStore(
+    subscribeExpanded,
+    getExpandedSnapshot,
+    () => false
+  );
 
   const [settingsVisible, changeSettingsVisibility] = useState(false);
   const userSettings = useRef(null);
@@ -128,10 +139,12 @@ export default function AiSidebar(props: Props) {
         <button
           type="button"
           onClick={() => {
-            setExpanded((prev) => !prev);
-            if (!expanded)
-              return window.localStorage.setItem("expanded", "expanded");
-            return window.localStorage.removeItem("expanded");
+            if (expanded) {
+              window.localStorage.removeItem("expanded");
+            } else {
+              window.localStorage.setItem("expanded", "expanded");
+            }
+            window.dispatchEvent(new Event("expanded-change"));
           }}
           className={
             "flex items-center gap-1.5 p-2 rounded-sm hover:bg-blue-900 cursor-pointer transition focus:outline-none opacity-90 duration-200 w-full " +

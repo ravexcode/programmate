@@ -26,7 +26,7 @@ export default function AiSessionPage() {
     };
 
     load();
-  }, [sessionId]);
+  }, [sessionId, router]);
 
   if (!session) return null;
 

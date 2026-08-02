@@ -1,6 +1,5 @@
 import {
-  getSessionStr,
-  logOut
+  getSessionStr
 } from "@/services/session.service";
 
 import {

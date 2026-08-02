@@ -10,8 +10,8 @@ import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 
 //Types imports
-import { UserData } from "@/types/user.types";
-import Team from "@/types/team.types";
+import type { UserData } from "@/types/user.types";
+import type Team from "@/types/team.types";
 
 //Prebuild ui imports
 import TeamSidebar from "@/components/dashboard/team-sidebar";
@@ -20,9 +20,9 @@ import LoadingDashboard from "@/components/screens/loading-screen";
 import BgGradient from "@/components/ui/bg-gradient";
 import DashCard from "@/components/dashboard/dash-card";
 
-//Modules import
-import { getUser } from "@/modules/user.module";
-import { getProject } from "@/modules/project/main.module";
+//Client imports
+import { loadOverviewPage } from "@/client/projects/overview";
+import { getStatusColor, truncate } from "@/client/projects/shared";
 
 import { IconCircleDot, IconUserCircle } from "@tabler/icons-react";
 
@@ -43,25 +43,20 @@ export default function TeamPage(){
   //Sets the data
   useEffect(() => {
     async function get() {
-      const data_user = await getUser(router);
-      const data_project = await getProject({
-        router,
-        id: Number(params.id),
-        snackbar
-      });
+      const data = await loadOverviewPage(Number(params.id), router, snackbar);
 
-      if(!data_project || !data_user) return;
+      if(!data) return;
 
-      setUser(data_user);
-      setTeam(data_project);
-  
+      setUser(data.user);
+      setTeam(data.team);
+
       return;
     }
 
     get();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
+
   return (
       team && user ? (
         <div
@@ -73,7 +68,7 @@ export default function TeamPage(){
           team={team} />
 
           <main
-          className="w-full h-screen overflow-w-hidden overflow-y-auto py-5 px-18 bg-background relative flex flex-col justify-start items-start">
+          className="w-full h-screen overflow-hidden overflow-y-auto py-5 px-18 bg-background relative flex flex-col justify-start items-start">
             <BgGradient />
 
             {/* Team data section */}
@@ -81,24 +76,24 @@ export default function TeamPage(){
             className="flex flex-col py-2 w-full justify-center items-start mb-5">
               <h2
               className="text-5xl font-semibold mb-2">
-                {team?.name}
+                {team.name}
               </h2>
 
               <p
               className="opacity-70">
-                {team?.description}
+                {team.description}
               </p>
 
               <div
               className="flex gap-2 flex-wrap w-full justify-start items-center mt-5 cursor-default">
                 {
-                  team && team.tags && team.tags.length >= 1 && team.tags.map((tag: string, index: number) => 
+                  team.tags && team.tags.length >= 1 && team.tags.map((tag: string, index: number) =>
                     <div
                     key={index}
                     className="text-sm px-4 py-1 rounded-full border border-main/50 bg-main/30 duration-400 hover:bg-main/50">
                       {tag}
                     </div>
-                  )  
+                  )
                 }
               </div>
 
@@ -109,17 +104,12 @@ export default function TeamPage(){
 
               <p
               className="mt-1 flex gap-2 justify-center items-center w-max rounded-full text-sm">
-                <span className={"w-1.5 h-1.5 rounded-full block " + (
-                  team.status === "Backlog" ? "bg-zinc-500" :
-                  team.status === "Planning" ? "bg-blue-400" :
-                  team.status === "In progress" ? "bg-orange-400" :
-                  team.status === "On Hold" ? "bg-red-400" :
-                  "bg-purple-500" ) }></span>
-                { team?.status }
+                <span className={"w-1.5 h-1.5 rounded-full block " + getStatusColor(team.status)}></span>
+                { team.status }
               </p>
             </section>
 
-            
+
             <section
             className="w-full h-full py-5 flex flex-col md:grid md:grid-cols-2 items-center justify-center gap-5">
 
@@ -159,19 +149,11 @@ export default function TeamPage(){
                       className="flex flex-col items-start justify-center px-4 mr-auto">
                         <p
                         className="text-base font-medium">
-                          {
-                            int.username.length > 20 ?
-                              int.username.slice(0, 20) + "..." :
-                              int.username
-                          }
+                          { truncate(int.username, 20) }
                         </p>
                         <p
                         className="text-neutral-300">
-                          {
-                            int.email.length > 25 ?
-                              int.email.slice(0, 25) + "..." :
-                              int.email
-                          }
+                          { truncate(int.email, 25) }
                         </p>
                       </div>
 
@@ -197,17 +179,17 @@ export default function TeamPage(){
                 className="my-1 h-px bg-neutral-800 rounded-full w-full" />
 
                 {
-                  team.tickets && team.tickets.length > 0 ? 
+                  team.tickets && team.tickets.length > 0 ?
                     team.tickets.map((ticket, i) =>
                       <div
                       key={"Ticket" + i}
                       className="w-full py-2 px-4 rounded-md hover:backdrop-brightness-200">
                         {
-                          ticket.title 
+                          ticket.title
                         }
                       </div>
                     )
-                  : 
+                  :
                     <div
                     className="w-full h-full flex flex-col items-center justify-center text-neutral-300">
                       <IconCircleDot

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 interface IconProps {
   src: string;
@@ -38,9 +39,11 @@ export default function TechCarousel() {
               key={`carousel-${icon.alt}-${index}`}
               className="flex items-center justify-center grayscale opacity-70 hover:opacity-100 transition-all duration-300"
             >
-              <img
+              <Image
                 src={icon.src}
                 alt={icon.alt}
+                width={40}
+                height={40}
                 loading="lazy"
                 className={`object-contain min-w-max max-w-none w-auto ${icon.className ?? ''}`}
               />

@@ -2,23 +2,26 @@
 "use client";
 
 //Next imports
-import Link from "next/link";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 
 //React imports
 import { useEffect, useState, useRef } from "react";
 
-//Hooks imports
-import animationClose from "@/utils/animation-close";
-
-//Modules imports
-import { getUser } from "@/modules/user.module";
-import { getProject } from "@/modules/project/main.module";
-import { requestIntegrant, changeRole, removeMember, searchUsers } from "@/modules/project/integrants.module";
-
-//Functions imports
-import { isUserAdmin, getMemberById } from "@/utils/team-admin";
+//Client imports
+import {
+  loadIntegrantsPage,
+  saveIntegrants,
+  applyRoleChange,
+  removeTeamMember,
+  findUsers,
+  canManageTeam,
+  toggleRole,
+  applyRoleChangeToTeam,
+  removeMemberFromTeam,
+  type SearchedUser,
+} from "@/client/projects/members";
+import { toggleOverlay } from "@/client/projects/shared";
 
 //Prebuilt ui imports
 import TeamSideBar from "@/components/dashboard/team-sidebar";
@@ -40,8 +43,8 @@ import {
 
 //Types imports
 import type Team from "@/types/team.types";
-import { UserData } from "@/types/user.types";
-import { IntegrantData } from "@/types/team.types";
+import type { UserData } from "@/types/user.types";
+import type { IntegrantData } from "@/types/team.types";
 
 export default function Page(){
   //NextJS Setup
@@ -58,18 +61,11 @@ export default function Page(){
   //Searcher value
   const [ searched, setSearched ] = useState<string>("");
   //Found
-  const [ found, setFound ] = useState<Array<{
-    email: string,
-    display_name: string
-  }> | undefined>();
+  const [ found, setFound ] = useState<SearchedUser[]>();
   //Found
-  const [ added, setAdded ] = useState<Array<{
-    email: string,
-    display_name: string
-  }> | undefined>();
+  const [ added, setAdded ] = useState<SearchedUser[]>();
   //Searcher status
   const [ searchStatus, setSearchStatus ] = useState<"not-searched" | "not-found" | "searching">("not-searched");
-  const [ currentRole ] = useState("member");
 
   //Confirmation dialog states
   const [ confirmationOpen, setConfirmationOpen ] = useState<boolean>(false);
@@ -85,17 +81,12 @@ export default function Page(){
 
   useEffect(() => {
     async function get() {
-      const data_user = await getUser(router);
-      const data_project = await getProject({
-        router,
-        id: Number(params.id),
-        snackbar
-      });
+      const data = await loadIntegrantsPage(Number(params.id), router, snackbar);
 
-      if(!data_project || !data_user) return;
+      if(!data) return;
 
-      setUser(data_user);
-      setTeam(data_project);
+      setUser(data.user);
+      setTeam(data.team);
 
       return;
     }
@@ -110,60 +101,22 @@ export default function Page(){
     e.preventDefault();
     setFormDisabled(true);
 
-    for(const item of added) {
-      await requestIntegrant({
-        id: Number(params.id),
-        reqEmail: item.email,
-        router,
-        snackbar
-      });
-    }
+    await saveIntegrants(Number(params.id), added, router, snackbar);
 
-    toggleForm();
+    toggleOverlay(addIntgForm);
     setFound(undefined);
     setAdded(undefined);
     setFormDisabled(false);
   }
 
-  const toggleForm = () => {
-    if(!addIntgForm.current) return;
-
-    const current : HTMLElement = addIntgForm.current;
-    const classlist = current.classList;
-
-    if(classlist.contains("hidden")){
-      classlist.remove("animate-fade-out-down");
-      classlist.replace("hidden", "flex");
-
-      return;
-    };
-
-    classlist.add("animate-fade-out-down");
-    animationClose(current, "fade-out-down", "hidden", "flex");
-    return;
-  }
-
   //Change member role
-  const changeMemberRole = async(memberId: string, currentRole: string) => {
-    if(!team) return;
-
-    // Constants
-    const integrants = team.integrants;
-    // Variables
-    const user_index = integrants.findIndex(
-      integrant => integrant.id === user?.id
-    );
-
-    if(user_index === undefined) return router.push("/dashboard");
-
-    if(integrants[user_index].type !== "admin") return;
-
-    const newRole = currentRole === "admin" ? "member" : "admin";
+  const changeMemberRole = (memberId: string, currentRole: string) => {
+    if(!canManageTeam(team, user?.id)) return;
 
     // Open confirmation dialog
     setConfirmationMemberId(memberId);
     setConfirmationAction("role-change");
-    setConfirmationNewRole(newRole);
+    setConfirmationNewRole(toggleRole(currentRole));
     setConfirmationOpen(true);
   }
 
@@ -173,22 +126,16 @@ export default function Page(){
 
     setIsProcessing(true);
 
-    const success = await changeRole({
-      id: Number(params.id),
-      memberId: confirmationMemberId,
-      newRole: confirmationNewRole,
+    const success = await applyRoleChange(
+      Number(params.id),
+      confirmationMemberId,
+      confirmationNewRole,
       router,
       snackbar
-    });
+    );
 
     if(success) {
-      // Update local state
-      setTeam({
-        ...team,
-        integrants: team.integrants.map((member: IntegrantData) =>
-          member.id === confirmationMemberId ? { ...member, type: confirmationNewRole } : member
-        )
-      });
+      setTeam(applyRoleChangeToTeam(team, confirmationMemberId, confirmationNewRole));
     }
 
     setConfirmationOpen(false);
@@ -196,9 +143,8 @@ export default function Page(){
   }
 
   //Delete member from team
-  const deleteMember = async(memberId: string) => {
-    if(!team) return;
-    if(!isUserAdmin(team, user?.id)) return;
+  const deleteMember = (memberId: string) => {
+    if(!canManageTeam(team, user?.id)) return;
 
     // Open confirmation dialog
     setConfirmationMemberId(memberId);
@@ -212,19 +158,15 @@ export default function Page(){
 
     setIsProcessing(true);
 
-    const success = await removeMember({
-      id: Number(params.id),
-      memberId: confirmationMemberId,
+    const success = await removeTeamMember(
+      Number(params.id),
+      confirmationMemberId,
       router,
       snackbar
-    });
+    );
 
     if(success) {
-      // Update local state
-      setTeam({
-        ...team,
-        integrants: team.integrants.filter((member: IntegrantData) => member.id !== confirmationMemberId)
-      });
+      setTeam(removeMemberFromTeam(team, confirmationMemberId));
     }
 
     setConfirmationOpen(false);
@@ -233,21 +175,19 @@ export default function Page(){
 
   //User searcher
   const searchUsersHandler = async() => {
+    if(!searched || searched.length < 1) return;
+
     setSearchStatus("searching");
 
-    if(!searched || searched.length < 1) {
-      setSearchStatus("not-searched")
-    }
-
-    const users = await searchUsers({
-      query: searched,
-      snackbar
-    });
+    const users = await findUsers(searched, snackbar);
 
     if(users.length > 0) {
       setFound(users);
+      setSearchStatus("not-searched");
+      return;
     }
 
+    setFound(undefined);
     setSearchStatus("not-found");
     return;
   }
@@ -268,7 +208,7 @@ export default function Page(){
             : `Are you sure you want to change this member's role to ${confirmationNewRole}?`
         }
         actionType={confirmationAction}
-        memberName={(getMemberById(team, confirmationMemberId) as IntegrantData | undefined)?.username || "Unknown"}
+        memberName={team.integrants.find(int => int.id === confirmationMemberId)?.username || "Unknown"}
         newRole={confirmationAction === "role-change" ? confirmationNewRole : undefined}
         onConfirm={confirmationAction === "delete" ? confirmMemberDeletion : confirmRoleChange}
         onCancel={() => setConfirmationOpen(false)}
@@ -278,15 +218,15 @@ export default function Page(){
         <section
         className="fixed backdrop-blur backdrop-brightness-60 top-0 left-0 w-screen h-screen overflow-x-hidden overflow-y-auto justify-center py-10 z-20 hidden animate-fade-in-up animate-duration-200"
         ref={addIntgForm}
-        onClick={toggleForm}>
+        onClick={() => toggleOverlay(addIntgForm)}>
 
           <CreatorForm
           action={async(e) => { await save_integrant(e) }}
           title="Add a new teammate"
           actionIsDisabled={formDisabled || !found || found.length < 1}
-          hideAction={toggleForm}
+          hideAction={() => toggleOverlay(addIntgForm)}
           confirmMessage="Request integrant">
-            
+
             <label
             className="text-sm font-light w-full text-start">
               Search your teammate via email
@@ -312,7 +252,7 @@ export default function Page(){
             <section
             className="w-full rounded-md bg-neutral-800/50 py-2 mb-3">
               {
-                found && found.length > 0 ? found.map((user, index) => 
+                found && found.length > 0 ? found.map((user, index) =>
                   <button
                   type="button"
                   key={index}
@@ -352,7 +292,7 @@ export default function Page(){
               }
             </section>
 
-            
+
 
             <label
             className="text-sm font-light w-full text-start">
@@ -361,7 +301,7 @@ export default function Page(){
             <section
             className="w-full rounded-md bg-neutral-800/50 py-2 mb-4">
               {
-                added && added.length > 0 ? added.map((user, index) => 
+                added && added.length > 0 ? added.map((user, index) =>
                   <button
                   type="button"
                   key={index}
@@ -391,7 +331,7 @@ export default function Page(){
         team={team} />
 
         <main
-        className="w-full h-screen overflow-w-hidden overflow-y-auto py-5 px-18 bg-background relative flex flex-col justify-start items-start">
+        className="w-full h-screen overflow-hidden overflow-y-auto py-5 px-18 bg-background relative flex flex-col justify-start items-start">
           <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
             <div className="absolute left-1/2 top-1/2 aspect-square block w-200 -translate-x-1/2 -translate-y-1/2 rounded-full bg-main/15 blur-3xl animate-pulse" />
           </div>
@@ -414,8 +354,8 @@ export default function Page(){
               <MainButton
               size="w-50"
               className="flex flex-row justify-center items-center gap-2"
-              isDisabled={currentRole !== "admin"}
-              action={toggleForm}>
+              isDisabled={!canManageTeam(team, user.id)}
+              action={() => toggleOverlay(addIntgForm)}>
                 <IconUserPlus
                 size={20}
                 stroke={2} />
@@ -431,104 +371,100 @@ export default function Page(){
             className="px-6 py-4 border-b border-neutral-800 bg-neutral-950 flex justify-between items-center">
               <h3
               className="text-xl font-semibold text-white">
-                Project integrants: {team?.integrants?.length || 0}
+                Project integrants: {team.integrants?.length || 0}
               </h3>
             </header>
 
             <div className="p-6">
-              {team?.integrants && team.integrants.length > 0 ? (
-                <>
-                  <ul className="space-y-1 cursor-default">
-                    { team.integrants && team.integrants.length > 0 && team.integrants.map((member: IntegrantData) => (
-                      <li
-                      key={member.id}
-                      className="flex gap-4 py-3 px-2 rounded-lg transition-colors hover:bg-white/5 items-center group">
-                          {/* Member profile picture */}
-                        <div className="flex items-center gap-3">
-                          {
-                            member.avatar_url ? (
-                            <Image
-                            src={member.avatar_url}
-                            alt={member.username + " profile picture"}
-                            width={50}
-                            height={50}
-                            className="w-9 rounded-full"
-                            preload
-                            loading="eager" />
-                            ) : (
-                              <IconUserCircle
-                              size={30}
-                              stroke={1.5} />
-                            )
-                          }
-                          <span className="font-medium text-neutral-200 group-hover:text-blue-500 transition-colors">
-                            {member.username}
-                          </span>
-                        </div>
-
-                        <span className="font-light text-neutral-400 truncate text-sm">
-                          {member.email}
-                        </span>
-
-
-                          {/* Member role */}
-                        <div className="flex items-center gap-2">
-                          {member.type === "admin" ? (
-                            <>
-                              <IconShieldCheck
-                              size={16}
-                              stroke={2}
-                              className="text-green-500" />
-                              <span className="text-xs font-semibold text-green-500 uppercase">Admin</span>
-                            </>
-                          ) : (
-                            <>
-                              <IconShield
-                              size={16}
-                              stroke={2}
-                              className="text-blue-400" />
-                              <span className="text-xs font-semibold text-blue-400 uppercase">Member</span>
-                            </>
-                          )}
-                        </div>
-
-                        {/* Member actions (Invalid in user) */}
+              {team.integrants && team.integrants.length > 0 ? (
+                <ul className="space-y-1 cursor-default">
+                  { team.integrants.map((member: IntegrantData) => (
+                    <li
+                    key={member.id}
+                    className="flex gap-4 py-3 px-2 rounded-lg transition-colors hover:bg-white/5 items-center group">
+                      {/* Member profile picture */}
+                      <div className="flex items-center gap-3">
                         {
-                          member.id !== user.id ? (
-                            <div className="flex justify-end gap-2">
-                              <button
-                              type="button"
-                              onClick={() => changeMemberRole(member.id, member.type || "member")}
-                              disabled={!isUserAdmin(team, user?.id)}
-                              className="p-1 rounded-md bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                              title={isUserAdmin(team, user?.id) ? `Change role to ${member.type === "admin" ? "member" : "admin"}` : "Only admins can change roles"}>
-                                <IconUsers
-                                size={16}
-                                stroke={2} />
-                              </button>
-
-                              <button
-                              type="button"
-                              onClick={() => deleteMember(member.id)}
-                              disabled={!isUserAdmin(team, user?.id)}
-                              className="p-1 rounded-md bg-neutral-800 hover:bg-red-900 text-neutral-300 hover:text-red-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                              title={isUserAdmin(team, user?.id) ? "Remove member" : "Only admins can remove members"}>
-                                <IconTrash
-                                size={16}
-                                stroke={2} />
-                              </button>
-                            </div>
+                          member.avatar_url ? (
+                          <Image
+                          src={member.avatar_url}
+                          alt={member.username + " profile picture"}
+                          width={50}
+                          height={50}
+                          className="w-9 rounded-full"
+                          loading="eager" />
                           ) : (
-                            <span
-                            className="text-neutral-500 w-full text-end pr-2">
-                              You
-                            </span>
+                            <IconUserCircle
+                            size={30}
+                            stroke={1.5} />
                           )
                         }
-                      </li>
-                    ))}
-                  </ul>
-                </>
+                        <span className="font-medium text-neutral-200 group-hover:text-blue-500 transition-colors">
+                          {member.username}
+                        </span>
+                      </div>
+
+                      <span className="font-light text-neutral-400 truncate text-sm">
+                        {member.email}
+                      </span>
+
+                        {/* Member role */}
+                      <div className="flex items-center gap-2">
+                        {member.type === "admin" ? (
+                          <>
+                            <IconShieldCheck
+                            size={16}
+                            stroke={2}
+                            className="text-green-500" />
+                            <span className="text-xs font-semibold text-green-500 uppercase">Admin</span>
+                          </>
+                        ) : (
+                          <>
+                            <IconShield
+                            size={16}
+                            stroke={2}
+                            className="text-blue-400" />
+                            <span className="text-xs font-semibold text-blue-400 uppercase">Member</span>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Member actions */}
+                      {
+                        member.id !== user.id ? (
+                          <div className="flex justify-end gap-2">
+                            <button
+                            type="button"
+                            onClick={() => changeMemberRole(member.id, member.type || "member")}
+                            disabled={!canManageTeam(team, user.id)}
+                            className="p-1 rounded-md bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title={canManageTeam(team, user.id) ? `Change role to ${member.type === "admin" ? "member" : "admin"}` : "Only admins can change roles"}>
+                              <IconUsers
+                              size={16}
+                              stroke={2} />
+                            </button>
+
+                            <button
+                            type="button"
+                            onClick={() => deleteMember(member.id)}
+                            disabled={!canManageTeam(team, user.id)}
+                            className="p-1 rounded-md bg-neutral-800 hover:bg-red-900 text-neutral-300 hover:text-red-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title={canManageTeam(team, user.id) ? "Remove member" : "Only admins can remove members"}>
+                              <IconTrash
+                              size={16}
+                              stroke={2} />
+                            </button>
+                          </div>
+                        ) : (
+                          <span
+                          className="text-neutral-500 w-full text-end pr-2">
+                            You
+                          </span>
+                        )
+                      }
+                    </li>
+                  ))}
+                </ul>
               ) : (
                 <div
                 className="flex flex-col text-neutral-500 justify-center items-center py-16">
@@ -540,14 +476,15 @@ export default function Page(){
                   <p className="text-center text-sm opacity-70 mb-6 max-w-xs">
                     Invite your first team member to start collaborating on this project
                   </p>
-                  <Link
-                  href={`/projects/${team.team_id}/integrants/invite`}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-text bg-main hover:bg-main/90 duration-400 transition cursor-pointer font-medium">
+                  <MainButton
+                  size="w-auto"
+                  className="flex items-center gap-2"
+                  action={() => toggleOverlay(addIntgForm)}>
                     <IconUserPlus
                     size={18}
                     stroke={2} />
                     Invite Member
-                  </Link>
+                  </MainButton>
                 </div>
               )}
             </div>

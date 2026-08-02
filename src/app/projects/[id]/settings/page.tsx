@@ -12,17 +12,22 @@ import SnackBar from "@/components/ui/snackbar";
 import LoadingScreen from "@/components/screens/loading-screen";
 import TeamSideBar from "@/components/dashboard/team-sidebar";
 
-//Services imports
-import { getUser } from "@/modules/user.module";
-import { getTeam } from "@/modules/project/main.module";
-
-//Hooks imports
-import { deleteSessionStr, getSessionStr } from "@/services/session.service";
+//Client imports
+import {
+  loadSettingsPage,
+  addTag,
+  removeTag,
+  applySettings,
+  deleteTeam,
+  leaveTeam,
+  STATUS_OPTIONS,
+  WARN_TEXTS,
+} from "@/client/projects/settings";
+import { toggleOverlay } from "@/client/projects/shared";
 
 //Types imports
-import { UserData } from "@/types/user.types";
-import Team, { type Status } from "@/types/team.types";
-import { getCached } from "@/utils/cache";
+import type { UserData } from "@/types/user.types";
+import type Team from "@/types/team.types";
 
 //Icons imports
 import {
@@ -33,11 +38,6 @@ import {
 } from "@tabler/icons-react";
 import MainButton from "@/components/ui/buttons/main";
 import HazardButton from "@/components/ui/buttons/hazard";
-import animationClose from "@/utils/animation-close";
-
-//Modules imports
-import { updateProject, deleteProjectControllerProject } from "@/modules/project/main.module";
-import { removeMember } from "@/modules/project/integrants.module";
 
 export default function SettingsPage(){
   //Next setup
@@ -50,7 +50,6 @@ export default function SettingsPage(){
   const [ isStatusOpen, setIsStatusOpen ] = useState(false);
   const [ isLoading, setIsLoading ] = useState(false);
   const [ currentTag, setCurrentTag ] = useState("");
-  const [ userIndex, setUserIndex ] = useState<number>();
   const [ prevTeam, setPrevTeam ] = useState<Team>();
   const [ warnText, setWarnText ] = useState<0 | 1>(0);
   const [ confirmationText, setConfirmationText ] = useState("");
@@ -62,91 +61,23 @@ export default function SettingsPage(){
   //Gets data
   useEffect(() => {
     async function fetchData() {
-      let user_data: UserData;
+      const data = await loadSettingsPage(Number(params.id), router, snackbar);
 
-      const token = getSessionStr();
+      if(!data) return router.push("/dashboard");
 
-      if(!token) return router.push("/auth/signin");
-
-      const cached = getCached();
-
-      if(!cached) {
-        const user_fetched = await getUser(router);
-
-        if(!user_fetched) {
-          deleteSessionStr();
-          window.localStorage.clear();
-          return router.push("/auth/signin");
-        }
-
-        user_data = user_fetched
-      } else {
-        user_data = cached;
-      }
-
-      setUser(user_data);
-
-       const team = await getTeam(
-         { id: Number(params.id), router, snackbar: snackbar }
-       );
-
-
-      if(!team) return router.push("/dashboard")
-
-      setTeam(team);
-      setPrevTeam(team);
-      const user_index = team.integrants_id.indexOf(user_data.id);
-
-      if(user_index === undefined) return router.push("/dashboard");
-
-      setUserIndex(user_index)
+      setUser(data.user);
+      setTeam(data.team);
+      setPrevTeam(data.team);
     }
 
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
-  //Status options for project
-  const statusOptions = [
-    { value: "Backlog", label: "Backlog", color: "bg-zinc-500" },
-    { value: "Planning", label: "Planning", color: "bg-blue-400" },
-    { value: "In Progress", label: "In Progress", color: "bg-orange-400" },
-    { value: "On Hold", label: "On Hold", color: "bg-red-400" },
-    { value: "Done", label: "Done", color: "bg-purple-500" },
-  ];
-
-  const warnTexts = [
-    "Are you shure to you want to leave from this team?",
-    "Are you shure to you want to delete this team?"
-  ];
-
-  const toggleWarn = () => {
-    if(!warnCard.current) return;
-    setConfirmationText("");
-
-    const current : HTMLElement = warnCard.current;
-    const classlist = current.classList;
-
-    if(classlist.contains("hidden")){
-      classlist.remove("animate-fade-out-down");
-      classlist.replace("hidden", "flex");
-
-      return;
-    };
-
-    classlist.add("animate-fade-out-down");
-    animationClose(current, "fade-out-down", "hidden", "flex");
-    return;
-  };
 
   const handleDeleteTeam = async() => {
     setIsLoading(true);
 
-    await deleteProjectControllerProject({
-      router,
-      id: Number(params.id),
-      snackbar
-    });
+    await deleteTeam(router, snackbar, Number(params.id));
 
     router.push("/dashboard");
   }
@@ -156,18 +87,13 @@ export default function SettingsPage(){
 
     setIsLoading(true);
 
-    await removeMember({
-      id: Number(params.id),
-      memberId: user.id,
-      router,
-      snackbar
-    });
+    await leaveTeam(router, snackbar, Number(params.id), user.id);
 
     router.push("/dashboard");
   }
 
   return (
-    user && team && userIndex !== undefined ? (
+    user && team ? (
       <div
       className="bg-background text-text h-screen grid grid-cols-[auto_1fr] overflow-hidden"
       onClick={() => setIsStatusOpen(false)}>
@@ -183,8 +109,8 @@ export default function SettingsPage(){
           <div
           className="p-10 hidden items-center justify-center fixed z-10 backdrop-blur backdrop-brightness-75 w-screen h-screen inset-0 animate-fade-in-up animate-duration-300"
           ref={warnCard}
-          onClick={toggleWarn}>
-            
+          onClick={() => toggleOverlay(warnCard)}>
+
             <section
             className="p-3 rounded-md border border-neutral-800 bg-neutral-900 w-120 text-center flex flex-col gap-4 items-center justify-center"
             onClick={(e) => {
@@ -196,10 +122,10 @@ export default function SettingsPage(){
                 Caution!
               </p>
 
-              { warnTexts[warnText] }
+              { WARN_TEXTS[warnText] }
 
               {
-                warnText === 1 && 
+                warnText === 1 &&
                 <div
                 className="flex flex-col gap-1 w-full items-start justify-center px-10">
                   <label>
@@ -215,7 +141,7 @@ export default function SettingsPage(){
               }
 
               {
-                warnText === 1 && 
+                warnText === 1 &&
                 <span
                 className="w-70 rounded-md border border-red-700 bg-red-950 text-red-400 p-1 text-sm">
                   This action is not reversible
@@ -227,7 +153,7 @@ export default function SettingsPage(){
                 <button
                 type="button"
                 className="h-full rounded-md bg-neutral-800 duration-500 hover:bg-neutral-950 cursor-pointer text-sm"
-                onClick={toggleWarn}>
+                onClick={() => toggleOverlay(warnCard)}>
                   Cancel
                 </button>
 
@@ -240,7 +166,7 @@ export default function SettingsPage(){
                 }}
                 isDisabled={warnText === 1 && confirmationText !== team.name.toLowerCase()}>
                   {
-                    warnText && warnText === 1 ? "Delete" : "Leave from the team"
+                    warnText === 1 ? "Delete" : "Leave from the team"
                   }
                 </HazardButton>
               </div>
@@ -257,18 +183,9 @@ export default function SettingsPage(){
           <form
           className="w-full max-w-200 rounded-md p-4 z-2 flex flex-col items-start justify-start gap-4 animate-fade-in-up animate-duration-300"
           onSubmit={async(e) => {
+            e.preventDefault();
             setIsLoading(true);
-            await updateProject({
-              router,
-              snackbar,
-              project: {
-                id: team.team_id,
-                name: team.name,
-                description: team.description,
-                status: team.status as Status,
-                tags: team.tags || [],
-              }
-            })
+            await applySettings(router, snackbar, team)
             .finally(() => setPrevTeam(team));
             setIsLoading(false);
           }}>
@@ -292,7 +209,7 @@ export default function SettingsPage(){
               className="outline-none bg-neutral-950 rounded-sm p-3 duration-300 border border-neutral-900 focus:border-main w-full"
               placeholder="e.g. Project apollo" />
             </div>
-            
+
             <div
             className="w-full flex flex-col gap-2 text-sm items-start justify-center">
               <label
@@ -300,7 +217,7 @@ export default function SettingsPage(){
                 Team description
               </label>
               <textarea
-              defaultValue={team.description}
+              value={team.description}
               onChange={(e) => {
                 setTeam(
                   prev => prev ? {
@@ -312,20 +229,16 @@ export default function SettingsPage(){
               className="outline-none bg-neutral-950 rounded-sm p-3 duration-300 border border-neutral-900 focus:border-main w-full min-h-30 h-30 max-h-100"
               placeholder="e.g. Project apollo" />
             </div>
-            
+
             <div
             className="w-full flex flex-col gap-2 text-sm items-start justify-center">
               <label
               className="font-medium text-lg">
                 Team status
               </label>
-              
+
               <div className="w-full flex flex-col items-start mb-2 relative">
-                <label className="font-light w-full text-sm text-start mb-1 block">
-                  Project Status
-                </label>
-                        
-              <button
+                <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -334,23 +247,23 @@ export default function SettingsPage(){
                   setIsStatusOpen(!isStatusOpen);
                 }}
                 className="w-full flex items-center justify-between bg-neutral-950 rounded-sm p-2 text-text/80 hover:bg-neutral-800 transition-all duration-200" >
-                <div className="flex items-center gap-3">
-                  <span className={`w-2 h-2 rounded-full ${
-                    statusOptions.find(opt => opt.value === team.status)?.color || "bg-zinc-500"
-                  }`} />
-                  <span className="text-sm">{team.status}</span>
-                </div>
-                <IconAssembly
-                size={14}
-                stroke={2} />
-              </button>
-    
+                  <div className="flex items-center gap-3">
+                    <span className={`w-2 h-2 rounded-full ${
+                      STATUS_OPTIONS.find(opt => opt.value === team.status)?.color || "bg-zinc-500"
+                    }`} />
+                    <span className="text-sm">{team.status}</span>
+                  </div>
+                  <IconAssembly
+                  size={14}
+                  stroke={2} />
+                </button>
+
               {isStatusOpen && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setIsStatusOpen(false)} />
                   <div className="absolute top-[calc(100%+4px)] left-0 w-full bg-neutral-950 border border-neutral-800 rounded-md shadow-xl overflow-hidden z-20 animate-in fade-in zoom-in-95 duration-200">
                     <div className="p-1">
-                      {statusOptions.map((option) => (
+                      {STATUS_OPTIONS.map((option) => (
                         <button
                           key={option.value}
                           type="button"
@@ -358,14 +271,14 @@ export default function SettingsPage(){
                             setTeam(
                               prev => prev ? {
                                 ...prev,
-                                status: option.value as Status
+                                status: option.value
                               } : team
                             );
                             setIsStatusOpen(false);
                           }}
                           className={`w-full flex items-center gap-3 px-3 py-2 rounded-sm text-sm transition-all ${
-                            team.status === option.value 
-                            ? 'bg-neutral-800 text-white' 
+                            team.status === option.value
+                            ? 'bg-neutral-800 text-white'
                             : 'text-text/60 hover:bg-neutral-800/50 hover:text-text/90'
                           }`}
                         >
@@ -380,14 +293,14 @@ export default function SettingsPage(){
               )}
             </div>
             </div>
-            
+
             <div
             className="w-full flex flex-col gap-2 text-sm items-start justify-center">
               <label
               className="font-medium text-lg">
                 Team tags
               </label>
-              
+
               <div
               className="h-max w-full relative">
                 <input
@@ -395,24 +308,15 @@ export default function SettingsPage(){
                 onChange={(e) => setCurrentTag(e.target.value)}
                 onKeyDown={(e) => {
                   if(e.key !== " " || currentTag.length < 1) return;
-                  if(team.tags && team.tags && team.tags.filter(tag => tag === currentTag).length > 0) return;
 
-                  setTeam(
-                    prev => prev ?
-                    {
-                      ...prev,
-                      tags: [
-                        ...prev.tags || [],
-                        currentTag
-                      ]
-                    } : team
-                  );
+                  e.preventDefault();
+                  setTeam(prev => prev ? addTag(prev, currentTag.trim()) : team);
                   setCurrentTag("");
 
                   return;
                 }}
                 type="text"
-                className="w-max px-2 py-1 rounded-md bg-neutral-800 text-sm font-light cursor-default hover:bg-red-700 duration-400"
+                className="w-full px-3 py-2 pr-10 rounded-sm bg-neutral-950 border border-neutral-900 outline-none duration-300 focus:border-main"
                 placeholder="e.g. NextJS, TypeScript, NodeJS" />
 
                 <div
@@ -431,12 +335,7 @@ export default function SettingsPage(){
                     className="px-3 py-1 rounded-full text-sm font-light border border-main/50 bg-main/20 text-text/80 w-max cursor-default duration-300 hover:border-red-700 hover:bg-red-950"
                     key={ index }
                     onClick={() => setTeam(
-                      prev => prev ? {
-                        ...prev,
-                        tags: prev.tags ?
-                          prev.tags.filter((_, i) => i !== index)
-                         : []
-                      } : team
+                      prev => prev ? removeTag(prev, index) : team
                     )}>
                       {tag}
                     </p>
@@ -454,11 +353,11 @@ export default function SettingsPage(){
               Apply changes
             </MainButton>
           </form>
-          
+
           <div
           className="flex gap-2 justify-center items-center w-full max-w-250">
             <span className="w-full h-px rounded-md bg-red-600 animate-fade-in-right" />
-            
+
             <p
             className="w-80 text-center p-2 text-lg text-red-600 animate-fade-in-up animate-duration-300">
               Hazard options
@@ -473,8 +372,9 @@ export default function SettingsPage(){
             size="w-60"
             className="font-medium tracking-wide flex gap-2 items-center justify-center z-2"
             action={() => {
-              toggleWarn();
+              setConfirmationText("");
               setWarnText(0);
+              toggleOverlay(warnCard);
             }}>
               Leave from the team
 
@@ -484,13 +384,14 @@ export default function SettingsPage(){
             </HazardButton>
 
             {
-              team.integrants[userIndex].type === "admin" &&
+              user && team.integrants.find(int => int.id === user.id)?.type === "admin" &&
               <HazardButton
               size="w-60"
               className="font-medium tracking-wide flex gap-2 items-center justify-center z-2"
               action={() => {
-                toggleWarn();
+                setConfirmationText("");
                 setWarnText(1);
+                toggleOverlay(warnCard);
               }}>
                 Delete this team
 

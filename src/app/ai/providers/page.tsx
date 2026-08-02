@@ -11,12 +11,11 @@ import LoadingScreen from "@/components/screens/loading-screen";
 import AiLayout from "@/components/ai/layout";
 import Card from "@/components/ui/card";
 import MainButton from "@/components/ui/buttons/main";
-import AltButton from "@/components/ui/buttons/alternate";
 import HazardButton from "@/components/ui/buttons/hazard";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
 import OptionsInput from "@/components/forms/options-input";
-import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import SnackBar from "@/components/ui/snackbar";
 
 import type { UserData } from "@/types/user.types";
 import { providers, providersArray } from "@/utils/getURL";
@@ -24,7 +23,6 @@ import {
   IconCloudQuestion,
   IconTrash,
   IconPlus,
-  IconX,
 } from "@tabler/icons-react";
 
 const PROVIDER_DISPLAY_NAMES = providersArray.map(
@@ -79,7 +77,7 @@ export default function AiProvidersPage() {
       setUser(data);
     };
     get();
-  }, []);
+  }, [router]);
 
   // Reset form when modal opens
   const openModal = () => {

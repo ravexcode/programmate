@@ -5,8 +5,7 @@
 import { useEffect, useRef, useState } from "react";
 
 //Next imports
-import { useParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 //Prebuild UI imports
 import SnackBar from "@/components/ui/snackbar";
@@ -17,12 +16,11 @@ import BgGradient from "@/components/ui/bg-gradient";
 import TicketCard from "@/components/projects/ticket-card";
 
 //Types imports
-import { UserData } from "@/types/user.types";
-import Team from "@/types/team.types";
+import type { UserData } from "@/types/user.types";
+import type Team from "@/types/team.types";
 
-//Modules imports
-import { getUser } from "@/modules/user.module";
-import { getProject } from "@/modules/project/main.module";
+//Client imports
+import { loadTicketsPage } from "@/client/projects/tickets";
 
 export default function TicketsTeamPage(){
   //NextJS Setup
@@ -41,15 +39,12 @@ export default function TicketsTeamPage(){
 
   useEffect(() => {
     async function fetchData() {
-      const data_user = await getUser(router);
-      const data_project = await getProject({
-        router,
-        id: Number(params.id),
-        snackbar
-      });
+      const data = await loadTicketsPage(Number(params.id), router, snackbar);
 
-      setUser(data_user!);
-      setTeam(data_project);
+      if(!data) return;
+
+      setUser(data.user);
+      setTeam(data.team);
 
       return;
     }
@@ -67,7 +62,7 @@ export default function TicketsTeamPage(){
         <TeamSidebar
         user={user}
         team={team} />
-        
+
         <div
         className="grid grid-rows-[auto_1fr] relative h-max md:h-auto overflow-auto">
           <BgGradient />
@@ -108,7 +103,7 @@ export default function TicketsTeamPage(){
                 </section>
               ) : (
                 <div
-                className="flex flex-col text-neutral-200 justfiy-start items-center py-10 w-full z-2 h-full">
+                className="flex flex-col text-neutral-200 justify-start items-center py-10 w-full z-2 h-full">
                   <section
                   className="w-150 text-sm p-4 rounded-md bg-neutral-950 mt-10 flex flex-col gap-2 items-start justify-center select-none">
                     <p
@@ -128,7 +123,7 @@ export default function TicketsTeamPage(){
                       Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum, sit totam placeat asperiores pariatur consequuntur? Quae voluptatum vitae provident quibusdam totam eos temporibus facilis similique! Nam nobis illum dolores nihil?
                     </p>
 
-                    
+
                     <p
                     className="text-transparent bg-neutral-900 p-2 rounded-md text-sm mt-3 w-full">
                       Lorem
@@ -148,7 +143,7 @@ export default function TicketsTeamPage(){
             }
           </main>
         </div>
-        
+
       </div>
     ) : (
       <LoadingDashboard />

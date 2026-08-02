@@ -13,14 +13,6 @@ import SnackBar from "@/components/ui/snackbar";
 import LoadingScreen from "@/components/screens/loading-screen";
 import ReactMarkdown from "@/components/ui/react-markdown";
 
-//Modules imports
-import { getUser } from "@/modules/user.module";
-import {
-  getTicket,
-  updateTicket,
-  deleteTicket
-} from "@/modules/project/ticket.module";
-
 //Icons imports
 import {
   IconArrowLeft,
@@ -28,15 +20,22 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 
-import animationClose from "@/utils/animation-close";
-
 //Types setup
-//Imports
-import { UserData } from "@/types/user.types";
-import { Ticket } from "@/types/team.types";
+import type { UserData } from "@/types/user.types";
+import type { Ticket } from "@/types/team.types";
 import CreatorForm from "@/components/forms/creator-form";
 import CreatorInput from "@/components/forms/creator-inputs";
 import OptionsInput from "@/components/forms/options-input";
+
+//Client imports
+import {
+  loadTicketPage,
+  editTicket,
+  removeTicket,
+  getImportanceColor,
+  IMPORTANCE_OPTIONS,
+} from "@/client/projects/ticket";
+import { toggleOverlay } from "@/client/projects/shared";
 
 export default function TicketPage(){
   //Next setup
@@ -48,10 +47,10 @@ export default function TicketPage(){
   const [ ticket, setTicket ] = useState<Ticket>();
 
   //Editor form states
-  const [ loading, isLoading ] = useState(false);
+  const [ loading, setLoading ] = useState(false);
   const [ importance, setImportance ] = useState("");
   const [ ticketPrev, setTicketPrev ] = useState<Ticket>();
-  
+
   //Components ref
   const snackbar = useRef(null);
   const form = useRef(null)
@@ -59,47 +58,24 @@ export default function TicketPage(){
   //Data fetching
   useEffect(() => {
     async function get() {
-      const data_user = await getUser(router);
-      const data_ticket = await getTicket({
-        id: Number(params.id),
-        index: Number(params.index),
+      const data = await loadTicketPage(
+        Number(params.id),
+        Number(params.index),
         router,
         snackbar
-      });
+      );
 
-      setUser(data_user!);
-      setTicket(data_ticket.ticket);
-      setTicketPrev(data_ticket.ticket);
-      setImportance(data_ticket.ticket.importance);
+      if(!data) return;
+
+      setUser(data.user);
+      setTicket(data.ticket);
+      setTicketPrev(data.ticket);
+      setImportance(data.ticket.importance);
     }
 
     get();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const impOptions = ["Low" , "Medium" , "High"];
-
-  const toggleForm = () => {
-    if(!form.current) return;
-
-    const current : HTMLElement = form.current;
-
-    if(current.classList.contains("hidden")) {
-      current.classList.add("animate-fade-out-down");
-      animationClose(
-        current,
-        "fade-out-down",
-        "hidden",
-        "flex"
-      );
-
-      return;
-    }
-    
-    current.classList.remove("hidden");
-    current.classList.add("flex");
-    return;
-  };
 
   return (
     user && ticket ? (
@@ -115,18 +91,16 @@ export default function TicketPage(){
           action={async (e) => {
             e.preventDefault();
 
-            isLoading(true);
-            await updateTicket({
-              id: Number(params.id),
-              index: Number(params.index),
+            setLoading(true);
+            await editTicket(
+              Number(params.id),
+              Number(params.index),
+              ticket,
+              importance,
               router,
-              snackbar,
-              ticket: {
-                ...ticket,
-                importance: importance as "Low" | "Medium" | "High"
-              }
-            });
-            isLoading(false);
+              snackbar
+            );
+            setLoading(false);
           }}
           title="Edit your ticket"
           bgColor="bg-neutral-950"
@@ -167,11 +141,11 @@ export default function TicketPage(){
             required
             bgColor="bg-neutral-900"
             type="textarea" />
-                      
+
             <OptionsInput
             label="Set importance"
             value={importance}
-            options={impOptions}
+            options={IMPORTANCE_OPTIONS}
             onChange={setImportance}
             bgColor="bg-neutral-900" />
 
@@ -185,7 +159,7 @@ export default function TicketPage(){
           <div className="pointer-events-none absolute inset-0 -z-1 overflow-hidden">
             <div className="absolute left-1/2 top-1/2 aspect-square block w-200 -translate-x-1/2 -translate-y-1/2 rounded-full bg-main/15 blur-3xl animate-pulse" />
           </div>
-          
+
           <div className="p-8 md:p-12 max-w-5xl mx-auto z-2">
             {/* Back Button */}
             <Link
@@ -206,19 +180,12 @@ export default function TicketPage(){
                   <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
                     {ticket.title}
                   </h1>
-                  
+
                   {/* Importance Badge */}
                   <p
                   className="flex gap-2 items-center">
                     <span
-                    className="aspect-square rounded-full w-2 h-2 block"
-                    style={{
-                      backgroundColor: (
-                        ticket.importance === "Low" ? "blue" :
-                        ticket.importance === "Medium" ? "orange" :
-                        "red"
-                      )
-                    }}></span>
+                    className={"aspect-square rounded-full w-2 h-2 block " + getImportanceColor(ticket.importance)}></span>
                     Importance: {ticket.importance.toLowerCase()}
                   </p>
                 </div>
@@ -244,7 +211,7 @@ export default function TicketPage(){
                   <button
                   type="button"
                   className="p-2 w-full rounded-sm bg-main hover:brightness-75 duration-300 flex items-center justify-center gap-1.5 cursor-pointer"
-                  onClick={toggleForm}>
+                  onClick={() => toggleOverlay(form)}>
                     <IconPencil
                     size={18}
                     stroke={1.5} />
@@ -255,12 +222,12 @@ export default function TicketPage(){
                   type="button"
                   className="p-2 w-full rounded-sm bg-red-600 hover:brightness-75 duration-300 flex items-center justify-center gap-1.5 cursor-pointer"
                   onClick={async() => {
-                    await deleteTicket({
-                      id: Number(params.id),
-                      index: Number(params.index),
+                    await removeTicket(
+                      Number(params.id),
+                      Number(params.index),
                       router,
                       snackbar
-                    });
+                    );
 
                     return router.push(`/projects/${params.id}/tickets`);
                   }}>
@@ -284,7 +251,7 @@ export default function TicketPage(){
             </section>
           </div>
         </main>
-        
+
       </div>
     ) : (
       <LoadingScreen />

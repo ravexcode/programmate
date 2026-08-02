@@ -6,7 +6,16 @@ import Image from "next/image";
 import { getSessionStr } from "@/services/session.service";
 
 //React imports
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+
+function subscribeSigned(callback: () => void) {
+  window.addEventListener("signin-change", callback);
+  return () => window.removeEventListener("signin-change", callback);
+}
+
+function getSignedSnapshot() {
+  return Boolean(getSessionStr());
+}
 
 function OptionsButton(props: {
   link: string,
@@ -25,12 +34,11 @@ function OptionsButton(props: {
 }
 
 export default function Header(){
-  const [ signed, setSigned ] = useState<boolean>();
-
-  useEffect(() => {
-    const token = getSessionStr();
-    setSigned(token ? true : false);
-  }, []);
+  const signed = useSyncExternalStore(
+    subscribeSigned,
+    getSignedSnapshot,
+    () => false
+  );
 
   return (
     <header

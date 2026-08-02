@@ -57,7 +57,7 @@ export function useGetData(
     }
 
     get();
-  }, []);
+  }, [router, setUser]);
 }
 
 //-------- AI transport --------

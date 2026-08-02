@@ -62,6 +62,29 @@ function flattenModels(user: UserData): FlatModel[] {
   return models;
 }
 
+const greetings: string[] = [
+  "Hello, User! What are we building today?",
+  "Welcome back, User! Ready to create something amazing?",
+  "Hi, User! What's the project for today?",
+  "Good to see you, User. What are we working on?",
+  "Hello, User! Let's build something incredible.",
+  "Hey, User! What idea are we turning into reality today?",
+  "Welcome, User. What's on the development roadmap?",
+  "Hi there, User! Ready to start coding?",
+  "Hello, User! What challenge are we solving today?",
+  "Hey, User! What are we creating together?",
+  "Good to have you back, User! What's today's mission?",
+  "Welcome, User! Let's make some progress.",
+  "Hello, User! What's the next big feature?",
+  "Hi, User! What project deserves our attention today?",
+  "Hey, User! Time to build something awesome.",
+  "Welcome back, User! What's your plan for today?",
+  "Hello, User! Ready to bring another idea to life?",
+  "Hi, User! What innovation are we working on today?",
+  "Good day, User! What would you like to build?",
+  "Hello, User! Let's get started on your next masterpiece.",
+];
+
 interface Props {
   initialSession?: AiChatSession;
 }
@@ -82,7 +105,7 @@ export default function AiPage({ initialSession }: Props) {
 
   const [session, setSession] = useState<AiChatSession | undefined>(initialSession);
 
-  const [gIndex, setGIndex] = useState(0);
+  const [gIndex] = useState(() => rng(greetings.length));
 
   const flatModels = user ? flattenModels(user) : [];
 
@@ -94,13 +117,19 @@ export default function AiPage({ initialSession }: Props) {
       setUser(data);
     };
     get();
-  }, []);
+  }, [router]);
 
-  useEffect(() => {
-    if (flatModels.length > 0 && !selectedModel) {
-      setSelectedModel(flatModels[0]);
-    }
-  }, [flatModels]);
+  // Reset default model when the available model list changes
+  const [prevFlatModels, setPrevFlatModels] = useState(flatModels);
+
+  if (prevFlatModels !== flatModels) {
+    setPrevFlatModels(flatModels);
+    setSelectedModel((current) =>
+      current && flatModels.some((m) => m.displayName === current.displayName)
+        ? current
+        : (flatModels[0] ?? null)
+    );
+  }
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -118,33 +147,6 @@ export default function AiPage({ initialSession }: Props) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [session?.messages]);
-
-  const greetings: string[] = [
-    "Hello, User! What are we building today?",
-    "Welcome back, User! Ready to create something amazing?",
-    "Hi, User! What's the project for today?",
-    "Good to see you, User. What are we working on?",
-    "Hello, User! Let's build something incredible.",
-    "Hey, User! What idea are we turning into reality today?",
-    "Welcome, User. What's on the development roadmap?",
-    "Hi there, User! Ready to start coding?",
-    "Hello, User! What challenge are we solving today?",
-    "Hey, User! What are we creating together?",
-    "Good to have you back, User! What's today's mission?",
-    "Welcome, User! Let's make some progress.",
-    "Hello, User! What's the next big feature?",
-    "Hi, User! What project deserves our attention today?",
-    "Hey, User! Time to build something awesome.",
-    "Welcome back, User! What's your plan for today?",
-    "Hello, User! Ready to bring another idea to life?",
-    "Hi, User! What innovation are we working on today?",
-    "Good day, User! What would you like to build?",
-    "Hello, User! Let's get started on your next masterpiece.",
-  ];
-
-  useEffect(() => {
-    setGIndex(rng(greetings.length));
-  }, []);
 
   const resetChat = useCallback(() => {
     setSession(undefined);

@@ -1,3 +1,5 @@
+- **0.106.0:** Pagina lista para pruebas
+
 - **0.105.0:** Refactorizacion completa en el sidebar, implementando layout y eliminando variantes sin uso
 
 - **0.104.0:** Reorganizacion en la seccion de clientes, eliminando el modelo msc para cliente y dejandolo solamente para servidor
