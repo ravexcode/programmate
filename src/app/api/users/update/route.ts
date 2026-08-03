@@ -28,7 +28,7 @@ export async function PUT(req: NextRequest) {
     const { error: updateProfileError } = await supabase
     .from("profiles")
     .update({
-      name,
+      display_name: name,
       avatar_url
     })
     .eq("id", auth.user.id);
@@ -39,7 +39,7 @@ export async function PUT(req: NextRequest) {
       message: "Profile updated successfully"
     });
   } catch(e) {
-    serverErrorHandler(e);
+    return serverErrorHandler(e);
   }
 }
 
@@ -73,6 +73,6 @@ export async function POST(req: NextRequest) {
       message: "AI providers updated successfully"
     });
   } catch(e) {
-    serverErrorHandler(e);
+    return serverErrorHandler(e);
   }
 }

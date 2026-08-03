@@ -1,3 +1,5 @@
+- **0.107.0:** Arreglo de errores al registrar un nuevo usuario
+
 - **0.106.0:** Pagina lista para pruebas
 
 - **0.105.0:** Refactorizacion completa en el sidebar, implementando layout y eliminando variantes sin uso

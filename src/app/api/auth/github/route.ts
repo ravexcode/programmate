@@ -30,6 +30,6 @@ export async function GET() {
       url: data?.url
     });
   } catch(e: unknown) {
-    Handler.serverErrorHandler(e);
+    return Handler.serverErrorHandler(e);
   }
 }

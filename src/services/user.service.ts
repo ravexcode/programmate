@@ -1,6 +1,5 @@
 import {
-  getSessionStr,
-  logOut
+  getSessionStr
 } from "@/services/session.service";
 
 import { fetchProfile, UpdateUserController, updateAiProvidersController } from "@/controllers/user.controller";
@@ -32,7 +31,7 @@ export async function getUserService(data: GetData) {
   const req = await fetchProfile({ token });
 
   if(req.status === 401) return router.push("/auth/signin");
-  if(req.status >= 205) return logOut(router);
+  if(req.status >= 400) return undefined;
 
   let plan : string = "Free";
   let teams = [];
@@ -58,7 +57,7 @@ export async function getUserService(data: GetData) {
     teams = req.data.projects;
   }
 
-  const username = oAuthUser.user_metareq? oAuthUser.user_metareq.data.display_name : profile.display_name;
+  const username = oAuthUser.user_metadata?.display_name || profile.display_name;
 
   const user : UserData = {
     "id": profile.id,

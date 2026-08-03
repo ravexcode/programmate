@@ -4,6 +4,5 @@
     "read": "allow",
     "edit": "allow",
     "bash": "ask"
-  },
-  "yolo": true
+  }
 }

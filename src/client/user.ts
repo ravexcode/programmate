@@ -15,7 +15,7 @@ export async function updateUserRequest(
   }
 ) {
   return apiFetch("/api/users/update", {
-    method: "POST",
+    method: "PUT",
     token,
     body: updatable,
   });
