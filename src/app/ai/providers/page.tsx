@@ -87,7 +87,7 @@ export default function AiProvidersPage() {
     setShowModal(true);
   };
 
-  const handleConnect = async (e: React.FormEvent) => {
+  const handleConnect = async (e: React.SubmitEvent) => {
     e.preventDefault();
     if (!canSubmit || !user) return;
 

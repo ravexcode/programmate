@@ -1,4 +1,4 @@
-import { getSessionStr } from "../session.service"
+import { getSessionStr, logOut } from "../session.service"
 
 import * as controllers from "@/controllers/project/main.controller";
 
@@ -48,7 +48,7 @@ export async function getProjectService(data: GetData) {
   const token = getSessionStr();
   const router = data.router;
 
-  if(!token) return router.push("/auth/signin");
+  if(!token) return logOut(router);
 
   const res = await controllers.getProjectController({
     token,
@@ -70,7 +70,7 @@ export async function createProjectService(data: CreateData) {
   const token = getSessionStr();
   const router = data.router;
 
-  if(!token) return router.push("/auth/signin");
+  if(!token) return logOut(router);
 
   const res = await controllers.createProjectController({
     token,
@@ -91,7 +91,7 @@ export async function updateProjectService(data: UpdateData) {
   const token = getSessionStr();
   const router = data.router;
 
-  if(!token) return router.push("/auth/signin");
+  if(!token) return logOut(router);
 
   const res = await controllers.updateProjectController({
     token,
@@ -111,7 +111,7 @@ export async function deleteProjectService(data: DeleteData) {
   const token = getSessionStr();
   const router = data.router;
 
-  if(!token) return router.push("/auth/signin");
+  if(!token) return logOut(router);
 
   const res = await controllers.deleteProjectController({
     token,
@@ -131,7 +131,7 @@ export async function getTeamService(data: { id: number; router: AppRouterInstan
   const token = getSessionStr();
   const router = data.router;
 
-  if(!token) return router.push("/auth/signin");
+  if(!token) return logOut(router);
 
   const res = await controllers.getProjectController({
     token,

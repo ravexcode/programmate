@@ -1,4 +1,4 @@
-import { getSessionStr } from "../session.service";
+import { getSessionStr, logOut } from "../session.service";
 
 import { showSnackbar } from "@/components/ui/snackbar";
 
@@ -39,7 +39,7 @@ function handleToken(router: AppRouterInstance) {
   const token = getSessionStr();
 
   if (!token) {
-    router.push("/auth/signin");
+    logOut(router);
     return null;
   }
 

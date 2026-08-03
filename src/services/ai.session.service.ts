@@ -1,5 +1,6 @@
 import {
-  getSessionStr
+  getSessionStr,
+  logOut
 } from "@/services/session.service";
 
 import {
@@ -31,14 +32,14 @@ export async function createSessionService(
   const token = getSessionStr();
 
   if (!token) {
-    router.push("/auth/signin");
+    logOut(router);
     return { success: false, message: "No session" };
   }
 
   const res = await createSessionController({ token, title, provider, model });
 
   if (res.status === 401) {
-    router.push("/auth/signin");
+    logOut(router);
     return { success: false, message: "Unauthorized" };
   }
 
@@ -57,14 +58,14 @@ export async function listSessionsService(
   const token = getSessionStr();
 
   if (!token) {
-    router.push("/auth/signin");
+    logOut(router);
     return { success: false, message: "No session" };
   }
 
   const res = await listSessionsController(token);
 
   if (res.status === 401) {
-    router.push("/auth/signin");
+    logOut(router);
     return { success: false, message: "Unauthorized" };
   }
 
@@ -84,14 +85,14 @@ export async function getSessionService(
   const token = getSessionStr();
 
   if (!token) {
-    router.push("/auth/signin");
+    logOut(router);
     return { success: false, message: "No session" };
   }
 
   const res = await getSessionController({ token, sessionId });
 
   if (res.status === 401) {
-    router.push("/auth/signin");
+    logOut(router);
     return { success: false, message: "Unauthorized" };
   }
 
@@ -111,14 +112,14 @@ export async function deleteSessionService(
   const token = getSessionStr();
 
   if (!token) {
-    router.push("/auth/signin");
+    logOut(router);
     return { success: false, message: "No session" };
   }
 
   const res = await deleteSessionController({ token, sessionId });
 
   if (res.status === 401) {
-    router.push("/auth/signin");
+    logOut(router);
     return { success: false, message: "Unauthorized" };
   }
 
@@ -140,14 +141,14 @@ export async function addMessageService(
   const token = getSessionStr();
 
   if (!token) {
-    router.push("/auth/signin");
+    logOut(router);
     return { success: false, message: "No session" };
   }
 
   const res = await addMessageController({ token, sessionId, sent_by, content });
 
   if (res.status === 401) {
-    router.push("/auth/signin");
+    logOut(router);
     return { success: false, message: "Unauthorized" };
   }
 

@@ -1,3 +1,5 @@
+- **0.108.0:** Arreglo de error al manejar las sesiones.
+- 
 - **0.107.0:** Arreglo de errores al registrar un nuevo usuario
 
 - **0.106.0:** Pagina lista para pruebas

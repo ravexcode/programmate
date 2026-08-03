@@ -1,4 +1,4 @@
-import { getSessionStr } from "../session.service";
+import { getSessionStr, logOut } from "../session.service";
 
 import {
   requestIntegrantController,
@@ -22,7 +22,7 @@ export async function requestIntegrantService(data: {
   snackbar: React.RefObject<null>;
 }) {
   const token = getSessionStr();
-  if(!token) return data.router.push("/auth/signin");
+  if(!token) return logOut(data.router);
 
   const res = await requestIntegrantController({
     id: data.id,
@@ -48,7 +48,7 @@ export async function changeRoleService(data: {
   snackbar: React.RefObject<null>;
 }) {
   const token = getSessionStr();
-  if(!token) return data.router.push("/auth/signin");
+  if(!token) return logOut(data.router);
 
   const res = await changeRoleController({
     id: data.id,
@@ -74,7 +74,7 @@ export async function removeMemberService(data: {
   snackbar: React.RefObject<null>;
 }) {
   const token = getSessionStr();
-  if(!token) return data.router.push("/auth/signin");
+  if(!token) return logOut(data.router);
 
   const res = await removeMemberController({
     id: data.id,
@@ -99,7 +99,7 @@ export async function addIntegrantService(data: {
   snackbar: React.RefObject<null>;
 }) {
   const token = getSessionStr();
-  if(!token) return data.router.push("/auth/signin");
+  if(!token) return logOut(data.router);
 
   const res = await addIntegrantController({
     id: data.id,

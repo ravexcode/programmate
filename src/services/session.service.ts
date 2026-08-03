@@ -35,9 +35,6 @@ export function saveSession(token: string) {
     "SameSite=Lax"
   ].join("; ");
 
-  console.log("Cookie: " + cookie);
-  console.log("Token: " + token);
-
   document.cookie = cookie;
 }
 

@@ -1,5 +1,6 @@
 import {
-  getSessionStr
+  getSessionStr,
+  logOut
 } from "@/services/session.service";
 
 import { fetchProfile, UpdateUserController, updateAiProvidersController } from "@/controllers/user.controller";
@@ -26,11 +27,11 @@ export async function getUserService(data: GetData) {
   const token = getSessionStr();
   const router = data.router;
 
-  if(!token) return router.push("/auth/signin");
+  if(!token) return logOut(router);
 
   const req = await fetchProfile({ token });
 
-  if(req.status === 401) return router.push("/auth/signin");
+  if(req.status === 401) return logOut(router);
   if(req.status >= 400) return undefined;
 
   let plan : string = "Free";

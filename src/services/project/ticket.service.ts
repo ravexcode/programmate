@@ -32,7 +32,8 @@ import { showSnackbar } from "@/components/ui/snackbar";
 import checkStatus from "@/utils/check-status";
 
 import {
-  getSessionStr
+  getSessionStr,
+  logOut
 } from "../session.service";
 
 import type { Ticket } from "@/types/team.types";
@@ -42,7 +43,7 @@ export async function createTicketService(data: CreateData) {
   const token = getSessionStr();
   const router = data.router;
 
-  if (!token) return router.push("/auth/signin");
+  if (!token) return logOut(router);
 
   const response = await createTicketController({
     id: data.id,
@@ -65,7 +66,7 @@ export async function updateTicketService(data: UpdateData) {
   const token = getSessionStr();
   const router = data.router;
 
-  if (!token) return router.push("/auth/signin");
+  if (!token) return logOut(router);
 
   const response = await updateTicketController({
     id: data.id,
@@ -89,7 +90,7 @@ export async function getTicketService(data: RequestData) {
   const token = getSessionStr();
   const router = data.router;
 
-  if (!token) return router.push("/auth/signin");
+  if (!token) return logOut(router);
 
   const response = await getTicketController({
     teamId: data.id,
@@ -113,7 +114,7 @@ export async function deleteTicketService(data: RequestData) {
   const token = getSessionStr();
   const router = data.router;
 
-  if (!token) return router.push("/auth/signin");
+  if (!token) return logOut(router);
 
   const response = await deleteTicketController({
     teamId: data.id,

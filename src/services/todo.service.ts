@@ -1,4 +1,4 @@
-import { getSessionStr } from "@/services/session.service";
+import { getSessionStr, logOut } from "@/services/session.service";
 import { createTodo, updateTodo, deleteTodo } from "@/controllers/todo.controller";
 import { showSnackbar } from "@/components/ui/snackbar";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -30,7 +30,7 @@ export async function createTodoService(data: CreateData) {
   const token = getSessionStr();
 
   if (!token) {
-    data.router.push("/auth/signin");
+    logOut(data.router);
     return { success: false };
   }
 
@@ -42,7 +42,7 @@ export async function createTodoService(data: CreateData) {
   });
 
   if (req.status === 401) {
-    data.router.push("/auth/signin");
+    logOut(data.router);
     return { success: false };
   }
 
@@ -65,7 +65,7 @@ export async function updateTodoService(data: UpdateData) {
   const token = getSessionStr();
 
   if (!token) {
-    data.router.push("/auth/signin");
+    logOut(data.router);
     return { success: false };
   }
 
@@ -78,7 +78,7 @@ export async function updateTodoService(data: UpdateData) {
   });
 
   if (req.status === 401) {
-    data.router.push("/auth/signin");
+    logOut(data.router);
     return { success: false };
   }
 
@@ -101,7 +101,7 @@ export async function deleteTodoService(data: DeleteData) {
   const token = getSessionStr();
 
   if (!token) {
-    data.router.push("/auth/signin");
+    logOut(data.router);
     return { success: false };
   }
 
@@ -111,7 +111,7 @@ export async function deleteTodoService(data: DeleteData) {
   });
 
   if (req.status === 401) {
-    data.router.push("/auth/signin");
+    logOut(data.router);
     return { success: false };
   }
 
