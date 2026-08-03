@@ -23,6 +23,8 @@
     "@slack/web-api": "7.17.0",
     "@supabase/supabase-js": "2.106.1",
     "@tabler/icons-react": "3.44.0",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "@xyflow/react": "12.10.2",
     "crypto-js": "4.2.0",
     "ioredis": "5.10.1",
