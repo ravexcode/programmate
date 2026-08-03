@@ -1,3 +1,5 @@
+- **0.110.0:** Mejoras en el apartado de marketing.
+- 
 - **0.109.0:** Integracion de herramientas de analitica (Vercel Analytics y Speed Insights)
 - 
 - **0.108.0:** Arreglo de error al manejar las sesiones.
