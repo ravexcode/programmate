@@ -1,3 +1,5 @@
+- **0.111.0:** Actualizacion de Agentes (Opencode).
+-
 - **0.110.0:** Mejoras en el apartado de marketing.
 - 
 - **0.109.0:** Integracion de herramientas de analitica (Vercel Analytics y Speed Insights)
