@@ -24,7 +24,7 @@ export default function ViewAI() {
       </header>
 
       <main
-      className="text-4xl tracking-wide opacity-80 flex items-center justify-center w-full">
+      className="text-2xl sm:text-4xl tracking-wide opacity-80 flex items-center justify-center w-full px-4 text-center">
         <p
         className="animate-fade-in-up">
           What are we building today?
@@ -32,7 +32,7 @@ export default function ViewAI() {
       </main>
 
       <footer
-      className="mx-auto gap-3 p-3 mb-3 w-200 flex items-center">
+      className="mx-auto gap-3 p-3 mb-3 w-full max-w-200 flex items-center">
         <input
         type="text"
         className="rounded-md bg-neutral-900 border border-neutral-700 duration-300 outline-none focus:border-main p-2 w-full animate-fade-in-up"

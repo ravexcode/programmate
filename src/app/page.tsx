@@ -83,7 +83,7 @@ export default function HomePage(){
   const router = useRouter();
 
   return (
-    <div className="bg-background min-h-dvh animate-fade-in">
+    <div className="bg-background min-h-dvh overflow-x-clip animate-fade-in">
       <SnackBar ref={snackbar} />
 
       <Header />
@@ -98,7 +98,7 @@ export default function HomePage(){
           <div
           className="w-full animate-duration-1000 animate-blurred-fade-in">
             <h1
-            className="text-7xl font-black mb-4 z-2 text-center animate-fade-in-down animate-duration-500 delay-200">
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight text-balance font-black mb-4 z-2 text-center animate-fade-in-down animate-duration-500 delay-200">
               Built to improve <br />
               your team <span className="text-main"> Workflow </span>
             </h1>
@@ -113,17 +113,17 @@ export default function HomePage(){
           className="w-full md:w-[50%] flex justify-center items-center mt-5 z-2 animate-fade-in-up">
             <Link
             href="/product"
-            className="bg-main rounded-full px-12 py-2 duration-200 hover:brightness-120 hover:-translate-y-0.5">
+            className="bg-main rounded-full px-8 sm:px-12 py-2.5 duration-200 hover:brightness-120 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main">
               Take a look
             </Link>
           </div>
 
           <div
-          className="w-max mx-auto px-5 overflow-hidden flex items-center justify-start">
+          className="w-full max-w-300 mx-auto px-5 overflow-hidden flex items-center justify-center">
             <Suspense
             fallback={
               <div
-              className="w-300 aspect-video flex items-center justify-center"> Loading presentation dashboard... </div>
+              className="w-full max-w-300 aspect-video flex items-center justify-center"> Loading presentation dashboard... </div>
             }>
               <MiniDashboard />
             </Suspense>
@@ -145,7 +145,7 @@ export default function HomePage(){
         </Suspense>
 
         <section
-        className="w-full max-w-280 flex flex-col items-center px-4 mt-30">
+        className="w-full max-w-280 flex flex-col items-center px-4 mt-15 sm:mt-30">
           <SectionHeading
           title={<>Stop wasting time building across multiple <br /> <span className="text-main">platforms</span></>}
           subtitle={<>With nexzero <span className="text-blue-600">centralize</span> your workflow with AI-powered automation</>} />
@@ -180,7 +180,7 @@ export default function HomePage(){
         </section>
 
         <section
-        className="w-full max-w-300 flex flex-col items-center px-4 mt-50">
+        className="w-full max-w-300 flex flex-col items-center px-4 mt-20 sm:mt-50">
           <SectionHeading
           title={<>Everything you need <span className="text-main">to ship</span></>}
           subtitle="Projects, teams, code, databases and AI in a single workspace" />
@@ -189,7 +189,7 @@ export default function HomePage(){
         </section>
 
         <section
-        className="w-full max-w-300 flex flex-col items-center px-4 mt-50">
+        className="w-full max-w-300 flex flex-col items-center px-4 mt-20 sm:mt-50">
           <SectionHeading
           title={<>Built for <span className="text-main">code</span> and databases</>}
           subtitle="From schemas to scripts, NexZero keeps your technical work close to your workflow" />
@@ -230,7 +230,7 @@ export default function HomePage(){
 
               <Link
               href="/product"
-              className="w-max rounded-full bg-main px-10 py-2 duration-200 hover:brightness-80">
+              className="w-max rounded-full bg-main px-10 py-2 duration-200 hover:brightness-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main">
                 Explore product
               </Link>
             </div>
@@ -244,13 +244,13 @@ export default function HomePage(){
 
         <section
         id="pricing"
-        className="w-full max-w-300 flex flex-col items-center px-4 mt-50 scroll-mt-20">
+        className="w-full max-w-300 flex flex-col items-center px-4 mt-20 sm:mt-50 scroll-mt-20">
           <SectionHeading
           title={<>Simple pricing, <span className="text-main">scaled</span> for your team</>}
           subtitle="Start free and upgrade when your workflow grows" />
 
           <div
-          className="mt-15 flex gap-10 items-start justify-center flex-wrap timeline-view-y animate-fade-in-up animate-range-[entry_0%_cover_30%]">
+          className="mt-15 flex gap-6 md:gap-10 items-start justify-center flex-wrap timeline-view-y animate-fade-in-up animate-range-[entry_0%_cover_30%]">
             {
               pricingPlans.map((plan) => (
                 <PricingCard
@@ -267,7 +267,7 @@ export default function HomePage(){
         </section>
 
         <section
-        className="w-full max-w-280 flex flex-col items-center px-4 mt-50">
+        className="w-full max-w-280 flex flex-col items-center px-4 mt-20 sm:mt-50">
           <SectionHeading
           title="Testimonials"
           subtitle="Know what people say about us" />

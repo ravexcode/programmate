@@ -77,12 +77,12 @@ export default function MiniDashboard() {
 
   return (
     <div
-    className="flex flex-row bg-background rounded-md border border-neutral-800 w-300 z-2 aspect-video mt-6 animate-fade-in-up animate-duration-1000">
+    className="flex flex-row bg-background rounded-md border border-neutral-800 w-full max-w-300 z-2 aspect-auto lg:aspect-video mt-6 animate-fade-in-up animate-duration-1000">
       <MiniDashboardSidebar
       setCurrentView={setCurrentView} />
 
       <main
-      className={"w-full h-full relative flex flex-col justify-center items-center " + (currentView !== "ai" && "p-10")}>
+      className={"w-full h-full relative flex flex-col justify-center items-center " + (currentView !== "ai" && "p-4 sm:p-8 lg:p-10")}>
         {
           currentView !== "ai" && (
             <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden animate-zoom-in animate-duration-300">

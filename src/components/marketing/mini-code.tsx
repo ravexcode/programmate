@@ -28,7 +28,7 @@ export function errorTemplate(
 
   return (
     <div
-    className="w-full max-w-220 aspect-video rounded-sm border border-neutral-900 bg-neutral-950 mt-5 z-10 p-5">
+    className="w-full max-w-220 aspect-auto rounded-sm border border-neutral-900 bg-neutral-950 mt-5 z-10 p-5">
       <CodeText
       text={ex} />
     </div>

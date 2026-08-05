@@ -1,11 +1,15 @@
+- **0.113.0:** Mejoras en la landing page y nueva skill para opencode: Impecable.
+
+- **0.112.0:** Landing page responsive: tipografia fluida, dashboard demo fluido, menu movil, ritmo de secciones y carruseles ajustados.
+
 - **0.111.0:** Actualizacion de Agentes (Opencode).
--
+
 - **0.110.0:** Mejoras en el apartado de marketing.
-- 
+
 - **0.109.0:** Integracion de herramientas de analitica (Vercel Analytics y Speed Insights)
-- 
+
 - **0.108.0:** Arreglo de error al manejar las sesiones.
-- 
+
 - **0.107.0:** Arreglo de errores al registrar un nuevo usuario
 
 - **0.106.0:** Pagina lista para pruebas

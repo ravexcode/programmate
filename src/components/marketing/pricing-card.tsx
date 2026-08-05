@@ -14,7 +14,7 @@ interface Props {
 export default function PricingCard(props: Props) {
   return (
     <div
-    className="rounded-2xl border border-neutral-900 bg-[#111111] p-4 w-90 max-w-full flex flex-col items-start justify-start gap-2 h-120 animate-fade-in-up">
+    className="rounded-2xl border border-neutral-900 bg-[#111111] p-4 w-90 max-w-full flex flex-col items-start justify-start gap-2 h-auto min-h-120 animate-fade-in-up">
       <p
       className="text-2xl tracking-wide w-full text-start">
         {props.tier} tier

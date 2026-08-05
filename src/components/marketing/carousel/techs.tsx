@@ -28,11 +28,11 @@ export default function TechCarousel() {
       <div 
         className="w-full max-w-400 overflow-hidden select-none"
         style={{
-          maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)'
+          maskImage: 'linear-gradient(to right, transparent, black 8%, black 92%, transparent)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent, black 8%, black 92%, transparent)'
         }}
       >
-        <div className="flex w-max gap-16 md:gap-24 carousel">
+        <div className="flex w-max gap-10 md:gap-24 carousel">
           {duplicatedIcons.map((icon, index) => (
             <Link 
               href={icon.url}

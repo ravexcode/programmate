@@ -19,7 +19,10 @@ function Button(props: {
     className="flex gap-1 w-full items-center justify-start p-2 text-sm duration-300 hover:bg-main/60 rounded-md cursor-pointer"
     onClick={props.action}>
       { props.icon }
-      { props.content }
+      <span
+      className="hidden sm:inline">
+        { props.content }
+      </span>
     </button>
   )
 }
@@ -35,7 +38,7 @@ import {
 export default function MiniDashboardSidebar(props: Props) {
   return (
     <aside
-    className="flex flex-col gap-2 items-center justify-start bg-neutral-950 w-70 py-3 px-2">
+    className="flex flex-col gap-2 items-center justify-start bg-neutral-950 w-16 sm:w-70 py-3 px-2">
       <Image
       src="/logos/large.svg"
       alt="NexZero logo"
@@ -45,7 +48,10 @@ export default function MiniDashboardSidebar(props: Props) {
       <div
       className="flex gap-1 w-full items-center justify-start p-2 text-xs duration-300 hover:bg-main/60 rounded-md cursor-pointer">
         <IconLayoutSidebar size={18} />
-        Close
+        <span
+        className="hidden sm:inline">
+          Close
+        </span>
       </div>
       <Button
       content="Dashboard"
@@ -76,7 +82,7 @@ export default function MiniDashboardSidebar(props: Props) {
         className="aspect-square rounded-full w-6" />
 
         <p
-        className="text-xs">
+        className="hidden sm:block text-xs">
           NexZero <br />
           <span
           className="text-[10px] opacity-70">
