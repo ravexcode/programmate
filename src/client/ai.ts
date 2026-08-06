@@ -74,6 +74,18 @@ type ChatMessage = {
   content: string;
 };
 
+export async function openRouterChatRequest(
+  token: string,
+  model: string,
+  messages: ChatMessage[]
+) {
+  return apiFetch("/api/ai/openrouter/chat", {
+    method: "POST",
+    token,
+    body: { model, messages },
+  });
+}
+
 export async function chatCompletionRequest(data: {
   token: string;
   provider: string;

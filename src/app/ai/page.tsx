@@ -14,7 +14,9 @@ import {
   buildChatRequest,
   parseChatResponse,
 } from "@/utils/ai-chat";
-import { sendChatRequest } from "@/client/ai";
+import { sendChatRequest, openRouterChatRequest } from "@/client/ai";
+import { OPENROUTER_MODELS } from "@/utils/openrouter-models";
+import { getSessionStr } from "@/services/session.service";
 
 import LoadingScreen from "@/components/screens/loading-screen";
 import AiLayout from "@/components/ai/layout";
@@ -107,7 +109,20 @@ export default function AiPage({ initialSession }: Props) {
 
   const [gIndex] = useState(() => rng(greetings.length));
 
-  const flatModels = user ? flattenModels(user) : [];
+  const flatModels = user
+    ? [
+        ...flattenModels(user),
+        // Built-in OpenRouter (app key, paid plans only)
+        ...(user.plan !== "free"
+          ? OPENROUTER_MODELS.map((model) => ({
+              providerKey: "openrouter",
+              providerName: providers.openrouter.name,
+              model,
+              displayName: `${providers.openrouter.name} / ${model}`,
+            }))
+          : []),
+      ]
+    : [];
 
   // Load user
   useEffect(() => {
@@ -227,48 +242,84 @@ export default function AiPage({ initialSession }: Props) {
 
     setSession(userResult.data);
 
-    // 3. Find provider config
-    const providerConfig = user.ai.find(
-      (p) => p.name === selectedModel.providerKey
-    );
-
-    if (!providerConfig) {
-      showSnackbar("Provider not found", "critic", snackbarRef);
-      setIsSending(false);
-      return;
-    }
-
-    // 4. Build AI request
+    // 3. Build AI request
     const chatMessages = userResult.data.messages.map((m) => ({
       role: m.sent_by as "user" | "assistant",
       content: m.content,
     }));
 
-    const chatRequest = buildChatRequest({
-      provider: selectedModel.providerKey,
-      model: selectedModel.model,
-      messages: chatMessages,
-      apiKey: providerConfig.api_key,
-      url: providerConfig.url,
-    });
+    let aiContent: string | null = null;
 
-    if (!chatRequest) {
-      showSnackbar("Unsupported provider", "critic", snackbarRef);
-      setIsSending(false);
-      return;
+    if (selectedModel.providerKey === "openrouter") {
+      // Built-in provider: app key lives server-side, paid plans only
+      const token = getSessionStr();
+      if (!token) {
+        showSnackbar("Session expired", "critic", snackbarRef);
+        setIsSending(false);
+        return;
+      }
+
+      const res = await openRouterChatRequest(
+        token,
+        selectedModel.model,
+        chatMessages
+      );
+
+      if (res.status === 403) {
+        showSnackbar("OpenRouter requires a paid plan", "warn", snackbarRef);
+        setIsSending(false);
+        return;
+      }
+
+      if (res.status !== 200) {
+        showSnackbar(
+          res.data?.message ?? "OpenRouter request failed",
+          "critic",
+          snackbarRef
+        );
+        setIsSending(false);
+        return;
+      }
+
+      aiContent = res.data?.content ?? null;
+    } else {
+      // User-connected provider
+      const providerConfig = user.ai.find(
+        (p) => p.name === selectedModel.providerKey
+      );
+
+      if (!providerConfig) {
+        showSnackbar("Provider not found", "critic", snackbarRef);
+        setIsSending(false);
+        return;
+      }
+
+      const chatRequest = buildChatRequest({
+        provider: selectedModel.providerKey,
+        model: selectedModel.model,
+        messages: chatMessages,
+        apiKey: providerConfig.api_key,
+        url: providerConfig.url,
+      });
+
+      if (!chatRequest) {
+        showSnackbar("Unsupported provider", "critic", snackbarRef);
+        setIsSending(false);
+        return;
+      }
+
+      // 4. Call external AI
+      const aiRes = await sendChatRequest(chatRequest.url, chatRequest.options);
+
+      if (!aiRes.ok) {
+        showSnackbar("AI request failed", "critic", snackbarRef);
+        setIsSending(false);
+        return;
+      }
+
+      const aiData = await aiRes.json();
+      aiContent = parseChatResponse(selectedModel.providerKey, aiData);
     }
-
-    // 5. Call external AI
-    const aiRes = await sendChatRequest(chatRequest.url, chatRequest.options);
-
-    if (!aiRes.ok) {
-      showSnackbar("AI request failed", "critic", snackbarRef);
-      setIsSending(false);
-      return;
-    }
-
-    const aiData = await aiRes.json();
-    const aiContent = parseChatResponse(selectedModel.providerKey, aiData);
 
     if (!aiContent) {
       showSnackbar("Empty AI response", "warn", snackbarRef);
