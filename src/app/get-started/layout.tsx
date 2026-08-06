@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Welcome to NexZero!"
+  title: "Get Started",
+  description:
+    "Create your first project in NexZero and start tracking tickets, boards and workflows in minutes.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function Layout({

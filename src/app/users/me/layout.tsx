@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "NexZero - Your profile"
+  title: "Your profile",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function Layout({

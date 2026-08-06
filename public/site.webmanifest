@@ -1,0 +1,16 @@
+{
+  "name": "NexZero",
+  "short_name": "NexZero",
+  "description": "Project management suite for developers",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060606",
+  "theme_color": "#060606",
+  "icons": [
+    {
+      "src": "/logos/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

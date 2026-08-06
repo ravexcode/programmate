@@ -1,3 +1,5 @@
+- **0.117.0:** Implementacion de SEO: metadata completa (OpenGraph, Twitter, canonical), sitemap.xml, robots.txt, noindex en rutas de la app y manifest.
+- 
 - **0.116.0:** Actualizacion de OpenCode
 
 - **0.115.0:** OpenRouter como proveedor integrado: clave de la app (server), modelos curados, solo planes de pago.

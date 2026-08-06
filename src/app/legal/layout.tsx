@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "NexZero - Legal"
+  title: "Legal",
+  description: "NexZero legal documents: privacy policy and terms of service."
 };
 
 export default function LegalLayout({

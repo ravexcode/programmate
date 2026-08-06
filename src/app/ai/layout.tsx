@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "NexZero - Agents chat"
+  title: "Agents chat",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function Layout({

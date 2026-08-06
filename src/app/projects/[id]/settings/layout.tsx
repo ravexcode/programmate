@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 
-export const metadata: Metadata ={
-  title: "NexZero - Project settings"
+export const metadata: Metadata = {
+  title: "Project settings",
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default function SettingsLayout({
