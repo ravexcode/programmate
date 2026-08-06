@@ -41,6 +41,36 @@ export function buildChatRequest(input: ChatRequestInput): ChatRequest | null {
     case "google":
       return buildGoogleRequest(model, messages, apiKey);
 
+    case "groq":
+      return buildOpenAIRequest(model, messages, apiKey, "https://api.groq.com/openai/v1");
+
+    case "mistral":
+      return buildOpenAIRequest(model, messages, apiKey, "https://api.mistral.ai/v1");
+
+    case "deepseek":
+      return buildOpenAIRequest(model, messages, apiKey, "https://api.deepseek.com/v1");
+
+    case "xai":
+      return buildOpenAIRequest(model, messages, apiKey, "https://api.x.ai/v1");
+
+    case "openrouter":
+      return buildOpenAIRequest(model, messages, apiKey, "https://openrouter.ai/api/v1");
+
+    case "together":
+      return buildOpenAIRequest(model, messages, apiKey, "https://api.together.xyz/v1");
+
+    case "fireworks":
+      return buildOpenAIRequest(model, messages, apiKey, "https://api.fireworks.ai/inference/v1");
+
+    case "perplexity":
+      return buildOpenAIRequest(model, messages, apiKey, "https://api.perplexity.ai");
+
+    case "huggingface":
+      return buildOpenAIRequest(model, messages, apiKey, "https://router.huggingface.co/v1");
+
+    case "cohere":
+      return buildCohereRequest(model, messages, apiKey);
+
     case "other":
       if (!url) return null;
       return buildOpenAIRequest(model, messages, apiKey, url);
@@ -77,8 +107,38 @@ function buildOpenAIRequest(
   apiKey?: string,
   baseUrl: string = "https://api.openai.com"
 ): ChatRequest {
+  const normalized = baseUrl.replace(/\/+$/, "");
+
+  // Accept bases that already include the version segment (…/v1) and
+  // full chat URLs already ending in /chat/completions.
+  const base = normalized.replace(/\/v1$/, "");
+  const url = /\/chat\/completions$/.test(normalized)
+    ? normalized
+    : `${base}/v1/chat/completions`;
+
   return {
-    url: `${baseUrl}/v1/chat/completions`,
+    url,
+    options: {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+      }),
+    },
+  };
+}
+
+function buildCohereRequest(
+  model: string,
+  messages: ChatMessage[],
+  apiKey?: string
+): ChatRequest {
+  return {
+    url: "https://api.cohere.com/v2/chat",
     options: {
       method: "POST",
       headers: {
@@ -152,11 +212,30 @@ export function parseChatResponse(
     case "openai":
     case "codex":
     case "minimax":
+    case "groq":
+    case "mistral":
+    case "deepseek":
+    case "xai":
+    case "openrouter":
+    case "together":
+    case "fireworks":
+    case "perplexity":
+    case "huggingface":
     case "other": {
       const res = data as {
         choices?: Array<{ message?: { content?: string } }>;
       };
       return res.choices?.[0]?.message?.content ?? null;
+    }
+
+    case "cohere": {
+      const res = data as {
+        message?: { content?: Array<{ type?: string; text?: string }> | string };
+      };
+      const content = res.message?.content;
+      if (Array.isArray(content)) return content[0]?.text ?? null;
+      if (typeof content === "string") return content;
+      return null;
     }
 
     case "claude":

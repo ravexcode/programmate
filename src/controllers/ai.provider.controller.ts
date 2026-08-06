@@ -74,6 +74,60 @@ const PROVIDERS: Record<string, ProviderConfig> = {
     requiresApiKey: false,
     requiresCustomUrl: true,
   },
+  groq: {
+    name: "Groq",
+    validateUrl: "https://api.groq.com/openai/v1/models",
+    modelsUrl: "https://api.groq.com/openai/v1/models",
+    method: "GET",
+  },
+  mistral: {
+    name: "Mistral",
+    validateUrl: "https://api.mistral.ai/v1/models",
+    modelsUrl: "https://api.mistral.ai/v1/models",
+    method: "GET",
+  },
+  deepseek: {
+    name: "DeepSeek",
+    validateUrl: "https://api.deepseek.com/models",
+    modelsUrl: "https://api.deepseek.com/models",
+    method: "GET",
+  },
+  xai: {
+    name: "xAI (Grok)",
+    validateUrl: "https://api.x.ai/v1/models",
+    modelsUrl: "https://api.x.ai/v1/models",
+    method: "GET",
+  },
+  together: {
+    name: "Together AI",
+    validateUrl: "https://api.together.xyz/v1/models",
+    modelsUrl: "https://api.together.xyz/v1/models",
+    method: "GET",
+  },
+  fireworks: {
+    name: "Fireworks",
+    validateUrl: "https://api.fireworks.ai/inference/v1/models",
+    modelsUrl: "https://api.fireworks.ai/inference/v1/models",
+    method: "GET",
+  },
+  perplexity: {
+    name: "Perplexity",
+    validateUrl: "https://api.perplexity.ai/v1/models",
+    modelsUrl: "https://api.perplexity.ai/v1/models",
+    method: "GET",
+  },
+  cohere: {
+    name: "Cohere",
+    validateUrl: "https://api.cohere.com/v2/models",
+    modelsUrl: "https://api.cohere.com/v2/models",
+    method: "GET",
+  },
+  huggingface: {
+    name: "Hugging Face",
+    validateUrl: "https://router.huggingface.co/v1/models",
+    modelsUrl: "https://router.huggingface.co/v1/models",
+    method: "GET",
+  },
   other: {
     name: "Other (OpenAI-compatible)",
     validateUrl: "",
@@ -168,17 +222,16 @@ export async function validateProviderController(
         
         if (provider.name === "Google AI") {
           models = data.models?.map((m: { name: string }) => m.name.replace("models/", "")) || [];
-        } else if (provider.name === "Claude" || provider.name === "Claude Code") {
-          models = data.data?.map((m: { id: string }) => m.id) || [];
-        } else if (provider.name === "OpenAI" || provider.name === "Codex") {
-          models = data.data?.map((m: { id: string }) => m.id) || [];
-        } else if (provider.name === "Minimax") {
-          models = data.data?.map((m: { id: string }) => m.id) || [];
-        } else if (provider.name === "Ollama") {
-          models = data.models?.map((m: { name: string }) => m.name) || [];
-        } else {
-          models = data.models?.map((m: { name: string }) => m.name) || 
-                   data.data?.map((m: { id: string }) => m.id) || [];
+        } else if (Array.isArray(data.data)) {
+          models = data.data
+            .map((m: { id?: string }) => m.id)
+            .filter((id: string | undefined): id is string => Boolean(id));
+        } else if (Array.isArray(data.models)) {
+          models = data.models
+            .map((m: string | { name?: string; id?: string }) =>
+              typeof m === "string" ? m : (m.name ?? m.id)
+            )
+            .filter((id: string | undefined): id is string => Boolean(id));
         }
       }
     }

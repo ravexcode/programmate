@@ -1,3 +1,7 @@
+- **0.115.0:** OpenRouter como proveedor integrado: clave de la app (server), modelos curados, solo planes de pago.
+
+- **0.114.0:** Nuevos proveedores de IA: Groq, Mistral, DeepSeek, xAI (Grok), OpenRouter, Together AI, Fireworks, Perplexity, Cohere y Hugging Face.
+
 - **0.113.0:** Mejoras en la landing page y nueva skill para opencode: Impecable.
 
 - **0.112.0:** Landing page responsive: tipografia fluida, dashboard demo fluido, menu movil, ritmo de secciones y carruseles ajustados.
