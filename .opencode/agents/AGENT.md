@@ -297,7 +297,7 @@ Two kinds:
 ### AI project builder (Build mode)
 
 - Chat page (`/ai/page.tsx`) has a Chat/Build mode toggle next to the input. Build mode + a build-style message (`build/create/make/generate` + `project/app/website/...`) triggers project generation instead of plain chat.
-- Two server routes (no `/api/ai/chat` — that dir is empty, `chatCompletionRequest` in `@/client/ai.ts` is dead code):
+- Two server routes:
   - `POST /api/ai/build-project/generate` — body `{ provider, model, messages }`. Auth token, provider key read server-side from `profiles.ai` (fixes CORS for OpenAI/Anthropic), OpenRouter uses app key + paid gate + allowlist. Returns validated `{ spec }` only, **no DB write**.
   - `POST /api/ai/build-project/commit` — body `{ spec }`. Re-validates spec (`sanitizeProjectSpec`), enforces free-plan limit (2 projects, `integrants_id`), single atomic `teams` insert with `kanban_board`, `tickets` (messages `Encrypt()`-ed), `calendar`. Returns `{ team }`.
 - Spec schema + limits live in `@/types/ai-project.types.ts` (`AiProjectSpec`) and `@/utils/ai-project-spec.ts`. `buildProjectSystemPrompt()` sends the exact expected JSON schema to the model; `buildProjectSpecMessages()` folds the prompt into the last user message (works on every provider, no system-role reliance). `extractProjectSpec()` strips fences, parses, sanitizes.

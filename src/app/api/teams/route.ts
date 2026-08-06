@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
 
     //Verifies if the user can create projects
-    if(profile && profile.plan === "free") {
+    if(profile && (profile.plan || "free").toLowerCase() === "free") {
       const { data: teams } = await supabase
       .from("teams")
       .select("team_id")
@@ -84,14 +84,7 @@ export async function POST(req: NextRequest) {
       team: newTeam
     })
   } catch(e: unknown) {
-    const message = e instanceof Error ? e.message : "Unknown error";
-    //Server errors
-    return NextResponse.json({
-      message: "An error has happened in the server",
-      error: message
-    }, {
-      status: 500
-    });
+    return serverErrorHandler(e);
   }
 }
 
@@ -105,7 +98,7 @@ export async function PUT(req: NextRequest){
     const token = (await headers()).get("Authorization");
 
     //Verifies if the data is OK
-    if(!id || (!name && !description && status && tags)) return badRequestErrorHandler();
+    if(!id || (!name && !description && !status && !tags)) return badRequestErrorHandler();
 
     if(!token) return unauthorizedErrorHandler("Authorization token not inserted");
 
@@ -134,15 +127,17 @@ export async function PUT(req: NextRequest){
     //Verifies if the user is in the team
     if(!team?.integrants_id.includes(user.id)) return unauthorizedErrorHandler("You're not in the team");
 
+    //Builds a partial update with only the provided fields
+    const updates: Record<string, unknown> = {};
+    if (name) updates.name = name;
+    if (description) updates.description = description;
+    if (status) updates.status = status;
+    if (tags) updates.tags = tags;
+
     //Saves the value in the DB
     const { error: updateTeamError } = await supabase
     .from("teams")
-    .update({
-      name: name,
-      description: description,
-      status: status,
-      tags: tags,
-    })
+    .update(updates)
     .eq("team_id", id);
 
     //Verifies if there's no error
@@ -153,6 +148,6 @@ export async function PUT(req: NextRequest){
       message: "Team updated"
     });
   } catch(e: unknown) {
-    serverErrorHandler(e);
+    return serverErrorHandler(e);
   }
 }

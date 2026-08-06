@@ -1,3 +1,5 @@
+- **0.118.1:** Bugfixes: limite de proyectos free ahora compara plan sin importar mayusculas y maneja plan nulo; PUT /api/teams valida campos, actualiza parcialmente (sin pisar undefined) y retorna respuesta en exito y catch; catch de POST /api/teams usa handler compartido; eliminado codigo muerto (chatCompletionRequest, submitProvider, toggleComponent, useGetData y directorio vacio /api/ai/chat).
+
 - **0.118.0:** IA construye proyectos: modo Build en el chat, la IA genera un spec (nombre, descripcion, estado, tags, kanban, tickets, calendario) que se muestra en una tarjeta con botones Commit changes / Cancel, opcion Auto-build sin confirmacion, guardado via /api/ai/build-project y correccion del limite de plan free (users_id -> integrants_id).
 
 - **0.117.1:** Arreglo de errores en el apartado de IA
