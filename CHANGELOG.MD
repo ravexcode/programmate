@@ -1,3 +1,5 @@
+- **0.116.0:** Actualizacion de OpenCode
+
 - **0.115.0:** OpenRouter como proveedor integrado: clave de la app (server), modelos curados, solo planes de pago.
 
 - **0.114.0:** Nuevos proveedores de IA: Groq, Mistral, DeepSeek, xAI (Grok), OpenRouter, Together AI, Fireworks, Perplexity, Cohere y Hugging Face.

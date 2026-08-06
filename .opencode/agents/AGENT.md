@@ -267,8 +267,32 @@ Before writing API-facing code, verify: API endpoint, HTTP method, request body,
 ## Versioning
 
 - Add an entry to `CHANGELOG.MD` (`- **0.X.0:** short description`) per change.
+- Keep `/.opencode/agents/AGENT.md` updated when architecture, features, or env vars change — it is the persistent agent memory for this project.
 - Version types documented in `dev/version-variants.md`.
 - Branches: `development` (`pnpm push-d`) and `production` (`pnpm push-p`).
+
+## AI chat feature (`src/app/ai`)
+
+Pages: `/ai` (chat + model picker), `/ai/[id]` (session), `/ai/providers` (connect user providers).
+
+### Provider types
+
+Two kinds:
+
+1. **User-connected providers** — user's own API key, stored in `user.ai` (type `Provider` in `@/types/user.types.ts`: `name`, `api_key`, `models`, `url`). Connectable list = `providersArray` in `@/utils/getURL.ts` (drives providers page + `NEEDS_API_KEY`). Validation + model listing in `PROVIDERS` config in `@/controllers/ai.provider.controller.ts`, route `POST /api/ai/provider` (headers: `Authorization`, `provider-api-key`, `provider`, optional `custom-url`).
+2. **Built-in OpenRouter** — app's key, server-side only. Paid plans only, curated models. NOT in `providersArray` (users cannot connect their own key).
+
+### Chat transport
+
+- `buildChatRequest` + `parseChatResponse` in `@/utils/ai-chat.ts`. OpenAI-compatible base normalization: strips trailing `/v1`, accepts full `/chat/completions` URLs.
+- User-connected providers: direct browser → provider fetch via `sendChatRequest` (`@/client/ai.ts`). Caveat: OpenAI/Anthropic block browser CORS — pre-existing limitation, route through server if it must work.
+- OpenRouter: server route `POST /api/ai/openrouter/chat` (`@/app/api/ai/openrouter/chat/route.ts`). Gates: auth token → `profiles.plan === "free"` → 403; model not in allowlist → 400. App key from `OPENROUTER_API_KEY` env (server-only, add to `.env`, never client). Client call: `openRouterChatRequest(token, model, messages)`.
+- Allowlist: `OPENROUTER_MODELS` in `@/utils/openrouter-models.ts` — shared constant, gates BOTH client picker and server route. Curated models, verified OpenRouter slugs.
+- Chat page (`/ai/page.tsx`): OpenRouter models appended to picker only when `user.plan !== "free"`. Send flow branches on `providerKey === "openrouter"` → server route; else direct provider fetch.
+
+### Sessions
+
+- DB-backed (`ai_sessions` + messages). Module `@/modules/ai.session.module.ts`, routes under `/api/ai/sessions`. Session stores `provider` key + `model`.
 
 ## Communication style
 
