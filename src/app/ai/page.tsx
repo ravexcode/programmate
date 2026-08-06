@@ -17,10 +17,15 @@ import {
 import { sendChatRequest, openRouterChatRequest } from "@/client/ai";
 import { OPENROUTER_MODELS } from "@/utils/openrouter-models";
 import { getSessionStr } from "@/services/session.service";
+import {
+  generateProjectSpec,
+  commitProjectSpec,
+} from "@/modules/ai.build-project.module";
 
 import LoadingScreen from "@/components/screens/loading-screen";
 import AiLayout from "@/components/ai/layout";
 import SnackBar, { showSnackbar } from "@/components/ui/snackbar";
+import ProjectBuildCard from "@/components/ai/project-build-card";
 
 import { rng } from "@/utils/rng";
 import { providers } from "@/utils/getURL";
@@ -29,16 +34,72 @@ import {
   IconArrowUp,
   IconAssembly,
   IconCloudCog,
+  IconMessage,
+  IconBuildingSkyscraper,
 } from "@tabler/icons-react";
 
 import type { UserData } from "@/types/user.types";
 import type { AiChatSession, AiChatMessage } from "@/types/ai.types";
+import type { AiProjectSpec } from "@/types/ai-project.types";
 
 interface FlatModel {
   providerKey: string;
   providerName: string;
   model: string;
   displayName: string;
+}
+
+function ModeToggle({
+  buildMode,
+  onChange,
+}: {
+  buildMode: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <div className="flex rounded-md border border-neutral-800 overflow-hidden text-sm">
+      <button
+        type="button"
+        onClick={() => onChange(false)}
+        className={
+          "px-2 py-1.5 cursor-pointer duration-200 flex items-center gap-1 " +
+          (!buildMode ? "bg-main text-white" : "hover:bg-neutral-800")
+        }>
+        <IconMessage size={14} />
+        Chat
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange(true)}
+        className={
+          "px-2 py-1.5 cursor-pointer duration-200 flex items-center gap-1 " +
+          (buildMode ? "bg-main text-white" : "hover:bg-neutral-800")
+        }>
+        <IconBuildingSkyscraper size={14} />
+        Build
+      </button>
+    </div>
+  );
+}
+
+function AutoBuildCheckbox({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: () => void;
+}) {
+  return (
+    <label className="flex items-center gap-1.5 text-xs text-neutral-500 cursor-pointer select-none">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        className="accent-main w-3.5 h-3.5 cursor-pointer"
+      />
+      Auto-build
+    </label>
+  );
 }
 
 function flattenModels(user: UserData): FlatModel[] {
@@ -99,6 +160,17 @@ export default function AiPage({ initialSession }: Props) {
   const [user, setUser] = useState<UserData>();
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
+
+  // Build mode: AI creates projects instead of plain chat
+  const [buildMode, setBuildMode] = useState(false);
+  const [autoBuild, setAutoBuild] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.localStorage.getItem("ai_auto_build") === "1"
+  );
+  const [projectSpec, setProjectSpec] = useState<AiProjectSpec | null>(null);
+  const [isBuilding, setIsBuilding] = useState(false);
+  const [isCommitting, setIsCommitting] = useState(false);
 
   // Model selector
   const [showModelPicker, setShowModelPicker] = useState(false);
@@ -167,8 +239,39 @@ export default function AiPage({ initialSession }: Props) {
     setSession(undefined);
     setInput("");
     setIsSending(false);
+    setProjectSpec(null);
     router.push("/ai");
   }, [router]);
+
+  const handleAutoBuildToggle = () => {
+    setAutoBuild((prev) => {
+      const next = !prev;
+      window.localStorage.setItem("ai_auto_build", next ? "1" : "0");
+      return next;
+    });
+  };
+
+  const handleCommitSpec = async () => {
+    if (!projectSpec || isCommitting) return;
+
+    setIsCommitting(true);
+    const team = await commitProjectSpec({
+      router,
+      snackbar: snackbarRef,
+      spec: projectSpec,
+    });
+    setIsCommitting(false);
+
+    if (!team) return;
+
+    setProjectSpec(null);
+    router.push(`/projects/${team.team_id}`);
+  };
+
+  const handleCancelSpec = () => {
+    if (isCommitting) return;
+    setProjectSpec(null);
+  };
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,6 +284,7 @@ export default function AiPage({ initialSession }: Props) {
     const content = input.trim();
     setInput("");
     setIsSending(true);
+    setProjectSpec(null);
 
     // 1. Create session (first message)
     let targetSessionId: string;
@@ -247,6 +351,53 @@ export default function AiPage({ initialSession }: Props) {
       role: m.sent_by as "user" | "assistant",
       content: m.content,
     }));
+
+    // Build mode: AI generates a project spec. With auto-build the spec is
+    // committed immediately, otherwise the user reviews it on a card first.
+    const buildIntent =
+      buildMode &&
+      /(?:build|create|make|generate|start|scaffold)\b/i.test(content) &&
+      /(?:project|app|application|website|product|system|tool|platform)\b/i.test(
+        content
+      );
+
+    if (buildIntent) {
+      setIsBuilding(true);
+      const spec = await generateProjectSpec({
+        router,
+        snackbar: snackbarRef,
+        provider: selectedModel.providerKey,
+        model: selectedModel.model,
+        messages: chatMessages,
+      });
+      setIsBuilding(false);
+
+      if (!spec) {
+        setIsSending(false);
+        return;
+      }
+
+      if (autoBuild) {
+        setIsCommitting(true);
+        const team = await commitProjectSpec({
+          router,
+          snackbar: snackbarRef,
+          spec,
+        });
+        setIsCommitting(false);
+
+        if (team) {
+          router.push(`/projects/${team.team_id}`);
+        }
+
+        setIsSending(false);
+        return;
+      }
+
+      setProjectSpec(spec);
+      setIsSending(false);
+      return;
+    }
 
     let aiContent: string | null = null;
 
@@ -381,23 +532,61 @@ export default function AiPage({ initialSession }: Props) {
                 </div>
               )}
 
+              {isBuilding && (
+                <div className="w-full flex justify-start">
+                  <div className="bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-2 text-sm text-neutral-400">
+                    Building project...
+                  </div>
+                </div>
+              )}
+
               <div ref={messagesEndRef} />
             </section>
 
+            {projectSpec && (
+              <div className="w-full mb-3">
+                <ProjectBuildCard
+                  spec={projectSpec}
+                  isCommitting={isCommitting}
+                  onCommit={handleCommitSpec}
+                  onCancel={handleCancelSpec}
+                />
+              </div>
+            )}
+
             <section className="w-full mt-auto p-3 px-5 rounded-xl border border-neutral-900 bg-neutral-950 flex flex-col gap-2 animate-fade-in-up">
+              <div className="w-full flex items-center gap-3">
+                <ModeToggle buildMode={buildMode} onChange={setBuildMode} />
+                {buildMode && (
+                  <AutoBuildCheckbox
+                    checked={autoBuild}
+                    onChange={handleAutoBuildToggle}
+                  />
+                )}
+              </div>
+
               <form onSubmit={handleSend} className="w-full flex gap-3">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask me anything"
+                  placeholder={
+                    buildMode
+                      ? "Describe the project to build"
+                      : "Ask me anything"
+                  }
                   className="w-full outline-none"
-                  disabled={isSending}
+                  disabled={isSending || isBuilding || isCommitting}
                 />
 
                 <button
                   type="submit"
-                  disabled={isSending || !input.trim()}
+                  disabled={
+                    isSending ||
+                    isBuilding ||
+                    isCommitting ||
+                    !input.trim()
+                  }
                   className="bg-main rounded-full aspect-square block hover:brightness-75 duration-300 cursor-pointer p-2 disabled:grayscale disabled:cursor-not-allowed">
                   <IconArrowUp size={20} />
                 </button>
@@ -417,6 +606,16 @@ export default function AiPage({ initialSession }: Props) {
             </section>
 
             <section className="w-full p-3 px-5 rounded-xl border border-neutral-900 bg-neutral-950 flex flex-col gap-2 animate-fade-in-up">
+              <div className="w-full flex items-center gap-3">
+                <ModeToggle buildMode={buildMode} onChange={setBuildMode} />
+                {buildMode && (
+                  <AutoBuildCheckbox
+                    checked={autoBuild}
+                    onChange={handleAutoBuildToggle}
+                  />
+                )}
+              </div>
+
               <form onSubmit={handleSend} className="w-full flex gap-3">
                 <input
                   type="text"
@@ -424,16 +623,29 @@ export default function AiPage({ initialSession }: Props) {
                   onChange={(e) => setInput(e.target.value)}
                   placeholder={
                     flatModels.length > 0
-                      ? "Ask me anything"
+                      ? buildMode
+                        ? "Describe the project to build"
+                        : "Ask me anything"
                       : "Connect a provider first"
                   }
                   className="w-full outline-none"
-                  disabled={isSending || flatModels.length === 0}
+                  disabled={
+                    isSending ||
+                    isBuilding ||
+                    isCommitting ||
+                    flatModels.length === 0
+                  }
                 />
 
                 <button
                   type="submit"
-                  disabled={isSending || !input.trim() || flatModels.length === 0}
+                  disabled={
+                    isSending ||
+                    isBuilding ||
+                    isCommitting ||
+                    !input.trim() ||
+                    flatModels.length === 0
+                  }
                   className="bg-main rounded-full aspect-square block hover:brightness-75 duration-300 cursor-pointer p-2 disabled:grayscale disabled:cursor-not-allowed">
                   <IconArrowUp size={20} />
                 </button>

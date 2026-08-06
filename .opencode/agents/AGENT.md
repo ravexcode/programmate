@@ -294,6 +294,16 @@ Two kinds:
 
 - DB-backed (`ai_sessions` + messages). Module `@/modules/ai.session.module.ts`, routes under `/api/ai/sessions`. Session stores `provider` key + `model`.
 
+### AI project builder (Build mode)
+
+- Chat page (`/ai/page.tsx`) has a Chat/Build mode toggle next to the input. Build mode + a build-style message (`build/create/make/generate` + `project/app/website/...`) triggers project generation instead of plain chat.
+- Two server routes (no `/api/ai/chat` — that dir is empty, `chatCompletionRequest` in `@/client/ai.ts` is dead code):
+  - `POST /api/ai/build-project/generate` — body `{ provider, model, messages }`. Auth token, provider key read server-side from `profiles.ai` (fixes CORS for OpenAI/Anthropic), OpenRouter uses app key + paid gate + allowlist. Returns validated `{ spec }` only, **no DB write**.
+  - `POST /api/ai/build-project/commit` — body `{ spec }`. Re-validates spec (`sanitizeProjectSpec`), enforces free-plan limit (2 projects, `integrants_id`), single atomic `teams` insert with `kanban_board`, `tickets` (messages `Encrypt()`-ed), `calendar`. Returns `{ team }`.
+- Spec schema + limits live in `@/types/ai-project.types.ts` (`AiProjectSpec`) and `@/utils/ai-project-spec.ts`. `buildProjectSystemPrompt()` sends the exact expected JSON schema to the model; `buildProjectSpecMessages()` folds the prompt into the last user message (works on every provider, no system-role reliance). `extractProjectSpec()` strips fences, parses, sanitizes.
+- Chain: `@/client/ai.build-project.ts` → `@/controllers/ai.build-project.controller.ts` → `@/services/ai.build-project.service.ts` → `@/modules/ai.build-project.module.ts`. Commit service invalidates localStorage user cache (`user`, `cached_at`) so the new project shows on the dashboard.
+- UI: `ProjectBuildCard` (`@/components/ai/project-build-card.tsx`) shows the spec with Commit changes / Cancel. Auto-build checkbox (`ai_auto_build` localStorage) skips the card and commits immediately. Auto-build still verifies the user's own token + plan limit server-side — no auth bypass.
+
 ## Communication style
 
 Talk like a caveman: 2–10 words most of the time, no filler, no greetings, no endings, action first, facts only, one idea per line, bullets often. Code always clean. Use full clarity for code, commits, PR descriptions, and security warnings.

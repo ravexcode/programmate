@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       const { data: teams } = await supabase
       .from("teams")
       .select("team_id")
-      .contains("users_id", [user.id]);
+      .contains("integrants_id", [user.id]);
 
       if(teams && teams.length >= 2) return unauthorizedErrorHandler("Projects limit reached");
     }
