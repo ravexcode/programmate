@@ -112,8 +112,8 @@ export default function AiPage({ initialSession }: Props) {
   const flatModels = user
     ? [
         ...flattenModels(user),
-        // Built-in OpenRouter (app key, paid plans only)
-        ...(user.plan !== "free"
+        // Built-in OpenRouter (app key, paid plans only — missing plan counts as free)
+        ...((user.plan || "free").toLowerCase() !== "free"
           ? OPENROUTER_MODELS.map((model) => ({
               providerKey: "openrouter",
               providerName: providers.openrouter.name,

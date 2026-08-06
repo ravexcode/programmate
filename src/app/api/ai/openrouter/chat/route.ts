@@ -26,14 +26,14 @@ export async function POST(req: NextRequest) {
     if (authError) return unauthorizedErrorHandler(authError.message);
     if (!user) return unauthorizedErrorHandler("User not found");
 
-    // Paid plan gate
+    // Paid plan gate — missing plan counts as free (plan normalized to lowercase)
     const { data: profile } = await supabase
       .from("profiles")
       .select("plan")
       .eq("id", user.id)
       .maybeSingle();
 
-    if (!profile || profile.plan === "free") {
+    if (!profile || (profile.plan || "free").toLowerCase() === "free") {
       return NextResponse.json(
         { message: "OpenRouter requires a paid plan" },
         { status: 403 }
